@@ -435,7 +435,7 @@ fun CollapseGroupTitle(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TopBar(
+private fun TopBar(
     scrollBehavior: TopAppBarScrollBehavior,
     backgroundColor: Color,
     selectMode: Boolean,

@@ -20,6 +20,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
+import androidx.navigation.compose.navigation
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.ExportContext
@@ -28,8 +29,11 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.components.MutableExportContext
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SourceChangeDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.wenku8ApiWebDataSourceItem
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.zaiComicWebDataSourceItem
-import indi.dmzz_yyhyy.lightnovelreader.ui.debug.navigateToDebug
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.UpdatesAvailableDialogViewModel
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.advanced.debug.navigateToDebug
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.advanced.debug.settingsDebugDestination
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.advanced.translate.navigateToTranslate
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.advanced.translate.settingsTranslateDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
 import indi.dmzz_yyhyy.lightnovelreader.utils.uriLauncher
 import kotlinx.coroutines.CoroutineScope
@@ -38,8 +42,19 @@ import kotlinx.coroutines.launch
 import java.io.File
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun NavGraphBuilder.homeSettingDestination(navController: NavController, sharedTransitionScope: SharedTransitionScope) {
-    composable<Route.Home.Settings> {
+fun NavGraphBuilder.settingsNavigation(navController: NavController, sharedTransitionScope: SharedTransitionScope) {
+    navigation<Route.Home.Settings>(
+        startDestination = Route.Home.Settings.Home
+    ) {
+        settingsHomeDestination(navController, sharedTransitionScope)
+        settingsDebugDestination(navController)
+        settingsTranslateDestination(navController)
+    }
+}
+
+@OptIn(ExperimentalSharedTransitionApi::class)
+fun NavGraphBuilder.settingsHomeDestination(navController: NavController, sharedTransitionScope: SharedTransitionScope) {
+    composable<Route.Home.Settings.Home> {
         val settingsViewModel = hiltViewModel<SettingsViewModel>()
         val updatesAvailableDialogViewModel = hiltViewModel<UpdatesAvailableDialogViewModel>()
         val updatePhase by updatesAvailableDialogViewModel.updatePhaseFlow.collectAsState("Not Checked")
@@ -53,6 +68,7 @@ fun NavGraphBuilder.homeSettingDestination(navController: NavController, sharedT
             onClickDebugMode = navController::navigateToDebug,
             onClickChangeSource = navController::navigateToSourceChangeDialog,
             onClickExportUserData = navController::navigateToExportUserDataDialog,
+            onClickTranslateSettings = navController::navigateToTranslate,
             animatedVisibilityScope = this,
             sharedTransitionScope = sharedTransitionScope
         )

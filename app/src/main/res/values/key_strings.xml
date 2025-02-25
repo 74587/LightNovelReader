@@ -32,4 +32,17 @@
     <!-- Reader Bg Image Display Mode -->
     <string name="key_bg_image_display_mode_loop">Loop</string>
     <string name="key_bg_image_display_mode_fixed">Fixed</string>
+    <!-- ML Kit Language List -->
+    <string name="key_ml_kit_lang_zh" translatable="false">中文</string>
+    <string name="key_ml_kit_lang_en" translatable="false">English</string>
+    <string name="key_ml_kit_lang_de" translatable="false">Deutsch</string>
+    <string name="key_ml_kit_lang_es" translatable="false">Español</string>
+    <string name="key_ml_kit_lang_fr" translatable="false">Français</string>
+    <string name="key_ml_kit_lang_it" translatable="false">Italiano</string>
+    <string name="key_ml_kit_lang_ja" translatable="false">日本語 (你为什么要这样做)</string>
+    <string name="key_ml_kit_lang_ko" translatable="false">한국어</string>
+    <string name="key_ml_kit_lang_no" translatable="false">Norsk Bokmål</string>
+    <string name="key_ml_kit_lang_pl" translatable="false">Polski</string>
+    <string name="key_ml_kit_lang_pt" translatable="false">Português</string>
+    <string name="key_ml_kit_lang_ru" translatable="false">Русский</string>
 </resources>

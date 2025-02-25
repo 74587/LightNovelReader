@@ -1,4 +1,4 @@
-package indi.dmzz_yyhyy.lightnovelreader.ui.debug
+package indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.advanced.debug
 
 import android.annotation.SuppressLint
 import androidx.compose.runtime.getValue

@@ -85,7 +85,7 @@ fun SettingsSwitchEntry(
     description: String,
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
-    disabled: Boolean = false
+    disabled: Boolean
 ) {
     Row(
         modifier = modifier
@@ -93,7 +93,7 @@ fun SettingsSwitchEntry(
             .clip(RoundedCornerShape(6.dp))
             .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             .wrapContentHeight()
-            .then(if (!disabled) Modifier.clickable { onCheckedChange(!checked) } else Modifier)
+            .then(if (!disabled) modifier.clickable { onCheckedChange(!checked) } else modifier)
             .padding(start = 18.dp, end = 14.dp)
             .padding(vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically,
@@ -296,6 +296,8 @@ fun SettingsMenuEntry(
             .clip(RoundedCornerShape(6.dp))
             .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             .wrapContentHeight()
+            .then(modifier)
+
             .pointerInteropFilter {
                 offset = Offset(it.x, it.y); false
             }
@@ -429,6 +431,7 @@ fun SettingsClickableEntry(
             .clip(RoundedCornerShape(6.dp))
             .background(MaterialTheme.colorScheme.surfaceContainerHigh)
             .wrapContentHeight()
+            .then(modifier)
             .clickable { onClick.invoke() }
             .padding(start = 18.dp, end = 14.dp)
             .padding(vertical = 8.dp),

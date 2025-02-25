@@ -1,4 +1,4 @@
-package indi.dmzz_yyhyy.lightnovelreader.ui.debug
+package indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.advanced.debug
 
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsFocusedAsState

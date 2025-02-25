@@ -109,4 +109,19 @@ sealed class MenuOptions {
         val Default = option("default", R.string.key_default_text)
         val Customize = option("customize", R.string.key_customize_text)
     }
+
+    data object MLKitLangOptions: MenuOptions() {
+        val Chinese = option("zh", R.string.key_ml_kit_lang_zh)
+        val English = option("en", R.string.key_ml_kit_lang_en)
+        val German = option("de", R.string.key_ml_kit_lang_de)
+        val Spanish = option("es", R.string.key_ml_kit_lang_es)
+        val French = option("fr", R.string.key_ml_kit_lang_fr)
+        val Italian = option("it", R.string.key_ml_kit_lang_it)
+        val Japanese = option("ja", R.string.key_ml_kit_lang_ja)
+        val Korean = option("ko", R.string.key_ml_kit_lang_ko)
+        val Norwegian = option("no", R.string.key_ml_kit_lang_no)
+        val Polish = option("pl", R.string.key_ml_kit_lang_pl)
+        val Portuguese = option("pt", R.string.key_ml_kit_lang_pt)
+        val Russian = option("ru", R.string.key_ml_kit_lang_ru)
+    }
 }

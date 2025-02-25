@@ -52,6 +52,8 @@ sealed class UserDataPath(
             data object ProxyUrl: UserDataPath("proxy_url", App)
             data object Statistics : UserDataPath("statistics", App)
             data object MaxCache : UserDataPath("max_cache", App)
+            data object TranslateEnabled: UserDataPath("translate_enabled", App)
+            data object TranslateTargetLanguage: UserDataPath("translate_target_language", App)
         }
         data object Display: UserDataPath("display", Settings) {
             data object DarkMode : UserDataPath("dark_mode", Display)

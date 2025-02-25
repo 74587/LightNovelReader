@@ -57,6 +57,7 @@ import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.SharedContentKey
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.HomeNavigateBar
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.AboutSettingsList
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.AppSettingsList
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.DataSettingsList
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.DisplaySettingsList
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.UpdatesSettingsList
@@ -73,6 +74,7 @@ fun SettingsScreen(
     onClickChangeSource: () -> Unit,
     onClickExportUserData: () -> Unit,
     onClickDebugMode: () -> Unit,
+    onClickTranslateSettings: () -> Unit,
     animatedVisibilityScope: AnimatedVisibilityScope,
     sharedTransitionScope: SharedTransitionScope,
 ) {
@@ -103,6 +105,15 @@ fun SettingsScreen(
                         .verticalScroll(rememberScrollState())
                         .nestedScroll(pinnedScrollBehavior.nestedScrollConnection)
                 ) {
+                    SettingsCategory(
+                        title = stringResource(R.string.app_settings),
+                        icon = ImageVector.vectorResource(R.drawable.outline_settings_24px)
+                    ) {
+                        AppSettingsList(
+                            settingState = settingState,
+                            onClickTranslateSettings = onClickTranslateSettings
+                        )
+                    }
                     SettingsCategory(
                         title = stringResource(R.string.app_updates),
                         icon = ImageVector.vectorResource(R.drawable.deployed_code_update_24px)
