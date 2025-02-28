@@ -30,6 +30,8 @@ sealed class UserDataPath(
         data object EnableChapterTitleIndicator : UserDataPath("enableChapterTitleIndicator", Reader)
         data object EnableReadingChapterProgressIndicator : UserDataPath("enableReadingChapterProgressIndicator", Reader)
         data object EnableSimplifiedTraditionalTransform : UserDataPath("enableSimplifiedTraditionalTransform", Reader)
+        data object EnableMLTranslate : UserDataPath("enableMLTranslate", Reader)
+        data object TranslateTargetLanguage : UserDataPath("translateTargetLanguage", Reader)
         data object AutoPadding : UserDataPath("autoPadding", Reader)
         data object TopPadding : UserDataPath("topPadding", Reader)
         data object BottomPadding : UserDataPath("bottomPadding", Reader)
@@ -52,8 +54,6 @@ sealed class UserDataPath(
             data object ProxyUrl: UserDataPath("proxy_url", App)
             data object Statistics : UserDataPath("statistics", App)
             data object MaxCache : UserDataPath("max_cache", App)
-            data object TranslateEnabled: UserDataPath("translate_enabled", App)
-            data object TranslateTargetLanguage: UserDataPath("translate_target_language", App)
         }
         data object Display: UserDataPath("display", Settings) {
             data object DarkMode : UserDataPath("dark_mode", Display)

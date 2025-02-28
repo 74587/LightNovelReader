@@ -3,9 +3,9 @@ package indi.dmzz_yyhyy.lightnovelreader.ui.book.content
 import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.Color
-import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.setting.AbstractSettingState
 import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataPath
+import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataRepository
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.data.MenuOptions
 import kotlinx.coroutines.CoroutineScope
 
@@ -33,6 +33,7 @@ class SettingState(
         UserDataPath.Reader.EnableReadingChapterProgressIndicator.path)
     val enableSimplifiedTraditionalTransformUserData = userDataRepository.booleanUserData(
         UserDataPath.Reader.EnableSimplifiedTraditionalTransform.path)
+    val enableMLTranslateUserData = userDataRepository.booleanUserData(UserDataPath.Reader.EnableMLTranslate.path)
     val autoPaddingUserData = userDataRepository.booleanUserData(UserDataPath.Reader.AutoPadding.path)
     val topPaddingUserData = userDataRepository.floatUserData(UserDataPath.Reader.TopPadding.path)
     val bottomPaddingUserData = userDataRepository.floatUserData(UserDataPath.Reader.BottomPadding.path)
@@ -59,6 +60,7 @@ class SettingState(
     val enableChapterTitleIndicator by enableChapterTitleIndicatorUserData.safeAsState(true)
     val enableReadingChapterProgressIndicator by enableReadingChapterProgressIndicatorUserData.safeAsState(true)
     val enableSimplifiedTraditionalTransform by enableSimplifiedTraditionalTransformUserData.safeAsState(false)
+    val enableMLTranslateKey by enableMLTranslateUserData.asState(false)
     val autoPadding by autoPaddingUserData.safeAsState(true)
     val topPadding by topPaddingUserData.safeAsState(12f)
     val bottomPadding by bottomPaddingUserData.safeAsState(12f)

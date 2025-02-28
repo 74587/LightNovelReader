@@ -111,7 +111,9 @@ sealed class MenuOptions {
     }
 
     data object MLKitLangOptions: MenuOptions() {
+/*
         val Chinese = option("zh", R.string.key_ml_kit_lang_zh)
+*/
         val English = option("en", R.string.key_ml_kit_lang_en)
         val German = option("de", R.string.key_ml_kit_lang_de)
         val Spanish = option("es", R.string.key_ml_kit_lang_es)

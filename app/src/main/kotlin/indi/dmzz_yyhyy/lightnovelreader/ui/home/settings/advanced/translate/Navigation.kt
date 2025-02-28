@@ -13,6 +13,9 @@ fun NavGraphBuilder.settingsTranslateDestination(navController: NavController) {
         TranslateScreen(
             onClickBack = navController::popBackStackIfResumed,
             settingState = viewModel.settingState,
+            uiState = viewModel.uiState,
+            onClickDownloadModel = viewModel::downloadModel,
+            onClickDeleteModel = viewModel::deleteModel
         )
     }
 }

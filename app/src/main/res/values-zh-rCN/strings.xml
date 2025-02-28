@@ -89,7 +89,7 @@
     <string name="settings_dynamic_colors">系统动态配色</string>
     <string name="settings_dynamic_colors_desc">从系统主题应用动态配色 (Android 12 +)</string>
     <string name="settings_characters_variant">汉字变体</string>
-    <string name="settings_characters_variant_desc">(实验性) 使用指定语言的汉字变体，需要系统字体支持</string>
+    <string name="settings_characters_variant_desc">使用指定语言的汉字变体，需要系统字体支持</string>
 
     <string name="data_settings">数据</string>
     <string name="settings_snap_data">快照数据</string>

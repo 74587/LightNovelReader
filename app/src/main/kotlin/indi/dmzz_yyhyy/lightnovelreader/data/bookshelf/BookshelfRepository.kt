@@ -279,7 +279,7 @@ class BookshelfRepository @Inject constructor(
         val bookshelfDataList = data.bookshelf ?: return false
         val bookshelfBookMetadataList = data.bookShelfBookMetadata ?: return false
         bookshelfDataList.forEach { bookshelf ->
-            val oldBookshelf = bookshelfDao.getBookshelf(bookshelf.id).debugPrint()
+            val oldBookshelf = bookshelfDao.getBookshelf(bookshelf.id)
             if (oldBookshelf == null)
                 bookshelfDao.createBookshelf(
                     BookshelfEntity(

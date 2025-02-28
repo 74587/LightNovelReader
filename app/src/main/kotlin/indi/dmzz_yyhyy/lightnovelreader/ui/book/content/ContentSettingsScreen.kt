@@ -431,13 +431,22 @@ fun LazyListScope.AppearancePage(
         )
     }
     item {
+        SettingsSwitchEntry(
+            iconRes = R.drawable.translate_24px,
+            title = "启用翻译",
+            description = "将内容翻译为指定语言，可从设置调整相关选项",
+            checked = settingState.enableMLTranslateKey,
+            booleanUserData = settingState.enableMLTranslateUserData
+        )
+    }
+    item {
         val onSecondaryContainer = MaterialTheme.colorScheme.onSecondaryContainer
         val background = MaterialTheme.colorScheme.background
         SettingsClickableEntry (
             modifier = Modifier.animateItem(),
             iconRes = R.drawable.palette_24px,
-            title = "字体颜色",
-            description = "自定义阅读器字体色",
+            title = "文字颜色",
+            description = "自定义阅读器文字颜色",
             onClick = onClickChangeTextColor,
             trailingContent = {
                 androidx.compose.foundation.Canvas(

@@ -50,9 +50,6 @@ class ContentViewModel @Inject constructor(
 
     @Suppress("DuplicatedCode")
     fun init(bookId: Int, chapterId: Int) {
-        println(bookId)
-        println(chapterId)
-        println(_bookId)
         if (bookId != _bookId) {
             viewModelScope.launch {
                 val bookVolumes = bookRepository.getBookVolumes(bookId)
@@ -82,9 +79,6 @@ class ContentViewModel @Inject constructor(
                 bookId = bookId
             )
             chapterContent.collect { content ->
-                println(content.id)
-                println(content.title)
-                println(chapterContent)
                 if (content.id == -1) return@collect
                 _uiState.chapterContent = content
                 _uiState.isLoading = _uiState.chapterContent.id == -1

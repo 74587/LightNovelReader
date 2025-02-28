@@ -1,8 +1,8 @@
 package indi.dmzz_yyhyy.lightnovelreader.data.text
 
-import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.book.ChapterContent
 import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataPath
+import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -15,7 +15,9 @@ import javax.inject.Singleton
 
 @Singleton
 class TextProcessingRepository @Inject constructor(
-    userDataRepository: UserDataRepository
+    userDataRepository: UserDataRepository,
+    private val mlTranslateProcessor: MLTranslateProcessor
+
 ) {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private val processors = mutableSetOf<TextProcessor>()
@@ -24,15 +26,30 @@ class TextProcessingRepository @Inject constructor(
 
     init {
         coroutineScope.launch {
-            userDataRepository.booleanUserData(UserDataPath.Reader.EnableSimplifiedTraditionalTransform.path).getFlow().collect { enableSimplifiedTraditionalTransform ->
-                if (enableSimplifiedTraditionalTransform == true)
-                    processors.add(SimplifiedTraditionalProcessor)
-                else
-                    processors.remove(SimplifiedTraditionalProcessor)
-                _updateFlow.update { it+1 }
-            }
+            userDataRepository.booleanUserData(UserDataPath.Reader.EnableSimplifiedTraditionalTransform.path)
+                .getFlow()
+                .collect { enableSimplifiedTraditionalTransform ->
+                    if (enableSimplifiedTraditionalTransform == true)
+                        processors.add(SimplifiedTraditionalProcessor)
+                    else
+                        processors.remove(SimplifiedTraditionalProcessor)
+                    _updateFlow.update { it + 1 }
+                }
+        }
+        coroutineScope.launch {
+            userDataRepository.booleanUserData(UserDataPath.Reader.EnableMLTranslate.path)
+                .getFlow()
+                .collect { enableMLTranslate ->
+                    if (enableMLTranslate == true) {
+                        processors.add(mlTranslateProcessor)
+                    } else {
+                        processors.remove(mlTranslateProcessor)
+                    }
+                    _updateFlow.update { it + 1 }
+                }
         }
     }
+
 
     fun processChapterContent(flow: Flow<ChapterContent>): Flow<ChapterContent> {
         return flow.map { chapterContent ->
