@@ -36,8 +36,6 @@ class BookshelfHomeViewModel @Inject constructor(
     private val bookVolumesStateFlows = mutableMapOf<Int, StateFlow<BookVolumes>>()
 
     fun load() {
-        if (_uiState.bookshelfList.isNotEmpty()) return
-
         viewModelScope.launch(Dispatchers.IO) {
             viewModelScope.coroutineContext.cancelChildren()
             _uiState.bookshelfList = bookshelfRepository.getAllBookshelfIds().map(::getBookshelf)

@@ -118,17 +118,6 @@ object Wenku8Api: WebBookDataSource {
     }
 
     override suspend fun isOffLine(): Boolean = withContext(Dispatchers.IO) {
-        Jsoup
-            .connect("$host/")
-            .wenku8Cookie()
-            .timeout(2000)
-            .let {
-                if (ProxyPool.enable && !isLocalIpUnableUse)
-                    ProxyPool.apply {
-                        it.proxyGet()
-                    }
-                else it.get()
-            }
         val isApiOffLine =
             async {
                 tryOrFalse {
