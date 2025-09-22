@@ -13,11 +13,18 @@ class IntListUserData (
     }
 
     override fun get(): List<Int>? {
-        return userDataDao.get(path)?.split(",")?.map(String::toInt)
+        return userDataDao.get(path)
+            ?.split(",")
+            ?.filter { it.isNotBlank() }
+            ?.map(String::toInt)
     }
 
     override fun getFlow(): Flow<List<Int>?> {
-        return userDataDao.getFlow(path).map { it?.split(",")?.map(String::toInt) }
+        return userDataDao.getFlow(path).map {
+            it?.split(",")
+                ?.filter { it.isNotBlank() }
+                ?.map(String::toInt)
+        }
     }
 
     fun update(data: (List<Int>) -> List<Int>) {
