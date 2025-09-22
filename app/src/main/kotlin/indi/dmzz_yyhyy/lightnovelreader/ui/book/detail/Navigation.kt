@@ -35,7 +35,7 @@ fun NavGraphBuilder.bookDetailDestination() {
     composable<Route.Book.Detail> { entry ->
         val navController = LocalNavController.current
         val bookId = entry.toRoute<Route.Book.Detail>().bookId
-        val viewModel = hiltViewModel<DetailViewModel>()
+        val viewModel = hiltViewModel<DetailViewModel>(entry)
         val context = LocalContext.current
         val coroutineScope = rememberCoroutineScope()
         val exportBookToEPUBLauncher = uriLauncher {
