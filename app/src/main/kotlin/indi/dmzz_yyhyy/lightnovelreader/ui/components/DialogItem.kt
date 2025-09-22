@@ -1,5 +1,6 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.components
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemDefaults
@@ -8,6 +9,7 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
 
 @Composable
@@ -22,6 +24,7 @@ fun ListItem(
         colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
         headlineContent = {
             Text(
+                modifier = Modifier.padding(bottom = 4.dp),
                 text = title,
                 style = AppTypography.titleMedium,
             )
@@ -29,7 +32,7 @@ fun ListItem(
         supportingContent = {
             Text(
                 text = supportingText,
-                style = AppTypography.bodyMedium,
+                style = AppTypography.labelMedium,
             )
         },
         trailingContent = trailingContent

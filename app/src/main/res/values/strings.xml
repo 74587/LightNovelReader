@@ -227,8 +227,8 @@
     <string name="bookshelf_group_title_pinned">Pinned (%s)</string>
     <string name="bookshelf_group_title_all">All (%s)</string>
     <string name="data_source_provider">Provider: %s</string>
-    <string name="read_progress">• Read %s</string>
-    <string name="read_minutes">• %d min</string>
+    <string name="read_progress">Read %s</string>
+    <string name="read_minutes">%d min</string>
     <string name="translators">Translate Contributors</string>
     <string name="select_chapter">Select Chapter</string>
     <string name="logs_title">Logs</string>

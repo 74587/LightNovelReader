@@ -209,8 +209,8 @@
     <string name="bookshelf_group_title_pinned">Закреплено (%s)</string>
     <string name="bookshelf_group_title_all">Все (%s)</string>
     <string name="data_source_provider">Источник: %s</string>
-    <string name="read_progress">• Прочитано %s</string>
-    <string name="read_minutes">• %d мин</string>
+    <string name="read_progress">Прочитано %s</string>
+    <string name="read_minutes">%d мин</string>
     <string name="translators">Переводчики</string>
     <string name="select_chapter">Выбрать главу</string>
     <string name="logs_title">Логи</string>

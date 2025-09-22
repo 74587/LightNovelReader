@@ -225,8 +225,8 @@
     <string name="bookshelf_group_title_pinned">已固定 (%s)</string>
     <string name="bookshelf_group_title_all">全部 (%s)</string>
     <string name="data_source_provider">提供者: %s</string>
-    <string name="read_progress">• 已读 %s</string>
-    <string name="read_minutes">• %d 分钟</string>
+    <string name="read_progress">已读 %s</string>
+    <string name="read_minutes">%d 分钟</string>
     <string name="translators">翻译贡献者</string>
     <string name="select_chapter">章节选择</string>
     <string name="logs_title">日志</string>

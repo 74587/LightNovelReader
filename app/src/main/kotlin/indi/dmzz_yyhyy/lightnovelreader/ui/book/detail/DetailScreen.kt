@@ -151,7 +151,9 @@ fun DetailScreen(
                     exit = fadeOut()
                 ) {
                     ExtendedFloatingActionButton(
-                        modifier = Modifier.padding(end = 24.dp, start = 16.dp).padding(vertical = 14.dp),
+                        modifier = Modifier
+                            .padding(end = 24.dp, start = 16.dp)
+                            .padding(vertical = 14.dp),
                         onClick = if (uiState.userReadingData.lastReadChapterId == -1) onClickReadFromStart
                         else onClickContinueReading,
                         icon = {
@@ -215,13 +217,15 @@ fun DetailScreen(
                 onClickExport = onClickExportToEpub
             )
         }
-        BookInfoBottomSheet(
-            bookInformation = uiState.bookInformation,
-            bookVolumes = uiState.bookVolumes,
-            sheetState = infoBottomSheetState,
-            isVisible = showInfoBottomSheet,
-            onDismissRequest = { showInfoBottomSheet = false }
-        )
+        AnimatedVisibility(visible = showInfoBottomSheet) {
+            BookInfoBottomSheet(
+                bookInformation = uiState.bookInformation,
+                bookVolumes = uiState.bookVolumes,
+                sheetState = infoBottomSheetState,
+                onDismissRequest = { showInfoBottomSheet = false }
+            )
+        }
+
     }
 }
 
@@ -359,6 +363,7 @@ private fun DetailContent(
         item {
             BookCardBlock(
                 bookInformation = uiState.bookInformation,
+                totalReadTime = uiState.userReadingData.totalReadTime,
                 modifier = Modifier
                     .graphicsLayer {
                         translationY = lazyListState.firstVisibleItemScrollOffset * 0.5f
@@ -549,6 +554,7 @@ private fun TopBar(
 @Composable
 private fun BookCardBlock(
     bookInformation: BookInformation,
+    totalReadTime: Int,
     modifier: Modifier,
     onClickCover: (String) -> Unit
 ) {
@@ -637,6 +643,25 @@ private fun BookCardBlock(
                     },
                     text = wordCountText
                 )
+                if (totalReadTime > 59) {
+                    Spacer(Modifier.height(2.dp))
+                    InfoRow(
+                        icon = {
+                            Icon(
+                                painter = painterResource(R.drawable.schedule_90dp),
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.outline,
+                                modifier = Modifier
+                                    .size(16.dp)
+                                    .padding(top = 2.dp)
+                            )
+                        },
+                        text = stringResource(
+                            R.string.read_minutes,
+                            totalReadTime / 60
+                        )
+                    )
+                }
             }
         }
     }
@@ -940,7 +965,12 @@ private fun ChapterItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(start = 32.dp, end = 32.dp, top = 12.dp, bottom = if (isLastRead) 6.dp else 12.dp)
+            .padding(
+                start = 32.dp,
+                end = 32.dp,
+                top = 12.dp,
+                bottom = if (isLastRead) 6.dp else 12.dp
+            )
     ) {
         Column {
             Text(

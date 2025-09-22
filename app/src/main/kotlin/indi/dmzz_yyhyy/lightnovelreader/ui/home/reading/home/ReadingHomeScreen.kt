@@ -494,14 +494,14 @@ private fun ReadingBookCard(
                             )
                         }
                         Text(
-                            text = stringResource(
+                            text = "• " + stringResource(
                                 R.string.read_progress,
                                 (userReadingData.readingProgress * 100).toInt().toString() + "%"
                             ),
                             style = AppTypography.labelSmall
                         )
                         Text(
-                            text = stringResource(
+                            text = "• " + stringResource(
                                 R.string.read_minutes,
                                 (userReadingData.totalReadTime) / 60
                             ),
