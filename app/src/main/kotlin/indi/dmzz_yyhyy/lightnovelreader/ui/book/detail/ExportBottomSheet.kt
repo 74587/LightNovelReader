@@ -16,9 +16,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
@@ -26,12 +24,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.book.BookVolumes
 import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
+import indi.dmzz_yyhyy.lightnovelreader.ui.components.SwitchChip
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,7 +65,7 @@ fun ExportBottomSheet(
             ) {
                 Text(
                     modifier = Modifier.weight(1f),
-                    text = "导出为 Epub",
+                    text = stringResource(R.string.export_epub),
                     style = AppTypography.titleLarge
                 )
                 Spacer(Modifier.width(16.dp))
@@ -78,7 +77,7 @@ fun ExportBottomSheet(
                     }
                     onDismissRequest()
                 }) {
-                    Text("导出", fontWeight = FontWeight.SemiBold)
+                    Text(stringResource(R.string.export), fontWeight = FontWeight.SemiBold)
                 }
             }
 
@@ -90,8 +89,8 @@ fun ExportBottomSheet(
                 contentPadding = PaddingValues(end = 16.dp)
             ) {
                 item {
-                    SettingChip(
-                        label = "包含图片",
+                    SwitchChip(
+                        label = stringResource(R.string.export_include_images),
                         selected = settings.includeImages,
                         onClick = {
                             onSettingsChange(settings.copy(includeImages = !settings.includeImages))
@@ -100,8 +99,8 @@ fun ExportBottomSheet(
                 }
 
                 item {
-                    SettingChip(
-                        label = "分卷导出",
+                    SwitchChip(
+                        label = stringResource(R.string.export_split_volumes),
                         selected = isSplitEnabled,
                         onClick = {
                             onSettingsChange(
@@ -117,8 +116,8 @@ fun ExportBottomSheet(
                     val isAllSelected = selectedVolumeIds.size == allVolumeIds.size
                     if (!isAllSelected) {
                         item {
-                            SettingChip(
-                                label = "全选",
+                            SwitchChip(
+                                label = stringResource(R.string.select_all),
                                 selected = false,
                                 onClick = {
                                     onSettingsChange(settings.copy(selectedVolumeIds = allVolumeIds))
@@ -126,8 +125,8 @@ fun ExportBottomSheet(
                             )
                         }
                         item {
-                            SettingChip(
-                                label = "反选",
+                            SwitchChip(
+                                label = stringResource(R.string.invert_selection),
                                 selected = false,
                                 onClick = {
                                     val toggled = allVolumeIds - selectedVolumeIds
@@ -189,34 +188,4 @@ fun ExportBottomSheet(
             }
         }
     }
-}
-
-@Composable
-private fun SettingChip(
-    label: String,
-    selected: Boolean,
-    onClick: () -> Unit
-) {
-    FilterChip(
-        selected = selected,
-        onClick = onClick,
-        leadingIcon = {
-            if (selected) {
-                Icon(
-                    painter = painterResource(R.drawable.check_24px),
-                    contentDescription = ""
-                )
-            }
-        },
-        label = {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.labelLarge,
-                color = if (selected)
-                    MaterialTheme.colorScheme.onPrimaryContainer
-                else
-                    MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        }
-    )
 }

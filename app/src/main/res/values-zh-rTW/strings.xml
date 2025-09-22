@@ -15,6 +15,11 @@
     <string name="cancel">取消</string>
     <string name="apply">套用</string>
     <string name="decline">拒絕</string>
+    <string name="export">導出</string>
+    <string name="undo">撤銷</string>
+    <string name="copied">內容已複製</string>
+    <string name="select_all">全選</string>
+    <string name="invert_selection">反選</string>
     <string name="manual_download">手動下載</string>
     <string name="follow_system">跟隨系統</string>
     <string name="enabled">啟用</string>
@@ -24,21 +29,43 @@
     <string name="ignore">忽略</string>
     <string name="ignore_version">忽略此版本</string>
     <string name="switch_and_restart">切換並重新啟動</string>
-    <string name="show_read">顯示全部</string>
     <string name="hide_read">僅顯示未讀</string>
+    <string name="mark_all_read">全部標為已讀</string>
+    <string name="export_epub">導出為 Epub</string>
+    <string name="export_include_images">包含圖片</string>
+    <string name="export_split_volumes">分卷導出</string>
+    <string name="select_location">選擇位置</string>
     <string name="export_to_file">匯出至檔案</string>
     <string name="export_and_share">匯出並分享</string>
     <string name="choose_light_bg">選擇淺色背景</string>
     <string name="choose_dark_bg">選擇深色背景</string>
     <string name="reader_back_press_again">再次點擊返回以退出閱讀</string>
+    <string name="previous_chapter">上一章</string>
+    <string name="next_chapter">下一章</string>
+    <string name="save_rule">保存規則</string>
+    <string name="delete_rule">刪除規則</string>
+    <string name="data_import_success">導入成功</string>
+    <string name="data_import_failed">導入失敗，請檢查檔案格式或檔案已損壞。</string>
+    <string name="download_in_progress">進行中</string>
+    <string name="download_item_progress">%s 已下載 %d%</string>
+    <string name="download_item_finished">%s 完成</string>
+    <string name="download_item_failed">%s 失敗, 請檢查您的網絡環境或尋求開發者幫助</string>
 
     <!-- Hints -->
     <string name="nothing_here">沒有內容</string>
     <string name="nothing_here_desc_reading">閱讀一些書本後，它們會顯示在這裡\n透過下方的導覽列前往「探索」頁面尋找新書</string>
     <string name="nothing_here_desc_search">這裡會儲存最近的搜尋結果\n點擊搜尋列右側圖示，指定搜尋範圍</string>
     <string name="nothing_here_desc_bookshelf">點擊「收藏」按鈕，將書本加入此書架</string>
+    <string name="nothing_here_desc_book_manager">沒有正在下載的書本</string>
     <string name="offline">離線中</string>
     <string name="offline_desc">目前無法取得線上資料，請重新整理再試\n檢查來源網站連線狀態，或者換個網路試試</string>
+    <string name="saved_to_pictures_dir">已保存到 Pictures/LightNovelReader/%s</string>
+    <string name="save_failed">保存失敗</string>
+    <string name="reader_first_page">已經是第一頁了</string>
+    <string name="reader_reached_top">已經到頂了</string>
+    <string name="reader_last_page">已經是最後一頁了</string>
+    <string name="reader_reached_bottom">已經到底了</string>
+    <string name="font_file_error">字體文件錯誤或已損壞, 請您檢查後導入</string>
 
     <!-- Snackbar Hints -->
     <string name="cache_book_started">開始快取：%1$s</string>
@@ -49,6 +76,10 @@
     <string name="network_error_message">
         無法從資料來源取得資訊，這通常是網路問題所致。在提交問題前，請知晓：我們無法協助排查具體網路狀況，請先檢查您的網路連線。
     </string>
+    <string name="export_book_started">開始導出書本 %s</string>
+    <string name="export_book_success">成功導出書本 %s</string>
+    <string name="export_book_failed">導出書本 %s 失敗</string>
+    <string name="removed_item">已移除: %s</string>
 
     <!-- Settings -->
     <string name="reading_settings">閲讀</string>
@@ -142,6 +173,8 @@
     <string name="settings_app_logs_desc">檢視與分享應用程式日誌（除錯用途）</string>
     <string name="settings_app_log_level">日誌等級</string>
     <string name="settings_app_log_level_desc">設定日誌過濾等級，重新啟動應用程式後生效</string>
+    <string name="settings_auto_proxy">自動代理</string>
+    <string name="settings_auto_proxy_desc">自動從網絡上獲取代理ip, <b>但這將導致您所瀏覽的書本數據可能會被截獲</b></string>
 
     <string name="about_settings">關於</string>
     <string name="settings_debug_tools">除錯工具</string>
@@ -179,13 +212,15 @@
     <string name="detail_introduction">介紹</string>
     <string name="detail_contents">目錄</string>
     <string name="detail_title">詳情</string>
+    <string name="book_management_title">書本管理</string>
+    <string name="bookshelf_new_title">新建書架</string>
+    <string name="bookshelf_edit_title">編輯書架</string>
     <string name="changelog">新版變化</string>
     <string name="recent_reads">最近讀過 (%d)</string>
     <string name="search_no_results">找不到內容</string>
     <string name="search_no_results_desc">檢查拼字，或換個關鍵字再試</string>
     <string name="search_results_title">\"%1$s\" 的搜尋結果 (%2$d%3$s)</string>
     <string name="search_history">搜尋歷史</string>
-    <string name="search_history_clear">清除全部</string>
     <string name="start_reading">開始閱讀</string>
     <string name="continue_reading">繼續閱讀</string>
     <string name="resume_last_reading">繼續上次閱讀</string>
@@ -280,7 +315,17 @@
     <string name="unit_seconds">&#160;秒</string>
     <string name="detail_of_date">%1$s 的閱讀時長</string>
     <string name="book_rules">書本規則</string>
-    <string name="text_replacement_rules_title">規則</string>
+    <string name="detail_info_stats_content">%1$s 字\n共計 %2$d 卷, %3$d 章節</string>
+    <string name="mark_all_read_desc">將這本書截至目前的所有章節標為已讀。後續更新的章節將不受影響。</string>
+    <string name="completed">已完成</string>
+    <string name="clear_all">全部清除</string>
+    <string name="global_formatting_rules">全局規則</string>
+    <string name="n_rules">%d 個規則</string>
+    <string name="rule_name">名稱</string>
+    <string name="rule_match">匹配內容</string>
+    <string name="rule_replacement">替換為</string>
+    <string name="rule_is_regex">使用正則匹配</string>
+    <string name="edit_rule">編輯規則</string>
 
     <!-- Dialogs -->
     <string name="dialog_about_version">版本</string>
@@ -302,5 +347,7 @@
     <string name="dialog_select_data_source_text">選擇使用的資料來源，這將清除快取並切換軟體資料來源。目前的使用者資料不會遺失，並將在下次切換回目前資料來源時還原。</string>
     <string name="dialog_slider_custom">輸入數值</string>
     <string name="dialog_slider_custom_illegal_value">請輸入合法的數值</string>
+    <string name="dialog_color_picker">調色盤</string>
+    <string name="dialog_color_picker_desc">選擇一個顏色用於閱讀器背景。</string>
 
 </resources>

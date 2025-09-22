@@ -23,7 +23,6 @@
     <string name="ignore">Игнорировать</string>
     <string name="ignore_version">Игнорировать версию</string>
     <string name="switch_and_restart">Сменить и перезапустить</string>
-    <string name="show_read">Показать прочитанное</string>
     <string name="hide_read">Скрыть прочитанное</string>
     <string name="export_to_file">Экспорт в файл</string>
     <string name="export_and_share">Поделиться</string>
@@ -169,7 +168,6 @@
     <string name="search_no_results_desc">Проверьте правописание или попробуйте другие ключевые слова на китайском.</string>
     <string name="search_results_title">Результаты поиска по "%1$s" (%2$d%3$s)</string>
     <string name="search_history">История поиска</string>
-    <string name="search_history_clear">Очистить всё</string>
     <string name="start_reading">Начать чтение</string>
     <string name="continue_reading">Продолжить чтение</string>
     <string name="resume_last_reading">Читать дальше</string>
@@ -184,7 +182,7 @@
     <string name="filter_by_publishing_house">Фильтр по издательству</string>
     <string name="filter_by_publishing_house_desc">Фильтр по издательству книги</string>
     <string name="book_info_update_date">Обновлено %1$d-%2$d-%3$d</string>
-    <string name="book_info_word_count_kilo">%dK слов</string>
+    <string name="book_info_word_count_kilo">%sK слов</string>
     <string name="name">Название</string>
     <string name="bookshelf_name">Название полки</string>
     <string name="bookshelf_name_suggestion">Дайте вашей полке простое имя</string>
@@ -265,7 +263,6 @@
     <string name="unit_seconds">с</string>
     <string name="detail_of_date">Время чтения %1$s</string>
     <string name="book_rules">Правила книги</string>
-    <string name="text_replacement_rules_title">Правила</string>
     <string name="dialog_about_version">Версия</string>
     <string name="dialog_delete_bookshelf">Удалить полку</string>
     <string name="dialog_delete_bookshelf_text">Вы уверены, что хотите удалить эту полку? Она будет потеряна навсегда! (Очень надолго!)</string>

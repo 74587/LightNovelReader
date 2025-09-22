@@ -493,8 +493,8 @@ fun ColorPickerDialog(
 
     BaseDialog (
         icon = painterResource(R.drawable.palette_24px),
-        title = "调色盘",
-        description = "选择一个颜色用于阅读器背景。",
+        title = stringResource(R.string.dialog_color_picker),
+        description = stringResource(R.string.dialog_color_picker_desc),
         onDismissRequest = onDismissRequest,
         onConfirmation = { onConfirmation(currentColor) },
         dismissText = stringResource(R.string.cancel),

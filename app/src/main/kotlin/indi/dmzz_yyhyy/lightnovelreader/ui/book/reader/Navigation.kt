@@ -17,6 +17,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.toRoute
+import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalNavController
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.imageview.ImageViewerScreen
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.ColorPickerDialog
@@ -119,18 +120,18 @@ private fun NavGraphBuilder.imageViewerDialog() {
                                 if (savedName != null) {
                                     Toast.makeText(
                                         context,
-                                        "已保存到 Pictures/LightNovelReader/$savedName",
+                                        context.getString(R.string.saved_to_pictures_dir, savedName),
                                         Toast.LENGTH_LONG
                                     ).show()
                                 } else {
-                                    Toast.makeText(context, "保存失败", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(context, context.getString(R.string.save_failed), Toast.LENGTH_SHORT).show()
                                 }
                             }
                         }
                     },
                     onError = { error ->
                         Log.d("ImageViewer", "Failed to save image: ${error.message}")
-                        Toast.makeText(context, "下载失败", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.save_failed), Toast.LENGTH_SHORT).show()
                     }
                 )
             }

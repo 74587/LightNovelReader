@@ -45,9 +45,9 @@ fun MarkAllChaptersAsReadDialog(
 ) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
-        title = { Text("标为已读") },
+        title = { Text(stringResource(R.string.mark_all_read)) },
         text = {
-            Text("将这本书截至目前的所有章节标为已读。后续更新的章节将不受影响。")
+            Text(stringResource(R.string.mark_all_read_desc))
         },
         confirmButton = {
             TextButton(

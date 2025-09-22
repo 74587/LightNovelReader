@@ -3,7 +3,7 @@ package indi.dmzz_yyhyy.lightnovelreader.data.web.exploration.filter
 import indi.dmzz_yyhyy.lightnovelreader.data.book.BookInformation
 
 class IsCompletedSwitchFilter(
-    onChange: () -> Unit
+    onChange: () -> Unit,
 ): SwitchFilter("已完结", onChange), LocalFilter{
     override fun filter(bookInformation: BookInformation): Boolean =
         !this.enabled || bookInformation.isComplete

@@ -493,7 +493,7 @@ fun BookshelfHomeScreen(
                                 ) {
                                     Text(
                                         modifier = Modifier.padding(vertical = 18.dp),
-                                        text = "${allBookIds.size} 本书",
+                                        text = stringResource(R.string.n_books, allBookIds.size),
                                         style = AppTypography.labelMedium,
                                         fontWeight = FontWeight.W600,
                                         color = MaterialTheme.colorScheme.outline

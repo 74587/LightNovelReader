@@ -67,6 +67,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 import androidx.compose.ui.platform.LocalResources
+import indi.dmzz_yyhyy.lightnovelreader.R
 
 @Composable
 fun FlipPageContentComponent(
@@ -131,8 +132,8 @@ private fun SimpleFlipPageTextComponent(
                     coroutineScope = scope,
                     hostState = snackbarHostState,
                     duration = SnackbarDuration.Short,
-                    message = "已经是第一页了",
-                    actionLabel = "上一章"
+                    message = context.getString(R.string.reader_first_page),
+                    actionLabel = context.getString(R.string.previous_chapter)
                 ) {
                     if (it == SnackbarResult.ActionPerformed) {
                         onClickPrevChapter()
@@ -159,8 +160,8 @@ private fun SimpleFlipPageTextComponent(
                     coroutineScope = scope,
                     hostState = snackbarHostState,
                     duration = SnackbarDuration.Short,
-                    message = "已经是最后一页了",
-                    actionLabel = "下一章"
+                    message = context.getString(R.string.reader_last_page),
+                    actionLabel = context.getString(R.string.next_chapter)
                 ) {
                     if (it == SnackbarResult.ActionPerformed) {
                         onClickNextChapter()

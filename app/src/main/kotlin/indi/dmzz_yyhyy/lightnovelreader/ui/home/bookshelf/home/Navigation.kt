@@ -6,12 +6,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.toRoute
+import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.bookshelf.Bookshelf
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalNavController
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.detail.navigateToBookDetailDestination
@@ -25,6 +27,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun NavGraphBuilder.bookshelfHomeDestination(sharedTransitionScope: SharedTransitionScope) {
     composable<Route.Main.Bookshelf.Home> {
+        val context = LocalContext.current
         val navController = LocalNavController.current
         val bookshelfHomeViewModel = hiltViewModel<BookshelfHomeViewModel>()
         BookshelfHomeScreen(
@@ -35,10 +38,10 @@ fun NavGraphBuilder.bookshelfHomeDestination(sharedTransitionScope: SharedTransi
             changeBookSelectState = bookshelfHomeViewModel::changeBookSelectState,
             uiState = bookshelfHomeViewModel.uiState,
             onClickCreate = {
-                navController.navigateToBookshelfEditDestination(-1, "新建书架")
+                navController.navigateToBookshelfEditDestination(-1, context.getString(R.string.bookshelf_new_title))
             },
             onClickEdit = {
-                navController.navigateToBookshelfEditDestination(it, "编辑书架")
+                navController.navigateToBookshelfEditDestination(it, context.getString(R.string.bookshelf_edit_title))
             },
             onClickBook = navController::navigateToBookDetailDestination,
             onClickEnableSelectMode = bookshelfHomeViewModel::enableSelectMode,

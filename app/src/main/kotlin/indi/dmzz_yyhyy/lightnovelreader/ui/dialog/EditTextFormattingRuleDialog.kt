@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.FilterChip
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
@@ -15,12 +13,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.format.FormattingRule
 import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
+import indi.dmzz_yyhyy.lightnovelreader.ui.components.SwitchChip
 
 @Composable
 fun EditTextFormattingRuleDialog(
@@ -51,7 +50,7 @@ fun EditTextFormattingRuleDialog(
         onDismissRequest = onDismissRequest,
         title = {
             Text(
-                text = "编辑规则",
+                text = stringResource(R.string.edit_rule),
                 style = AppTypography.titleLarge,
                 color = colorScheme.onSurface,
             )
@@ -64,14 +63,14 @@ fun EditTextFormattingRuleDialog(
                     modifier = Modifier.fillMaxWidth(),
                     value = rule.name,
                     onValueChange = onNameChange,
-                    label = { Text("名称") },
+                    label = { Text(stringResource(R.string.rule_name)) },
                     singleLine = true
                 )
                 OutlinedTextField(
                     modifier = Modifier.fillMaxWidth(),
                     value = matchTextFieldValue,
                     onValueChange = onMatchChange,
-                    label = { Text("匹配内容") },
+                    label = { Text(stringResource(R.string.rule_match)) },
                     singleLine = false,
                     isError = isWrong,
                 )
@@ -79,26 +78,21 @@ fun EditTextFormattingRuleDialog(
                     modifier = Modifier.fillMaxWidth(),
                     value = rule.replacement,
                     onValueChange = onReplacementChange,
-                    label = { Text("替换为") },
+                    label = { Text(stringResource(R.string.rule_replacement)) },
                     singleLine = false
                 )
-                FilterChip(
+                SwitchChip(
+                    label = stringResource(R.string.rule_is_regex),
                     selected = rule.isRegex,
-                    onClick = { onIsRegexChange(!rule.isRegex) },
-                    leadingIcon = {
-                        if (rule.isRegex)
-                            Icon(
-                                painter = painterResource(R.drawable.check_24px),
-                                contentDescription = ""
-                            )
-                    },
-                    label = { Text("使用正则匹配") }
+                    onClick = {
+                        onIsRegexChange(!rule.isRegex)
+                    }
                 )
             }
         },
         confirmButton = {
             TextButton(onClick = onConfirmation, enabled = !isWrong) {
-                Text(text = "保存规则")
+                Text(text = stringResource(R.string.save_rule))
             }
         },
         dismissButton = {
@@ -110,7 +104,7 @@ fun EditTextFormattingRuleDialog(
                         Text(text = "删除规则", color = colorScheme.error)
                     }
                 TextButton(onClick = onDismissRequest) {
-                    Text(text = "取消")
+                    Text(text = stringResource(R.string.cancel))
                 }
             }
         }

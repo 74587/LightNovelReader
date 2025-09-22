@@ -212,7 +212,6 @@ fun Content(
 ) {
     val activity = LocalActivity.current as Activity
     val coroutineScope = rememberCoroutineScope()
-    val context = LocalContext.current
     val density = LocalDensity.current
     val settingsBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
     val chaptersBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
@@ -261,7 +260,6 @@ fun Content(
                 updateTotalReadingTime(readingScreenUiState.bookId, totalReadingTime)
             } else {
                 Log.e("ReaderScreen", "time counter error, time now is $totalReadingTime over 60s")
-                Toast.makeText(context, "计时器错误, 请向开发者报告此错误,", Toast.LENGTH_SHORT).show()
             }
             totalReadingTime = 0
         }
@@ -303,7 +301,6 @@ fun Content(
                 updateTotalReadingTime(readingScreenUiState.bookId, totalReadingTime)
             } else {
                 Log.e("ReaderScreen", "time counter error, time now is $totalReadingTime over 60s")
-                Toast.makeText(context, "计时器错误, 请向开发者报告此错误,", Toast.LENGTH_SHORT).show()
             }
         }
     }

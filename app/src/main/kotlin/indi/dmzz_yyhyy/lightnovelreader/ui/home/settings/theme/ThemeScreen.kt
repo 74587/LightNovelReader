@@ -501,10 +501,9 @@ fun ReaderThemeSettingsList(
     )
     val textMeasurer = rememberTextMeasurer()
     val coroutineScope = rememberCoroutineScope()
-    val content = LocalContext.current
     val launcher = uriLauncher {
         CoroutineScope(Dispatchers.IO).launch {
-            val font = content.filesDir.resolve("readerTextFont")
+            val font = context.filesDir.resolve("readerTextFont")
                 .also {
                     if (it.exists()) {
                         it.delete()
@@ -512,7 +511,7 @@ fun ReaderThemeSettingsList(
                     } else it.createNewFile()
                 }
             try {
-                content.contentResolver.openFileDescriptor(it, "r")
+                context.contentResolver.openFileDescriptor(it, "r")
                     ?.use { parcelFileDescriptor ->
                         FileInputStream(parcelFileDescriptor.fileDescriptor).use { fileInputStream ->
                             fileInputStream.readBytes()
@@ -533,8 +532,8 @@ fun ReaderThemeSettingsList(
             } catch (_: Exception) {
                 coroutineScope.launch {
                     Toast.makeText(
-                        content,
-                        "字体文件错误或已损坏, 请您检查后导入",
+                        context,
+                        context.getString(R.string.font_file_error),
                         Toast.LENGTH_SHORT
                     ).show()
                 }

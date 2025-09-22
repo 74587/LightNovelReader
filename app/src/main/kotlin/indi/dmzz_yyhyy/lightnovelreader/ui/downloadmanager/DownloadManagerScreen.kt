@@ -29,6 +29,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -55,7 +56,7 @@ fun DownloadManagerScreen(
             MediumTopAppBar(
                 title = {
                     Text(
-                        text = "书本管理",
+                        text = stringResource(R.string.book_management_title),
                         style = AppTypography.titleTopBar,
                         fontWeight = FontWeight.W600
                     )
@@ -92,8 +93,8 @@ private fun Content(
     if (downloadItemIdList.isEmpty())
         EmptyPage(
             icon = painterResource(id = R.drawable.download_24px),
-            title = "无内容",
-            description = "无正在下载的内容",
+            title = stringResource(R.string.nothing_here),
+            description = stringResource(R.string.nothing_here_desc_book_manager),
         )
     LazyColumn(
         modifier = Modifier.padding(horizontal = 18.dp),
@@ -103,7 +104,7 @@ private fun Content(
             item {
                 Text(
                     modifier = Modifier.height(34.dp).animateItem(),
-                    text = "进行中",
+                    text = stringResource(R.string.download_in_progress),
                     style = AppTypography.bodyLarge,
                     fontWeight = FontWeight.W600
                 )
@@ -128,14 +129,14 @@ private fun Content(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "已完成",
+                        text = stringResource(R.string.completed),
                         style = AppTypography.bodyLarge,
                         fontWeight = FontWeight.W600
                     )
                     Spacer(Modifier.weight(1f))
                     TextButton(onClickClearCompleted) {
                         Text(
-                            text = "全部清除",
+                            text = stringResource(R.string.clear_all),
                             style = AppTypography.bodyLarge,
                             fontWeight = FontWeight.W600,
                             color = MaterialTheme.colorScheme.primary
@@ -183,7 +184,7 @@ private fun Card(
         Box(Modifier.width(16.dp))
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(3.67.dp)
+            verticalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             Text(
                 text = bookInformation.title,
@@ -214,9 +215,14 @@ private fun Card(
                 Box(Modifier.width(10.dp))
                 Text(
                     text =
-                        if (downloadItem.progress < 1) "${formTime(downloadItem.startTime)}  已下载 ${(downloadItem.progress*100).toInt()}%"
-                        else if (downloadItem.progress > 0) "${downloadItem.type.typeName}完成"
-                        else "${downloadItem.type.typeName}失败, 请检查您的网络环境或寻求开发者帮助",
+                        if (downloadItem.progress < 1)
+                            stringResource(R.string.download_in_progress,
+                                formTime(downloadItem.startTime),
+                                downloadItem.progress*100
+                            )
+                        else if (downloadItem.progress > 0)
+                            stringResource(R.string.download_item_finished, downloadItem.type.typeName)
+                        else stringResource(R.string.download_item_failed, downloadItem.type.typeName),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = AppTypography.bodyMedium,

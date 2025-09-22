@@ -1,5 +1,6 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.book.detail
 
+import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.provider.DocumentsContract
@@ -40,15 +41,15 @@ fun NavGraphBuilder.bookDetailDestination() {
         val coroutineScope = rememberCoroutineScope()
         val exportBookToEPUBLauncher = uriLauncher {
             CoroutineScope(Dispatchers.Main).launch {
-                Toast.makeText(context, "开始导出书本 ${viewModel.uiState.bookInformation.title}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, context.getString(R.string.export_book_started, viewModel.uiState.bookInformation.title), Toast.LENGTH_SHORT).show()
                 viewModel.exportToEpub(it, bookId, viewModel.uiState.bookInformation.title).collect {
                     if (it != null)
                         when (it.state) {
                             WorkInfo.State.SUCCEEDED -> {
-                                Toast.makeText(context, "成功导出书本 ${viewModel.uiState.bookInformation.title}", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, context.getString(R.string.export_book_success, viewModel.uiState.bookInformation.title), Toast.LENGTH_SHORT).show()
                             }
                             WorkInfo.State.FAILED -> {
-                                Toast.makeText(context, "导出书本 ${viewModel.uiState.bookInformation.title} 失败", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, context.getString(R.string.export_book_failed, viewModel.uiState.bookInformation.title), Toast.LENGTH_SHORT).show()
                             }
                             else -> {}
                         }
@@ -67,8 +68,8 @@ fun NavGraphBuilder.bookDetailDestination() {
             onClickExportToEpub = { settings ->
                 viewModel.exportSettings = settings
                 when (settings.exportType) {
-                    ExportType.BOOK -> createDataFile(viewModel.uiState.bookInformation.title, exportBookToEPUBLauncher)
-                    ExportType.VOLUMES -> selectDirectory(exportBookToEPUBLauncher)
+                    ExportType.BOOK -> createDataFile(context, viewModel.uiState.bookInformation.title, exportBookToEPUBLauncher)
+                    ExportType.VOLUMES -> selectDirectory(context, exportBookToEPUBLauncher)
                 }
             },
             onClickBackButton = navController::popBackStackIfResumed,
@@ -144,7 +145,11 @@ fun NavController.navigateToBookDetailDestination(bookId: Int) {
 }
 
 @Suppress("DuplicatedCode")
-fun createDataFile(fileName: String, launcher: ManagedActivityResultLauncher<Intent, ActivityResult>) {
+fun createDataFile(
+    context: Context,
+    fileName: String,
+    launcher: ManagedActivityResultLauncher<Intent, ActivityResult>
+) {
     val initUri = DocumentsContract.buildDocumentUri("com.android.externalstorage.documents", "primary:Documents")
     val intent = Intent(Intent.ACTION_CREATE_DOCUMENT).apply {
         addCategory(Intent.CATEGORY_OPENABLE)
@@ -153,15 +158,15 @@ fun createDataFile(fileName: String, launcher: ManagedActivityResultLauncher<Int
             putExtra(DocumentsContract.EXTRA_INITIAL_URI, initUri)
         putExtra(Intent.EXTRA_TITLE, fileName)
     }
-    launcher.launch(Intent.createChooser(intent, "选择一位置"))
+    launcher.launch(Intent.createChooser(intent, context.getString(R.string.select_location)))
 }
 
 @Suppress("DuplicatedCode")
-fun selectDirectory(launcher: ManagedActivityResultLauncher<Intent, ActivityResult>) {
+fun selectDirectory(context: Context, launcher: ManagedActivityResultLauncher<Intent, ActivityResult>) {
     val intent = Intent(Intent.ACTION_OPEN_DOCUMENT_TREE).apply {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
             putExtra(DocumentsContract.EXTRA_INITIAL_URI, Intent.ACTION_OPEN_DOCUMENT)
     }
-    launcher.launch(Intent.createChooser(intent, "选择一位置"))
+    launcher.launch(Intent.createChooser(intent, context.getString(R.string.select_location)))
 }
 

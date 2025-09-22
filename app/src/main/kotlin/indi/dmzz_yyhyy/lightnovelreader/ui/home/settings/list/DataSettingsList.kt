@@ -43,10 +43,10 @@ fun DataSettingsList(
             workManager.getWorkInfoByIdFlow(importData(it).id).collect {
                 when (it?.state) {
                     WorkInfo.State.FAILED -> {
-                        Toast.makeText(context, "导入失败，请检查文件格式或文件已损坏。", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.data_import_failed), Toast.LENGTH_SHORT).show()
                     }
                     WorkInfo.State.SUCCEEDED -> {
-                        Toast.makeText(context, "导入成功", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, context.getString(R.string.data_import_success), Toast.LENGTH_SHORT).show()
                     }
                     else -> {}
                 }
@@ -110,8 +110,8 @@ fun DataSettingsList(
     )
     SettingsSwitchEntry(
         iconRes = R.drawable.wifi_proxy_24px,
-        title = "自动代理",
-        description = "自动从网络上获取代理ip, **但这将导致您所浏览的书本数据可能会被截获**",
+        title = stringResource(R.string.settings_auto_proxy),
+        description = stringResource(R.string.settings_auto_proxy_desc),
         checked = settingState.isUseProxy,
         booleanUserData = settingState.isUseProxyUserData
     )

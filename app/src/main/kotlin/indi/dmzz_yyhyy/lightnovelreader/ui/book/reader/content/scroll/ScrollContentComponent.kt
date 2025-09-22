@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.text.font.FontWeight
@@ -38,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
+import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.SettingState
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.content.BaseContentComponent
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Loading
@@ -83,6 +85,7 @@ fun ScrollContentTextComponent(
     onClickPrevChapter: () -> Unit,
     onClickNextChapter: () -> Unit
 ) {
+    val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = LocalSnackbarHost.current
     val density = LocalDensity.current
@@ -117,8 +120,8 @@ fun ScrollContentTextComponent(
                                         coroutineScope = coroutineScope,
                                         hostState = snackbarHostState,
                                         duration = SnackbarDuration.Short,
-                                        message = "已经到顶了",
-                                        actionLabel = "上一章"
+                                        message = context.getString(R.string.reader_reached_top),
+                                        actionLabel = context.getString(R.string.previous_chapter)
                                     ) {
                                         if (it == SnackbarResult.ActionPerformed) {
                                             onClickPrevChapter()
@@ -136,8 +139,8 @@ fun ScrollContentTextComponent(
                                         coroutineScope = coroutineScope,
                                         hostState = snackbarHostState,
                                         duration = SnackbarDuration.Short,
-                                        message = "已经到底了",
-                                        actionLabel = "下一章"
+                                        message = context.getString(R.string.reader_reached_bottom),
+                                        actionLabel = context.getString(R.string.next_chapter)
                                     ) {
                                         if (it == SnackbarResult.ActionPerformed) {
                                             onClickNextChapter()

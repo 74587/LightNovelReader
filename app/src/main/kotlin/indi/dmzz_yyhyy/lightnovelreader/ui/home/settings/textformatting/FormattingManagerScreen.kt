@@ -89,12 +89,12 @@ fun TextFormattingScreen(
                         verticalArrangement = Arrangement.spacedBy(4.dp)
                     ) {
                         Text(
-                            text = "全局规则",
+                            text = stringResource(R.string.global_formatting_rules),
                             style = AppTypography.labelLarge,
                             maxLines = 1
                         )
                         Text(
-                            text = "${groups.firstOrNull { it.id == -1 }?.size ?: "0"} 个规则",
+                            text = stringResource(R.string.n_rules, groups.firstOrNull { it.id == -1 }?.size ?: 0),
                             style = AppTypography.labelMedium,
                             color = colorScheme.secondary
                         )

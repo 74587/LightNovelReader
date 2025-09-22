@@ -187,7 +187,7 @@ private fun TopBar(
     MediumTopAppBar(
         title = {
             Text(
-                text = stringResource(id = R.string.text_replacement_rules_title),
+                text = stringResource(id = R.string.book_rules),
                 style = AppTypography.titleTopBar,
                 color = colorScheme.onSurface,
                 maxLines = 1,

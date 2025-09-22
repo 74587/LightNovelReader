@@ -32,7 +32,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DropdownMenu
@@ -61,7 +60,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
@@ -87,6 +85,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.LocalNavController
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.AnimatedTextLine
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Cover
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Loading
+import indi.dmzz_yyhyy.lightnovelreader.ui.components.SwitchChip
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.bookshelf.home.BookStatusIcon
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.textformatting.rules.navigateToSettingsTextFormattingRulesDestination
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
@@ -403,27 +402,12 @@ private fun DetailContent(
                     fontWeight = FontWeight.W600
                 )
                 Spacer(Modifier.width(12.dp))
-                AssistChip(
-                    onClick = { hideReadChapters = !hideReadChapters },
-                    label = {
-                        Text(
-                            text = stringResource(
-                                if (hideReadChapters) R.string.show_read
-                                else R.string.hide_read
-                            )
-                        )
-                    },
-                    leadingIcon = {
-                        Icon(
-                            modifier = Modifier.scale(0.75f),
-                            painter = painterResource(
-                                if (hideReadChapters) R.drawable.filled_menu_book_24px
-                                else R.drawable.done_all_24px
-                            ),
-                            contentDescription = "Toggle Hide Read"
-                        )
-                    },
-                    modifier = Modifier.padding(8.dp)
+                SwitchChip(
+                    label = stringResource(R.string.hide_read),
+                    selected = hideReadChapters,
+                    onClick = {
+                        hideReadChapters = !hideReadChapters
+                    }
                 )
             }
         }
@@ -529,7 +513,7 @@ private fun TopBar(
                     DropdownMenuItem(
                         text = {
                             Text(
-                                text = "全部标为已读",
+                                text = stringResource(R.string.mark_all_read),
                                 style = AppTypography.dropDownItem
                             )
                         },

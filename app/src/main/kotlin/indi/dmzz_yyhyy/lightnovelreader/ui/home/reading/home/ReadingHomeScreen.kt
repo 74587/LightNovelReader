@@ -51,6 +51,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -183,6 +184,7 @@ private fun ReadingContent(
     scrollBehavior: TopAppBarScrollBehavior,
     loadBookInfo: (Int) -> Unit
 ) {
+    val context = LocalContext.current
     val shimmerInstance = rememberShimmer(ShimmerBounds.Custom)
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = LocalSnackbarHost.current
@@ -275,8 +277,8 @@ private fun ReadingContent(
                                 showSnackbar(
                                     coroutineScope = coroutineScope,
                                     hostState = snackbarHostState,
-                                    message = "已移除: ${recentReadingBookInformationMap[id]?.title}",
-                                    actionLabel = "撤销",
+                                    message = context.getString(R.string.removed_item, recentReadingBookInformationMap[id]?.title),
+                                    actionLabel = context.getString(R.string.undo),
                                 ) {
                                     when (it) {
                                         SnackbarResult.Dismissed -> { }

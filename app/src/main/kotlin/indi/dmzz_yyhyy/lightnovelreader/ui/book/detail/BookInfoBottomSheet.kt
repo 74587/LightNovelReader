@@ -2,7 +2,6 @@ package indi.dmzz_yyhyy.lightnovelreader.ui.book.detail
 
 import android.content.ClipData
 import android.widget.Toast
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -100,7 +99,7 @@ fun BookInfoBottomSheet(
                                     val clipData = ClipData.newPlainText("content", content)
                                     val clipEntry = ClipEntry(clipData = clipData)
                                     clipboard.setClipEntry(clipEntry = clipEntry)
-                                    Toast.makeText(context, "内容已复制", Toast.LENGTH_SHORT)
+                                    Toast.makeText(context, context.getString(R.string.copied), Toast.LENGTH_SHORT)
                                         .show()
                                 }
                             },
@@ -171,7 +170,9 @@ fun BookInfoBottomSheet(
             val formatter = DateTimeFormatter.ofPattern(dateFormat)
             InfoItem(
                 title = stringResource(R.string.detail_info_updated_on),
-                content = bookInformation.lastUpdated.format(formatter) + "\n" + if (bookInformation.isComplete) "完结" else "连载中",
+                content = bookInformation.lastUpdated.format(formatter) + "\n" +
+                        if (bookInformation.isComplete) stringResource(R.string.book_completed)
+                        else stringResource(R.string.book_ongoing),
                 titleStyle = titleStyle,
                 contentStyle = contentStyle,
                 icon = painterResource(R.drawable.autorenew_24px)
@@ -187,9 +188,12 @@ fun BookInfoBottomSheet(
 
             InfoItem(
                 title = stringResource(R.string.detail_info_stats),
-                content = "${
-                    NumberFormat.getInstance().format(bookInformation.wordCount)
-                } 字\n共计 ${bookVolumes.volumes.count()} 卷, ${bookVolumes.volumes.sumOf { volume -> volume.chapters.size }} 章节",
+                content = stringResource(
+                    R.string.detail_info_stats_content,
+                    NumberFormat.getInstance().format(bookInformation.wordCount),
+                    bookVolumes.volumes.count(),
+                    bookVolumes.volumes.sumOf { it.chapters.size }
+                ),
                 titleStyle = titleStyle,
                 contentStyle = contentStyle,
                 icon = painterResource(R.drawable.text_fields_24px)
