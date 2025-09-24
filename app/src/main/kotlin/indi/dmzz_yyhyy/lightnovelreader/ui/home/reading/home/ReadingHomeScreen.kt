@@ -492,15 +492,15 @@ private fun ReadingBookCard(
                             val text = buildString {
                                 append(formTime(userReadingData.lastReadTime))
                                 append(" • ")
-                                append((userReadingData.readingProgress * 100).toInt())
-                                append("%")
-                                append(" • ")
                                 append(
                                     stringResource(
                                         R.string.read_minutes,
                                         userReadingData.totalReadTime / 60
                                     )
                                 )
+                                append(" • ")
+                                append((userReadingData.readingProgress * 100).toInt())
+                                append("%")
                             }
                             Text(
                                 text = text,

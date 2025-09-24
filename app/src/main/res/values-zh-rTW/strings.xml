@@ -47,9 +47,9 @@
     <string name="data_import_success">導入成功</string>
     <string name="data_import_failed">導入失敗，請檢查檔案格式或檔案已損壞。</string>
     <string name="download_in_progress">進行中</string>
-    <string name="download_item_progress">%s 已下載 %d%</string>
-    <string name="download_item_finished">%s 完成</string>
-    <string name="download_item_failed">%s 失敗, 請檢查您的網絡環境或尋求開發者幫助</string>
+    <string name="download_item_progress">%s 已下載 %d%%</string>
+    <string name="download_item_finished">%s完成</string>
+    <string name="download_item_failed">%s失敗, 請檢查您的網絡環境或尋求開發者幫助</string>
 
     <!-- Hints -->
     <string name="nothing_here">沒有內容</string>

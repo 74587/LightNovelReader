@@ -49,7 +49,7 @@
     <string name="data_import_success">Import successful</string>
     <string name="data_import_failed">Import failed. Please check the file format or if the file is corrupted.</string>
     <string name="download_in_progress">In Progress</string>
-    <string name="download_item_progress">%s downloaded %d%</string>
+    <string name="download_item_progress">%s downloaded %d%%</string>
     <string name="download_item_finished">%s completed</string>
     <string name="download_item_failed">%s failed, please check your network or seek developer assistance</string>
 

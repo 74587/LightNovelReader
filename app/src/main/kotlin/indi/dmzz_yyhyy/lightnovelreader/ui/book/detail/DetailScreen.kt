@@ -362,7 +362,6 @@ private fun DetailContent(
         item {
             BookCardBlock(
                 bookInformation = uiState.bookInformation,
-                totalReadTime = uiState.userReadingData.totalReadTime,
                 modifier = Modifier
                     .graphicsLayer {
                         translationY = lazyListState.firstVisibleItemScrollOffset * 0.5f
@@ -538,7 +537,6 @@ private fun TopBar(
 @Composable
 private fun BookCardBlock(
     bookInformation: BookInformation,
-    totalReadTime: Int,
     modifier: Modifier,
     onClickCover: (String) -> Unit
 ) {
@@ -627,25 +625,6 @@ private fun BookCardBlock(
                     },
                     text = wordCountText
                 )
-                if (totalReadTime > 59) {
-                    Spacer(Modifier.height(2.dp))
-                    InfoRow(
-                        icon = {
-                            Icon(
-                                painter = painterResource(R.drawable.schedule_90dp),
-                                contentDescription = null,
-                                tint = MaterialTheme.colorScheme.outline,
-                                modifier = Modifier
-                                    .size(16.dp)
-                                    .padding(top = 2.dp)
-                            )
-                        },
-                        text = stringResource(
-                            R.string.read_minutes,
-                            totalReadTime / 60
-                        )
-                    )
-                }
             }
         }
     }
@@ -800,9 +779,7 @@ private fun QuickOperationsBlock(
 @Composable
 private fun IntroBlock(description: String) {
     var expanded by remember { mutableStateOf(false) }
-    var overflowed by remember(description.length) {
-        mutableStateOf(false)
-    }
+    var overflowed by rememberSaveable(description.length) { mutableStateOf(false) }
 
     val fadingBrush = remember {
         Brush.verticalGradient(

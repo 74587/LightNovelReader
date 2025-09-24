@@ -216,9 +216,9 @@ private fun Card(
                 Text(
                     text =
                         if (downloadItem.progress < 1)
-                            stringResource(R.string.download_in_progress,
+                            stringResource(R.string.download_item_progress,
                                 formTime(downloadItem.startTime),
-                                downloadItem.progress*100
+                                (downloadItem.progress*100).toInt()
                             )
                         else if (downloadItem.progress > 0)
                             stringResource(R.string.download_item_finished, downloadItem.type.typeName)
