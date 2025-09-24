@@ -7,9 +7,13 @@ import android.provider.DocumentsContract
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.result.ActivityResult
+import androidx.compose.foundation.background
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkInfo
@@ -91,38 +95,44 @@ fun DataSettingsList(
         }
     }*/
     SettingsClickableEntry(
-        iconRes = R.drawable.output_24px,
+        modifier = Modifier.background(colorScheme.surfaceContainer),
+        painter = painterResource(R.drawable.output_24px),
         title = stringResource(R.string.settings_snap_data),
         description = stringResource(R.string.settings_snap_data_desc),
         onClick = onClickExportUserData
     )
     SettingsClickableEntry(
-        iconRes = R.drawable.input_24px,
+        modifier = Modifier.background(colorScheme.surfaceContainer),
+        painter = painterResource(R.drawable.input_24px),
         title = stringResource(R.string.settings_import_data),
         description = stringResource(R.string.settings_import_data_desc),
         onClick = { selectDataFile(importDataLauncher) }
     )
     SettingsClickableEntry(
-        iconRes = R.drawable.public_24px,
+        modifier = Modifier.background(colorScheme.surfaceContainer),
+        painter = painterResource(R.drawable.public_24px),
         title = stringResource(R.string.settings_select_data_source),
         description = stringResource(R.string.settings_select_data_source_desc),
         onClick = onClickChangeSource
     )
     SettingsSwitchEntry(
-        iconRes = R.drawable.wifi_proxy_24px,
+        modifier = Modifier.background(colorScheme.surfaceContainer),
+        painter = painterResource(R.drawable.wifi_proxy_24px),
         title = stringResource(R.string.settings_auto_proxy),
         description = stringResource(R.string.settings_auto_proxy_desc),
         checked = settingState.isUseProxy,
         booleanUserData = settingState.isUseProxyUserData
     )
     SettingsClickableEntry(
-        iconRes = R.drawable.bug_report_24px,
+        modifier = Modifier.background(colorScheme.surfaceContainer),
+        painter = painterResource(R.drawable.bug_report_24px),
         title = stringResource(R.string.settings_app_logs),
         description = stringResource(R.string.settings_app_logs_desc),
         onClick = onClickLogcat
     )
     SettingsMenuEntry(
-        iconRes = R.drawable.bug_report_24px,
+        modifier = Modifier.background(colorScheme.surfaceContainer),
+        painter = painterResource(R.drawable.bug_report_24px),
         title = stringResource(R.string.settings_app_log_level),
         description = stringResource(R.string.settings_app_log_level_desc),
         options = MenuOptions.LogLevelOptions,

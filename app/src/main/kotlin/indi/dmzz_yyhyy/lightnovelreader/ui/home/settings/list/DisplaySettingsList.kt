@@ -4,8 +4,12 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
+import androidx.compose.foundation.background
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsClickableEntry
@@ -21,7 +25,8 @@ fun DisplaySettingsList(
     val isAboveTiramisu = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
 
     SettingsClickableEntry(
-        iconRes = R.drawable.language_24px,
+        modifier = Modifier.background(colorScheme.surfaceContainer),
+        painter = painterResource(R.drawable.language_24px),
         title = stringResource(R.string.settings_app_language),
         description = if (isAboveTiramisu)
             stringResource(R.string.settings_app_language_desc)
@@ -37,7 +42,8 @@ fun DisplaySettingsList(
         }
     )
     SettingsMenuEntry(
-        iconRes = R.drawable.translate_24px,
+        modifier = Modifier.background(colorScheme.surfaceContainer),
+        painter = painterResource(R.drawable.translate_24px),
         title = stringResource(R.string.settings_characters_variant),
         description = stringResource(R.string.settings_characters_variant_desc),
         options = MenuOptions.AppLocaleOptions,

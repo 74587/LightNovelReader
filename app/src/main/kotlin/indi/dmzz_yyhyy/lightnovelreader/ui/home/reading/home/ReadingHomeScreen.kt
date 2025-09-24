@@ -482,34 +482,32 @@ private fun ReadingBookCard(
                         Row {
                             Icon(
                                 modifier = Modifier
+                                    .padding(top = 2.dp, end = 2.dp)
                                     .size(14.dp)
-                                    .align(Alignment.CenterVertically)
-                                    .padding(top = 2.dp, end = 2.dp),
+                                    .align(Alignment.CenterVertically),
                                 painter = painterResource(id = R.drawable.outline_schedule_24px),
                                 contentDescription = null,
                                 tint = colorScheme.secondary
                             )
+                            val text = buildString {
+                                append(formTime(userReadingData.lastReadTime))
+                                append(" • ")
+                                append((userReadingData.readingProgress * 100).toInt())
+                                append("%")
+                                append(" • ")
+                                append(
+                                    stringResource(
+                                        R.string.read_minutes,
+                                        userReadingData.totalReadTime / 60
+                                    )
+                                )
+                            }
                             Text(
-                                text = formTime(userReadingData.lastReadTime),
+                                text = text,
                                 modifier = Modifier.align(Alignment.CenterVertically),
                                 style = AppTypography.labelSmall
                             )
                         }
-                        Text(
-                            text = "• " + stringResource(
-                                R.string.read_progress,
-                                (userReadingData.readingProgress * 100).toInt().toString() + "%"
-                            ),
-                            style = AppTypography.labelSmall
-                        )
-                        Text(
-                            text = "• " + stringResource(
-                                R.string.read_minutes,
-                                (userReadingData.totalReadTime) / 60
-                            ),
-                            modifier = Modifier.align(Alignment.CenterVertically),
-                            style = AppTypography.labelSmall
-                        )
                     }
 
                     LinearProgressIndicator(

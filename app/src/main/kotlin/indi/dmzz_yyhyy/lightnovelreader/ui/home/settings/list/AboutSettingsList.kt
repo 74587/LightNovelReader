@@ -1,10 +1,14 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list
 
+import androidx.compose.foundation.background
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import indi.dmzz_yyhyy.lightnovelreader.BuildConfig
 import indi.dmzz_yyhyy.lightnovelreader.R
@@ -27,25 +31,29 @@ fun AboutSettingsList(
     }
 
     SettingsClickableEntry(
-        iconRes = R.drawable.info_24px,
+        modifier = Modifier.background(colorScheme.surfaceContainer),
+        painter = painterResource(R.drawable.info_24px),
         title = stringResource(R.string.app_name),
         description = appInfo,
         onClick = { showAppInfoDialog = true },
         option = stringResource(R.string.item_view_details)
     )
     SettingsClickableEntry(
-        iconRes = R.drawable.group_24px,
+        modifier = Modifier.background(colorScheme.surfaceContainer),
+        painter = painterResource(R.drawable.group_24px),
         title = stringResource(R.string.settings_communication),
         description = stringResource(R.string.settings_communication_desc),
         openUrl = "https://qm.qq.com/q/Tp80Hf9Oms"
     )
     SettingsClickableEntry(
-        iconRes = R.drawable.archive_24px,
+        modifier = Modifier.background(colorScheme.surfaceContainer),
+        painter = painterResource(R.drawable.archive_24px),
         title = stringResource(R.string.settings_github_repo),
         description = stringResource(R.string.settings_github_repo_desc),
         openUrl = "https://github.com/dmzz-yyhyy/LightNovelReader"
     )
     /* SettingsSwitchEntry(
+        modifier = Modifier.background(colorScheme.surfaceContainer),
         title = stringResource(R.string.settings_statistics),
         description = stringResource(R.string.settings_statistics_desc),
         checked = if (BuildConfig.DEBUG) false else settingState.statistics,
@@ -54,7 +62,8 @@ fun AboutSettingsList(
     ) */
     if (BuildConfig.DEBUG)
         SettingsClickableEntry(
-            iconRes = R.drawable.adb_24px,
+            modifier = Modifier.background(colorScheme.surfaceContainer),
+            painter = painterResource(R.drawable.adb_24px),
             title = stringResource(R.string.settings_debug_tools),
             description = stringResource(R.string.settings_debug_tools_desc),
             onClick = onClickDebugMode

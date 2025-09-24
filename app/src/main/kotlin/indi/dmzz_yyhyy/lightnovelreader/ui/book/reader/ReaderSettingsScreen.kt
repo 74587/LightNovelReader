@@ -41,6 +41,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
@@ -78,7 +79,7 @@ fun SettingsBottomSheet(
                 .fillMaxHeight()
         ) {
             Text(
-                modifier = Modifier.padding(horizontal = 16.dp),
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 12.dp),
                 style = AppTypography.titleLarge,
                 text = stringResource(R.string.reader_settings),
                 fontWeight = FontWeight.W600
@@ -134,9 +135,7 @@ fun ContentSettings(
         ) { pageIndex ->
             LazyColumn(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .clip(RoundedCornerShape(14.dp)),
-                verticalArrangement = Arrangement.spacedBy(6.dp),
+                    .fillMaxSize(),
             ) {
                 when (pageIndex) {
                     0 -> AppearancePage(settingState, onClickThemeSettings)
@@ -201,7 +200,7 @@ fun LazyListScope.AppearancePage(
     item {
         SettingsClickableEntry(
             modifier = Modifier.animateItem(),
-            iconRes = R.drawable.format_paint_24px,
+            painter = painterResource(R.drawable.format_paint_24px),
             title = stringResource(R.string.settings_theme_settings),
             description = stringResource(R.string.settings_theme_settings_desc),
             onClick = onClickThemeSettings
@@ -210,7 +209,7 @@ fun LazyListScope.AppearancePage(
     item {
         SettingsSwitchEntry(
             modifier = Modifier.animateItem(),
-            iconRes = R.drawable.lightbulb_24px,
+            painter = painterResource(R.drawable.lightbulb_24px),
             title = stringResource(R.string.settings_reader_keep_screen_on),
             description = stringResource(R.string.settings_reader_keep_screen_on_desc),
             checked = settingState.keepScreenOn,
@@ -220,7 +219,7 @@ fun LazyListScope.AppearancePage(
     item {
         SettingsSwitchEntry(
             modifier = Modifier.animateItem(),
-            iconRes = R.drawable.toolbar_24px,
+            painter = painterResource(R.drawable.toolbar_24px),
             title = stringResource(R.string.settings_hide_status_bar),
             description = stringResource(R.string.settings_hide_status_bar_desc),
             checked = settingState.enableHideStatusBar,
@@ -230,7 +229,7 @@ fun LazyListScope.AppearancePage(
     item {
         SettingsMenuEntry(
             modifier = Modifier.animateItem(),
-            iconRes = R.drawable.battery_android_full_24px,
+            painter = painterResource(R.drawable.battery_android_full_24px),
             title = stringResource(R.string.settings_reader_battery_indicator),
             description = stringResource(R.string.settings_reader_battery_indicator_desc),
             options = MenuOptions.ReaderIndicatorBatteryDisplayMode,
@@ -241,7 +240,7 @@ fun LazyListScope.AppearancePage(
     item {
         SettingsSwitchEntry(
             modifier = Modifier.animateItem(),
-            iconRes = R.drawable.outline_schedule_24px,
+            painter = painterResource(R.drawable.outline_schedule_24px),
             title = stringResource(R.string.settings_reader_time_indicator),
             description = stringResource(R.string.settings_reader_time_indicator_desc),
             checked = settingState.enableTimeIndicator,
@@ -251,7 +250,7 @@ fun LazyListScope.AppearancePage(
     item {
         SettingsSwitchEntry(
             modifier = Modifier.animateItem(),
-            iconRes = R.drawable.contract_24px,
+            painter = painterResource(R.drawable.contract_24px),
             title = stringResource(R.string.settings_reader_chapter_indicator),
             description = stringResource(R.string.settings_reader_chapter_indicator_desc),
             checked = settingState.enableChapterTitleIndicator,
@@ -261,7 +260,7 @@ fun LazyListScope.AppearancePage(
     item {
         SettingsSwitchEntry(
             modifier = Modifier.animateItem(),
-            iconRes = R.drawable.clock_loader_40_24px,
+            painter = painterResource(R.drawable.clock_loader_40_24px),
             title = stringResource(R.string.settings_reader_progress_indicator),
             description = stringResource(R.string.settings_reader_progress_indicator_desc),
             checked = settingState.enableReadingChapterProgressIndicator,
@@ -274,7 +273,7 @@ fun LazyListScope.ActionPage(settingState: SettingState) {
     item {
         SettingsSwitchEntry(
             modifier = Modifier.animateItem(),
-            iconRes = R.drawable.menu_book_24px,
+            painter = painterResource(R.drawable.menu_book_24px),
             title = stringResource(R.string.settings_reader_page_mode),
             description = stringResource(R.string.settings_reader_page_mode_desc),
             checked = settingState.isUsingFlipPage,
@@ -284,7 +283,7 @@ fun LazyListScope.ActionPage(settingState: SettingState) {
     item {
         SettingsMenuEntry(
             modifier = Modifier.animateItem(),
-            iconRes = R.drawable.block_24px,
+            painter = painterResource(R.drawable.block_24px),
             title = stringResource(R.string.settings_reader_back_block_mode),
             description = stringResource(R.string.settings_reader_back_block_mode_desc),
             options = MenuOptions.ReaderBackBlockMode,
@@ -296,7 +295,7 @@ fun LazyListScope.ActionPage(settingState: SettingState) {
         item {
             SettingsSwitchEntry(
                 modifier = Modifier.animateItem(),
-                iconRes = R.drawable.auto_stories_24px,
+                painter = painterResource(R.drawable.auto_stories_24px),
                 title = stringResource(R.string.settings_reader_volume_key_control),
                 description = stringResource(R.string.settings_reader_volume_key_control_desc),
                 checked = settingState.isUsingVolumeKeyFlip,
@@ -308,7 +307,7 @@ fun LazyListScope.ActionPage(settingState: SettingState) {
                 val steps = listOf(-1f, 0.1f, 0.2f, 0.3f, 0.5f, 0.8f, 1.0f, 2.0f, 4.0f)
                 SettingsSliderEntry(
                     modifier = Modifier.animateItem(),
-                    iconRes = R.drawable.timer_24px,
+                    painter = painterResource(R.drawable.timer_24px),
                     title = stringResource(R.string.settings_reader_volume_key_interval),
                     unit = "s",
                     value = settingState.volumeKeyContinuousFlipInterval,
@@ -323,7 +322,7 @@ fun LazyListScope.ActionPage(settingState: SettingState) {
         item {
             SettingsSwitchEntry(
                 modifier = Modifier.animateItem(),
-                iconRes = R.drawable.unfold_more_double_24px,
+                painter = painterResource(R.drawable.unfold_more_double_24px),
                 title = stringResource(R.string.settings_continous_scrolling),
                 description = stringResource(R.string.settings_continous_scrolling_desc),
                 checked = settingState.isUsingContinuousScrolling,
@@ -335,7 +334,7 @@ fun LazyListScope.ActionPage(settingState: SettingState) {
         item {
             SettingsSwitchEntry(
                 modifier = Modifier.animateItem(),
-                iconRes = R.drawable.touch_app_24px,
+                painter = painterResource(R.drawable.touch_app_24px),
                 title = stringResource(R.string.settings_reader_t2tp),
                 description = stringResource(R.string.settings_reader_t2tp_desc),
                 checked = settingState.isUsingClickFlipPage,
@@ -347,7 +346,7 @@ fun LazyListScope.ActionPage(settingState: SettingState) {
         item {
             SettingsMenuEntry(
                 modifier = Modifier.animateItem(),
-                iconRes = R.drawable.transition_chop_24px,
+                painter = painterResource(R.drawable.transition_chop_24px),
                 title = stringResource(R.string.settings_reader_page_turn_anim),
                 description = stringResource(R.string.settings_reader_page_turn_anim_desc),
                 options = MenuOptions.FlipAnimationOptions,
@@ -360,7 +359,7 @@ fun LazyListScope.ActionPage(settingState: SettingState) {
         item {
             SettingsSwitchEntry(
                 modifier = Modifier.animateItem(),
-                iconRes = R.drawable.quick_reorder_24px,
+                painter = painterResource(R.drawable.quick_reorder_24px),
                 title = stringResource(R.string.settings_reader_quick_chapter_switch),
                 description = stringResource(R.string.settings_reader_quick_chapter_switch_desc),
                 checked = settingState.fastChapterChange,

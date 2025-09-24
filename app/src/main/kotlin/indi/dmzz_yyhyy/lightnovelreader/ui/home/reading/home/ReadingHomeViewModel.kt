@@ -28,7 +28,6 @@ class ReadingHomeViewModel @Inject constructor(
     private val _recentReadingUserReadingDataMap = mutableStateMapOf<Int, UserReadingData>()
     val recentReadingBookInformationMap: Map<Int, BookInformation> = _recentReadingBookInformationMap
     val recentReadingUserReadingDataMap: Map<Int, UserReadingData> = _recentReadingUserReadingDataMap
-    private val requestedIds = mutableSetOf<Int>()
 
     fun updateReadingBooks() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -40,9 +39,6 @@ class ReadingHomeViewModel @Inject constructor(
     }
 
     fun loadBookInfo(id: Int) {
-        if (requestedIds.contains(id)) return
-        requestedIds.add(id)
-
         viewModelScope.launch(Dispatchers.IO) {
             val info = bookRepository.getStateBookInformation(id, viewModelScope)
             val userData = bookRepository.getStateUserReadingData(id, viewModelScope)
