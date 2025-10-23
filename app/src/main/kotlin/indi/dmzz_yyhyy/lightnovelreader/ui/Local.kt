@@ -1,5 +1,6 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui
 
+import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.navigation.NavController
@@ -10,5 +11,13 @@ val LocalNavController = compositionLocalOf<NavController> {
 }
 
 val LocalAppTheme = staticCompositionLocalOf<AppTheme> {
-    error("No AppThemeContext provided")
+    error("No AppTheme provided")
+}
+
+val LocalLightColorScheme = staticCompositionLocalOf<ColorScheme> {
+    error("No Light ColorScheme provided")
+}
+
+val LocalDarkColorScheme = staticCompositionLocalOf<ColorScheme> {
+    error("No Dark ColorScheme provided")
 }
