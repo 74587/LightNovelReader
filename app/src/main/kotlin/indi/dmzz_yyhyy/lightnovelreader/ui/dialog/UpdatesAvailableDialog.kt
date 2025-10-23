@@ -4,6 +4,8 @@ import android.content.Intent
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -54,15 +56,14 @@ fun UpdatesAvailableDialog(
         title = {
             Text(
                 text = stringResource(R.string.dialog_updates_available),
-                style = AppTypography.titleLarge,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = MaterialTheme.colorScheme.onSurface
             )
         },
         text = {
             Column {
                 release?.versionName?.let {
                     Text(
-                        text = "${BuildConfig.VERSION_NAME}(${BuildConfig.VERSION_CODE}) → ${release.versionName}(${release.version})"
+                        text = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE}) → ${release.versionName} (${release.version})"
                     )
                 }
                 release?.releaseNotes?.let {
@@ -77,6 +78,7 @@ fun UpdatesAvailableDialog(
                                 text = stringResource(R.string.changelog),
                                 style = AppTypography.titleMedium,
                             )
+                            Spacer(Modifier.height(12.dp))
                         }
                         item {
                             MarkdownText(it)

@@ -12,8 +12,9 @@
     <string name="key_default_text">預設字型</string>
     <string name="key_customize_text">自訂字型</string>
     <!-- Update Channel -->
-    <string name="key_update_channel_release">正式發布版</string>
-    <string name="key_update_channel_development">開發版 (最新功能和錯誤修復)</string>
+    <string name="key_update_channel_release">不加入</string>
+    <string name="key_update_channel_development">Beta 測試版</string>
+    <string name="key_update_channel_ci">內部測試版 (不穩定)</string>
     <!-- Dark Mode -->
     <string name="key_dark_mode_follow_system">跟隨系統</string>
     <string name="key_dark_mode_enabled">保持啟用</string>

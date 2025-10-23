@@ -90,8 +90,8 @@
     <string name="app_updates">Updates</string>
     <string name="settings_auto_check_updates">Auto Check for Updates</string>
     <string name="settings_auto_check_updates_desc">Enable automatic update checks upon app launch</string>
-    <string name="settings_update_channel">Update Channel</string>
-    <string name="settings_update_channel_desc">Select your preferred update channel.</string>
+    <string name="settings_update_channel">Join Beta Program</string>
+    <string name="settings_update_channel_desc">Join the Beta program to experience upcoming features before the stable release and share your feedback.</string>
     <string name="settings_get_updates">Check for Updates</string>
     <string name="settings_get_updates_desc">Check and install the latest version.</string>
     <string name="settings_distribution_platform">Distribution Platform</string>
@@ -335,7 +335,7 @@
     <string name="dialog_add_to_bookshelf_text">Add this book to the following bookshelves</string>
     <string name="dialog_export_to_epub">Export as EPUB</string>
     <string name="dialog_export_to_epub_text">EPUB (Electronic Publication) is an open e-book standard with a .epub format.\n\nDo you want to export this book as an EPUB?</string>
-    <string name="dialog_updates_available">Updates Available</string>
+    <string name="dialog_updates_available">Update Available</string>
     <string name="dialog_snap_user_data_text">Select the data to export</string>
     <string name="dialog_snap_bookshelf">Bookshelf</string>
     <string name="dialog_snap_bookshelf_text">Includes bookshelf and book information.</string>

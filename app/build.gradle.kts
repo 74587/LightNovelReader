@@ -119,8 +119,6 @@ dependencies {
     implementation(libs.gson)
     // Markdown
     implementation(libs.markdown)
-    // Ketch
-    implementation(libs.ketch)
     // Room
     implementation(libs.room.runtime)
     annotationProcessor(libs.room.compiler)

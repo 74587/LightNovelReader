@@ -88,8 +88,8 @@
     <string name="app_updates">更新</string>
     <string name="settings_auto_check_updates">自动检查更新</string>
     <string name="settings_auto_check_updates_desc">应用启动后自动检查更新</string>
-    <string name="settings_update_channel">首选软件版本</string>
-    <string name="settings_update_channel_desc">检查更新的目标版本</string>
+    <string name="settings_update_channel">加入 Beta 版本测试</string>
+    <string name="settings_update_channel_desc">提前体验即将发布的新功能，并在稳定版发布前提供宝贵的反馈</string>
     <string name="settings_get_updates">手动检查更新</string>
     <string name="settings_get_updates_desc">手动获取应用更新</string>
     <string name="settings_distribution_platform">更新分发平台</string>
@@ -266,7 +266,7 @@
     <string name="select_chapter">章节选择</string>
     <string name="logs_title">日志</string>
     <string name="log_source">日志来源</string>
-    <string name="log_clear">删除所有临时日志 Logs</string>
+    <string name="log_clear">删除所有临时日志</string>
     <string name="log_clear_desc">清除应用缓存时，这些临时日志也将被删除</string>
     <string name="auto_scroll">自动滚动</string>
     <string name="word_wrap">自动换行</string>
