@@ -18,8 +18,6 @@ import dagger.assisted.AssistedInject
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.book.BookInformation
 import indi.dmzz_yyhyy.lightnovelreader.data.bookshelf.BookshelfRepository
-import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataPath
-import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.web.WebBookDataSource
 import kotlinx.coroutines.delay
 
@@ -35,6 +33,9 @@ class CheckUpdateWork @AssistedInject constructor(
         val reminderBookMap = mutableMapOf<Int, BookInformation>()
         bookshelfRepository.getAllBookshelfBooksMetadata().forEach { bookshelfBookMetadata ->
             delay(3000)
+            if (bookshelfBookMetadata.bookShelfIds.all {
+                    bookshelfRepository.getBookshelf(it)?.systemUpdateReminder != true
+                }) return@forEach
             Log.d("CheckUpdateWork", "Updating book id=${bookshelfBookMetadata.id}")
             val bookInformation = webBookDataSource.getBookInformation(bookshelfBookMetadata.id)
             val webBookLastUpdate = bookInformation.lastUpdated

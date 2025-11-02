@@ -10,9 +10,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
@@ -26,7 +25,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -63,10 +61,10 @@ fun SettingsScreen(
     animatedVisibilityScope: AnimatedVisibilityScope,
     sharedTransitionScope: SharedTransitionScope,
 ) {
-    val pinnedScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     with(sharedTransitionScope) {
         Scaffold(
-            topBar = { TopBar(pinnedScrollBehavior) },
+            topBar = { TopBar(scrollBehavior) },
             bottomBar = {
                 HomeNavigateBar(
                     Modifier.sharedElement(
@@ -81,54 +79,62 @@ fun SettingsScreen(
                 SnackbarHost(LocalSnackbarHost.current)
             }
         ) {
-            Column(
-                Modifier
-                    .padding(it)
-                    .verticalScroll(rememberScrollState())
-                    .nestedScroll(pinnedScrollBehavior.nestedScrollConnection)
+            LazyColumn (
+                Modifier.padding(it)
             ) {
-                SettingsCategory(
-                    title = stringResource(R.string.app_updates)
-                ) {
-                    UpdatesSettingsList(
-                        updatePhase = updatePhase,
-                        settingState = settingState,
-                        checkUpdate = checkUpdate,
-                    )
+                item {
+                    SettingsCategory(
+                        title = stringResource(R.string.app_updates)
+                    ) {
+                        UpdatesSettingsList(
+                            updatePhase = updatePhase,
+                            settingState = settingState,
+                            checkUpdate = checkUpdate,
+                        )
+                    }
                 }
-                SettingsCategory(
-                    title = stringResource(R.string.reading_settings),
-                ) {
-                    ReadingSettingsList(
-                        settingState = settingState,
-                        onClickTheme = onClickThemeSettings,
-                        onClickTextFormatting = onClickTextFormatting
-                    )
+
+                item {
+                    SettingsCategory(
+                        title = stringResource(R.string.reading_settings),
+                    ) {
+                        ReadingSettingsList(
+                            settingState = settingState,
+                            onClickTheme = onClickThemeSettings,
+                            onClickTextFormatting = onClickTextFormatting
+                        )
+                    }
                 }
-                SettingsCategory(
-                    title = stringResource(R.string.display_settings),
-                ) {
-                    DisplaySettingsList(
-                        settingState = settingState
-                    )
+                item {
+                    SettingsCategory(
+                        title = stringResource(R.string.display_settings),
+                    ) {
+                        DisplaySettingsList(
+                            settingState = settingState
+                        )
+                    }
                 }
-                SettingsCategory(
-                    title = stringResource(R.string.data_settings),
-                ) {
-                    DataSettingsList(
-                        onClickChangeSource = onClickChangeSource,
-                        onClickExportUserData = onClickExportUserData,
-                        settingState = settingState,
-                        importData = importData,
-                        onClickLogcat = onClickLogcat
-                    )
+                item {
+                    SettingsCategory(
+                        title = stringResource(R.string.data_settings),
+                    ) {
+                        DataSettingsList(
+                            onClickChangeSource = onClickChangeSource,
+                            onClickExportUserData = onClickExportUserData,
+                            settingState = settingState,
+                            importData = importData,
+                            onClickLogcat = onClickLogcat
+                        )
+                    }
                 }
-                SettingsCategory(
-                    title = stringResource(R.string.about_settings),
-                ) {
-                    AboutSettingsList(
-                        onClickDebugMode = onClickDebugMode
-                    )
+                item {
+                    SettingsCategory(
+                        title = stringResource(R.string.about_settings),
+                    ) {
+                        AboutSettingsList(
+                            onClickDebugMode = onClickDebugMode
+                        )
+                    }
                 }
             }
         }
@@ -145,10 +151,7 @@ private fun TopBar(
         title = {
             Text(
                 text = stringResource(R.string.nav_settings),
-                style = AppTypography.titleTopBar,
-                color = colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
+                style = AppTypography.titleTopBar
             )
         },
         navigationIcon = {
