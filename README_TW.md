@@ -27,10 +27,6 @@ LightNovelReader <sup>*重構版*</sup> 是一款開源的輕小說閱讀軟體�
 - 將書本匯出為 EPUB 檔案
 - 熱情的開發者，還有更多…
 
-## 下載
-
-從 [GitHub Releases](https://github.com/dmzz-yyhyy/LightNovelReader/releases/latest) 下載最新發布版。要體驗最新的功能與錯誤修復，請從 [Actions](https://github.com/dmzz-yyhyy/LightNovelReader/actions) 下載最新建置。
-
 ## 外掛程式開發與自訂資料來源
 
 您可以為LightNovelReader新增自訂的資料來源與插件
@@ -38,6 +34,10 @@ LightNovelReader <sup>*重構版*</sup> 是一款開源的輕小說閱讀軟體�
 您可以從[範例外掛程式](https://github.com/dmzz-yyhyy/LightNovelReaderPlguin-Template)開始
 
 歡迎各位開發者進行開發!
+
+## 下載
+
+從 [GitHub Releases](https://github.com/dmzz-yyhyy/LightNovelReader/releases/latest) 下載最新發布版。要體驗最新的功能與錯誤修復，請從 [Actions](https://github.com/dmzz-yyhyy/LightNovelReader/actions) 下載最新建置。
 
 ## 支援
 
@@ -65,23 +65,29 @@ LightNovelReader <sup>*重構版*</sup> 是一款開源的輕小說閱讀軟體�
 ### 開始
 1. Fork 本倉庫。
 2. 克隆你的 fork：`git clone https://github.com/your-username/LightNovelReader.git`
-3. 為你的更改創建新分支：`git checkout -b feature/your-feature-name`
+3. 為你的更改建立新分支：`git checkout -b feature/your-feature-name`
 4. 進行更改並測試。
-5. 按照下面的提交指南提交更改。
+5. 依照下方提交指南提交變更。
 6. 推送到你的 fork：`git push origin feature/your-feature-name`
-7. 向 `refactoring` 分支打開 Pull Request。
+7. 向 `refactoring` 分支開啟 Pull Request。
 
 ### 提交指南
-- 保持提交原子化和描述性。
-- 如果你的更改影響版本，請在 `app/build.gradle.kts` 中更新。
+- 保持提交原子化且描述清楚。
+- 若你的變更會影響版本，請在 `app/build.gradle.kts` 中更新。
 
 ### 版本管理
 版本在 `app/build.gradle.kts` 中管理：
-- `versionNameStr`：公共版本（例如 "1.3.1"）。遵循語義化版本（major.minor.patch）。
-- `debugNumber`：開發構建時遞增（發布時為 0）。
-- `versionCode`：自動計算為 major*1000000 + minor*10000 + patch*1000 + debugNumber。
+- `versionName`：公開版本（例如 "1.3.1"）。遵循語義化版本（major.minor.patch）。
+- `versionCode`：隨著開發自然遞增。
+- 
+## 支持專案
 
-發布時，更新 `versionNameStr` 並將 `debugNumber` 重置為 0。
+[![支持我們 愛發電](https://img.shields.io/badge/❤%20支持我們-愛發電-orange)](https://www.ifdian.net/a/lightnovelreader)
+
+LightNovelReader 是一個完全免費、開源的專案。  
+如果你喜歡這個專案，或它對你有所幫助，歡迎透過 [愛發電](https://www.ifdian.net/a/lightnovelreader) 贊助。
+所有贊助款項將用於持續開發、新功能實作、（若有）伺服器維護及社群建設。
+你的支持讓我們能不斷前進，打造更好的閱讀體驗。
 
 ## 授權條款
 

@@ -27,10 +27,6 @@ LightNovelReader <sup>*Refactored Version*</sup> is an open-source app for readi
 - EPUB export functionality for your favorite novels
 - Active development with passionate contributors
 
-## Download
-
-Download the latest release from [GitHub Releases](https://github.com/dmzz-yyhyy/LightNovelReader/releases/latest). To experience the latest features and bug fixes, download the latest build from [Actions](https://github.com/dmzz-yyhyy/LightNovelReader/actions).
-
 ## Plugin Development and Custom Data Sources
 
 You can add custom data sources and plugins to LightNovelReader.
@@ -38,6 +34,10 @@ You can add custom data sources and plugins to LightNovelReader.
 You can start with the [sample plugin](https://github.com/dmzz-yyhyy/LightNovelReaderPlugin-Template)
 
 Developers are welcome to contribute!
+
+## Download
+
+Download the latest release from [GitHub Releases](https://github.com/dmzz-yyhyy/LightNovelReader/releases/latest). To experience the latest features and bug fixes, download the latest build from [Actions](https://github.com/dmzz-yyhyy/LightNovelReader/actions).
 
 ## Support
 
@@ -77,11 +77,18 @@ We welcome contributions to LightNovelReader! Here's how you can get involved:
 
 ### Version Management
 Versions are managed in `app/build.gradle.kts`:
-- `versionNameStr`: The public version (e.g., "1.3.1"). Follow semantic versioning (major.minor.patch).
-- `debugNumber`: Increment for development builds (0 for releases).
-- `versionCode`: Auto-calculated as major*1000000 + minor*10000 + patch*1000 + debugNumber.
+- `versionName`: The public version (e.g., "1.3.1"). Follow semantic versioning (major.minor.patch).
+- `versionCode`: Increases naturally as development progresses.
 
-For releases, update `versionNameStr` and reset `debugNumber` to 0.
+## Support the Project
+
+[![Support Us on Aifadian](https://img.shields.io/badge/❤%20Support%20Us-ifdian-orange)](https://www.ifdian.net/a/lightnovelreader)
+
+LightNovelReader is a fully free and open-source project.  
+If you enjoy using it or find it helpful, consider supporting us through [Aifadian](https://www.ifdian.net/a/lightnovelreader) (a China-based platform similar to Patreon).  
+All contributions go toward continuous development, new features, possible future server maintenance, and community growth.
+Your support helps keep the project alive and makes reading even better for everyone.
+
 
 ## License
 

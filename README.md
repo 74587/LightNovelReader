@@ -27,10 +27,6 @@ LightNovelReader <sup>*重构版*</sup> 是一款开源的轻小说阅读软件�
 - 将书本导出为 EPUB 文件
 - 热情的开发者，还有更多…
 
-## 下载
-
-从 [GitHub Releases](https://github.com/dmzz-yyhyy/LightNovelReader/releases/latest) 下载最新发布版。要体验最新的功能与 Bug 修复，请从 [Actions](https://github.com/dmzz-yyhyy/LightNovelReader/actions) 下载最新构建。
-
 ## 插件开发与自定义数据源
 
 您可以为LightNovelReader添加自定义的数据源与插件
@@ -38,6 +34,10 @@ LightNovelReader <sup>*重构版*</sup> 是一款开源的轻小说阅读软件�
 您可以从[示例插件](https://github.com/dmzz-yyhyy/LightNovelReaderPlguin-Template)开始
 
 欢迎各位开发者进行开发!
+
+## 下载
+
+从 [GitHub Releases](https://github.com/dmzz-yyhyy/LightNovelReader/releases/latest) 下载最新发布版。要体验最新的功能与 Bug 修复，请从 [Actions](https://github.com/dmzz-yyhyy/LightNovelReader/actions) 下载最新构建。
 
 ## 支持
 
@@ -77,11 +77,16 @@ LightNovelReader <sup>*重构版*</sup> 是一款开源的轻小说阅读软件�
 
 ### 版本管理
 版本在 `app/build.gradle.kts` 中管理：
-- `versionNameStr`：公共版本（例如 "1.3.1"）。遵循语义化版本（major.minor.patch）。
-- `debugNumber`：开发构建时递增（发布时为 0）。
-- `versionCode`：自动计算为 major*1000000 + minor*10000 + patch*1000 + debugNumber。
+- `versionName`：公共版本（例如 "1.3.1"）。遵循语义化版本（major.minor.patch）。
+- `versionCode`：随着开发自然递增。
 
-发布时，更新 `versionNameStr` 并将 `debugNumber` 重置为 0。
+## 支持项目
+
+[![爱发电赞助我们](https://img.shields.io/badge/❤%20支持我们-爱发电-orange)](https://www.ifdian.net/a/lightnovelreader)
+
+LightNovelReader 是一个完全免费、开源的项目。  
+如果你喜欢这个项目或它对你有所帮助，欢迎通过 [爱发电](https://www.ifdian.net/a/lightnovelreader) 支持我们。
+所有款项将用于持续开发、新功能的实现、（如果有）服务器维护以及社区建设。
 
 ## License
 
