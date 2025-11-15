@@ -31,8 +31,6 @@ fun NavGraphBuilder.bookshelfHomeDestination(sharedTransitionScope: SharedTransi
         val navController = LocalNavController.current
         val bookshelfHomeViewModel = hiltViewModel<BookshelfHomeViewModel>()
         BookshelfHomeScreen(
-            controller = navController,
-            selectedRoute = Route.Main.Bookshelf,
             init = bookshelfHomeViewModel::load,
             changePage = bookshelfHomeViewModel::changePage,
             changeBookSelectState = bookshelfHomeViewModel::changeBookSelectState,

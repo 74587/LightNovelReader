@@ -42,7 +42,7 @@ fun formTime(time: LocalDateTime): String {
                 else -> ""
             }
             if (dayDiff <=2) {
-                "$prefix ${time.hour}:${time.minute}"
+                String.format(Locale.getDefault(), "%s %d:%02d", prefix, time.hour, time.minute)
             } else {
                 prefix
             }

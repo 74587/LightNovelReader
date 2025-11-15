@@ -2,6 +2,7 @@ package indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.logcat
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -18,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,7 +28,6 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MenuAnchorType
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -55,12 +54,12 @@ import indi.dmzz_yyhyy.lightnovelreader.data.logging.LogEntry
 import indi.dmzz_yyhyy.lightnovelreader.data.logging.LogLevel
 import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.AnimatedTextLine
+import indi.dmzz_yyhyy.lightnovelreader.utils.mainScaffoldPaddings
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LogcatScreen(
     uiState: LogcatUiState,
@@ -85,222 +84,224 @@ fun LogcatScreen(
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Column {
-                        Text(
-                            text = stringResource(R.string.logs_title),
-                            style = AppTypography.titleTopBar
-                        )
-                        AnimatedTextLine(
-                            text = uiState.selectedLogFile,
-                            style = AppTypography.titleSubTopBar,
-                            color = MaterialTheme.colorScheme.secondary,
-                            overflow = TextOverflow.Ellipsis
-                        )
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClickBack) {
+    Column(modifier = Modifier.mainScaffoldPaddings()) {
+        TopBar(
+            uiState = uiState,
+            logEntries = logEntries,
+            onClickBack = onClickBack,
+            onClickClearLogs = onClickClearLogs,
+            onClickShareLogs = onClickShareLogs
+        )
+
+        Box(modifier = Modifier.weight(1f)) {
+            if (logEntries.isEmpty()) EmptyLogListContent()
+            else if (unwrapLogsText) LogListContent(logEntries, listState)
+            else UnWrapLogListContent(logEntries, listState)
+        }
+
+        BottomBar(
+            uiState = uiState,
+            logFiles = logFiles,
+            autoScrollEnabled = autoScrollEnabled,
+            unwrapLogsText = unwrapLogsText,
+            onSelectLogFile = onSelectLogFile,
+            onClickDeleteLogFile = onClickDeleteLogFile,
+            onToggleAutoScroll = { autoScrollEnabled = it },
+            onToggleWrap = { unwrapLogsText = it }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun TopBar(
+    uiState: LogcatUiState,
+    logEntries: List<LogEntry>,
+    onClickBack: () -> Unit,
+    onClickClearLogs: () -> Unit,
+    onClickShareLogs: () -> Unit
+) {
+    TopAppBar(
+        title = {
+            Column {
+                Text(
+                    text = stringResource(R.string.logs_title),
+                    style = AppTypography.titleTopBar
+                )
+                AnimatedTextLine(
+                    text = uiState.selectedLogFile,
+                    style = AppTypography.titleSubTopBar,
+                    color = MaterialTheme.colorScheme.secondary,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        },
+        navigationIcon = {
+            IconButton(onClickBack) {
+                Icon(
+                    painterResource(id = R.drawable.arrow_back_24px),
+                    contentDescription = "back"
+                )
+            }
+        },
+        actions = {
+            if (logEntries.isNotEmpty()) {
+                if (!uiState.isFileMode) {
+                    IconButton(onClickClearLogs) {
                         Icon(
-                            painterResource(id = R.drawable.arrow_back_24px),
-                            contentDescription = "back"
+                            painterResource(id = R.drawable.delete_forever_24px),
+                            contentDescription = "clear"
                         )
-                    }
-                },
-                actions = {
-                    if (logEntries.isNotEmpty()){
-                        if (!uiState.isFileMode) {
-                            IconButton(onClickClearLogs) {
-                                Icon(
-                                    painterResource(id = R.drawable.delete_forever_24px),
-                                    contentDescription = "clear",
-                                )
-                            }
-                        }
-                        IconButton(onClickShareLogs) {
-                            Icon(
-                                painterResource(id = R.drawable.ios_share_24px),
-                                contentDescription = "share",
-                            )
-                        }
                     }
                 }
-            )
-        },
-        bottomBar = {
-            var menuExpanded by remember { mutableStateOf(false) }
-            BottomAppBar(
-                modifier = Modifier.height(100.dp),
-                tonalElevation = 4.dp
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    var expanded by remember { mutableStateOf(false) }
-
-                    ExposedDropdownMenuBox(
-                        expanded = expanded,
-                        onExpandedChange = { expanded = !expanded },
-                        modifier = Modifier.weight(1f)
-                    ) {
-                        TextField(
-                            value = uiState.selectedLogFile,
-                            onValueChange = {},
-                            readOnly = true,
-                            label = { Text(stringResource(R.string.log_source)) },
-                            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
-                            colors = ExposedDropdownMenuDefaults.textFieldColors(),
-                            modifier = Modifier
-                                .menuAnchor(
-                                    type = MenuAnchorType.PrimaryNotEditable,
-                                    enabled = true
-                                )
-                                .fillMaxWidth(),
-                            maxLines = 1,
-                        )
-
-                        ExposedDropdownMenu(
-                            expanded = expanded,
-                            onDismissRequest = { expanded = false },
-                            modifier = Modifier.width(320.dp)
-                        ) {
-                            logFiles.forEach { fileName ->
-                                val (label, subText) = parseFileLabel(fileName)
-
-                                DropdownMenuItem(
-                                    text = {
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically
-                                        ) {
-                                            Spacer(Modifier.width(6.dp))
-
-                                            Box(
-                                                modifier = Modifier
-                                                    .size(8.dp)
-                                                    .clip(CircleShape)
-                                                    .background(colorForFile(fileName))
-                                            )
-
-                                            Spacer(Modifier.width(16.dp))
-
-                                            Column {
-                                                Text(
-                                                    text = label,
-                                                    maxLines = 1,
-                                                    overflow = TextOverflow.Ellipsis
-                                                )
-                                                if (subText.isNotEmpty()) {
-                                                    Text(
-                                                        text = subText,
-                                                        style = AppTypography.bodyLarge,
-                                                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                                                        maxLines = 1,
-                                                        overflow = TextOverflow.Ellipsis
-                                                    )
-                                                }
-                                            }
-                                        }
-                                    },
-                                    onClick = {
-                                        onSelectLogFile(fileName)
-                                        expanded = false
-                                    }
-                                )
-                            }
-                        }
-                    }
-                    Spacer(Modifier.width(12.dp))
-                    Box {
-                        IconButton(onClick = { menuExpanded = true }) {
-                            Icon(painterResource(R.drawable.more_vert_24px), contentDescription = "more")
-                        }
-
-                        DropdownMenu(
-                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp),
-                            expanded = menuExpanded,
-                            onDismissRequest = { menuExpanded = false },
-                        ) {
-                            DropdownMenuItem(
-                                text = {
-                                    Column {
-                                        Text(stringResource(R.string.log_clear), style = AppTypography.dropDownItem)
-                                        Spacer(Modifier.height(4.dp))
-                                        Text(
-                                            text = stringResource(R.string.log_clear_desc),
-                                            style = AppTypography.labelMedium,
-                                            color = MaterialTheme.colorScheme.secondary
-                                        )
-                                    }
-                                },
-                                onClick = {
-                                    onClickDeleteLogFile(":all")
-                                    menuExpanded = false
-                                }
-                            )
-                            DropdownMenuItem(
-                                text = {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-                                    ) {
-                                        Text(
-                                            stringResource(R.string.auto_scroll),
-                                            style = AppTypography.dropDownItem
-                                        )
-                                        Spacer(Modifier.weight(1f))
-                                        Switch(
-                                            checked = autoScrollEnabled,
-                                            onCheckedChange = {
-                                                autoScrollEnabled = it
-                                            }
-                                        )
-                                    }
-
-                                },
-                                onClick = { }
-                            )
-                            DropdownMenuItem(
-                                text = {
-                                    Row(
-                                        verticalAlignment = Alignment.CenterVertically,
-                                        modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)
-                                    ) {
-                                        Text(
-                                            text = stringResource(R.string.word_wrap),
-                                            style = AppTypography.dropDownItem
-                                        )
-                                        Spacer(Modifier.weight(1f))
-                                        Switch(
-                                            checked = unwrapLogsText,
-                                            onCheckedChange = {
-                                                unwrapLogsText = !unwrapLogsText
-                                            }
-                                        )
-                                    }
-
-                                },
-                                onClick = { }
-                            )
-                        }
-                    }
+                IconButton(onClickShareLogs) {
+                    Icon(
+                        painterResource(id = R.drawable.ios_share_24px),
+                        contentDescription = "share"
+                    )
                 }
             }
         }
-    ) { innerPadding ->
-        Box(modifier = Modifier.padding(innerPadding)) {
-            if (logEntries.isEmpty()) EmptyLogListContent() else {
-                if (unwrapLogsText) LogListContent(logEntries, listState)
-                else UnWrapLogListContent(logEntries, listState)
+    )
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun BottomBar(
+    uiState: LogcatUiState,
+    logFiles: List<String>,
+    autoScrollEnabled: Boolean,
+    unwrapLogsText: Boolean,
+    onSelectLogFile: (String) -> Unit,
+    onClickDeleteLogFile: (String) -> Unit,
+    onToggleAutoScroll: (Boolean) -> Unit,
+    onToggleWrap: (Boolean) -> Unit,
+) {
+    var menuExpanded by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(false) }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(100.dp)
+            .background(MaterialTheme.colorScheme.surface)
+            .padding(horizontal = 12.dp),
+        verticalArrangement = Arrangement.Center
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            ExposedDropdownMenuBox(
+                expanded = expanded,
+                onExpandedChange = { expanded = !expanded },
+                modifier = Modifier.weight(1f)
+            ) {
+                TextField(
+                    value = uiState.selectedLogFile,
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text(stringResource(R.string.log_source)) },
+                    trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded) },
+                    colors = ExposedDropdownMenuDefaults.textFieldColors(),
+                    modifier = Modifier
+                        .menuAnchor(type = MenuAnchorType.PrimaryNotEditable, enabled = true)
+                        .fillMaxWidth(),
+                    maxLines = 1
+                )
+                ExposedDropdownMenu(
+                    expanded = expanded,
+                    onDismissRequest = { expanded = false },
+                    modifier = Modifier.width(320.dp)
+                ) {
+                    logFiles.forEach { fileName ->
+                        val (label, subText) = parseFileLabel(fileName)
+                        DropdownMenuItem(
+                            text = {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Spacer(Modifier.width(6.dp))
+                                    Box(
+                                        Modifier
+                                            .size(8.dp)
+                                            .clip(CircleShape)
+                                            .background(colorForFile(fileName))
+                                    )
+                                    Spacer(Modifier.width(16.dp))
+                                    Column {
+                                        Text(label, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                                        if (subText.isNotEmpty()) {
+                                            Text(
+                                                subText,
+                                                style = AppTypography.bodyLarge,
+                                                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                                                maxLines = 1,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                        }
+                                    }
+                                }
+                            },
+                            onClick = {
+                                onSelectLogFile(fileName)
+                                expanded = false
+                            }
+                        )
+                    }
+                }
+            }
+
+            Spacer(Modifier.width(12.dp))
+
+            Box {
+                IconButton(onClick = { menuExpanded = true }) {
+                    Icon(painterResource(R.drawable.more_vert_24px), contentDescription = "more")
+                }
+                DropdownMenu(
+                    expanded = menuExpanded,
+                    onDismissRequest = { menuExpanded = false },
+                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp)
+                ) {
+                    DropdownMenuItem(
+                        text = {
+                            Column {
+                                Text(stringResource(R.string.log_clear), style = AppTypography.dropDownItem)
+                                Spacer(Modifier.height(4.dp))
+                                Text(
+                                    text = stringResource(R.string.log_clear_desc),
+                                    style = AppTypography.labelMedium,
+                                    color = MaterialTheme.colorScheme.secondary
+                                )
+                            }
+                        },
+                        onClick = {
+                            onClickDeleteLogFile(":all")
+                            menuExpanded = false
+                        }
+                    )
+                    DropdownMenuItem(
+                        text = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(stringResource(R.string.auto_scroll), style = AppTypography.dropDownItem)
+                                Spacer(Modifier.weight(1f))
+                                Switch(checked = autoScrollEnabled, onCheckedChange = onToggleAutoScroll)
+                            }
+                        },
+                        onClick = {}
+                    )
+                    DropdownMenuItem(
+                        text = {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(stringResource(R.string.word_wrap), style = AppTypography.dropDownItem)
+                                Spacer(Modifier.weight(1f))
+                                Switch(checked = unwrapLogsText, onCheckedChange = onToggleWrap)
+                            }
+                        },
+                        onClick = {}
+                    )
+                }
             }
         }
     }
 }
+
 
 @Composable
 private fun parseFileLabel(fileName: String): Pair<String, String> {
@@ -321,11 +322,8 @@ private fun parseFileLabel(fileName: String): Pair<String, String> {
     } catch (_: Exception) {
         null
     }
-
-    val label = fileName
     val subLabel = if (prefix != null && timestamp != null) "$prefix - $timestamp" else ""
-
-    return label to subLabel
+    return fileName to subLabel
 }
 
 @Composable

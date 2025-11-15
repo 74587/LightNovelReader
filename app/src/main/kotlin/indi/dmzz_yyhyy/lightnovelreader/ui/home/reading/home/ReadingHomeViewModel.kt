@@ -14,6 +14,7 @@ import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataPath
 import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataRepository
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -28,26 +29,43 @@ class ReadingHomeViewModel @Inject constructor(
     private val _recentReadingUserReadingDataMap = mutableStateMapOf<Int, UserReadingData>()
     val recentReadingBookInformationMap: Map<Int, BookInformation> = _recentReadingBookInformationMap
     val recentReadingUserReadingDataMap: Map<Int, UserReadingData> = _recentReadingUserReadingDataMap
+    private val loadingIds = mutableSetOf<Int>()
 
     fun updateReadingBooks() {
         viewModelScope.launch(Dispatchers.IO) {
-            recentReadingBookIds = readingBooksUserData
+            val ids = readingBooksUserData
                 .getOrDefault(emptyList())
                 .reversed()
                 .filter { it != -1 }
+            withContext(Dispatchers.Main) {
+                recentReadingBookIds = ids
+            }
         }
     }
 
     fun loadBookInfo(id: Int) {
+        if (recentReadingBookInformationMap[id] != null &&
+            recentReadingUserReadingDataMap[id] != null) return
+
+        val canLoad = synchronized(loadingIds) {
+            if (loadingIds.contains(id)) false else { loadingIds.add(id); true }
+        }
+        if (!canLoad) return
+
         viewModelScope.launch(Dispatchers.IO) {
-            val info = bookRepository.getStateBookInformation(id, viewModelScope)
-            val userData = bookRepository.getStateUserReadingData(id, viewModelScope)
-            viewModelScope.launch(Dispatchers.Main) {
-                _recentReadingBookInformationMap[id] = info
-                _recentReadingUserReadingDataMap[id] = userData
+            try {
+                val info = bookRepository.getStateBookInformation(id, viewModelScope)
+                val userData = bookRepository.getStateUserReadingData(id, viewModelScope)
+                withContext(Dispatchers.Main) {
+                    _recentReadingBookInformationMap[id] = info
+                    _recentReadingUserReadingDataMap[id] = userData
+                }
+            } finally {
+                synchronized(loadingIds) { loadingIds.remove(id) }
             }
         }
     }
+
 
     fun removeFromReadingList(bookId: Int) {
         viewModelScope.launch(Dispatchers.IO) {

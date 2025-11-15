@@ -1,7 +1,9 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.navigation
 
+import androidx.annotation.Keep
 import kotlinx.serialization.Serializable
 
+@Keep
 object Route {
     @Serializable
     object Main {

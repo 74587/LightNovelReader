@@ -3,7 +3,6 @@ package indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.content.flip
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.Orientation
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -29,6 +28,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.paint
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
@@ -41,6 +41,8 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.TextStyle
@@ -50,6 +52,7 @@ import androidx.compose.ui.unit.Constraints
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.SettingState
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.content.BaseContentComponent
@@ -66,8 +69,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
-import androidx.compose.ui.platform.LocalResources
-import indi.dmzz_yyhyy.lightnovelreader.R
 
 @Composable
 fun FlipPageContentComponent(
@@ -115,6 +116,16 @@ private fun SimpleFlipPageTextComponent(
     val focusRequester = remember { FocusRequester() }
     val snackbarHostState = LocalSnackbarHost.current
 
+    val painter = rememberReaderBackgroundPainter(settingState)
+    val bgPainter = remember(settingState.enableBackgroundImage, settingState.backgroundImageDisplayMode) {
+        if (settingState.enableBackgroundImage &&
+            settingState.backgroundImageDisplayMode == MenuOptions.ReaderBgImageDisplayModeOptions.Loop
+        ) painter else null
+    }
+
+    val windowInfo = LocalWindowInfo.current
+    val screenWidthPx = windowInfo.containerSize.width.toFloat()
+
     fun lastPage(pagerState: PagerState) {
         if (pagerState.currentPage != 0) {
             scope.launch {
@@ -127,19 +138,18 @@ private fun SimpleFlipPageTextComponent(
         } else if (settingState.fastChapterChange && slippedTextList.isNotEmpty()) {
             uiState.loadLastChapter.invoke()
         } else {
-            scope.launch {
-                showSnackbar(
-                    coroutineScope = scope,
-                    hostState = snackbarHostState,
-                    duration = SnackbarDuration.Short,
-                    message = context.getString(R.string.reader_first_page),
-                    actionLabel = context.getString(R.string.previous_chapter)
-                ) {
-                    if (it == SnackbarResult.ActionPerformed) {
-                        onClickPrevChapter()
-                    }
+            showSnackbar(
+                coroutineScope = scope,
+                hostState = snackbarHostState,
+                duration = SnackbarDuration.Short,
+                message = context.getString(R.string.reader_first_page),
+                actionLabel = context.getString(R.string.previous_chapter)
+            ) {
+                if (it == SnackbarResult.ActionPerformed) {
+                    onClickPrevChapter()
                 }
             }
+
         }
     }
 
@@ -155,17 +165,15 @@ private fun SimpleFlipPageTextComponent(
         } else if (settingState.fastChapterChange && slippedTextList.isNotEmpty()) {
             uiState.loadNextChapter.invoke()
         } else {
-            scope.launch {
-                showSnackbar(
-                    coroutineScope = scope,
-                    hostState = snackbarHostState,
-                    duration = SnackbarDuration.Short,
-                    message = context.getString(R.string.reader_last_page),
-                    actionLabel = context.getString(R.string.next_chapter)
-                ) {
-                    if (it == SnackbarResult.ActionPerformed) {
-                        onClickNextChapter()
-                    }
+            showSnackbar(
+                coroutineScope = scope,
+                hostState = snackbarHostState,
+                duration = SnackbarDuration.Short,
+                message = context.getString(R.string.reader_last_page),
+                actionLabel = context.getString(R.string.next_chapter)
+            ) {
+                if (it == SnackbarResult.ActionPerformed) {
+                    onClickNextChapter()
                 }
             }
         }
@@ -244,95 +252,102 @@ private fun SimpleFlipPageTextComponent(
         var volumeJob by remember { mutableStateOf<Job?>(null) }
         val intervalMs = (settingState.volumeKeyContinuousFlipInterval * 1000).toLong()
 
-        HorizontalPager(
-            state = uiState.pagerState,
+        Box(
             modifier = modifier
-                .focusRequester(focusRequester)
-                .focusable()
-                .onKeyEvent { event ->
-                    if (!settingState.isUsingVolumeKeyFlip) {
-                        false
-                    } else if (event.key == Key.VolumeUp || event.key == Key.VolumeDown) {
-                        when (event.type) {
-                            KeyEventType.KeyDown -> {
-                                if (event.nativeKeyEvent.repeatCount == 0) {
-                                    if (event.key == Key.VolumeUp) lastPage(uiState.pagerState)
-                                    else nextPage(uiState.pagerState)
+                .fillMaxSize()
+                .then(
+                    if (bgPainter != null)
+                        Modifier.paint(
+                            painter = bgPainter,
+                            contentScale = ContentScale.Crop
+                        )
+                    else Modifier
+                )
+        ) {
+            HorizontalPager(
+                state = uiState.pagerState,
+                key = { it },
+                modifier = modifier
+                    .focusRequester(focusRequester)
+                    .focusable()
+                    .onKeyEvent { event ->
+                        if (!settingState.isUsingVolumeKeyFlip) {
+                            false
+                        } else if (event.key == Key.VolumeUp || event.key == Key.VolumeDown) {
+                            when (event.type) {
+                                KeyEventType.KeyDown -> {
+                                    if (event.nativeKeyEvent.repeatCount == 0) {
+                                        if (event.key == Key.VolumeUp) lastPage(uiState.pagerState)
+                                        else nextPage(uiState.pagerState)
 
-                                    if (intervalMs > 0) {
-                                        volumeJob?.cancel()
-                                        volumeJob = scope.launch {
-                                            while (isActive) {
-                                                delay(intervalMs)
-                                                if (event.key == Key.VolumeUp) lastPage(uiState.pagerState)
-                                                else nextPage(uiState.pagerState)
+                                        if (intervalMs > 0) {
+                                            volumeJob?.cancel()
+                                            volumeJob = scope.launch {
+                                                while (isActive) {
+                                                    delay(intervalMs)
+                                                    if (event.key == Key.VolumeUp) lastPage(uiState.pagerState)
+                                                    else nextPage(uiState.pagerState)
+                                                }
                                             }
                                         }
                                     }
+                                    true
                                 }
-                                true
+                                KeyEventType.KeyUp -> {
+                                    volumeJob?.cancel()
+                                    volumeJob = null
+                                    true
+                                }
+                                else -> false
                             }
-                            KeyEventType.KeyUp -> {
-                                volumeJob?.cancel()
-                                volumeJob = null
-                                true
-                            }
-                            else -> false
+                        } else {
+                            false
                         }
-                    } else {
-                        false
                     }
-                }
-                .draggable(
-                    enabled = settingState.isUsingFlipPage,
-                    interactionSource = remember { MutableInteractionSource() },
-                    orientation = Orientation.Vertical,
-                    state = rememberDraggableState {},
-                    onDragStopped = {
-                        if (it.absoluteValue > 60) changeIsImmersive.invoke()
-                    }
-                )
-                .pointerInput(
-                    settingState.isUsingClickFlipPage,
-                    settingState.isUsingFlipPage,
-                    settingState.flipAnime,
-                    settingState.fastChapterChange
-                ) {
-                    detectTapGestures(
-                        onTap = {
-                            if (settingState.isUsingFlipPage && settingState.isUsingClickFlipPage)
-                                if (it.x <= context.resources.displayMetrics.widthPixels * 0.425) lastPage(
-                                    uiState.pagerState
-                                )
-                                else nextPage(uiState.pagerState)
-                            else changeIsImmersive.invoke()
+                    .draggable(
+                        enabled = settingState.isUsingFlipPage,
+                        interactionSource = remember { MutableInteractionSource() },
+                        orientation = Orientation.Vertical,
+                        state = rememberDraggableState {},
+                        onDragStopped = {
+                            if (it.absoluteValue > 60) changeIsImmersive.invoke()
                         }
                     )
-                },
-        ) {
-            Box(Modifier.fillMaxSize()) {
-                if (settingState.enableBackgroundImage && settingState.backgroundImageDisplayMode == MenuOptions.ReaderBgImageDisplayModeOptions.Loop) {
-                    Image(
-                        modifier = Modifier.fillMaxSize(),
-                        painter = rememberReaderBackgroundPainter(settingState),
-                        contentDescription = null,
-                        contentScale = ContentScale.Crop
+                    .pointerInput(
+                        settingState.isUsingClickFlipPage,
+                        settingState.isUsingFlipPage,
+                        settingState.flipAnime,
+                        settingState.fastChapterChange
+                    ) {
+                        detectTapGestures(
+                            onTap = {
+                                if (settingState.isUsingFlipPage && settingState.isUsingClickFlipPage)
+                                    if (it.x <= screenWidthPx * 0.425)
+                                        lastPage(uiState.pagerState)
+                                    else
+                                        nextPage(uiState.pagerState)
+                                else changeIsImmersive.invoke()
+                            }
+                        )
+                    },
+            ) { page ->
+                Box(Modifier.fillMaxSize()) {
+                    BaseContentComponent(
+                        modifier = modifier
+                            .fillMaxSize()
+                            .padding(paddingValues),
+                        imageModifier = Modifier
+                            .fillMaxSize()
+                            .padding(paddingValues),
+                        text = slippedTextList.getOrNull(page) ?: "",
+                        fontSize = settingState.fontSize.sp,
+                        fontLineHeight = settingState.fontLineHeight.sp,
+                        fontWeight = FontWeight(settingState.fontWeigh.toInt()),
+                        fontFamily = rememberReaderFontFamily(settingState),
+                        color = readerTextColor(settingState),
+                        onZoomImage = onZoomImage
                     )
                 }
-
-                BaseContentComponent(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-                    imageModifier = Modifier.fillMaxSize().padding(paddingValues),
-                    text = slippedTextList.getOrNull(it) ?: "",
-                    fontSize = settingState.fontSize.sp,
-                    fontLineHeight = settingState.fontLineHeight.sp,
-                    fontWeight = FontWeight(settingState.fontWeigh.toInt()),
-                    fontFamily = rememberReaderFontFamily(settingState),
-                    color = readerTextColor(settingState),
-                    onZoomImage = onZoomImage
-                )
             }
         }
     }

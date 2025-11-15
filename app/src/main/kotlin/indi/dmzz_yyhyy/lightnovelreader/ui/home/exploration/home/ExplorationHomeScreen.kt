@@ -34,9 +34,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Snackbar
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -67,19 +64,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
-import androidx.navigation.NavController
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.exploration.ExplorationBooksRow
 import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
-import indi.dmzz_yyhyy.lightnovelreader.ui.SharedContentKey
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Cover
-import indi.dmzz_yyhyy.lightnovelreader.ui.components.LnrSnackbar
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Loading
-import indi.dmzz_yyhyy.lightnovelreader.ui.home.HomeNavigateBar
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.exploration.ExplorationScreen
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.exploration.ExplorationUiState
-import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.fadingEdge
+import indi.dmzz_yyhyy.lightnovelreader.utils.mainScaffoldPaddings
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -88,8 +81,6 @@ import kotlinx.coroutines.launch
 fun ExplorationHomeScreen(
     explorationUiState: ExplorationUiState,
     explorationHomeUiState: ExplorationHomeUiState,
-    selectedRoute: Any,
-    controller: NavController,
     onClickExpand: (String) -> Unit,
     onClickBook: (Int) -> Unit,
     init: () -> Unit,
@@ -104,31 +95,14 @@ fun ExplorationHomeScreen(
         init()
     }
     with(sharedTransitionScope) {
-        Scaffold(
-            topBar = {
-                TopBar(
-                    scrollBehavior = enterAlwaysScrollBehavior,
-                    onClickSearch = onClickSearch
-                )
-            },
-            bottomBar = {
-                HomeNavigateBar(
-                    modifier = Modifier.sharedElement(
-                        sharedTransitionScope.rememberSharedContentState(SharedContentKey.HomeNavigateBar),
-                        animatedVisibilityScope,
-                    ),
-                    selectedRoute = selectedRoute,
-                    controller = controller
-                )
-            },
-            snackbarHost = {
-                SnackbarHost(LocalSnackbarHost.current) {
-                    LnrSnackbar(it)
-                }
-            }
-        ) { paddingValues ->
+        Column(
+            modifier = Modifier.mainScaffoldPaddings()
+        ) {
+            TopBar(
+                scrollBehavior = enterAlwaysScrollBehavior,
+                onClickSearch = onClickSearch
+            )
             ExplorationScreen(
-                modifier = Modifier.padding(paddingValues),
                 refresh = refresh,
                 uiState = explorationUiState
             ) {

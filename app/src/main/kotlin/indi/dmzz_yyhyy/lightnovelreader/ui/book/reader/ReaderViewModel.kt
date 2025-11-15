@@ -97,36 +97,31 @@ class ReaderViewModel @Inject constructor(
         contentViewModel.changeChapter(chapterId)
     }
 
-    private fun saveReadingProgress(progress: Float) {
-        if (_uiState.contentUiState.readingChapterContent.isEmpty()) return
-        val chapterId = _uiState.contentUiState.readingChapterContent.id
-        if (progress.isNaN() || progress == 0f || bookId == -1) return
-        Log.v("ReaderViewModel", "$bookId/$chapterId Saving progress $progress. (${_uiState.contentUiState.readingChapterContent.title})")
+    private fun saveReadingProgress(chapterId: Int, progress: Float) {
+        if (progress.isNaN() || progress <= 0f || bookId == -1) return
+        val title = _uiState.contentUiState.readingChapterContent.title
         viewModelScope.launch(Dispatchers.IO) {
             val currentTime = LocalDateTime.now()
 
             bookRepository.updateUserReadingData(bookId) { userReadingData ->
-                val isChapterCompleted = progress > 0.945 &&
-                        !userReadingData.readCompletedChapterIds.contains(chapterId)
-
+                Log.v("ReaderViewModel", "$bookId/$chapterId Saving progress $progress. (${_uiState.contentUiState.readingChapterContent.title})")
+                val completed = progress >= 0.95f && !userReadingData.readCompletedChapterIds.contains(chapterId)
                 userReadingData.apply {
                     lastReadTime = currentTime
                     lastReadChapterId = chapterId
-                    lastReadChapterProgress = progress.coerceIn(0f..1f)
-                    val totalChapters = _uiState.bookVolumes.volumes.sumOf { it.chapters.size }
-                    readingProgress = if (totalChapters == 0) {
-                        readingProgress
-                    } else if (isChapterCompleted) {
-                        (userReadingData.readCompletedChapterIds.size + 1) / totalChapters.toFloat()
-                    } else {
-                        userReadingData.readCompletedChapterIds.size / totalChapters.toFloat()
+                    lastReadChapterTitle = title
+                    lastReadChapterProgress = progress.coerceIn(0f, 1f)
+                    val total = _uiState.bookVolumes.volumes.sumOf { it.chapters.size }
+                    if (total > 0) {
+                        val base = userReadingData.readCompletedChapterIds.size + if (completed) 1 else 0
+                        readingProgress = base / total.toFloat()
                     }
-                    if (isChapterCompleted)
-                        readCompletedChapterIds.add(chapterId)
+                    if (completed) readCompletedChapterIds.add(chapterId)
                 }
             }
         }
     }
+
 
     fun updateTotalReadingTime(bookId: Int, totalReadingTime: Int) {
         viewModelScope.launch(Dispatchers.IO) {

@@ -1,6 +1,5 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.book.reader
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context.BATTERY_SERVICE
 import android.os.BatteryManager
@@ -13,6 +12,7 @@ import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
@@ -92,6 +92,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.components.AnimatedTextLine
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.LnrSnackbar
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.RollingNumber
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.data.MenuOptions
+import indi.dmzz_yyhyy.lightnovelreader.utils.LocalClaimSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.rememberReaderBackgroundPainter
 import kotlinx.coroutines.delay
@@ -99,7 +100,6 @@ import kotlinx.coroutines.launch
 import java.time.LocalTime
 import java.util.Locale
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReaderScreen(
@@ -119,6 +119,21 @@ fun ReaderScreen(
     val context = LocalContext.current
     val backBlockMode = settingState.backBlockMode
     var lastBackPressTime: Long by remember { mutableLongStateOf(0) }
+    var showSettingsBottomSheet by remember { mutableStateOf(false) }
+    var showChapterSelectorBottomSheet by remember { mutableStateOf(false) }
+    var selectedVolumeId by remember { mutableIntStateOf(-1) }
+
+    val coroutineScope = rememberCoroutineScope()
+    val settingsBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+    val chaptersBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+
+    val claim = LocalClaimSnackbarHost.current
+
+    DisposableEffect(Unit) {
+        claim(true)
+        onDispose { claim(false) }
+    }
+
 
     BackHandler {
         when (backBlockMode) {
@@ -126,6 +141,7 @@ fun ReaderScreen(
                 isImmersive = false
                 onClickBackButton()
             }
+
             MenuOptions.ReaderBackBlockMode.DoublePress -> {
                 val now = System.currentTimeMillis()
                 if (now - lastBackPressTime < 1500) {
@@ -139,7 +155,8 @@ fun ReaderScreen(
                     ).show()
                 }
             }
-            MenuOptions.ReaderBackBlockMode.FullyBlocked -> { }
+
+            MenuOptions.ReaderBackBlockMode.FullyBlocked -> {}
         }
     }
     DisposableEffect(Unit) {
@@ -163,13 +180,31 @@ fun ReaderScreen(
             }
         },
         snackbarHost = {
-            Box {
-                SnackbarHost(LocalSnackbarHost.current) {
-                    LnrSnackbar(it, modifier = Modifier.padding(bottom = 56.dp).align(Alignment.TopCenter))
-                }
+            SnackbarHost(LocalSnackbarHost.current) { data ->
+                LnrSnackbar(
+                    data,
+                    modifier = Modifier
+                        .padding(bottom = animateDpAsState(if (isImmersive) 56.dp else 12.dp).value)
+                )
             }
         },
-        containerColor = if (settingState.backgroundColor.isUnspecified) colorScheme.background else settingState.backgroundColor
+        bottomBar = {
+            AnimatedVisibility(
+                visible = !isImmersive,
+                enter = expandVertically(),
+                exit = shrinkVertically()
+            ) {
+                BottomBar(
+                    chapterContent = readingScreenUiState.contentUiState.readingChapterContent,
+                    onClickPrevChapter = onClickPrevChapter,
+                    onClickNextChapter = onClickNextChapter,
+                    onClickSettings = { showSettingsBottomSheet = true },
+                    onClickChapterSelector = { showChapterSelectorBottomSheet = true },
+                )
+            }
+        },
+        containerColor = if (settingState.backgroundColor.isUnspecified) colorScheme.background else settingState.backgroundColor,
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { _ ->
         if (settingState.enableBackgroundImage) {
             Image(
@@ -179,6 +214,7 @@ fun ReaderScreen(
                 contentScale = ContentScale.Crop
             )
         }
+
         Content(
             isImmersive = isImmersive,
             readingScreenUiState = readingScreenUiState,
@@ -187,11 +223,51 @@ fun ReaderScreen(
             updateTotalReadingTime = updateTotalReadingTime,
             onClickPrevChapter = onClickPrevChapter,
             onClickNextChapter = onClickNextChapter,
-            onChangeChapter = onChangeChapter,
             onChangeIsImmersive = { isImmersive = !isImmersive },
-            onClickThemeSettings = onClickThemeSettings,
-            onZoomImage = onZoomImage
+            onZoomImage = onZoomImage,
         )
+    }
+    AnimatedVisibility(visible = showSettingsBottomSheet) {
+        SettingsBottomSheet(
+            sheetState = settingsBottomSheetState,
+            onDismissRequest = {
+                coroutineScope.launch { settingsBottomSheetState.hide() }.invokeOnCompletion {
+                    if (!settingsBottomSheetState.isVisible) {
+                        showSettingsBottomSheet = false
+                    }
+                }
+                showSettingsBottomSheet = false
+            },
+            settingState = settingState,
+            onClickThemeSettings = onClickThemeSettings
+        )
+    }
+
+    AnimatedVisibility(visible = showChapterSelectorBottomSheet) {
+        ChapterSelectorBottomSheet(
+            sheetState = chaptersBottomSheetState,
+            selectedVolumeId = selectedVolumeId,
+            bookVolumes = readingScreenUiState.bookVolumes,
+            readingChapterId = readingScreenUiState.contentUiState.readingChapterContent.id,
+            onDismissRequest = {
+                coroutineScope.launch { chaptersBottomSheetState.hide() }.invokeOnCompletion {
+                    if (!chaptersBottomSheetState.isVisible) {
+                        showChapterSelectorBottomSheet = false
+                    }
+                }
+                showChapterSelectorBottomSheet = false
+                selectedVolumeId =
+                    readingScreenUiState.bookVolumes.volumes.firstOrNull { volume -> volume.chapters.any { it.id == readingScreenUiState.contentUiState.readingChapterContent.id } }?.volumeId
+                        ?: -1
+            },
+            onClickChapter = onChangeChapter,
+            onChangeSelectedVolumeId = {
+                selectedVolumeId = it
+            }
+        )
+    }
+    LaunchedEffect(readingScreenUiState.bookVolumes) {
+        selectedVolumeId = readingScreenUiState.bookVolumes.volumes.firstOrNull { volume -> volume.chapters.any { it.id == readingScreenUiState.contentUiState.readingChapterContent.id } }?.volumeId ?: -1
     }
 }
 
@@ -205,21 +281,14 @@ fun Content(
     accumulateReadingTime: (Int, Int) -> Unit,
     onClickPrevChapter: () -> Unit,
     onClickNextChapter: () -> Unit,
-    onChangeChapter: (Int) -> Unit,
     onChangeIsImmersive: () -> Unit,
-    onClickThemeSettings: () -> Unit,
     onZoomImage: (String) -> Unit
 ) {
     val activity = LocalActivity.current as Activity
-    val coroutineScope = rememberCoroutineScope()
     val density = LocalDensity.current
-    val settingsBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
-    val chaptersBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
     var isRunning by remember { mutableStateOf(false) }
-    var showSettingsBottomSheet by remember { mutableStateOf(false) }
-    var showChapterSelectorBottomSheet by remember { mutableStateOf(false) }
+
     var totalReadingTime by remember { mutableIntStateOf(0) }
-    var selectedVolumeId by remember { mutableIntStateOf(-1) }
 
     LaunchedEffect(isImmersive) {
         if (!settingState.enableHideStatusBar) return@LaunchedEffect
@@ -248,9 +317,6 @@ fun Content(
             }
         }
 
-    }
-    LaunchedEffect(readingScreenUiState.bookVolumes) {
-        selectedVolumeId = readingScreenUiState.bookVolumes.volumes.firstOrNull { volume -> volume.chapters.any { it.id == readingScreenUiState.contentUiState.readingChapterContent.id } }?.volumeId ?: -1
     }
     LifecycleResumeEffect(Unit) {
         isRunning = true
@@ -366,59 +432,6 @@ fun Content(
                     readingChapterProgress = readingScreenUiState.contentUiState.readingProgress,
                 )
             }
-        }
-        AnimatedVisibility(
-            modifier = Modifier.align(Alignment.BottomCenter),
-            visible = !isImmersive,
-            enter = expandVertically(),
-            exit = shrinkVertically()
-        ) {
-            BottomBar(
-                chapterContent = readingScreenUiState.contentUiState.readingChapterContent,
-                onClickPrevChapter = onClickPrevChapter,
-                onClickNextChapter = onClickNextChapter,
-                onClickSettings = { showSettingsBottomSheet = true },
-                onClickChapterSelector = { showChapterSelectorBottomSheet = true },
-            )
-        }
-        AnimatedVisibility(visible = showSettingsBottomSheet) {
-            SettingsBottomSheet(
-                sheetState = settingsBottomSheetState,
-                onDismissRequest = {
-                    coroutineScope.launch { settingsBottomSheetState.hide() }.invokeOnCompletion {
-                        if (!settingsBottomSheetState.isVisible) {
-                            showSettingsBottomSheet = false
-                        }
-                    }
-                    showSettingsBottomSheet = false
-                },
-                settingState = settingState,
-                onClickThemeSettings = onClickThemeSettings
-            )
-        }
-
-        AnimatedVisibility(visible = showChapterSelectorBottomSheet) {
-            ChapterSelectorBottomSheet(
-                sheetState = chaptersBottomSheetState,
-                selectedVolumeId = selectedVolumeId,
-                bookVolumes = readingScreenUiState.bookVolumes,
-                readingChapterId = readingScreenUiState.contentUiState.readingChapterContent.id,
-                onDismissRequest = {
-                    coroutineScope.launch { chaptersBottomSheetState.hide() }.invokeOnCompletion {
-                        if (!chaptersBottomSheetState.isVisible) {
-                            showChapterSelectorBottomSheet = false
-                        }
-                    }
-                    showChapterSelectorBottomSheet = false
-                    selectedVolumeId =
-                        readingScreenUiState.bookVolumes.volumes.firstOrNull { volume -> volume.chapters.any { it.id == readingScreenUiState.contentUiState.readingChapterContent.id } }?.volumeId
-                            ?: -1
-                },
-                onClickChapter = onChangeChapter,
-                onChangeSelectedVolumeId = {
-                    selectedVolumeId = it
-                }
-            )
         }
     }
 }

@@ -33,7 +33,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.RadioButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
@@ -94,14 +93,11 @@ fun ThemeScreen(
     onClickChangeBackgroundColor: () -> Unit
 ) {
     val context = LocalContext.current
-    Scaffold(
-        topBar = {
-            TopBar(onClickBack)
-        },
+    Column(
+        modifier = Modifier.fillMaxSize()
     ) {
-        LazyColumn (
-            modifier = Modifier.padding(it)
-        ) {
+        TopBar(onClickBack)
+        LazyColumn {
             item {
                 DarkModeSettings(themeSettingState)
             }

@@ -152,7 +152,7 @@
     <string name="settings_theme_bg_image_built_in_desc">牛皮纸</string>
     <string name="settings_theme_bg_image_custom">自定义</string>
     <string name="settings_theme_bg_display_mode">背景显示模式</string>
-    <string name="settings_theme_bg_display_mode_desc">指定自定义背景图片显示模式</string>
+    <string name="settings_theme_bg_display_mode_desc">指定自定义背景图片显示模式（仅在滚动模式生效）</string>
     <string name="settings_theme_bg_color">背景颜色</string>
     <string name="settings_theme_bg_color_desc">自定义阅读器背景色</string>
     <string name="text_settings">文本</string>
@@ -216,7 +216,7 @@
     <string name="bookshelf_new_title">新建书架</string>
     <string name="bookshelf_edit_title">编辑书架</string>
     <string name="changelog">新版变化</string>
-    <string name="recent_reads">最近读过 (%d)</string>
+    <string name="recent_reads">最近阅读 (%d)</string>
     <string name="search_no_results">未搜索到内容</string>
     <string name="search_no_results_desc">检查拼写，或换一个关键词重试</string>
     <string name="search_results_title">\"%1$s\" 的搜索结果 (%2$d%3$s)</string>

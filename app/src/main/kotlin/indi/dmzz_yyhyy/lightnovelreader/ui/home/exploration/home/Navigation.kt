@@ -31,14 +31,13 @@ fun NavGraphBuilder.explorationHomeDestination(sharedTransitionScope: SharedTran
             changePage = explorationHomeViewModel::changePage,
             onClickSearch = navController::navigateToSearchDestination,
             refresh = explorationHomeViewModel::refresh,
-            selectedRoute = Route.Main.Exploration,
-            controller = navController,
             animatedVisibilityScope = this,
             sharedTransitionScope = sharedTransitionScope
         )
     }
 }
 
+@Suppress("unused")
 fun NavController.navigateToExplorationHomeDestination() {
     if (!this.isResumed()) return
     navigate(Route.Main.Exploration.Home)

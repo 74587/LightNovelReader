@@ -8,15 +8,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -27,27 +25,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import androidx.work.OneTimeWorkRequest
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
-import indi.dmzz_yyhyy.lightnovelreader.ui.SharedContentKey
-import indi.dmzz_yyhyy.lightnovelreader.ui.home.HomeNavigateBar
+import indi.dmzz_yyhyy.lightnovelreader.ui.components.SectionHeader
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.AboutSettingsList
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.DataSettingsList
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.DisplaySettingsList
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.ReadingSettingsList
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.UpdatesSettingsList
-import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
+import indi.dmzz_yyhyy.lightnovelreader.utils.mainScaffoldPaddings
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun SettingsScreen(
-    controller: NavController,
-    selectedRoute: Any,
     settingState: SettingState,
     updatePhase: String,
     checkUpdate: () -> Unit,
@@ -63,24 +55,12 @@ fun SettingsScreen(
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     with(sharedTransitionScope) {
-        Scaffold(
-            topBar = { TopBar(scrollBehavior) },
-            bottomBar = {
-                HomeNavigateBar(
-                    Modifier.sharedElement(
-                        sharedTransitionScope.rememberSharedContentState(SharedContentKey.HomeNavigateBar),
-                        animatedVisibilityScope = animatedVisibilityScope
-                    ),
-                    selectedRoute,
-                    controller
-                )
-            },
-            snackbarHost = {
-                SnackbarHost(LocalSnackbarHost.current)
-            }
+        Column(
+            modifier = Modifier.mainScaffoldPaddings()
         ) {
+            TopBar(scrollBehavior)
             LazyColumn (
-                Modifier.padding(it)
+                Modifier.fillMaxSize()
             ) {
                 item {
                     SettingsCategory(
@@ -173,13 +153,9 @@ fun SettingsCategory(
     content: @Composable ColumnScope.() -> Unit
 ) {
     title?.let {
-        Text(
-            modifier = Modifier.padding(horizontal = 24.dp)
-                .padding(vertical = 12.dp),
-            text = it,
-            color = colorScheme.onSurfaceVariant,
-            style = AppTypography.titleSmall,
-            fontWeight = FontWeight.W600
+        SectionHeader(
+            modifier = Modifier.padding(horizontal = 24.dp, vertical = 10.dp),
+            text = it
         )
     }
 

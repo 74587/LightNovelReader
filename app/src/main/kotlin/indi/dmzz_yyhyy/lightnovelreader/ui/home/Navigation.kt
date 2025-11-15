@@ -11,9 +11,9 @@ import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.navigation
 import indi.dmzz_yyhyy.lightnovelreader.R
@@ -63,99 +63,52 @@ fun NavController.navigateToHomeNavigation() {
 @OptIn(ExperimentalAnimationGraphicsApi::class)
 @Composable
 fun HomeNavigateBar(
-    modifier: Modifier = Modifier,
-    selectedRoute: Any,
+    selectedRoute: Any?,
     controller: NavController,
 ) {
-    fun <T : Any> coverNavigate(route: T) {
-        controller.popBackStack()
-        controller.navigate(route)
+    fun <T: Any> NavController.navigateSingleTopTo(route: T) {
+        navigate(route) {
+            launchSingleTop = true
+            restoreState = true
+            val start = graph.findStartDestination().id
+            popUpTo(start) { saveState = true }
+        }
     }
 
-    NavigationBar(modifier) {
+    val isReading = selectedRoute is Route.Main.Reading
+    val isBookshelf = selectedRoute is Route.Main.Bookshelf
+    val isExploration = selectedRoute is Route.Main.Exploration
+    val isSettings = selectedRoute is Route.Main.Settings
+
+    val avdReading = AnimatedImageVector.animatedVectorResource(R.drawable.animated_book)
+    val avdShelf = AnimatedImageVector.animatedVectorResource(R.drawable.animated_bookshelf)
+    val avdExplore = AnimatedImageVector.animatedVectorResource(R.drawable.animated_exploration)
+    val avdSettings = AnimatedImageVector.animatedVectorResource(R.drawable.animated_settings)
+
+    NavigationBar {
         NavigationBarItem(
-            selected = selectedRoute is Route.Main.Reading,
-            onClick = {
-                if (selectedRoute !is Route.Main.Reading) coverNavigate(Route.Main.Reading)
-            },
-            icon = {
-                Icon(
-                    painter = rememberAnimatedVectorPainter(
-                        AnimatedImageVector.animatedVectorResource(R.drawable.animated_book),
-                        selectedRoute is Route.Main.Reading
-                    ),
-                    contentDescription = null
-                )
-            },
-            label = {
-                Text(
-                    text = stringResource(R.string.nav_reading),
-                    maxLines = 1
-                )
-            }
+            selected = isReading,
+            onClick = { controller.navigateSingleTopTo(Route.Main.Reading) },
+            icon = { Icon(painter = rememberAnimatedVectorPainter(avdReading, isReading), null) },
+            label = { Text(stringResource(R.string.nav_reading), maxLines = 1) }
         )
         NavigationBarItem(
-            selected = selectedRoute is Route.Main.Bookshelf,
-            onClick = {
-                if (selectedRoute !is Route.Main.Bookshelf) coverNavigate(Route.Main.Bookshelf)
-            },
-            icon = {
-                Icon(
-                    painter = rememberAnimatedVectorPainter(
-                        AnimatedImageVector.animatedVectorResource(R.drawable.animated_bookshelf),
-                        selectedRoute is Route.Main.Bookshelf
-                    ),
-                    contentDescription = null
-                )
-            },
-            label = {
-                Text(
-                    text = stringResource(R.string.nav_bookshelf),
-                    maxLines = 1
-                )
-            }
+            selected = isBookshelf,
+            onClick = { controller.navigateSingleTopTo(Route.Main.Bookshelf) },
+            icon = { Icon(painter = rememberAnimatedVectorPainter(avdShelf, isBookshelf), null) },
+            label = { Text(stringResource(R.string.nav_bookshelf), maxLines = 1) }
         )
         NavigationBarItem(
-            selected = selectedRoute is Route.Main.Exploration,
-            onClick = {
-                if (selectedRoute !is Route.Main.Exploration) coverNavigate(Route.Main.Exploration)
-            },
-            icon = {
-                Icon(
-                    painter = rememberAnimatedVectorPainter(
-                        AnimatedImageVector.animatedVectorResource(R.drawable.animated_exploration),
-                        selectedRoute is Route.Main.Exploration
-                    ),
-                    contentDescription = null
-                )
-            },
-            label = {
-                Text(
-                    text = stringResource(R.string.nav_explore),
-                    maxLines = 1
-                )
-            }
+            selected = isExploration,
+            onClick = { controller.navigateSingleTopTo(Route.Main.Exploration) },
+            icon = { Icon(painter = rememberAnimatedVectorPainter(avdExplore, isExploration), null) },
+            label = { Text(stringResource(R.string.nav_explore), maxLines = 1) }
         )
         NavigationBarItem(
-            selected = selectedRoute is Route.Main.Settings,
-            onClick = {
-                if (selectedRoute !is Route.Main.Settings) coverNavigate(Route.Main.Settings)
-            },
-            icon = {
-                Icon(
-                    painter = rememberAnimatedVectorPainter(
-                        AnimatedImageVector.animatedVectorResource(R.drawable.animated_settings),
-                        selectedRoute is Route.Main.Settings
-                    ),
-                    contentDescription = null
-                )
-            },
-            label = {
-                Text(
-                    text = stringResource(R.string.nav_settings),
-                    maxLines = 1
-                )
-            }
+            selected = isSettings,
+            onClick = { controller.navigateSingleTopTo(Route.Main.Settings) },
+            icon = { Icon(painter = rememberAnimatedVectorPainter(avdSettings, isSettings), null) },
+            label = { Text(stringResource(R.string.nav_settings), maxLines = 1) }
         )
     }
 }

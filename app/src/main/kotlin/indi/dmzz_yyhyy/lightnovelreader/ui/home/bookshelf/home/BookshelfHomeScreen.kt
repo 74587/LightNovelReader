@@ -48,9 +48,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.ScrollableTabRow
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
@@ -88,7 +86,6 @@ import androidx.core.content.FileProvider
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.NavController
 import androidx.work.ExistingWorkPolicy
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkInfo
@@ -102,12 +99,10 @@ import indi.dmzz_yyhyy.lightnovelreader.data.book.BookInformation
 import indi.dmzz_yyhyy.lightnovelreader.data.book.BookVolumes
 import indi.dmzz_yyhyy.lightnovelreader.data.work.SaveBookshelfWork
 import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
-import indi.dmzz_yyhyy.lightnovelreader.ui.SharedContentKey
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.AnimatedText
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.BookCardItem
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.EmptyPage
-import indi.dmzz_yyhyy.lightnovelreader.ui.home.HomeNavigateBar
-import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
+import indi.dmzz_yyhyy.lightnovelreader.utils.mainScaffoldPaddings
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
@@ -117,8 +112,6 @@ import java.io.File
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun BookshelfHomeScreen(
-    controller: NavController,
-    selectedRoute: Any,
     init: () -> Unit,
     changePage: (Int) -> Unit,
     changeBookSelectState: (Int) -> Unit,
@@ -180,90 +173,75 @@ fun BookshelfHomeScreen(
     }
 
     with(sharedTransitionScope) {
-        Scaffold(
-            topBar = {
-                TopBar(
-                    scrollBehavior = enterAlwaysScrollBehavior,
-                    backgroundColor = animatedBackgroundColor,
-                    selectMode = uiState.selectMode,
-                    uiState = uiState,
-                    onClickCreate = onClickCreate,
-                    onClickSearch = {  },
-                    onClickEdit = { onClickEdit(uiState.selectedBookshelfId) },
-                    onClickDisableSelectMode = onClickDisableSelectMode,
-                    onClickSelectAll = onClickSelectAll,
-                    onClickPin = onClickPin,
-                    onClickRemove = onClickRemove,
-                    onClickBookmark = onClickMarkSelectedBooks,
-                    onClickShareBookshelf = {
-                        val uri = FileProvider.getUriForFile(
-                            context,
-                            "${context.applicationInfo.processName}.provider",
-                            File(context.cacheDir, "LightNovelReaderBookshelfData.lnr")
-                        )
-                        val workRequest = OneTimeWorkRequestBuilder<SaveBookshelfWork>()
-                            .setInputData(
-                                workDataOf(
-                                    "bookshelfId" to uiState.selectedBookshelfId,
-                                    "uri" to uri.toString(),
-                                )
+        Column(
+            modifier = Modifier.mainScaffoldPaddings()
+        ) {
+            TopBar(
+                scrollBehavior = enterAlwaysScrollBehavior,
+                backgroundColor = animatedBackgroundColor,
+                selectMode = uiState.selectMode,
+                uiState = uiState,
+                onClickCreate = onClickCreate,
+                onClickSearch = {  },
+                onClickEdit = { onClickEdit(uiState.selectedBookshelfId) },
+                onClickDisableSelectMode = onClickDisableSelectMode,
+                onClickSelectAll = onClickSelectAll,
+                onClickPin = onClickPin,
+                onClickRemove = onClickRemove,
+                onClickBookmark = onClickMarkSelectedBooks,
+                onClickShareBookshelf = {
+                    val uri = FileProvider.getUriForFile(
+                        context,
+                        "${context.applicationInfo.processName}.provider",
+                        File(context.cacheDir, "LightNovelReaderBookshelfData.lnr")
+                    )
+                    val workRequest = OneTimeWorkRequestBuilder<SaveBookshelfWork>()
+                        .setInputData(
+                            workDataOf(
+                                "bookshelfId" to uiState.selectedBookshelfId,
+                                "uri" to uri.toString(),
                             )
-                            .build()
-                        workManager.enqueueUniqueWork(
-                            uri.toString(),
-                            ExistingWorkPolicy.KEEP,
-                            workRequest
                         )
-                        coroutineScope.launch(Dispatchers.IO) {
-                            workManager.getWorkInfoByIdFlow(workRequest.id).collect {
-                                when (it?.state) {
-                                    WorkInfo.State.SUCCEEDED -> {
-                                        ShareCompat.IntentBuilder(context)
-                                            .setType("application/zip")
-                                            .setSubject("分享文件")
-                                            .addStream(uri)
-                                            .setChooserTitle("分享书架")
-                                            .startChooser()
-                                    }
-
-                                    else -> return@collect
+                        .build()
+                    workManager.enqueueUniqueWork(
+                        uri.toString(),
+                        ExistingWorkPolicy.KEEP,
+                        workRequest
+                    )
+                    coroutineScope.launch(Dispatchers.IO) {
+                        workManager.getWorkInfoByIdFlow(workRequest.id).collect {
+                            when (it?.state) {
+                                WorkInfo.State.SUCCEEDED -> {
+                                    ShareCompat.IntentBuilder(context)
+                                        .setType("application/zip")
+                                        .setSubject("分享文件")
+                                        .addStream(uri)
+                                        .setChooserTitle("分享书架")
+                                        .startChooser()
                                 }
+
+                                else -> return@collect
                             }
                         }
-                    },
-                    onClickSaveThisBookshelf = {
-                        createBookshelfDataFile(
-                            uiState.selectedBookshelf.name,
-                            saveThisBookshelfLauncher
-                        )
-                    },
-                    onClickSaveAllBookshelf = {
-                        createBookshelfDataFile(
-                            "bookshelves",
-                            saveAllBookshelfLauncher
-                        )
-                    },
-                    onClickImportBookshelf = { selectBookshelfDataFile(importBookshelfLauncher) }
-                )
-            },
-            bottomBar = {
-                HomeNavigateBar(
-                    modifier = Modifier.sharedElement(
-                        sharedTransitionScope.rememberSharedContentState(SharedContentKey.HomeNavigateBar),
-                        animatedVisibilityScope = animatedVisibilityScope
-                    ),
-                    selectedRoute = selectedRoute,
-                    controller = controller
-                )
-            },
-            snackbarHost = {
-                SnackbarHost(LocalSnackbarHost.current)
-            }
-        ) { paddingValues ->
+                    }
+                },
+                onClickSaveThisBookshelf = {
+                    createBookshelfDataFile(
+                        uiState.selectedBookshelf.name,
+                        saveThisBookshelfLauncher
+                    )
+                },
+                onClickSaveAllBookshelf = {
+                    createBookshelfDataFile(
+                        "bookshelves",
+                        saveAllBookshelfLauncher
+                    )
+                },
+                onClickImportBookshelf = { selectBookshelfDataFile(importBookshelfLauncher) }
+            )
             Column(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(paddingValues)
             ) {
                 AnimatedVisibility(
                     visible = !uiState.selectMode,
@@ -424,29 +402,29 @@ fun BookshelfHomeScreen(
                             )
                         }
                         if (uiState.pinnedExpanded) {
-                                items(
-                                    items = pinnedIds,
-                                    key = { "pinned_$it" }
-                                ) { id ->
-                                    val infoFlow = remember(id) { getBookInfoFlow(id) }
-                                    val info by infoFlow.collectAsStateWithLifecycle()
+                            items(
+                                items = pinnedIds,
+                                key = { "pinned_$it" }
+                            ) { id ->
+                                val infoFlow = remember(id) { getBookInfoFlow(id) }
+                                val info by infoFlow.collectAsStateWithLifecycle()
 
-                                    BookCardItem(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 16.dp)
-                                            .padding(bottom = 12.dp),
-                                        bookInformation = info,
-                                        selected = uiState.selectedBookIds.contains(id),
-                                        collected = false,
-                                        onClick = {
-                                            if (!uiState.selectMode) onClickBook(id)
-                                            else changeBookSelectState(id)
-                                        },
-                                        onLongPress = { onLongPress(id) },
-                                        shimmer = shimmerInstance
-                                    )
-                                }
+                                BookCardItem(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 16.dp)
+                                        .padding(bottom = 12.dp),
+                                    bookInformation = info,
+                                    selected = uiState.selectedBookIds.contains(id),
+                                    collected = false,
+                                    onClick = {
+                                        if (!uiState.selectMode) onClickBook(id)
+                                        else changeBookSelectState(id)
+                                    },
+                                    onLongPress = { onLongPress(id) },
+                                    shimmer = shimmerInstance
+                                )
+                            }
                         }
                     }
 

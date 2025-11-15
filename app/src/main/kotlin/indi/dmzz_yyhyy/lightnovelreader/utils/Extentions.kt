@@ -1,5 +1,6 @@
 package indi.dmzz_yyhyy.lightnovelreader.utils
 
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -16,6 +17,9 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hierarchy
+import indi.dmzz_yyhyy.lightnovelreader.ui.LocalScaffoldPadding
+import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import java.util.Collections
@@ -127,4 +131,25 @@ fun isInMainNavigation(from: NavDestination, to: NavDestination): Boolean {
 
     val toMatch = homeRoutes.any(toRoute::contains)
     return toMatch
+}
+
+fun NavDestination?.currentMainRoute(): Any? {
+    if (this == null) return null
+    return hierarchy.firstNotNullOfOrNull { dest ->
+        when (dest.route) {
+            Route.Main.Reading.Home::class.qualifiedName -> Route.Main.Reading
+            Route.Main.Bookshelf.Home::class.qualifiedName -> Route.Main.Bookshelf
+            Route.Main.Exploration.Home::class.qualifiedName -> Route.Main.Exploration
+            Route.Main.Settings.Home::class.qualifiedName -> Route.Main.Settings
+            else -> null
+        }
+    }
+}
+
+@Composable
+fun Modifier.mainScaffoldPaddings(): Modifier {
+    val localPadding = LocalScaffoldPadding.current
+
+    return this
+        .padding(localPadding)
 }

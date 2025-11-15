@@ -22,8 +22,6 @@ fun NavGraphBuilder.readingHomeDestination(sharedTransitionScope: SharedTransiti
         val parentEntry = remember(entry) { navController.getBackStackEntry(Route.Main) }
         val readingViewModel = hiltViewModel<ReadingHomeViewModel>(parentEntry)
         ReadingScreen(
-            controller = navController,
-            selectedRoute = Route.Main.Reading,
             updateReadingBooks = readingViewModel::updateReadingBooks,
             recentReadingBookIds = readingViewModel.recentReadingBookIds,
             recentReadingUserReadingDataMap = readingViewModel.recentReadingUserReadingDataMap,
@@ -35,7 +33,6 @@ fun NavGraphBuilder.readingHomeDestination(sharedTransitionScope: SharedTransiti
                 navController.navigateToBookReaderDestination(bookId, chapterId, context)
             },
             sharedTransitionScope = sharedTransitionScope,
-            animatedVisibilityScope = this,
             onClickStats = navController::navigateToReadingStatsDestination,
             loadBookInfo = readingViewModel::loadBookInfo,
             onRemoveBook = readingViewModel::removeFromReadingList

@@ -1,5 +1,6 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui
 
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.material3.ColorScheme
 import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.staticCompositionLocalOf
@@ -21,3 +22,5 @@ val LocalLightColorScheme = staticCompositionLocalOf<ColorScheme> {
 val LocalDarkColorScheme = staticCompositionLocalOf<ColorScheme> {
     error("No Dark ColorScheme provided")
 }
+
+val LocalScaffoldPadding = compositionLocalOf { PaddingValues() }

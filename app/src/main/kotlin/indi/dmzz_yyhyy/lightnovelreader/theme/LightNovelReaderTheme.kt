@@ -12,12 +12,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
-import androidx.core.graphics.drawable.toDrawable
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalAppTheme
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalDarkColorScheme
@@ -40,13 +36,13 @@ fun LightNovelReaderTheme(
 ) {
     val context = LocalContext.current
     val view = LocalView.current
-    val isSystemInDarkTheme = isSystemInDarkTheme()
+    val systemDark = isSystemInDarkTheme()
 
-    val isDark = remember(darkMode) {
+    val isDark = remember(darkMode, systemDark) {
         when (darkMode) {
             "Enabled" -> true
             "Disabled" -> false
-            else -> isSystemInDarkTheme
+            else -> systemDark
         }
     }
 
@@ -64,7 +60,6 @@ fun LightNovelReaderTheme(
             dynamicDarkColorScheme(context)
         else when (darkThemeName) {
             "dark_obsidian" -> DarkObsidianColorScheme
-            "dark_default" -> DefaultDarkColorScheme
             else -> DefaultDarkColorScheme
         }
     }
@@ -77,20 +72,6 @@ fun LightNovelReaderTheme(
 
     SideEffect {
         val window = (view.context as Activity).window
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-
-        window.setBackgroundDrawable(colorScheme.background.toArgb().toDrawable())
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            @Suppress("DEPRECATION")
-            window.statusBarColor = Color.Transparent.toArgb()
-        } else {
-            window.decorView.setOnApplyWindowInsetsListener { v, insets ->
-                v.setPadding(0, 0, 0, 0)
-                insets
-            }
-        }
-
         WindowInsetsControllerCompat(window, view).apply {
             isAppearanceLightStatusBars = !isDark
             isAppearanceLightNavigationBars = !isDark

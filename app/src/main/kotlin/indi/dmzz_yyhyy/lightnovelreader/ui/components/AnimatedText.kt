@@ -1,6 +1,11 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.components
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.core.Easing
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.animation.togetherWith
@@ -9,13 +14,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
@@ -53,9 +54,6 @@ fun AnimatedText(
     onTextLayout: ((TextLayoutResult) -> Unit)? = null,
     style: TextStyle = LocalTextStyle.current
 ) {
-    var currentText by remember { mutableStateOf(text) }
-    SideEffect{ currentText = text }
-
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
@@ -96,11 +94,6 @@ fun AnimatedText(
     }
 }
 
-/**
- * 动画文本控件
- *
- * 区别于 AnimatedText, 该控件在文本变化时，提供整行的滑动动画效果
- */
 @Composable
 fun AnimatedTextLine(
     text: String,
@@ -119,43 +112,42 @@ fun AnimatedTextLine(
     maxLines: Int = Int.MAX_VALUE,
     minLines: Int = 1,
     onTextLayout: ((TextLayoutResult) -> Unit)? = null,
-    style: TextStyle = LocalTextStyle.current
+    style: TextStyle = LocalTextStyle.current,
+    durationMillis: Int = 220,
+    easing: Easing = FastOutSlowInEasing,
 ) {
-    var currentText by remember { mutableStateOf(text) }
-    SideEffect { currentText = text }
-
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        AnimatedContent(
-            targetState = currentText,
-            transitionSpec = {
-                (slideInVertically(initialOffsetY = { it })).togetherWith(
-                    slideOutVertically(targetOffsetY = { -it })
-                )
-            },
-            label = ""
-        ) { text ->
-            Text(
-                text = text,
-                modifier = modifier,
-                style = style,
-                color = color,
-                softWrap = softWrap,
-                fontSize = fontSize,
-                fontStyle = fontStyle,
-                fontWeight = fontWeight,
-                fontFamily = fontFamily,
-                letterSpacing = letterSpacing,
-                textDecoration = textDecoration,
-                textAlign = textAlign,
-                lineHeight = lineHeight,
-                overflow = overflow,
-                maxLines = maxLines,
-                minLines = minLines,
-                onTextLayout = onTextLayout
-            )
-        }
+    AnimatedContent(
+        targetState = text,
+        transitionSpec = {
+            slideInVertically(
+                animationSpec = tween(durationMillis, easing = easing)
+            ) { fullHeight -> fullHeight } +
+                    fadeIn(animationSpec = tween(durationMillis / 2)) togetherWith
+                    slideOutVertically(
+                        animationSpec = tween(durationMillis, easing = easing)
+                    ) { fullHeight -> -fullHeight } +
+                    fadeOut(animationSpec = tween(durationMillis / 2))
+        },
+        modifier = modifier.clipToBounds(),
+        label = "AnimatedTextLine"
+    ) { target ->
+        Text(
+            text = target,
+            style = style,
+            color = color,
+            softWrap = softWrap,
+            fontSize = fontSize,
+            fontStyle = fontStyle,
+            fontWeight = fontWeight,
+            fontFamily = fontFamily,
+            letterSpacing = letterSpacing,
+            textDecoration = textDecoration,
+            textAlign = textAlign,
+            lineHeight = lineHeight,
+            overflow = overflow,
+            maxLines = maxLines,
+            minLines = minLines,
+            onTextLayout = onTextLayout
+        )
     }
 }

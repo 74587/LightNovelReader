@@ -154,7 +154,7 @@
     <string name="settings_theme_bg_image_built_in_desc">Kraft Paper</string>
     <string name="settings_theme_bg_image_custom">Custom</string>
     <string name="settings_theme_bg_display_mode">Background Display Mode</string>
-    <string name="settings_theme_bg_display_mode_desc">Set how custom background images are displayed</string>
+    <string name="settings_theme_bg_display_mode_desc">Set how custom background images are displayed (effective in scroll mode only)</string>
     <string name="settings_theme_bg_color">Background Color</string>
     <string name="settings_theme_bg_color_desc">Customize reader background color</string>
     <string name="text_settings">Text</string>

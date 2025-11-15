@@ -59,8 +59,6 @@ fun NavGraphBuilder.settingsDestination(sharedTransitionScope: SharedTransitionS
         val updatesAvailableDialogViewModel = hiltViewModel<UpdatesAvailableDialogViewModel>()
         val updatePhase by updatesAvailableDialogViewModel.updatePhaseFlow.collectAsState("Not Checked")
         SettingsScreen(
-            controller = navController,
-            selectedRoute = Route.Main.Settings,
             updatePhase = updatePhase,
             settingState = settingsViewModel.settingState,
             checkUpdate = updatesAvailableDialogViewModel::checkUpdate,

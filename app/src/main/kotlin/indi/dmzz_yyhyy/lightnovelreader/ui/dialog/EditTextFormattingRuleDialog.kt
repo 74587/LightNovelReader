@@ -4,6 +4,8 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.OutlinedTextField
@@ -57,6 +59,9 @@ fun EditTextFormattingRuleDialog(
         },
         text = {
             Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState()),
                 verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 OutlinedTextField(
@@ -84,9 +89,7 @@ fun EditTextFormattingRuleDialog(
                 SwitchChip(
                     label = stringResource(R.string.rule_is_regex),
                     selected = rule.isRegex,
-                    onClick = {
-                        onIsRegexChange(!rule.isRegex)
-                    }
+                    onClick = { onIsRegexChange(!rule.isRegex) }
                 )
             }
         },
@@ -96,9 +99,7 @@ fun EditTextFormattingRuleDialog(
             }
         },
         dismissButton = {
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (rule.id != -1)
                     TextButton(onClick = onDelete) {
                         Text(text = "删除规则", color = colorScheme.error)

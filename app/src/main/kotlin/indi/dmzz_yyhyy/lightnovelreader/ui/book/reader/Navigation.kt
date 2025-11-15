@@ -5,6 +5,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -34,7 +35,11 @@ import kotlinx.coroutines.withContext
 fun NavGraphBuilder.bookReaderDestination() {
     composable<Route.Book.Reader> { navBackStackEntry ->
         val navController = LocalNavController.current
-        val viewModel = hiltViewModel<ReaderViewModel>(navController.getBackStackEntry<Route.Book>())
+        val parentEntry = remember(navBackStackEntry) {
+            navBackStackEntry.destination.parent?.route
+                ?.let(navController::getBackStackEntry)
+        }
+        val viewModel = hiltViewModel<ReaderViewModel>(parentEntry ?: navBackStackEntry)
         ReaderScreen(
             readingScreenUiState = viewModel.uiState,
             settingState = viewModel.settingState,
