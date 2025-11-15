@@ -20,12 +20,12 @@ class ExploreRepository @Inject constructor(
 ) {
     private val searchResultCacheMap = mutableMapOf<String, List<BookInformation>>()
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
-    val searchTypeIdList = webBookDataSourceProvider.value.searchTypeIdList
-    val searchTypeMap = processingRepository.processSearchTypeNameMap { webBookDataSourceProvider.value.searchTypeMap }
-    val searchTipMap = processingRepository.processSearchTipMap { webBookDataSourceProvider.value.searchTipMap }
-    val explorePageIdList = webBookDataSourceProvider.value.explorePageIdList
-    val explorePageDataSourceMap = webBookDataSourceProvider.value.explorePageDataSourceMap
-    val exploreExpandedPageDataSourceMap = webBookDataSourceProvider.value.exploreExpandedPageDataSourceMap
+    val searchTypeIdList get() = webBookDataSourceProvider.default.searchTypeIdList
+    val searchTypeMap get() = processingRepository.processSearchTypeNameMap { webBookDataSourceProvider.default.searchTypeMap }
+    val searchTipMap get() = processingRepository.processSearchTipMap { webBookDataSourceProvider.default.searchTipMap }
+    val explorePageIdList get() = webBookDataSourceProvider.default.explorePageIdList
+    val explorePageDataSourceMap get() = webBookDataSourceProvider.default.explorePageDataSourceMap
+    val exploreExpandedPageDataSourceMap get() = webBookDataSourceProvider.default.exploreExpandedPageDataSourceMap
 
     fun search(searchType: String, keyword: String): Flow<List<BookInformation>> {
         searchResultCacheMap[searchType + keyword]?.let { searchResult ->
@@ -33,7 +33,7 @@ class ExploreRepository @Inject constructor(
             flow.update { searchResult }
             return flow
         }
-        val flow = webBookDataSourceProvider.value.search(searchType, keyword)
+        val flow = webBookDataSourceProvider.default.search(searchType, keyword)
         coroutineScope.launch {
             flow.collect {
                 if (it.isNotEmpty() && it.last().isEmpty()) {
@@ -49,5 +49,5 @@ class ExploreRepository @Inject constructor(
         }
     }
 
-    fun stopAllSearch() = webBookDataSourceProvider.value.stopAllSearch()
+    fun stopAllSearch() = webBookDataSourceProvider.default.stopAllSearch()
 }

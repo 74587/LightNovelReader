@@ -71,11 +71,12 @@ class WebBookDataSourceManager @Inject constructor (
 
     fun onWebDataSourceListChange() {
         val webDataSourcesId = userDataRepository.intUserData(UserDataPath.Settings.Data.WebDataSourceId.path).getOrDefault("wenku8".hashCode())
-        mutableWebDataSourceProvider.value =
+        mutableWebDataSourceProvider.update(
             webBookDataSources
                 .find { it.id == webDataSourcesId }
                 .also {
                     it?.onLoad()
                 } ?: EmptyWebDataSource
+        )
     }
 }

@@ -19,6 +19,7 @@ import indi.dmzz_yyhyy.lightnovelreader.data.bookshelf.BookshelfRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.download.DownloadProgressRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.download.DownloadType
 import indi.dmzz_yyhyy.lightnovelreader.data.work.ExportBookToEPUBWork
+import io.nightfish.lightnovelreader.api.web.WebDataSourcePriority
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -44,7 +45,7 @@ class DetailViewModel @Inject constructor(
         if (isInitialized) return
         isInitialized = true
         viewModelScope.launch(Dispatchers.IO) {
-            bookRepository.getBookInformationFlow(bookId, viewModelScope).collect {
+            bookRepository.getBookInformationFlow(bookId, viewModelScope, WebDataSourcePriority.High).collect {
                 if (it.id.isBlank()) return@collect
                 _uiState.bookInformation = it
                 _uiState.isLoading = false
@@ -56,7 +57,7 @@ class DetailViewModel @Inject constructor(
             }
         }
         viewModelScope.launch(Dispatchers.IO) {
-            bookRepository.getBookVolumesFlow(bookId, viewModelScope).collect {
+            bookRepository.getBookVolumesFlow(bookId, viewModelScope, WebDataSourcePriority.High).collect {
                 if (it.volumes.isEmpty()) return@collect
                 _uiState.bookVolumes = it
             }

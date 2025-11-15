@@ -7,6 +7,7 @@ import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.book.BookVolumes
 import io.nightfish.lightnovelreader.api.book.ChapterContent
 import io.nightfish.lightnovelreader.api.book.Volume
+import io.nightfish.lightnovelreader.api.util.Cache
 import io.nightfish.lightnovelreader.api.web.explore.ExploreExpandedPageDataSource
 import io.nightfish.lightnovelreader.api.web.explore.ExplorePageDataSource
 import kotlinx.coroutines.flow.Flow
@@ -17,6 +18,17 @@ import kotlinx.coroutines.flow.Flow
  * 版本: 0.5.0
  */
 interface WebBookDataSource {
+    /**
+     * 最大协程并发量
+     */
+    val permits: Int get() = 64
+
+    /**
+     * 数据源的缓存对象
+     * 用于指定最大缓存数目与过期时间
+     * 如为null则不设缓存
+     */
+    val cache: Cache? get() = null
     val id: Int
 
     /**

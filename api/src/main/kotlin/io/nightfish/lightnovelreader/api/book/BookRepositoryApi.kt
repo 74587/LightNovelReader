@@ -1,24 +1,43 @@
 package io.nightfish.lightnovelreader.api.book
 
 import androidx.navigation.NavController
+import io.nightfish.lightnovelreader.api.web.WebDataSourcePriority
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 
 interface BookRepositoryApi {
-    fun getStateBookInformation(id: String, coroutineScope: CoroutineScope): BookInformation
-    fun getBookInformationFlow(id: String, coroutineScope: CoroutineScope): Flow<BookInformation>
-    fun getBookVolumesFlow(id: String, coroutineScope: CoroutineScope): Flow<BookVolumes>
+    fun getStateBookInformation(
+        id: String,
+        coroutineScope: CoroutineScope,
+        priority: WebDataSourcePriority = WebDataSourcePriority.Default
+    ): BookInformation
+    fun getBookInformationFlow(
+        id: String,
+        coroutineScope: CoroutineScope,
+        priority: WebDataSourcePriority = WebDataSourcePriority.Default
+    ): Flow<BookInformation>
+    fun getBookVolumesFlow(
+        id: String,
+        coroutineScope: CoroutineScope,
+        priority: WebDataSourcePriority = WebDataSourcePriority.Default
+    ): Flow<BookVolumes>
     fun getStateChapterContent(
         chapterId: String,
         bookId: String,
-        coroutineScope: CoroutineScope
+        coroutineScope: CoroutineScope,
+        priority: WebDataSourcePriority = WebDataSourcePriority.Default
     ): ChapterContent
 
-    suspend fun getChapterContent(chapterId: String, bookId: String): ChapterContent
+    suspend fun getChapterContent(
+        chapterId: String,
+        bookId: String,
+        priority: WebDataSourcePriority = WebDataSourcePriority.Default
+    ): ChapterContent
     fun getChapterContentFlow(
         chapterId: String,
         bookId: String,
-        coroutineScope: CoroutineScope
+        coroutineScope: CoroutineScope,
+        priority: WebDataSourcePriority = WebDataSourcePriority.Default
     ): Flow<ChapterContent>
 
     fun getStateUserReadingData(bookId: String, coroutineScope: CoroutineScope): UserReadingData

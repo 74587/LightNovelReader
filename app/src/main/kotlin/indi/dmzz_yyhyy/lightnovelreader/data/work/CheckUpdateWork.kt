@@ -15,11 +15,13 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import indi.dmzz_yyhyy.lightnovelreader.LightNovelReaderApplication
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.bookshelf.BookshelfRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.web.WebBookDataSourceProvider
 import io.nightfish.lightnovelreader.api.book.BookInformation
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.yield
 
 @HiltWorker
 class CheckUpdateWork @AssistedInject constructor(
@@ -30,11 +32,23 @@ class CheckUpdateWork @AssistedInject constructor(
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
+        if (appContext !is LightNovelReaderApplication) return Result.failure()
         val reminderBookMap = mutableMapOf<String, BookInformation>()
+        val needRemindBookIdSet = mutableSetOf<String>()
+        bookshelfRepository
+            .getAllBookshelves()
+            .filter { it.systemUpdateReminder }
+            .forEach {
+                needRemindBookIdSet.addAll(it.allBookIds)
+            }
         bookshelfRepository.getAllBookshelfBooksMetadata().forEach { bookshelfBookMetadata ->
             delay(3000)
+            while (!appContext.isAppStopped) {
+                yield()
+            }
+            if (!needRemindBookIdSet.contains(bookshelfBookMetadata.id)) return@forEach
             Log.d("CheckUpdateWork", "Updating book id=${bookshelfBookMetadata.id}")
-            val bookInformation = webBookDataSourceProvider.value.getBookInformation(bookshelfBookMetadata.id)
+            val bookInformation = webBookDataSourceProvider.lowPriority.getBookInformation(bookshelfBookMetadata.id)
             val webBookLastUpdate = bookInformation.lastUpdated
             if (webBookLastUpdate.isAfter(bookshelfBookMetadata.lastUpdate)) {
                 bookshelfBookMetadata.bookShelfIds.forEach {

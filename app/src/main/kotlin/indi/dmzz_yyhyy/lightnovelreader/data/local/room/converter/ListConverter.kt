@@ -21,6 +21,6 @@ object ListConverter {
 
     @TypeConverter
     fun stringToStringList(string: String): List<String> {
-        return string.split(",").map { it }
+        return string.ifBlank { return emptyList() }.split(",").map { it }
     }
 }

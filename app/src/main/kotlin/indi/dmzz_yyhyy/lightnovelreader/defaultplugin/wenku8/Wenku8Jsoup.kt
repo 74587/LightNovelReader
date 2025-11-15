@@ -4,6 +4,7 @@ import android.util.Log
 import indi.dmzz_yyhyy.lightnovelreader.utils.UserAgentGenerator
 import indi.dmzz_yyhyy.lightnovelreader.utils.autoReconnectionPost
 import indi.dmzz_yyhyy.lightnovelreader.utils.update
+import io.nightfish.lightnovelreader.api.util.Cache
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -17,7 +18,7 @@ import java.time.Instant
 import kotlin.io.encoding.Base64
 import kotlin.random.Random
 
-private val requestLimiter = Semaphore(3)
+private val requestLimiter = Semaphore(4)
 private val pendingJobs = Channel<Unit>(capacity = 25, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
 fun Connection.wenku8Cookie(): Connection =
@@ -36,14 +37,28 @@ fun wenku8Cookies(): Map<String, String> = mapOf(
     "Hm_lpvt_d72896ddbf8d27c750e3b365ea2fc902" to "1739294503"
 )
 
-suspend fun wenku8Api(request: String): Document? {
+private val cache = Cache(
+    timeout = 5 * 60 * 1000
+)
+
+private inline fun ifCache(id: String, block: () -> Document?): Document? {
+    val cacheData = cache.getCache<Document?>(id.hashCode())
+    if (cacheData == null) {
+        val data = block.invoke()
+        if (data == null) return data
+        cache.cache(id.hashCode(), data)
+        return data
+    }
+    return cacheData
+}
+
+suspend fun wenku8Api(request: String): Document? = ifCache(request) {
     if (!pendingJobs.trySend(Unit).isSuccess) {
         Log.w("Wenku8API", "request dropped: $request")
     }
 
     return try {
         requestLimiter.withPermit {
-            delay(Random.Default.nextLong(500, 800))
             Log.i("Wenku8API", "request to wenku8 with $request")
 
             withTimeoutOrNull(15_000L) {
@@ -62,6 +77,7 @@ suspend fun wenku8Api(request: String): Document? {
                         .prettyPrint(false)
                         .syntax(Document.OutputSettings.Syntax.xml)
                 )
+                delay(Random.Default.nextLong(450, 300))
                 doc
             }.also {
                 if (it == null) Log.w("Wenku8API", "request timeout: $request")

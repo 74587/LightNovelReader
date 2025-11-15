@@ -16,6 +16,7 @@ interface BookshelfRepositoryApi {
     fun updateBookshelfBookMetadataLastUpdateTime(bookId: String, time: LocalDateTime)
     fun clear()
     fun getAllBookshelvesFlow(): Flow<List<MutableBookshelf>>
+    fun getAllBookshelves(): List<MutableBookshelf>
     fun getBookshelf(id: Int): MutableBookshelf?
     fun getBookshelfFlow(id: Int): Flow<MutableBookshelf?>
     fun createBookShelf(

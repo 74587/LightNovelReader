@@ -58,12 +58,12 @@ class ImportDataWork @AssistedInject constructor(
         try {
             val appUserDataJson = AppUserDataJson.fromJson(jsonText)
             if (appUserDataJson.type == "light novel reader data file")
-                data = appUserDataJson.data.firstOrNull { it.webDataSourceId == webBookDataSourceProvider.value.id }
+                data = appUserDataJson.data.firstOrNull { it.webDataSourceId == webBookDataSourceProvider.default.id }
             if (data == null) {
                 if(!ignoreDataIdCheck) {
                     Log.e(
                         "Data Importer",
-                        "failed to import the data into app, the data file's web source id is different from app(AppWebSourceId: ${webBookDataSourceProvider.value.id})"
+                        "failed to import the data into app, the data file's web source id is different from app(AppWebSourceId: ${webBookDataSourceProvider.default.id})"
                     )
                     return Result.failure()
                 } else {

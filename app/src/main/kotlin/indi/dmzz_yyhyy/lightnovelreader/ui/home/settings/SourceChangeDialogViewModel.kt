@@ -41,7 +41,8 @@ class SourceChangeDialogViewModel @Inject constructor(
     webBookDataSourceManager: WebBookDataSourceManager
 ) : ViewModel() {
 
-    val webBookDataSourceId = webBookDataSourceProvider.value.id
+    val webBookDataSourceId
+        get() = webBookDataSourceProvider.default.id
 
     val webDataSourceItems = webBookDataSourceManager.webDataSourceItems
 
@@ -86,7 +87,7 @@ class SourceChangeDialogViewModel @Inject constructor(
         if (webDataSourceId == webBookDataSourceId) return
 
         CoroutineScope(Dispatchers.IO).launch {
-            val oldUri = File(fileDir, "${webBookDataSourceProvider.value.id}.data.lnr").toUri()
+            val oldUri = File(fileDir, "${webBookDataSourceProvider.default.id}.data.lnr").toUri()
             val exportRequest = exportToFile(oldUri, MutableExportContext().apply { settings = false })
 
             try {

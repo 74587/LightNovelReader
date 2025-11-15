@@ -37,7 +37,20 @@ class BookshelfRepository @Inject constructor(
 ): BookshelfRepositoryApi {
     override fun getAllBookshelfIds(): List<Int> = bookshelfDao.getAllBookshelfIds()
 
-    override fun getAllBookshelvesFlow(): Flow<List<MutableBookshelf>> = bookshelfDao.getAllBookshelfFlow().map { bookshelfEntities ->
+    override fun getAllBookshelves(): List<MutableBookshelf> = bookshelfDao.getAllBookshelves().map { bookshelfEntity ->
+        MutableBookshelf().apply {
+            this.id =   bookshelfEntity.id
+            this.name = bookshelfEntity.name
+            this.sortType = BookshelfSortType.entries.first { it.key == bookshelfEntity.sortType }
+            this.autoCache = bookshelfEntity.autoCache
+            this.systemUpdateReminder = bookshelfEntity.systemUpdateReminder
+            this.allBookIds = bookshelfEntity.allBookIds
+            this.pinnedBookIds = bookshelfEntity.pinnedBookIds
+            this.updatedBookIds = bookshelfEntity.updatedBookIds
+        }
+    }
+
+    override fun getAllBookshelvesFlow(): Flow<List<MutableBookshelf>> = bookshelfDao.getAllBookshelvesFlow().map { bookshelfEntities ->
         bookshelfEntities.map { bookshelfEntity ->
             MutableBookshelf().apply {
                 this.id =   bookshelfEntity.id
@@ -239,7 +252,7 @@ class BookshelfRepository @Inject constructor(
 
     fun exportAllBookshelvesJson(): String = AppUserDataJsonBuilder()
         .data {
-            webDataSourceId(webBookDataSourceProvider.value.id)
+            webDataSourceId(webBookDataSourceProvider.default.id)
             getAllBookshelfIds()
                 .mapNotNull { (getBookshelf(it)) }
                 .map { (it as Bookshelf).toJsonData() }
@@ -253,7 +266,7 @@ class BookshelfRepository @Inject constructor(
 
     fun exportBookshelfToJson(id: Int): String = AppUserDataJsonBuilder()
         .data {
-            webDataSourceId(webBookDataSourceProvider.value.id)
+            webDataSourceId(webBookDataSourceProvider.default.id)
             getBookshelf(id)?.toJsonData()?.let(::bookshelf)
             getBookshelf(id)?.allBookIds
                 ?.mapNotNull(::getBookshelfBookMetadata)

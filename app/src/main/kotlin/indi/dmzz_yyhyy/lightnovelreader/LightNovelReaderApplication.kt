@@ -1,7 +1,9 @@
 package indi.dmzz_yyhyy.lightnovelreader
 
+import android.app.Activity
 import android.app.Application
 import android.content.Context
+import android.os.Bundle
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import androidx.work.WorkManager
@@ -20,6 +22,8 @@ import javax.inject.Inject
 @HiltAndroidApp
 class LightNovelReaderApplication : Application(), Configuration.Provider {
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
+    var isAppStopped = false
+        private set
     @Inject lateinit var workerFactory: HiltWorkerFactory
     @Inject lateinit var loggerRepository: LoggerRepository
     @Inject lateinit var userDataRepository: UserDataRepository
@@ -37,6 +41,20 @@ class LightNovelReaderApplication : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
+        registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
+            override fun onActivityStarted(activity: Activity) {
+                isAppStopped = false
+            }
+
+            override fun onActivityStopped(activity: Activity) {
+                isAppStopped = true
+            }
+            override fun onActivityResumed(activity: Activity) {}
+            override fun onActivityPaused(activity: Activity) {}
+            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
+            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
+            override fun onActivityDestroyed(activity: Activity) {}
+        })
         pluginManager.loadAllPlugins()
         coroutineScope.launch(Dispatchers.IO) {
             loggerRepository.logLevel = LogLevel.from(userDataRepository.stringUserData(UserDataPath.Settings.Data.LogLevel.path).getOrDefault("none"))

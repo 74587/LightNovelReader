@@ -349,5 +349,6 @@
     <string name="dialog_slider_custom_illegal_value">请输入合法的数值</string>
     <string name="dialog_color_picker">调色盘</string>
     <string name="dialog_color_picker_desc">选择一个颜色用于阅读器背景。</string>
+    <string name="settings_sponsor" />
 
 </resources>
