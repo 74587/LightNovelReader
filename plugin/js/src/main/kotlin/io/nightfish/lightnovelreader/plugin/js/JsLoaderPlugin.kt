@@ -49,8 +49,9 @@ import java.util.zip.ZipFile
     name = "JsLoader",
     versionName = "0.0.1",
     author = "NightFish",
-    description = "用于加载外部JavaScrip数据源的插件",
-    updateUrl = "https://gh-proxy.com/https://github.com/dmzz-yyhyy/LightNovelReader-PluginRepository/blob/main/data/io.nightfish.lightnovelreader.plugin.js"
+    description = "用于加载外部 JavaScript 数据源的插件",
+    updateUrl = "https://gh-proxy.com/https://github.com/dmzz-yyhyy/LightNovelReader-PluginRepository/blob/main/data/io.nightfish.lightnovelreader.plugin.js",
+    apiVersion = 1
 )
 class JsLoaderPlugin(
     val appContext: Context,

@@ -19,6 +19,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.EmptyPage
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
@@ -60,8 +61,8 @@ fun ExploreScreen(
                 item {
                     EmptyPage(
                         icon = painterResource(R.drawable.link_off_24px),
-                        titleId = R.string.offline,
-                        descriptionId = R.string.offline_desc
+                        title = stringResource(R.string.offline),
+                        description = stringResource(R.string.offline_desc)
                     ) {
                         IconButton({
                             showSnackbar(

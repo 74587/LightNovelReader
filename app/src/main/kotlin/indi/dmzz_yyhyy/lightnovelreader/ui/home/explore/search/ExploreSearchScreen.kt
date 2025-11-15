@@ -166,8 +166,8 @@ fun ExploreSearchScreen(
                     ) {
                         EmptyPage(
                             icon = painterResource(R.drawable.schedule_90dp),
-                            titleId = R.string.nothing_here,
-                            descriptionId = R.string.nothing_here_desc_search
+                            title = stringResource(R.string.nothing_here),
+                            description = stringResource(R.string.nothing_here_desc_search)
                         )
                     }
                     AnimatedVisibility(
@@ -268,8 +268,8 @@ fun ExploreSearchScreen(
             ) {
                 EmptyPage(
                     icon = painterResource(R.drawable.not_found_90dp),
-                    titleId = R.string.search_no_results,
-                    descriptionId = R.string.search_no_results_desc
+                    title = stringResource(R.string.search_no_results),
+                    description = stringResource(R.string.search_no_results_desc)
                 )
             }
             AnimatedVisibility(

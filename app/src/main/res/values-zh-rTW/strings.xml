@@ -14,6 +14,7 @@
     <!-- Operations -->
     <string name="cancel">取消</string>
     <string name="apply">套用</string>
+    <string name="confirm">確認</string>
     <string name="decline">拒絕</string>
     <string name="export">導出</string>
     <string name="undo">撤銷</string>

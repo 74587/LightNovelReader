@@ -1,9 +1,12 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -11,9 +14,10 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.FilledTonalButton
@@ -22,12 +26,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -35,7 +46,10 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginInfo
+import indi.dmzz_yyhyy.lightnovelreader.ui.components.EmptyPage
+import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -46,7 +60,12 @@ fun PluginManagerScreen(
     onClickDetail: (String) -> Unit,
     onClickDelete: (String) -> Unit,
     onClickSwitch: (String) -> Unit,
-    pluginInfoList: List<PluginInfo>
+    onClickKeyAlert: () -> Unit,
+    onClickPluginRepo: () -> Unit,
+    onClickCheckUpdate: (String) -> Unit,
+    pluginInfoList: List<PluginInfo>,
+    onClickOptimize: (String) -> Unit,
+    onClickShowSignatures: (String) -> Unit
 ) {
     val enterAlwaysScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -54,7 +73,8 @@ fun PluginManagerScreen(
         topBar = {
             TopBar(
                 onClickBack = onClickBack,
-                scrollBehavior = enterAlwaysScrollBehavior
+                scrollBehavior = enterAlwaysScrollBehavior,
+                onClickPluginRepo = onClickPluginRepo
             )
         },
         floatingActionButton = {
@@ -71,28 +91,56 @@ fun PluginManagerScreen(
                     Text("Install plugin")
                 }
             )
+        },
+        snackbarHost = {
+            SnackbarHost(LocalSnackbarHost.current)
         }
     ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier.padding(paddingValues)
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
         ) {
-            item {
-                ThirdPartyPluginTips()
-            }
-            items(pluginInfoList) { plugin ->
-                PluginCard(
-                    pluginInfo = plugin,
-                    onClickDetail = onClickDetail,
-                    enabledPluginList = enabledPluginList,
-                    onClickSwitch = onClickSwitch,
-                    onClickDelete = onClickDelete
-                )
-            }
-            item {
-                Spacer(Modifier.height(98.dp))
+            ThirdPartyPluginTips()
+
+            Spacer(Modifier.height(8.dp))
+
+            if (pluginInfoList.isEmpty()) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    EmptyPage(
+                        icon = painterResource(R.drawable.deployed_code_update_24px),
+                        title = "没有插件",
+                        description = "安装受支持的 .lnrp 格式插件",
+                    )
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .weight(1f)
+                ) {
+                    items(pluginInfoList) { plugin ->
+                        PluginCard(
+                            modifier = Modifier.animateItem(),
+                            pluginInfo = plugin,
+                            onClickDetail = onClickDetail,
+                            enabledPluginList = enabledPluginList,
+                            onClickSwitch = onClickSwitch,
+                            onClickDelete = onClickDelete,
+                            onClickCheckUpdate = onClickCheckUpdate,
+                            onClickKeyAlert = onClickKeyAlert,
+                            onClickOptimizePlugin = onClickOptimize,
+                            onClickShowSignatures = onClickShowSignatures
+                        )
+                    }
+                    item {
+                        Spacer(Modifier.height(98.dp))
+                    }
+                }
             }
         }
     }
+
 }
 
 @Composable
@@ -124,87 +172,113 @@ private fun ThirdPartyPluginTips() {
 
 @Composable
 private fun PluginCard(
+    modifier: Modifier = Modifier,
     enabledPluginList: List<String>,
     pluginInfo: PluginInfo,
     onClickDetail: (String) -> Unit,
     onClickSwitch: (String) -> Unit,
-    onClickDelete: (String) -> Unit
+    onClickDelete: (String) -> Unit,
+    onClickKeyAlert: () -> Unit,
+    onClickCheckUpdate: (String) -> Unit,
+    onClickOptimizePlugin: (String) -> Unit,
+    onClickShowSignatures: (String) -> Unit
 ) {
-    Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 8.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = colorScheme.surfaceContainerLow
-        ),
-        shape = RoundedCornerShape(16.dp),
+    var switchEnabled by remember { mutableStateOf(true) }
+    var showMenu by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = modifier.fillMaxWidth()
     ) {
-        Column(
-            modifier = Modifier.padding(20.dp)
+        Card(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp, horizontal = 8.dp)
+                .clickable { showMenu = true },
+            colors = CardDefaults.cardColors(containerColor = colorScheme.surfaceContainerLow),
+            shape = RoundedCornerShape(16.dp)
         ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Column {
-                    Text(pluginInfo.name, style = AppTypography.titleMedium)
-                    Text(pluginInfo.versionName, style = AppTypography.labelMedium, color = colorScheme.secondary)
-                    Text("by ${pluginInfo.author}", style = AppTypography.labelMedium, color = colorScheme.secondary)
-                }
-                Spacer(Modifier.weight(1f))
-                Switch(
-                    checked = enabledPluginList.contains(pluginInfo.id),
-                    onCheckedChange = {
-                        onClickSwitch(pluginInfo.id)
+            Column(Modifier.padding(20.dp)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Column {
+                        Text(pluginInfo.name, style = AppTypography.titleMedium)
+                        Text(pluginInfo.versionName, style = AppTypography.labelMedium, color = colorScheme.secondary)
+                        Text("by ${pluginInfo.author}", style = AppTypography.labelMedium, color = colorScheme.secondary)
                     }
-                )
-            }
-            /*HorizontalDivider(Modifier
-                .padding(vertical = 12.dp)
-                .fillMaxWidth())
-            Text(plugin.description, style = AppTypography.bodyMedium)*/
-            Spacer(Modifier.height(12.dp))
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                if (pluginInfo.isUpdatable) {
-                    Button(
-                        onClick = {},
-                    ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
+                    Spacer(Modifier.weight(1f))
+                    Switch(
+                        checked = enabledPluginList.contains(pluginInfo.id),
+                        enabled = switchEnabled,
+                        onCheckedChange = { checked ->
+                            if (switchEnabled) {
+                                onClickSwitch(pluginInfo.id)
+                                switchEnabled = false
+                            }
+                        }
+                    )
+                    LaunchedEffect(switchEnabled) {
+                        if (!switchEnabled) {
+                            delay(1000)
+                            switchEnabled = true
+                        }
+                    }
+                }
+
+                Spacer(Modifier.height(12.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    /*if (!pluginInfo.updateUrl.isNullOrEmpty()) {
+                        Button(onClick = { onClickCheckUpdate(pluginInfo.id) }) {
                             Icon(painterResource(R.drawable.deployed_code_update_24px), null)
                             Spacer(Modifier.width(12.dp))
                             Text("更新")
                         }
+                    }*/
+                    Spacer(Modifier.weight(1f))
+                    if (pluginInfo.signatures == null) {
+                        FilledTonalIconButton(onClick = { onClickKeyAlert() }) {
+                            Icon(painterResource(R.drawable.key_off_24px), contentDescription = "invalid_signature")
+                        }
                     }
-                }
-                Spacer(Modifier.weight(1f))
-                FilledTonalIconButton(
-                    onClick = { onClickDelete(pluginInfo.id) }
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.delete_forever_24px),
-                        contentDescription = "remove"
-                    )
-                }
-                FilledTonalButton(
-                    onClick = {
-                        onClickDetail(pluginInfo.id)
+                    FilledTonalIconButton(onClick = { onClickDelete(pluginInfo.id) }) {
+                        Icon(painterResource(R.drawable.delete_forever_24px), contentDescription = "remove")
                     }
-                ) {
-                    Text("详情")
+                    FilledTonalButton(onClick = { onClickDetail(pluginInfo.id) }) {
+                        Text("详情")
+                    }
                 }
             }
         }
+
+        DropdownMenu(
+            modifier = Modifier.padding(horizontal = 12.dp),
+            expanded = showMenu,
+            onDismissRequest = { showMenu = false }
+        ) {
+            DropdownMenuItem(
+                enabled = false,
+                text = { Text("优化") },
+                onClick = {
+                    showMenu = false
+                    onClickOptimizePlugin(pluginInfo.id)
+                }
+            )
+            DropdownMenuItem(
+                text = { Text("签名信息") },
+                onClick = {
+                    showMenu = false
+                    onClickShowSignatures(pluginInfo.id)
+                }
+            )
+        }
     }
 }
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopBar(
     scrollBehavior: TopAppBarScrollBehavior,
-    onClickBack: () -> Unit
+    onClickBack: () -> Unit,
+    onClickPluginRepo: () -> Unit
 ) {
     TopAppBar(
         title = {
@@ -222,6 +296,13 @@ private fun TopBar(
                     painter = painterResource(id = R.drawable.arrow_back_24px),
                     contentDescription = "back"
                 )
+            }
+        },
+        actions = {
+            TextButton(
+                onClick = onClickPluginRepo
+            ) {
+                Text("插件仓库")
             }
         },
         scrollBehavior = scrollBehavior

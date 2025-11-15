@@ -289,8 +289,8 @@ abstract class LightNovelReaderDatabase : RoomDatabase() {
                 if (cursor.moveToFirst()) {
                     do {
                         val contentValues = ContentValues()
-                        contentValues.put("id", cursor.getInt(cursor.columnNames.indexOfFirst { it == "book_id" }).toString())
-                        contentValues.put("title", cursor.getString(cursor.columnNames.indexOfFirst { it == "volume_id" }))
+                        contentValues.put("id", cursor.getString(cursor.getColumnIndexOrThrow("id")))
+                        contentValues.put("title", cursor.getString(cursor.getColumnIndexOrThrow("title")))
                         db.insert(
                             "chapter_information",
                             SQLiteDatabase.CONFLICT_FAIL,

@@ -318,7 +318,7 @@ fun Content(
                         with(density) {
                             PaddingValues(
                                 top = WindowInsets.safeContent.getTop(density).toDp(),
-                                bottom = WindowInsets.safeContent.getBottom(density).toDp() + if (isEnableIndicator) 50.dp else 0.dp,
+                                bottom = WindowInsets.safeContent.getBottom(density).toDp() + if (isEnableIndicator) 26.dp else 0.dp,
                                 start = 16.dp,
                                 end = 16.dp
                             )

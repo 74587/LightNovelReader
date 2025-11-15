@@ -14,26 +14,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
-
-@Composable
-fun EmptyPage(
-    modifier: Modifier = Modifier,
-    icon: Painter,
-    titleId: Int,
-    descriptionId: Int,
-    content: @Composable (() -> Unit)? = null
-) {
-    EmptyPage(
-        modifier = modifier,
-        icon = icon,
-        title = stringResource(titleId),
-        description = stringResource(descriptionId),
-        content = content
-    )
-}
 
 @Composable
 fun EmptyPage(

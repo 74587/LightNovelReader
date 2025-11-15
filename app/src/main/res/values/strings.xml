@@ -16,6 +16,9 @@
     <!-- Operations -->
     <string name="cancel">Cancel</string>
     <string name="apply">Apply</string>
+    <string name="confirm">Confirm</string>
+    <string name="next">Next</string>
+    <string name="abort">Abort</string>
     <string name="decline">Decline</string>
     <string name="copied">Content copied</string>
     <string name="select_all">Select All</string>

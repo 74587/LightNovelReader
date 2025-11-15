@@ -14,6 +14,10 @@ import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.web.WebBookDataSourceManager
 import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.Wenku8Api
 import indi.dmzz_yyhyy.lightnovelreader.utils.AnnotationScanner
+import indi.dmzz_yyhyy.lightnovelreader.utils.PluginAnnotationParser
+import indi.dmzz_yyhyy.lightnovelreader.utils.getApkSignatures
+import io.nightfish.lightnovelreader.api.ApiCompat
+import io.nightfish.lightnovelreader.api.ApiMetadata
 import io.nightfish.lightnovelreader.api.PluginContext
 import io.nightfish.lightnovelreader.api.plugin.LightNovelReaderPlugin
 import io.nightfish.lightnovelreader.api.plugin.Plugin
@@ -22,6 +26,10 @@ import java.io.File
 import java.util.zip.ZipFile
 import javax.inject.Inject
 import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 
 @Singleton
 class PluginManager @Inject constructor(
@@ -35,17 +43,27 @@ class PluginManager @Inject constructor(
     private val pluginMap = mutableMapOf<String, LightNovelReaderPlugin>()
     private val pluginClassLoaderMap = mutableMapOf<String, DexClassLoader>()
     val allPluginInfo: SnapshotStateList<PluginInfo> = _allPluginInfo
-    private val enabledPluginsUserData = userDataRepository.stringListUserData(UserDataPath.Plugin.EnabledPlugins.path)
-    private val errorPluginsUserData = userDataRepository.stringListUserData(UserDataPath.Plugin.ErrorPlugins.path)
+
+    private val enabledPluginsUserData =
+        userDataRepository.stringListUserData(UserDataPath.Plugin.EnabledPlugins.path)
+    private val errorPluginsUserData =
+        userDataRepository.stringListUserData(UserDataPath.Plugin.ErrorPlugins.path)
+
     private val defaultWebDataSources = listOf(Wenku8Api)
-    val pluginsDir = appContext.dataDir.resolve("plugin")
-    fun getPluginDir(name: String) = pluginsDir.resolve(name)
-    fun getPluginFile(pluginDir: File) = pluginDir.resolve("plugin")
+    private val defaultPlugins = listOf<Class<*>>()
+    private val computeScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+    val pluginsDir: File = appContext.dataDir.resolve("plugins")
+    val pluginsTempDir: File = appContext.cacheDir.resolve("plugins_tmp")
+    fun getPluginDir(name: String): File = pluginsDir.resolve(name)
     fun getPluginDataDir(pluginDir: File) = pluginDir.resolve("data")
-    fun getPluginAssetDir(pluginDir: File) = pluginDir.resolve("asset")
-    fun getPluginLibsDir(pluginDir: File) = pluginDir.resolve("libs")
+    fun getPluginFile(pluginDir: File): File = pluginDir.resolve("plugin")
+    fun getPluginAssetDir(pluginDir: File): File = pluginDir.resolve("asset")
+    fun getPluginLibsDir(pluginDir: File): File = pluginDir.resolve("libs")
 
     fun loadAllPlugins() {
+        val tmp = pluginsTempDir
+        if (tmp.exists()) tmp.deleteRecursively()
         errorPluginsUserData.get()?.forEach { path ->
             File(path).also {
                 it.delete()
@@ -64,30 +82,40 @@ class PluginManager @Inject constructor(
             .also(File::mkdir)
             .listFiles()
             ?.filter { it.isDirectory }
-            ?.forEach {
-                loadPlugin(getPluginFile(it))
+            ?.forEach { dir ->
+                val file = getPluginFile(dir)
+                PluginAnnotationParser.parsePluginAnnotationFromFile(
+                    apkFile = file,
+                    workDir = pluginsTempDir,
+                    parentClassLoader = this::class.java.classLoader,
+                    pm = appContext.packageManager
+                )?.let { (pid, ann) ->
+                    if (!ApiCompat.isSupported(ann.apiVersion, ApiMetadata.API_VERSION)) {
+                        enabledPluginsUserData.update { it.toMutableList().apply { remove(pid) } }
+                    }
+                }
+                loadPlugin(file)
             }
     }
 
-    private fun getPluginId(plugin: Class<*>): String? {
-        var id: String?
-        val annotation = plugin.getAnnotation(Plugin::class.java)
-        if (annotation != null) {
-            id = plugin.`package`?.name ?: return null
-            val info = PluginInfo(
-                isUpdatable = false,
-                id = id,
-                name = annotation.name,
-                version = annotation.version,
-                versionName = annotation.versionName,
-                author = annotation.author,
-                description = annotation.description,
-                updateUrl = annotation.updateUrl
-            )
-            if (!_allPluginInfo.contains(info)) _allPluginInfo.add(info)
-            return id
-        }
-        return null
+    private fun getPluginId(clazz: Class<*>): String? {
+        val annotation = clazz.getAnnotation(Plugin::class.java) ?: return null
+        val id = clazz.`package`?.name ?: return null
+        val existingSignatures = _allPluginInfo.firstOrNull { it.id == id }?.signatures
+        val info = PluginInfo(
+            isUpdatable = false,
+            id = id,
+            name = annotation.name,
+            version = annotation.version,
+            versionName = annotation.versionName,
+            author = annotation.author,
+            description = annotation.description,
+            updateUrl = annotation.updateUrl,
+            signatures = existingSignatures
+        )
+        _allPluginInfo.removeAll { it.id == info.id }
+        _allPluginInfo.add(info)
+        return id
     }
 
     private fun getPluginInstance(clazz: Class<*>, pluginContext: PluginContext): LightNovelReaderPlugin? {
@@ -106,31 +134,31 @@ class PluginManager @Inject constructor(
 
     fun loadPlugin(path: File, forceLoad: Boolean = false): String? {
         path.setReadOnly()
-        val packageManager = appContext.packageManager
         val pluginDir = path.parentFile ?: return null
-        val packageInfo = packageManager.getPackageArchiveInfo(path.path, PackageManager.GET_PERMISSIONS)?.also { packageInfo ->
-            val dir = getPluginAssetDir(pluginDir)
-                .also {
-                    if (it.exists()) it.deleteRecursively()
-                    it.mkdirs()
-                }
-            val zipFile = ZipFile(path)
-            val entries = zipFile.entries()
 
-            for (entry in entries) {
-                if (entry.name.startsWith("assets")) {
-                    zipFile.getInputStream(entry).buffered().use { inputStream ->
-                        val outputFile = dir.resolve(entry.name.replaceFirst("assets/", ""))
-                            .also { it.parentFile?.mkdirs() }
-                        outputFile.outputStream().buffered().use {
-                            inputStream.copyTo(it)
+        val packageInfo = appContext.packageManager
+            .getPackageArchiveInfo(path.path, PackageManager.GET_PERMISSIONS)
+            ?.also {
+                val assetDir = getPluginAssetDir(pluginDir).apply {
+                    if (exists()) deleteRecursively()
+                    mkdirs()
+                }
+                ZipFile(path).use { zip ->
+                    val entries = zip.entries()
+                    while (entries.hasMoreElements()) {
+                        val entry = entries.nextElement()
+                        if (!entry.isDirectory && entry.name.startsWith("assets/")) {
+                            zip.getInputStream(entry).buffered().use { input ->
+                                val out = assetDir.resolve(entry.name.removePrefix("assets/"))
+                                out.parentFile?.mkdirs()
+                                out.outputStream().buffered().use { input.copyTo(it) }
+                            }
                         }
                     }
                 }
+                extractLibFromApk(path, getPluginLibsDir(pluginDir).apply { mkdirs() })
             }
-            zipFile.close()
-            extractLibFromApk(path, getPluginLibsDir(pluginDir).also { it.mkdirs() })
-        }
+
         val classLoader = DexClassLoader(
             path.absolutePath,
             null,
@@ -138,20 +166,29 @@ class PluginManager @Inject constructor(
             this.javaClass.classLoader
         )
         val scanPackage = packageInfo?.packageName ?: ""
-        return loadPlugin(
-            classLoader,
-            PluginContext(
+
+        val id = loadPlugin(
+            classLoader = classLoader,
+            pluginContext = PluginContext(
                 dataDir = getPluginDataDir(pluginDir),
                 pluginFile = getPluginFile(pluginDir),
                 assetDir = getPluginAssetDir(pluginDir)
             ),
-            scanPackage,
-            forceLoad
-        ).also {
-            if (it != null) {
-                pluginPathMap[it] = path
+            scanPackage = scanPackage,
+            forceLoad = forceLoad
+        )
+        if (id != null) {
+            pluginPathMap[id] = path
+            computeScope.launch {
+                val sig = try { getApkSignatures(path) } catch (_: Throwable) { null }
+                val info = _allPluginInfo.firstOrNull { it.id == id }
+                if (info != null) {
+                    _allPluginInfo.removeAll { it.id == id }
+                    _allPluginInfo.add(info.copy(signatures = sig))
+                }
             }
         }
+        return id
     }
 
     fun loadPlugin(classLoader: DexClassLoader, pluginContext: PluginContext, scanPackage: String = "", forceLoad: Boolean = false): String? {
@@ -185,6 +222,57 @@ class PluginManager @Inject constructor(
         pluginClassLoaderMap[id]?.let { webBookDataSourceManager.unloadWebDataSourcesFromClassLoader(it) }
     }
 
+    fun upgradePlugin(id: String, newFile: File): Boolean {
+        val oldFile = pluginPathMap[id] ?: return false
+        unloadPlugin(id)
+
+        val dir = oldFile.parentFile ?: return false
+        val tmp = File(dir, "${oldFile.name}.tmp")
+        val bak = File(dir, "${oldFile.name}.bak")
+
+        fun restoreOld(): Boolean {
+            loadPlugin(oldFile, forceLoad = true)
+            return false
+        }
+
+        if (tmp.exists()) tmp.delete()
+        runCatching {
+            newFile.copyTo(tmp, overwrite = true)
+            newFile.delete()
+            tmp.setReadOnly()
+        }.getOrElse {
+            tmp.delete()
+            return restoreOld()
+        }
+
+        if (bak.exists()) bak.delete()
+        if (!oldFile.renameTo(bak)) {
+            tmp.delete()
+            return restoreOld()
+        }
+
+        if (!tmp.renameTo(oldFile)) {
+            bak.renameTo(oldFile)
+            tmp.delete()
+            return restoreOld()
+        }
+
+        _allPluginInfo.removeAll { it.id == id }
+        val loadedId = runCatching { loadPlugin(oldFile, forceLoad = true) }.getOrNull()
+
+        return if (loadedId == id) {
+            bak.delete()
+            pluginPathMap[id] = oldFile
+            true
+        } else {
+            oldFile.delete()
+            bak.renameTo(oldFile)
+            tmp.delete()
+            loadPlugin(oldFile, forceLoad = true)
+            false
+        }
+    }
+
     fun deletePlugin(id: String) {
         val path = pluginPathMap[id] ?: return
         unloadPlugin(id)
@@ -192,38 +280,35 @@ class PluginManager @Inject constructor(
         if (path.parentFile?.parentFile == pluginsDir) {
             path.parentFile!!.deleteRecursively()
         }
-        enabledPluginsUserData.update {
-            it.toMutableList().apply { remove(id) }
-        }
-        _allPluginInfo.removeIf { it.id == id }
+        enabledPluginsUserData.update { it.toMutableList().apply { remove(id) } }
+        _allPluginInfo.removeAll { it.id == id }
+        pluginPathMap.remove(id)
+        pluginMap.remove(id)
+        pluginClassLoaderMap.remove(id)
     }
 
-
-
-    private fun extractLibFromApk(apk: File, targetDir: File) {
+    fun extractLibFromApk(apk: File, targetDir: File) {
         try {
             val tempDir = targetDir.resolve("temp").also { it.mkdir() }
             val packageInfo = appContext.packageManager.getPackageArchiveInfo(apk.path, 0)
-            packageInfo?.applicationInfo?.let { appInfo ->
-                val sourceDir = apk.path
-                val zipFile = ZipFile(sourceDir)
-                val entries = zipFile.entries()
-
-                for (entry in entries) {
-                    if (entry.name.startsWith("lib/") && !entry.isDirectory && !entry.name.endsWith("libandroidx.graphics.path.so")) {
-                        zipFile.getInputStream(entry).buffered().use { inputStream ->
-                            val outputFile = tempDir.resolve(entry.name.replaceFirst("lib/", ""))
-                                .also { file ->
-                                    file.parentFile?.mkdirs()
-                                }
-                                .also { it.createNewFile() }
-                            outputFile.outputStream().buffered().use {
-                                inputStream.copyTo(it)
+            packageInfo?.applicationInfo?.let {
+                ZipFile(apk.path).use { zip ->
+                    val entries = zip.entries()
+                    while (entries.hasMoreElements()) {
+                        val entry = entries.nextElement()
+                        if (
+                            entry.name.startsWith("lib/") &&
+                            !entry.isDirectory &&
+                            !entry.name.endsWith("libandroidx.graphics.path.so")
+                        ) {
+                            val out = tempDir.resolve(entry.name.removePrefix("lib/"))
+                            out.parentFile?.mkdirs()
+                            zip.getInputStream(entry).buffered().use { input ->
+                                out.outputStream().buffered().use { input.copyTo(it) }
                             }
                         }
                     }
                 }
-                zipFile.close()
             }
             val abiList = Build.SUPPORTED_ABIS
             for (abi in abiList.reversed()) {
@@ -231,7 +316,8 @@ class PluginManager @Inject constructor(
                 if (!abiDir.exists()) continue
                 abiDir.listFiles()?.forEach { file ->
                     val outputFile = targetDir.resolve(file.name)
-                        .also(File::createNewFile)
+                    outputFile.parentFile?.mkdirs()
+                    if (!outputFile.exists()) outputFile.createNewFile()
                     outputFile.outputStream().buffered().use {
                         file.inputStream().buffered().copyTo(it)
                     }
@@ -247,6 +333,12 @@ class PluginManager @Inject constructor(
     fun PluginContent(pluginId: String, paddingValues: PaddingValues) {
         pluginMap[pluginId]?.PageContent(paddingValues)
     }
+
+    fun getPluginInfo(id: String): PluginInfo? =
+        _allPluginInfo.firstOrNull { it.id == id }
+
+    fun getPluginFile(id: String): File? =
+        pluginPathMap[id]
 
     fun NavGraphBuilder.onBuildNavHost() {
         pluginMap.values.forEach {

@@ -14,6 +14,7 @@
     <!-- Operations -->
     <string name="cancel">取消</string>
     <string name="apply">设定</string>
+    <string name="confirm">确定</string>
     <string name="decline">拒绝</string>
     <string name="copied">内容已复制</string>
     <string name="select_all">全选</string>

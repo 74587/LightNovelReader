@@ -149,6 +149,8 @@ dependencies {
     implementation(libs.dom4j)
     implementation(libs.kotlin.result)
     implementation(libs.kotlin.result.coroutines)
+    // apksig
+    implementation(libs.apksig)
 }
 
 configurations.implementation {

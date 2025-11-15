@@ -347,8 +347,8 @@ fun BookshelfHomeScreen(
                 ) {
                     EmptyPage(
                         icon = painterResource(R.drawable.bookmarks_90px),
-                        titleId = R.string.nothing_here,
-                        descriptionId = R.string.nothing_here_desc_bookshelf
+                        title = stringResource(R.string.nothing_here),
+                        description = stringResource(R.string.nothing_here_desc_bookshelf)
                     )
                 }
 
