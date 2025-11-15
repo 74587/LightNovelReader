@@ -129,7 +129,7 @@ class ExportBookToEPUBWork @AssistedInject constructor(
             return@withContext Result.failure()
         }
         val tasks = mutableListOf<ImageDownloader.Task>()
-        var bookInformation = webBookDataSourceProvider.value.getBookInformation(bookId)
+        var bookInformation = webBookDataSourceProvider.lowPriority.getBookInformation(bookId)
         if (bookInformation.isEmpty()) {
             val localData = localBookDataSource.getBookInformation(bookId)
             if (localData == null || localData.isEmpty()) {
@@ -139,7 +139,7 @@ class ExportBookToEPUBWork @AssistedInject constructor(
             }
             else bookInformation = localBookDataSource.getBookInformation(bookId)!!
         }
-        var bookVolumes = webBookDataSourceProvider.value.getBookVolumes(bookId)
+        var bookVolumes = webBookDataSourceProvider.lowPriority.getBookVolumes(bookId)
         if (bookVolumes.isEmpty()) {
             val localData = localBookDataSource.getBookVolumes(bookId)
             if (localData == null || localData.isEmpty()) {
@@ -161,7 +161,7 @@ class ExportBookToEPUBWork @AssistedInject constructor(
             updateProgressNotification(bookId, progressForVolume)
             downloadItem.progress = progressForVolume / 100f
             volume.chapters.forEach {
-                var chapterContent = webBookDataSourceProvider.value.getChapterContent(it.id, bookId)
+                var chapterContent = webBookDataSourceProvider.lowPriority.getChapterContent(it.id, bookId)
                 if (chapterContent.isEmpty()) {
                     val localData = localBookDataSource.getChapterContent(it.id)
                     if (localData == null || localData.isEmpty()) {
@@ -239,7 +239,7 @@ class ExportBookToEPUBWork @AssistedInject constructor(
                 if (currentVolumeIndex == 0)
                     cover(cover)
                 else {
-                    val url = webBookDataSourceProvider.value.getCoverUriInVolume(bookId, volume, bookContentMap, applicationContext)
+                    val url = webBookDataSourceProvider.lowPriority.getCoverUriInVolume(bookId, volume, bookContentMap, applicationContext)
                     if (url == null) {
                         cover(cover)
                     } else {

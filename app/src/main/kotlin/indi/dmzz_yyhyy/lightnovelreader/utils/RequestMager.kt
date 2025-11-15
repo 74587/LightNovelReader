@@ -3,7 +3,6 @@ package indi.dmzz_yyhyy.lightnovelreader.utils
 import kotlinx.coroutines.delay
 import kotlin.coroutines.cancellation.CancellationException
 
-@Suppress("UNCHECKED_CAST")
 class RequestMarge {
     data class Result(
         val value: Any
@@ -19,13 +18,11 @@ class RequestMarge {
             try {
                 resultMap[key] = Result(block.invoke())
             } catch (_: CancellationException) {
-                println("canceled and process")
                 resultMap.remove(key)
                 return block.invoke()
             }
         }
         while (resultMap.contains(key) && resultMap[key] == null) {
-            println("wait for other request $key")
             delay(1)
         }
         val value = resultMap[key]?.let { it.value as T} ?: block.invoke()

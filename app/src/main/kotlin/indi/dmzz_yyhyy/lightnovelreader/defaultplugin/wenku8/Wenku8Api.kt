@@ -13,7 +13,6 @@ import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore.expanedpage
 import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore.expanedpage.filter.FirstLetterSingleChoiceFilter
 import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore.expanedpage.filter.PublishingHouseSingleChoiceFilter
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.explore.expanded.navigateToExploreExpandDestination
-import indi.dmzz_yyhyy.lightnovelreader.utils.Cache
 import indi.dmzz_yyhyy.lightnovelreader.utils.update
 import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.book.BookVolumes
@@ -28,6 +27,7 @@ import io.nightfish.lightnovelreader.api.content.builder.ContentBuilder
 import io.nightfish.lightnovelreader.api.content.builder.image
 import io.nightfish.lightnovelreader.api.content.builder.simpleText
 import io.nightfish.lightnovelreader.api.content.component.ImageComponentData
+import io.nightfish.lightnovelreader.api.util.Cache
 import io.nightfish.lightnovelreader.api.web.WebBookDataSource
 import io.nightfish.lightnovelreader.api.web.WebDataSource
 import io.nightfish.lightnovelreader.api.web.explore.ExploreExpandedPageDataSource
@@ -86,7 +86,10 @@ object Wenku8Api: WebBookDataSource {
     private val titleRegex = Regex("(.*) ?[(（](.*)[)）] ?$")
     private val hosts = listOf("https://www.wenku8.cc", "https://www.wenku8.net", "https://www.wenku8.com")
     private var isLocalIpUnableUse = true
-    private val cache = Cache(
+    override val cache = Cache(
+        timeout = 5 * 60 * 1000
+    )
+    private val _cache = Cache(
         timeout = 5 * 60 * 1000
     )
     var host  =  hosts[0]
@@ -98,11 +101,11 @@ object Wenku8Api: WebBookDataSource {
     }
 
     private inline fun <reified T: CanBeEmpty> ifCache(id: String, block: () -> T): T {
-        val cacheData = cache.getCache<T>(id.hashCode())
+        val cacheData = _cache.getCache<T>(id.hashCode())
         if (cacheData == null) {
             val data = block.invoke()
             if (data.isEmpty()) return data
-            cache.cache(id.hashCode(), data)
+            _cache.cache(id.hashCode(), data)
             return data
         }
         return cacheData

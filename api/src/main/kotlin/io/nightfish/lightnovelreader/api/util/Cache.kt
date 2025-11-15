@@ -1,4 +1,4 @@
-package indi.dmzz_yyhyy.lightnovelreader.utils
+package io.nightfish.lightnovelreader.api.util
 
 import kotlin.reflect.KClass
 

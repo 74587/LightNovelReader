@@ -29,13 +29,13 @@ class CacheBookWork @AssistedInject constructor(
         val downloadItem = MutableDownloadItem(DownloadType.CACHE, bookId)
         downloadProgressRepository.addExportItem(downloadItem)
         var count = 0
-        val bookVolumes = webBookDataSourceProvider.value.getBookVolumes(bookId)
+        val bookVolumes = webBookDataSourceProvider.default.getBookVolumes(bookId)
         val total = bookVolumes.volumes.sumOf { it.chapters.size } + 1
         if (bookVolumes.volumes.isEmpty()) return Result.failure()
         localBookDataSource.updateBookVolumes(bookId, bookVolumes)
         bookVolumes.volumes.forEach { volume ->
             volume.chapters.map { it.id }.forEach { chapterId ->
-                val chapter = webBookDataSourceProvider.value.getChapterContent(
+                val chapter = webBookDataSourceProvider.default.getChapterContent(
                     chapterId = chapterId,
                     bookId = bookId
                 )
@@ -49,7 +49,7 @@ class CacheBookWork @AssistedInject constructor(
                 downloadItem.progress = count.toFloat() / total
             }
         }
-        webBookDataSourceProvider.value.getBookInformation(bookId)
+        webBookDataSourceProvider.default.getBookInformation(bookId)
             .let {
                 if (it.isEmpty()) return Result.failure()
                 localBookDataSource.updateBookInformation(it)

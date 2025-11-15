@@ -6,6 +6,7 @@ import androidx.compose.runtime.snapshotFlow
 import indi.dmzz_yyhyy.lightnovelreader.data.book.BookRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.content.ContentComponentRepository
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.content.ContentViewModel
+import io.nightfish.lightnovelreader.api.web.WebDataSourcePriority
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -81,7 +82,12 @@ class FlipPageContentViewModel(
         }
         notRecoveredProgress = 0f
         uiState.readingProgress = 0f
-        uiState.readingChapterContent = bookRepository.getStateChapterContent(id, uiState.bookId, coroutineScope)
+        uiState.readingChapterContent = bookRepository.getStateChapterContent(
+            id,
+            uiState.bookId,
+            coroutineScope,
+            WebDataSourcePriority.High
+        )
         uiState.readingChapterContent
         coroutineScope.launch(Dispatchers.IO) {
             snapshotFlow { uiState.readingChapterContent.title }.collect { title ->

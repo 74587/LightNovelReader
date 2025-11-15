@@ -59,7 +59,7 @@ class MainActivity : ComponentActivity() {
         workManager.enqueueUniquePeriodicWork(
             "checkUpdate",
             ExistingPeriodicWorkPolicy.KEEP,
-            PeriodicWorkRequestBuilder<CheckUpdateWork>(2, TimeUnit.HOURS)
+            PeriodicWorkRequestBuilder<CheckUpdateWork>(12, TimeUnit.HOURS)
                 .build()
         )
         coroutineScope.launch(Dispatchers.IO) {

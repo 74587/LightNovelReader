@@ -76,7 +76,7 @@ class ExportDataWork @AssistedInject constructor(
             }
         return@withContext AppUserDataJsonBuilder()
             .data {
-                webDataSourceId(webBookDataSourceProvider.value.id)
+                webDataSourceId(webBookDataSourceProvider.default.id)
                 if (exportBookshelf) {
                     bookshelfRepository.getAllBookshelfIds()
                         .mapNotNull { (bookshelfRepository.getBookshelf(it)) }

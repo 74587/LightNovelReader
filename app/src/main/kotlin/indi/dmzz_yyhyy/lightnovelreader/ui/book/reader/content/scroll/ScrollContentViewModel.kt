@@ -7,6 +7,7 @@ import indi.dmzz_yyhyy.lightnovelreader.data.content.ContentComponentRepository
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.SettingState
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.content.ContentViewModel
 import indi.dmzz_yyhyy.lightnovelreader.utils.throttleLatest
+import io.nightfish.lightnovelreader.api.web.WebDataSourcePriority
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -179,7 +180,7 @@ class ScrollContentViewModel(
         uiState.readingContentId = id
         uiState.readingProgress = 0f
         coroutineScope.launch(Dispatchers.IO) {
-            val chapterContent = bookRepository.getChapterContent(id, uiState.bookId)
+            val chapterContent = bookRepository.getChapterContent(id, uiState.bookId, WebDataSourcePriority.High)
             bookRepository.updateUserReadingData(uiState.bookId) {
                 it.apply {
                     lastReadChapterProgress =
@@ -193,7 +194,7 @@ class ScrollContentViewModel(
         coroutineScope.launch(Dispatchers.IO) {
             val isUsingContinuousScrollingUserData =
                 settingState.isUsingContinuousScrollingUserData.getOrDefault(false)
-            bookRepository.getChapterContentFlow(id, uiState.bookId, coroutineScope).collect { chapterContent ->
+            bookRepository.getChapterContentFlow(id, uiState.bookId, coroutineScope, WebDataSourcePriority.High).collect { chapterContent ->
                 if (chapterContent.isEmpty()) return@collect
                 if (chapterContent.id != uiState.readingContentId) return@collect
                 if (
@@ -208,7 +209,8 @@ class ScrollContentViewModel(
                         bookRepository.getStateChapterContent(
                             chapterContent.lastChapter,
                             uiState.bookId,
-                            coroutineScope
+                            coroutineScope,
+                            WebDataSourcePriority.High
                         )
                     )
                 }

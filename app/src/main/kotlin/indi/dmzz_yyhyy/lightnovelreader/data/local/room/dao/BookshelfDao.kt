@@ -30,7 +30,10 @@ interface BookshelfDao {
     fun getBookShelfFlow(id: Int): Flow<BookshelfEntity?>
 
     @Query("select * from book_shelf")
-    fun getAllBookshelfFlow(): Flow<List<BookshelfEntity>>
+    fun getAllBookshelvesFlow(): Flow<List<BookshelfEntity>>
+
+    @Query("select * from book_shelf")
+    fun getAllBookshelves(): List<BookshelfEntity>
 
     @Query("select * from book_shelf_book_metadata")
     fun getAllBookshelfBookMetadataEntities(): List<BookshelfBookMetadataEntity>
