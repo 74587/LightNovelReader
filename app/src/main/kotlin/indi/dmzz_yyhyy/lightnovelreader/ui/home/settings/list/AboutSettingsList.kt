@@ -17,7 +17,8 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsClickableEntry
 
 @Composable
 fun AboutSettingsList(
-    onClickDebugMode: () -> Unit
+    onClickDebugMode: () -> Unit,
+    onClickLicenses: () -> Unit
 ) {
     val appInfo: String = buildString {
         appendLine(BuildConfig.APPLICATION_ID)
@@ -60,6 +61,12 @@ fun AboutSettingsList(
         booleanUserData = settingState.statisticsUserData,
         disabled = BuildConfig.DEBUG
     ) */
+    SettingsClickableEntry(
+        modifier = Modifier.background(colorScheme.surfaceContainer),
+        painter = painterResource(R.drawable.code_24px),
+        title = "开放源代码许可",
+        onClick = onClickLicenses
+    )
     if (BuildConfig.DEBUG)
         SettingsClickableEntry(
             modifier = Modifier.background(colorScheme.surfaceContainer),

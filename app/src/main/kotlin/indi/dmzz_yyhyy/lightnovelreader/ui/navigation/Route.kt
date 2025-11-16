@@ -65,6 +65,8 @@ object Route {
             object Debug
             @Serializable
             object Theme
+            @Serializable
+            object Licenses
         }
         @Serializable
         object SourceChangeDialog

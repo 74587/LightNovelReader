@@ -48,6 +48,7 @@ fun SettingsScreen(
     onClickChangeSource: () -> Unit,
     onClickExportUserData: () -> Unit,
     onClickDebugMode: () -> Unit,
+    onClickLicenses: () -> Unit,
     onClickThemeSettings: () -> Unit,
     onClickTextFormatting: () -> Unit,
     animatedVisibilityScope: AnimatedVisibilityScope,
@@ -112,7 +113,8 @@ fun SettingsScreen(
                         title = stringResource(R.string.about_settings),
                     ) {
                         AboutSettingsList(
-                            onClickDebugMode = onClickDebugMode
+                            onClickDebugMode = onClickDebugMode,
+                            onClickLicenses = onClickLicenses
                         )
                     }
                 }

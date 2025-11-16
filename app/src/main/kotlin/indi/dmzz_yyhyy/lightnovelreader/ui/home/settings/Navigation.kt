@@ -36,6 +36,8 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.SliderValueDialogViewModel
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.UpdatesAvailableDialogViewModel
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.debug.navigateToSettingsDebugDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.debug.settingsDebugDestination
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.licenses.navigateToSettingsLicensesDestination
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.licenses.settingsLicensesDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.logcat.navigateToSettingsLogcatDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.logcat.settingsLogcatDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.textformatting.editTextFormattingRuleDialog
@@ -64,6 +66,7 @@ fun NavGraphBuilder.settingsDestination(sharedTransitionScope: SharedTransitionS
             checkUpdate = updatesAvailableDialogViewModel::checkUpdate,
             importData = settingsViewModel::importFromFile,
             onClickDebugMode = navController::navigateToSettingsDebugDestination,
+            onClickLicenses = navController::navigateToSettingsLicensesDestination,
             onClickChangeSource = navController::navigateToSourceChangeDialog,
             onClickExportUserData = navController::navigateToExportUserDataDialog,
             onClickLogcat = navController::navigateToSettingsLogcatDestination,
@@ -89,6 +92,7 @@ fun NavGraphBuilder.settingsNavigation(sharedTransitionScope: SharedTransitionSc
         settingsLogcatDestination()
         settingsThemeDestination()
         settingsTextFormattingNavigation()
+        settingsLicensesDestination()
     }
 }
 
