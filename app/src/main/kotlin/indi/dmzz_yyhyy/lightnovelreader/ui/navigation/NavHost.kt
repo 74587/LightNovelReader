@@ -1,12 +1,7 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.navigation
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
-import androidx.compose.animation.shrinkVertically
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -26,12 +21,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalNavController
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalScaffoldPadding
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.bookNavigation
+import indi.dmzz_yyhyy.lightnovelreader.ui.components.LnrNavigationBar
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.LnrSnackbar
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.addBookToBookshelfDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.markAllChaptersAsReadDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.updatesAvailableDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.downloadmanager.downloadManager
-import indi.dmzz_yyhyy.lightnovelreader.ui.home.HomeNavigateBar
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.homeNavigation
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalClaimSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
@@ -53,7 +48,6 @@ fun LightNovelReaderNavHost(
         { take -> claimCount += if (take) 1 else -1 }
     }
 
-
     CompositionLocalProvider(
         LocalNavController provides navController,
         LocalSnackbarHost provides snackbarHostState,
@@ -66,18 +60,11 @@ fun LightNovelReaderNavHost(
 
         Scaffold(
             bottomBar = {
-                AnimatedVisibility(
-                    visible = showBottomBar,
-                    enter = expandVertically(tween(300)),
-                    exit = shrinkVertically(tween(300))
-                ) {
-                    Box {
-                        HomeNavigateBar(
-                            selectedRoute = selectedRoute,
-                            controller = navController
-                        )
-                    }
-                }
+                LnrNavigationBar(
+                    showBottomBar = showBottomBar,
+                    selectedRoute = selectedRoute,
+                    navController = navController
+                )
             },
             snackbarHost = {
                 if (claimCount == 0) {
@@ -109,6 +96,7 @@ fun LightNovelReaderNavHost(
                 }
             }
         }
+
     }
 }
 

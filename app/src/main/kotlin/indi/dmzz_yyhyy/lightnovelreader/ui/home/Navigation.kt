@@ -6,6 +6,10 @@ import androidx.compose.animation.graphics.ExperimentalAnimationGraphicsApi
 import androidx.compose.animation.graphics.res.animatedVectorResource
 import androidx.compose.animation.graphics.res.rememberAnimatedVectorPainter
 import androidx.compose.animation.graphics.vector.AnimatedImageVector
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.WindowInsetsSides
+import androidx.compose.foundation.layout.only
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -85,7 +89,12 @@ fun HomeNavigateBar(
     val avdExplore = AnimatedImageVector.animatedVectorResource(R.drawable.animated_exploration)
     val avdSettings = AnimatedImageVector.animatedVectorResource(R.drawable.animated_settings)
 
-    NavigationBar {
+
+    NavigationBar(
+        windowInsets = WindowInsets.systemBars.only(
+            WindowInsetsSides.Bottom + WindowInsetsSides.Horizontal
+        )
+    ) {
         NavigationBarItem(
             selected = isReading,
             onClick = { controller.navigateSingleTopTo(Route.Main.Reading) },

@@ -1,6 +1,7 @@
 package indi.dmzz_yyhyy.lightnovelreader.theme
 
 import android.app.Activity
+import android.graphics.Color
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
@@ -14,7 +15,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
-import androidx.core.view.WindowInsetsControllerCompat
+import androidx.core.view.WindowCompat
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalAppTheme
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalDarkColorScheme
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalLightColorScheme
@@ -70,12 +71,17 @@ fun LightNovelReaderTheme(
         AppTheme(isDark = isDark, colorScheme = colorScheme)
     }
 
+    @Suppress("deprecation")
     SideEffect {
         val window = (view.context as Activity).window
-        WindowInsetsControllerCompat(window, view).apply {
-            isAppearanceLightStatusBars = !isDark
-            isAppearanceLightNavigationBars = !isDark
+        val controller = WindowCompat.getInsetsController(window, view)
+
+        controller.isAppearanceLightStatusBars = !isDark
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            controller.isAppearanceLightNavigationBars = !isDark
         }
+        window.statusBarColor = Color.TRANSPARENT
+        window.navigationBarColor = Color.TRANSPARENT
     }
 
     LaunchedEffect(appLocale) {
