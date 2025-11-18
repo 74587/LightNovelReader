@@ -5,6 +5,7 @@ import android.content.Context.BATTERY_SERVICE
 import android.os.BatteryManager
 import android.util.Log
 import android.view.View
+import android.view.Window
 import android.view.WindowManager
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -33,6 +34,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContent
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsIgnoringVisibility
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -46,6 +48,7 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -81,10 +84,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.book.BookVolumes
 import indi.dmzz_yyhyy.lightnovelreader.data.book.ChapterContent
+import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataPath
 import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.content.ContentComponent
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.AnimatedText
@@ -95,6 +100,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.data.MenuOptions
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalClaimSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.rememberReaderBackgroundPainter
+import indi.dmzz_yyhyy.lightnovelreader.utils.showSnackbar
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalTime
@@ -115,8 +121,9 @@ fun ReaderScreen(
     onZoomImage: (String) -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    var isImmersive by remember { mutableStateOf(false) }
+    var isImmersive by remember { mutableStateOf(true) }
     val context = LocalContext.current
+    val snackbarHostState = LocalSnackbarHost.current
     val backBlockMode = settingState.backBlockMode
     var lastBackPressTime: Long by remember { mutableLongStateOf(0) }
     var showSettingsBottomSheet by remember { mutableStateOf(false) }
@@ -134,7 +141,6 @@ fun ReaderScreen(
         onDispose { claim(false) }
     }
 
-
     BackHandler {
         when (backBlockMode) {
             MenuOptions.ReaderBackBlockMode.None -> {
@@ -144,15 +150,16 @@ fun ReaderScreen(
 
             MenuOptions.ReaderBackBlockMode.DoublePress -> {
                 val now = System.currentTimeMillis()
-                if (now - lastBackPressTime < 1500) {
+                if (!isImmersive || now - lastBackPressTime < 1500) {
                     onClickBackButton()
                 } else {
                     lastBackPressTime = now
-                    Toast.makeText(
-                        context,
-                        context.getString(R.string.reader_back_press_again),
-                        Toast.LENGTH_SHORT
-                    ).show()
+                    showSnackbar(
+                        coroutineScope = coroutineScope,
+                        hostState = snackbarHostState,
+                        message = context.getString(R.string.reader_back_press_again),
+                        duration = SnackbarDuration.Short
+                    )
                 }
             }
 
@@ -285,38 +292,52 @@ fun Content(
     onZoomImage: (String) -> Unit
 ) {
     val activity = LocalActivity.current as Activity
+    val window = activity.window
     val density = LocalDensity.current
-    var isRunning by remember { mutableStateOf(false) }
 
+    val stableSafeTopDp by remember {
+        mutableStateOf(
+            with(density) {
+                WindowInsetsCompat
+                    .toWindowInsetsCompat(activity.window.decorView.rootWindowInsets)
+                    .getInsetsIgnoringVisibility(WindowInsetsCompat.Type.statusBars())
+                    .top
+                    .toDp()
+            }
+        )
+    }
+
+    val originalUiFlags = remember { window.decorView.systemUiVisibility }
+
+    var isRunning by remember { mutableStateOf(false) }
     var totalReadingTime by remember { mutableIntStateOf(0) }
 
-    LaunchedEffect(isImmersive) {
-        if (!settingState.enableHideStatusBar) return@LaunchedEffect
-        val window = activity.window
-        val controller = WindowCompat.getInsetsController(window, window.decorView)
+    LaunchedEffect(
+        isImmersive,
+        settingState.enableHideStatusBar,
+        settingState.batteryIndicatorDisplayMode
+    ) {
+        updateReaderImmersiveMode(
+            window = window,
+            immersive = isImmersive,
+            enableHideStatusBar = settingState.enableHideStatusBar,
+        )
+    }
 
-        @Suppress("DEPRECATION")
-        controller.apply {
-            if (isImmersive) {
-                if (settingState.batteryIndicatorDisplayMode == "immersed") {
-                    var visibility =
-                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                    val navbar =
-                        View.SYSTEM_UI_FLAG_LOW_PROFILE or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    visibility = visibility or navbar
-                    window.decorView.systemUiVisibility = visibility
-                } else {
-                    val visibility =
-                        View.SYSTEM_UI_FLAG_LAYOUT_STABLE or View.SYSTEM_UI_FLAG_FULLSCREEN or View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                    window.decorView.systemUiVisibility = visibility
-                }
-
-            } else {
-                show(WindowInsetsCompat.Type.systemBars())
-                window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
-            }
+    DisposableEffect(Unit) {
+        onDispose {
+            val controller = WindowCompat.getInsetsController(window, window.decorView)
+            controller.show(WindowInsetsCompat.Type.systemBars())
         }
+    }
 
+    DisposableEffect(Unit) {
+        @Suppress("deprecation")
+        onDispose {
+            val controller = WindowCompat.getInsetsController(window, window.decorView)
+            controller.show(WindowInsetsCompat.Type.systemBars())
+            window.decorView.systemUiVisibility = originalUiFlags
+        }
     }
     LifecycleResumeEffect(Unit) {
         isRunning = true
@@ -372,7 +393,11 @@ fun Content(
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        val isEnableIndicator = settingState.enableTimeIndicator || settingState.enableReadingChapterProgressIndicator || settingState.enableChapterTitleIndicator
+        val isEnableIndicator =
+            settingState.enableTimeIndicator ||
+                    settingState.enableReadingChapterProgressIndicator ||
+                    settingState.enableChapterTitleIndicator
+
         Box(Modifier.fillMaxSize()) {
             AnimatedContent(
                 readingScreenUiState.contentUiState,
@@ -381,29 +406,30 @@ fun Content(
                 ContentComponent(
                     uiState = contentUiState,
                     settingState = settingState,
-                    paddingValues = if (settingState.autoPadding)
-                        with(density) {
+                    paddingValues =
+                        if (settingState.autoPadding)
                             PaddingValues(
-                                top = WindowInsets.safeContent.getTop(density).toDp(),
+                                top = stableSafeTopDp,
                                 bottom = if (isEnableIndicator) 46.dp else 12.dp,
                                 start = 16.dp,
                                 end = 16.dp
                             )
-                        }
-                    else PaddingValues(
-                        top = settingState.topPadding.dp,
-                        bottom = if (isEnableIndicator) (settingState.bottomPadding + 38).dp else settingState.bottomPadding.dp,
-                        start = settingState.leftPadding.dp,
-                        end = settingState.rightPadding.dp
-                    ),
+                        else PaddingValues(
+                            top = settingState.topPadding.dp,
+                            bottom = if (isEnableIndicator)
+                                (settingState.bottomPadding + 38).dp
+                            else settingState.bottomPadding.dp,
+                            start = settingState.leftPadding.dp,
+                            end = settingState.rightPadding.dp
+                        ),
                     changeIsImmersive = onChangeIsImmersive,
                     onZoomImage = onZoomImage,
                     onClickPrevChapter = onClickPrevChapter,
                     onClickNextChapter = onClickNextChapter
                 )
-
             }
-            AnimatedVisibility (
+
+            AnimatedVisibility(
                 modifier = Modifier.align(Alignment.BottomCenter),
                 visible = isEnableIndicator,
                 enter = expandVertically(),
@@ -433,6 +459,33 @@ fun Content(
                 )
             }
         }
+    }
+}
+
+private fun updateReaderImmersiveMode(
+    window: Window,
+    immersive: Boolean,
+    enableHideStatusBar: Boolean,
+) {
+    val controller = WindowCompat.getInsetsController(window, window.decorView)
+
+    controller.systemBarsBehavior =
+        WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+
+    if (immersive) {
+        if (enableHideStatusBar) {
+            controller.hide(WindowInsetsCompat.Type.statusBars())
+        } else {
+            controller.show(WindowInsetsCompat.Type.statusBars())
+        }
+    } else {
+        controller.show(WindowInsetsCompat.Type.statusBars())
+    }
+
+    if (immersive) {
+        controller.hide(WindowInsetsCompat.Type.navigationBars())
+    } else {
+        controller.show(WindowInsetsCompat.Type.navigationBars())
     }
 }
 

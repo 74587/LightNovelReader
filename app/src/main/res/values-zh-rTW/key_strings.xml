@@ -35,5 +35,5 @@
     <!-- Reader Battery Indicator Display Mode -->
     <string name="key_reader_indicator_battery_display_mode_hidden">隱藏</string>
     <string name="key_reader_indicator_battery_display_mode_classic">經典</string>
-    <string name="key_reader_indicator_battery_display_mode_immersed">沉浸</string>
+    <string name="key_reader_indicator_battery_display_mode_immersed">在狀態欄顯示</string>
 </resources>

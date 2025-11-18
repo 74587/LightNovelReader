@@ -35,7 +35,7 @@
     <!-- Reader Battery Indicator Display Mode -->
     <string name="key_reader_indicator_battery_display_mode_hidden">隐藏</string>
     <string name="key_reader_indicator_battery_display_mode_classic">经典</string>
-    <string name="key_reader_indicator_battery_display_mode_immersed">沉浸</string>
+    <string name="key_reader_indicator_battery_display_mode_immersed">在状态栏显示</string>
     <!-- Reader Back Block Mode -->
     <string name="key_reader_back_block_mode_none">无</string>
     <string name="key_reader_back_block_mode_double_press">双击</string>
