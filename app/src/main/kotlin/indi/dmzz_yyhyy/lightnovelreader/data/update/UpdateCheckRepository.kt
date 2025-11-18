@@ -62,10 +62,6 @@ class UpdateCheckRepository @Inject constructor(
             val updateChannelKey = userDataRepository.stringUserData(UserDataPath.Settings.App.UpdateChannel.path).get() ?: MenuOptions.UpdateChannelOptions.Development
             val distributionPlatform = userDataRepository.stringUserData(UserDataPath.Settings.App.DistributionPlatform.path).get() ?: MenuOptions.UpdatePlatformOptions.GitHub
             Log.i("UpdateChecker", "Checking for updates from $distributionPlatform/$updateChannelKey")
-            if (distributionPlatform == "AppCenter") {
-                _updatePhase.update { "失败: AppCenter 平台已不受支持" }
-                return@launch
-            }
             _updatePhase.update { "已请求更新，等待 $distributionPlatform 应答" }
             try {
                 release =

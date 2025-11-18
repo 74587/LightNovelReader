@@ -32,7 +32,9 @@ fun UpdatesSettingsList(
         painter = painterResource(R.drawable.alt_route_24px),
         title = stringResource(R.string.settings_update_channel),
         description = stringResource(R.string.settings_update_channel_desc),
-        options = MenuOptions.UpdatePlatformOptions.getOptionWithValue(settingState.distributionPlatformKey).value,
+        options = MenuOptions.UpdatePlatformOptions
+            .getOptionWithValueOrDefault(settingState.distributionPlatformKey)
+            .value,
         selectedOptionKey = settingState.updateChannelKey,
         onOptionChange = settingState.updateChannelKeyUserData::asynchronousSet
     )

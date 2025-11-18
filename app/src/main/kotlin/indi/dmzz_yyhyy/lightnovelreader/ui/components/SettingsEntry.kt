@@ -314,7 +314,9 @@ fun SettingsMenuEntry(
     onOptionChange: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember { mutableStateOf(options.get(selectedOptionKey)) }
+    var selectedOption by remember {
+        mutableStateOf(options.getOrNull(selectedOptionKey))
+    }
 
     Row(
         modifier = Modifier
@@ -352,10 +354,14 @@ fun SettingsMenuEntry(
                 )
             }
             AnimatedTextLine(
-                text = stringResource(selectedOption.nameId),
+                text =
+                    selectedOption?.let { stringResource(it.nameId) }
+                        ?: "(null)",
                 style = AppTypography.labelMedium,
                 color = colorScheme.primary
             )
+
+
 
             Box(
                 modifier = Modifier.offset {
