@@ -59,7 +59,6 @@ import indi.dmzz_yyhyy.lightnovelreader.data.book.BookInformation
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.entity.BookRecordEntity
 import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.AnimatedText
-import indi.dmzz_yyhyy.lightnovelreader.ui.components.Cover
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.HeatMapCalendar
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.calendar.core.CalendarDay
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.calendar.core.CalendarMonth
@@ -68,6 +67,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.components.calendar.core.displayText
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.calendar.core.yearMonth
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.calendar.rememberHeatMapCalendarState
 import indi.dmzz_yyhyy.lightnovelreader.utils.DurationFormat
+import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.Month
@@ -123,6 +123,7 @@ fun StatsOverviewScreen(
                     }
                     item { DailyStatsBlock(uiState, onClickDetailScreen) }
                     item { TotalStatsBlock(uiState) }
+                    navigationBarSpacer()
                 }
             }
         }

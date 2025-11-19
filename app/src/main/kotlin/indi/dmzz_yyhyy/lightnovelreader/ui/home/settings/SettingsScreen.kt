@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -35,7 +36,8 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.DataSettingsList
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.DisplaySettingsList
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.ReadingSettingsList
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.UpdatesSettingsList
-import indi.dmzz_yyhyy.lightnovelreader.utils.mainScaffoldPaddings
+import indi.dmzz_yyhyy.lightnovelreader.utils.bottomBarSpacer
+import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
@@ -55,13 +57,14 @@ fun SettingsScreen(
     sharedTransitionScope: SharedTransitionScope,
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    val listState = rememberLazyListState()
+
     with(sharedTransitionScope) {
-        Column(
-            modifier = Modifier.mainScaffoldPaddings()
-        ) {
+        Column {
             TopBar(scrollBehavior)
             LazyColumn (
-                Modifier.fillMaxSize()
+                Modifier.fillMaxSize(),
+                listState
             ) {
                 item {
                     SettingsCategory(
@@ -118,6 +121,8 @@ fun SettingsScreen(
                         )
                     }
                 }
+                bottomBarSpacer()
+                navigationBarSpacer()
             }
         }
     }

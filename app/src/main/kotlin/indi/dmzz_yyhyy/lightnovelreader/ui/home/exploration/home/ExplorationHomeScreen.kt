@@ -71,8 +71,9 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.components.Cover
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Loading
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.exploration.ExplorationScreen
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.exploration.ExplorationUiState
+import indi.dmzz_yyhyy.lightnovelreader.utils.bottomBarSpacer
 import indi.dmzz_yyhyy.lightnovelreader.utils.fadingEdge
-import indi.dmzz_yyhyy.lightnovelreader.utils.mainScaffoldPaddings
+import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -94,10 +95,9 @@ fun ExplorationHomeScreen(
     LifecycleEventEffect(Lifecycle.Event.ON_CREATE) {
         init()
     }
+
     with(sharedTransitionScope) {
-        Column(
-            modifier = Modifier.mainScaffoldPaddings()
-        ) {
+        Column {
             TopBar(
                 scrollBehavior = enterAlwaysScrollBehavior,
                 onClickSearch = onClickSearch
@@ -211,27 +211,36 @@ fun ExplorationPage(
     nestedScrollConnection: NestedScrollConnection,
     refresh: () -> Unit
 ) {
-    val rememberPullToRefreshState = rememberPullToRefreshState()
-    var isRefreshing by remember{ mutableStateOf(false) }
+    val pullState = rememberPullToRefreshState()
+    var isRefreshing by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    val listState = rememberLazyListState()
+
     PullToRefreshBox(
         isRefreshing = isRefreshing,
         onRefresh = {
             isRefreshing = true
             refresh()
             scope.launch {
-                rememberPullToRefreshState.animateToHidden()
+                pullState.animateToHidden()
+                isRefreshing = false
             }
-            isRefreshing = false
         },
-        state = rememberPullToRefreshState
+        state = pullState
     ) {
         LazyColumn(
-            modifier = Modifier.nestedScroll(nestedScrollConnection)
+            modifier = Modifier
+                .fillMaxWidth()
+                .nestedScroll(nestedScrollConnection),
+            state = listState
         ) {
-            items(explorationPageBooksRawList) { explorationBooksRow ->
+            items(
+                items = explorationPageBooksRawList,
+                key = { it.title }
+            ) { explorationBooksRow ->
                 Column(
-                    modifier = Modifier.animateItem()
+                    modifier = Modifier
+                        .animateItem()
                 ) {
                     Row(
                         modifier = Modifier
@@ -264,6 +273,7 @@ fun ExplorationPage(
                             }
                         }
                     }
+
                     val lazyRowState = rememberLazyListState()
 
                     CompositionLocalProvider(LocalOverscrollFactory provides null) {
@@ -287,7 +297,10 @@ fun ExplorationPage(
                                 Box(modifier = Modifier.width(10.dp))
                             }
 
-                            items(explorationBooksRow.bookList) { explorationDisplayBook ->
+                            items(
+                                items = explorationBooksRow.bookList,
+                                key = { it.id }
+                            ) { explorationDisplayBook ->
                                 Column(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(10.dp))
@@ -313,11 +326,13 @@ fun ExplorationPage(
                                         verticalArrangement = Arrangement.spacedBy(2.dp)
                                     ) {
                                         val titleLineHeight = 16.sp
+                                        val titleHeight = with(LocalDensity.current) {
+                                            (titleLineHeight * 2.2f).toDp()
+                                        }
+
                                         Text(
                                             modifier = Modifier
-                                                .height(
-                                                    with(LocalDensity.current) { (titleLineHeight * 2.2f).toDp() }
-                                                )
+                                                .height(titleHeight)
                                                 .wrapContentHeight(Alignment.Top),
                                             text = explorationDisplayBook.title,
                                             style = AppTypography.titleVerySmall.copy(
@@ -357,7 +372,8 @@ fun ExplorationPage(
                     }
                 }
             }
+            navigationBarSpacer()
+            bottomBarSpacer()
         }
-
     }
 }

@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -25,6 +24,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -77,8 +77,9 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.components.EmptyPage
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SectionHeader
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.rememberSkeletonShimmer
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
+import indi.dmzz_yyhyy.lightnovelreader.utils.bottomBarSpacer
 import indi.dmzz_yyhyy.lightnovelreader.utils.formTime
-import indi.dmzz_yyhyy.lightnovelreader.utils.mainScaffoldPaddings
+import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 import indi.dmzz_yyhyy.lightnovelreader.utils.removeFromBookshelfAction
 import indi.dmzz_yyhyy.lightnovelreader.utils.showSnackbar
 import kotlinx.coroutines.delay
@@ -106,9 +107,7 @@ fun ReadingScreen(
     }
 
     with(sharedTransitionScope) {
-        Column(
-            modifier = Modifier.mainScaffoldPaddings()
-        ) {
+        Column {
             TopBar(
                 onClickDownloadManager = onClickDownloadManager,
                 onClickStats = onClickStats
@@ -166,6 +165,7 @@ private fun ReadingContent(
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = LocalSnackbarHost.current
+    val listState = rememberLazyListState()
 
     var started by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
@@ -192,7 +192,8 @@ private fun ReadingContent(
                 val position = layoutCoordinates.unclippedBoundsInWindow()
                 shimmerInstance.updateBounds(position)
             },
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        state = listState
     ) {
         if (
             recentReadingBookIds.isNotEmpty()
@@ -278,10 +279,8 @@ private fun ReadingContent(
                 }
             }
         }
-
-        item {
-            Spacer(Modifier.height(12.dp))
-        }
+        navigationBarSpacer()
+        bottomBarSpacer()
     }
 }
 
@@ -292,7 +291,6 @@ fun ReadingBookCardSkeleton(
     val roundedSmall = RoundedCornerShape(4.dp)
     val roundedLarge = RoundedCornerShape(8.dp)
     val baseColor = colorScheme.surfaceContainerLow
-
 
     Row(
         modifier = modifier

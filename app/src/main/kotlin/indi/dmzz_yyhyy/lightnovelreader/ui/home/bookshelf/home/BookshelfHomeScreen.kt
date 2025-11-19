@@ -47,12 +47,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
+import androidx.compose.material3.PrimaryScrollableTabRow
 import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
-import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -102,7 +101,8 @@ import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.AnimatedText
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.BookCardItem
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.EmptyPage
-import indi.dmzz_yyhyy.lightnovelreader.utils.mainScaffoldPaddings
+import indi.dmzz_yyhyy.lightnovelreader.utils.bottomBarSpacer
+import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
@@ -173,9 +173,7 @@ fun BookshelfHomeScreen(
     }
 
     with(sharedTransitionScope) {
-        Column(
-            modifier = Modifier.mainScaffoldPaddings()
-        ) {
+        Column {
             TopBar(
                 scrollBehavior = enterAlwaysScrollBehavior,
                 backgroundColor = animatedBackgroundColor,
@@ -249,19 +247,19 @@ fun BookshelfHomeScreen(
                     exit = shrinkVertically()
                 ) {
                     if (uiState.bookshelfList.size > 4) {
-                        ScrollableTabRow(
+                        PrimaryScrollableTabRow(
                             selectedTabIndex = uiState.selectedTabIndex,
                             edgePadding = 16.dp,
-                            indicator = { tabPositions ->
+                            indicator = {
                                 SecondaryIndicator(
                                     modifier = Modifier
-                                        .tabIndicatorOffset(tabPositions[uiState.selectedTabIndex])
+                                        .tabIndicatorOffset(uiState.selectedTabIndex)
                                         .height(4.dp)
                                         .clip(RoundedCornerShape(topStart = 3.dp, topEnd = 3.dp))
                                         .background(MaterialTheme.colorScheme.secondary),
-                                    color = MaterialTheme.colorScheme.primary,
+                                    color = MaterialTheme.colorScheme.primary
                                 )
-                            },
+                            }
                         ) {
                             uiState.bookshelfList.forEach { bookshelf ->
                                 Tab(
@@ -278,7 +276,17 @@ fun BookshelfHomeScreen(
                         }
                     } else {
                         PrimaryTabRow(
-                            selectedTabIndex = uiState.selectedTabIndex
+                            selectedTabIndex = uiState.selectedTabIndex,
+                            indicator = {
+                                SecondaryIndicator(
+                                    modifier = Modifier
+                                        .tabIndicatorOffset(uiState.selectedTabIndex)
+                                        .height(4.dp)
+                                        .clip(RoundedCornerShape(topStart = 3.dp, topEnd = 3.dp))
+                                        .background(MaterialTheme.colorScheme.secondary),
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
                         ) {
                             uiState.bookshelfList.forEach { bookshelf ->
                                 Tab(
@@ -290,12 +298,13 @@ fun BookshelfHomeScreen(
                                             maxLines = 1,
                                             overflow = TextOverflow.Ellipsis
                                         )
-                                    },
+                                    }
                                 )
                             }
                         }
                     }
                 }
+
                 val allBookIds = uiState.selectedBookshelf.allBookIds
 
                 val updatedIds by remember(uiState.selectedBookshelf.updatedBookIds) {
@@ -481,6 +490,8 @@ fun BookshelfHomeScreen(
                             }
                         }
                     }
+                    navigationBarSpacer()
+                    bottomBarSpacer()
                 }
             }
         }
@@ -739,7 +750,7 @@ fun TopBar(
         },
         windowInsets = WindowInsets.safeDrawing.only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top),
         scrollBehavior = scrollBehavior,
-        colors = if (uiState.selectMode) TopAppBarDefaults.mediumTopAppBarColors(
+        colors = if (uiState.selectMode) TopAppBarDefaults.topAppBarColors(
             containerColor = backgroundColor,
             scrolledContainerColor = backgroundColor
         ) else TopAppBarDefaults.topAppBarColors()

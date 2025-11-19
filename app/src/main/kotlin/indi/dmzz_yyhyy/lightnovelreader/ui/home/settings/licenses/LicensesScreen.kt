@@ -37,6 +37,7 @@ import com.mikepenz.aboutlibraries.ui.compose.android.produceLibraries
 import com.mikepenz.aboutlibraries.ui.compose.util.author
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
+import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 
 @Composable
 fun LicensesScreen(
@@ -60,6 +61,7 @@ fun LicenseList(items: List<Library>) {
         items(items) { lib ->
             LicenseItem(lib)
         }
+        navigationBarSpacer()
     }
 }
 
