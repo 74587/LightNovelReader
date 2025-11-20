@@ -48,7 +48,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.PrimaryScrollableTabRow
-import androidx.compose.material3.PrimaryTabRow
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
@@ -246,14 +245,19 @@ fun BookshelfHomeScreen(
                     enter = expandVertically(),
                     exit = shrinkVertically()
                 ) {
-                    if (uiState.bookshelfList.size > 4) {
+                    if (uiState.bookshelfList.isNotEmpty()) {
+                        val selectedIndex = uiState.selectedTabIndex
+                            .takeIf { it in uiState.bookshelfList.indices }
+                            ?: 0
+
                         PrimaryScrollableTabRow(
-                            selectedTabIndex = uiState.selectedTabIndex,
+                            selectedTabIndex = selectedIndex,
                             edgePadding = 16.dp,
                             indicator = {
                                 SecondaryIndicator(
                                     modifier = Modifier
-                                        .tabIndicatorOffset(uiState.selectedTabIndex)
+                                        .padding(horizontal = 10.dp)
+                                        .tabIndicatorOffset(selectedIndex)
                                         .height(4.dp)
                                         .clip(RoundedCornerShape(topStart = 3.dp, topEnd = 3.dp))
                                         .background(MaterialTheme.colorScheme.secondary),
@@ -263,33 +267,7 @@ fun BookshelfHomeScreen(
                         ) {
                             uiState.bookshelfList.forEach { bookshelf ->
                                 Tab(
-                                    selected = uiState.selectedBookshelfId == bookshelf.id,
-                                    onClick = { if (!uiState.selectMode) changePage(bookshelf.id) },
-                                    text = {
-                                        Text(
-                                            text = bookshelf.name,
-                                            maxLines = 1
-                                        )
-                                    }
-                                )
-                            }
-                        }
-                    } else {
-                        PrimaryTabRow(
-                            selectedTabIndex = uiState.selectedTabIndex,
-                            indicator = {
-                                SecondaryIndicator(
-                                    modifier = Modifier
-                                        .tabIndicatorOffset(uiState.selectedTabIndex)
-                                        .height(4.dp)
-                                        .clip(RoundedCornerShape(topStart = 3.dp, topEnd = 3.dp))
-                                        .background(MaterialTheme.colorScheme.secondary),
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                            }
-                        ) {
-                            uiState.bookshelfList.forEach { bookshelf ->
-                                Tab(
+                                    modifier = Modifier,
                                     selected = uiState.selectedBookshelfId == bookshelf.id,
                                     onClick = { if (!uiState.selectMode) changePage(bookshelf.id) },
                                     text = {
@@ -301,9 +279,9 @@ fun BookshelfHomeScreen(
                                     }
                                 )
                             }
+                            }
                         }
                     }
-                }
 
                 val allBookIds = uiState.selectedBookshelf.allBookIds
 
