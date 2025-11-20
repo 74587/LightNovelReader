@@ -4,7 +4,6 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -100,7 +99,8 @@ fun ReadingScreen(
     onClickStats: () -> Unit,
     onRemoveBook: (Int) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
-    loadBookInfo: (Int) -> Unit
+    loadBookInfo: (Int) -> Unit,
+    onClickOpenChapters: (Int) -> Unit
 ) {
     LifecycleEventEffect(Lifecycle.Event.ON_CREATE) {
         updateReadingBooks()
@@ -112,22 +112,18 @@ fun ReadingScreen(
                 onClickDownloadManager = onClickDownloadManager,
                 onClickStats = onClickStats
             )
+
             var showEmptyPage by remember { mutableStateOf(false) }
 
             LaunchedEffect(recentReadingBookIds) {
-                if (recentReadingBookIds.isEmpty()) {
-                    delay(140)
-                    showEmptyPage = true
-                } else {
-                    showEmptyPage = false
-                }
+                showEmptyPage = recentReadingBookIds.isEmpty()
             }
 
             AnimatedVisibility(
                 modifier = Modifier.fillMaxSize(),
                 visible = showEmptyPage,
-                enter = fadeIn(animationSpec = tween(durationMillis = 300)),
-                exit = fadeOut(animationSpec = tween(durationMillis = 300))
+                enter = fadeIn(),
+                exit = fadeOut()
             ) {
                 EmptyPage(
                     icon = painterResource(R.drawable.empty_90dp),
@@ -140,6 +136,7 @@ fun ReadingScreen(
                 modifier = Modifier.fillMaxSize(),
                 onClickBook = onClickBook,
                 onClickContinueReading = onClickContinueReading,
+                onClickOpenChapters = onClickOpenChapters,
                 onRemoveBook = onRemoveBook,
                 recentReadingBookInformationMap = recentReadingBookInformationMap,
                 recentReadingUserReadingDataMap = recentReadingUserReadingDataMap,
@@ -160,7 +157,8 @@ private fun ReadingContent(
     recentReadingBookInformationMap: Map<Int, BookInformation>,
     recentReadingUserReadingDataMap: Map<Int, UserReadingData>,
     recentReadingBookIds: List<Int>,
-    loadBookInfo: (Int) -> Unit
+    loadBookInfo: (Int) -> Unit,
+    onClickOpenChapters: (Int) -> Unit
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -199,23 +197,22 @@ private fun ReadingContent(
             recentReadingBookIds.isNotEmpty()
             && recentReadingUserReadingDataMap[recentReadingBookIds.first()] != null
             && recentReadingBookInformationMap[recentReadingBookIds.first()] != null
-            ) {
-            item {
-                SectionHeader(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .padding(top = 4.dp),
-                    text = stringResource(R.string.continue_reading)
-                )
-            }
-
+        ) {
             item {
                 if (headerItems.isNotEmpty()) {
+                    SectionHeader(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 14.dp),
+                        text = stringResource(R.string.continue_reading)
+                    )
                     ReadingHeaderCardPager(
                         items = headerItems,
-                        modifier = Modifier.animateItem()
+                        modifier = Modifier
+                            .animateItem()
                             .padding(horizontal = 8.dp),
-                        onClickContinueReading = onClickContinueReading
+                        onClickContinueReading = onClickContinueReading,
+                        onClickOpenChapters = onClickOpenChapters
                     )
                 }
             }
@@ -235,10 +232,7 @@ private fun ReadingContent(
             key = { it }
         ) { id ->
             LaunchedEffect(id) {
-                if (recentReadingBookInformationMap[id] == null ||
-                    recentReadingUserReadingDataMap[id] == null) {
-                    loadBookInfo(id)
-                }
+                loadBookInfo(id)
             }
 
             val info = recentReadingBookInformationMap[id]
@@ -262,7 +256,10 @@ private fun ReadingContent(
                                 showSnackbar(
                                     coroutineScope = coroutineScope,
                                     hostState = snackbarHostState,
-                                    message = context.getString(R.string.removed_item, recentReadingBookInformationMap[id]?.title),
+                                    message = context.getString(
+                                        R.string.removed_item,
+                                        recentReadingBookInformationMap[id]?.title
+                                    ),
                                     actionLabel = context.getString(R.string.undo),
                                 ) {
                                     if (it == SnackbarResult.ActionPerformed) onRemoveBook(-id)
@@ -392,10 +389,7 @@ private fun ReadingBookCard(
     val minutes = stringResource(R.string.read_minutes, userReadingData.totalReadTime / 60)
     val progress = "${(userReadingData.readingProgress * 100).toInt()}%"
 
-
-    val infoText = remember(userReadingData) {
-        "$lastRead • $minutes • $progress"
-    }
+    val infoText = "$lastRead • $minutes • $progress"
 
     SwipeableActionsBox(
         startActions = swipeToRightActions,
@@ -481,7 +475,8 @@ private fun ReadingBookCard(
 fun ReadingHeaderCardPager(
     items: List<Pair<BookInformation, UserReadingData>>,
     modifier: Modifier = Modifier,
-    onClickContinueReading: (Int, Int) -> Unit
+    onClickContinueReading: (Int, Int) -> Unit,
+    onClickOpenChapters: (Int) -> Unit
 ) {
     val pageCount = items.size.coerceIn(1, 3)
     val pagerState = rememberPagerState(initialPage = 0) { pageCount }
@@ -537,8 +532,8 @@ fun ReadingHeaderCardPager(
                     info = book,
                     data = user,
                     onClickContinueReading = onClickContinueReading,
-                    modifier = Modifier.matchParentSize(),
-                    onClickOpenDetail = { }
+                    onClickOpenDetail = onClickOpenChapters,
+                    modifier = Modifier.matchParentSize()
                 )
             }
         }

@@ -44,6 +44,7 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
@@ -302,6 +303,7 @@ fun Content(
         )
     }
 
+    @Suppress("deprecated")
     val originalUiFlags = remember { window.decorView.systemUiVisibility }
 
     var isRunning by remember { mutableStateOf(false) }
@@ -611,7 +613,6 @@ fun ChapterSelectorBottomSheet(
     onChangeSelectedVolumeId: (Int) -> Unit
 ) {
     val lazyColumnState = rememberLazyListState()
-    var hasScrolled by remember { mutableStateOf(false) }
 
     val flatItems = remember(bookVolumes) {
         bookVolumes.volumes.flatMap { volume ->
@@ -619,16 +620,25 @@ fun ChapterSelectorBottomSheet(
         }
     }
 
-    LaunchedEffect(Unit) {
-        if (!hasScrolled) {
-            val targetIndex = flatItems.indexOfFirst { (_, chapter) ->
-                chapter?.id == readingChapterId
-            }
-            if (targetIndex >= 0) {
-                hasScrolled = true
-                lazyColumnState.scrollToItem(targetIndex)
-            }
+    LaunchedEffect(readingChapterId, flatItems) {
+        if (readingChapterId <= 0) return@LaunchedEffect
+
+        val targetIndex = flatItems.indexOfFirst { (_, chapter) ->
+            chapter?.id == readingChapterId
         }
+        if (targetIndex < 0) return@LaunchedEffect
+
+        val (volume, _) = flatItems[targetIndex]
+
+        onChangeSelectedVolumeId(volume.volumeId)
+
+        if (sheetState.currentValue == SheetValue.PartiallyExpanded &&
+            sheetState.hasExpandedState
+        ) {
+            sheetState.expand()
+        }
+
+        lazyColumnState.scrollToItem(targetIndex)
     }
 
     ModalBottomSheet(
@@ -641,7 +651,10 @@ fun ChapterSelectorBottomSheet(
                 .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Icon(painter = painterResource(R.drawable.read_more_24px), contentDescription = null)
+            Icon(
+                painter = painterResource(R.drawable.read_more_24px),
+                contentDescription = null
+            )
             Text(
                 modifier = Modifier.padding(start = 8.dp),
                 text = stringResource(R.string.select_chapter),
@@ -653,15 +666,19 @@ fun ChapterSelectorBottomSheet(
         Spacer(Modifier.height(8.dp))
 
         LazyColumn(state = lazyColumnState) {
-            items(flatItems, key = { (volume, chapter) ->
-                chapter?.id ?: "v_${volume.volumeId}"
-            }) { (volume, chapter) ->
+            items(
+                items = flatItems,
+                key = { (volume, chapter) ->
+                    chapter?.id ?: "v_${volume.volumeId}"
+                }
+            ) { (volume, chapter) ->
                 if (chapter == null) {
                     Box(
                         modifier = Modifier
                             .clickable {
                                 onChangeSelectedVolumeId(
-                                    if (selectedVolumeId == volume.volumeId) -1 else volume.volumeId
+                                    if (selectedVolumeId == volume.volumeId) -1
+                                    else volume.volumeId
                                 )
                             }
                             .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -693,7 +710,10 @@ fun ChapterSelectorBottomSheet(
                             Icon(
                                 modifier = Modifier
                                     .scale(0.75f)
-                                    .rotate(if (selectedVolumeId == volume.volumeId) -90f else 90f),
+                                    .rotate(
+                                        if (selectedVolumeId == volume.volumeId) -90f
+                                        else 90f
+                                    ),
                                 painter = painterResource(R.drawable.arrow_forward_ios_24px),
                                 tint = colorScheme.onSurface,
                                 contentDescription = null
@@ -708,7 +728,12 @@ fun ChapterSelectorBottomSheet(
                             .animateContentSize(animationSpec = tween(durationMillis = 200))
                     ) {
                         if (expanded) {
-                            val alpha by animateFloatAsState(targetValue = 1f, animationSpec = tween(180))
+                            val alpha by animateFloatAsState(
+                                targetValue = 1f,
+                                animationSpec = tween(180),
+                                label = "chapterItemAlpha"
+                            )
+
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -717,7 +742,10 @@ fun ChapterSelectorBottomSheet(
                                     .padding(horizontal = 22.dp),
                                 contentAlignment = Alignment.CenterStart
                             ) {
-                                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.alpha(alpha)) {
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier.alpha(alpha)
+                                ) {
                                     val isSelected = readingChapterId == chapter.id
                                     if (isSelected) {
                                         Icon(
@@ -729,7 +757,10 @@ fun ChapterSelectorBottomSheet(
                                     }
                                     Text(
                                         text = chapter.title,
-                                        fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
+                                        fontWeight = if (isSelected)
+                                            FontWeight.Bold
+                                        else
+                                            FontWeight.Normal,
                                         style = AppTypography.titleSmall,
                                         color = colorScheme.onSurfaceVariant,
                                         maxLines = 2,
@@ -744,6 +775,7 @@ fun ChapterSelectorBottomSheet(
         }
     }
 }
+
 
 @Composable
 fun Indicator(

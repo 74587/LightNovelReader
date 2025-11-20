@@ -58,8 +58,9 @@ fun NavGraphBuilder.bookReaderDestination() {
 }
 
 fun NavController.navigateToBookReaderDestination(bookId: Int, chapterId: Int, context: Context) {
-    if (this.currentBackStackEntry?.destination?.route?.contains("indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route.Book.Detail") != true) {
-        return
+    navigate(Route.Book.Detail(bookId)) {
+        launchSingleTop = true
+        restoreState = true
     }
     val entry = this.getBackStackEntry<Route.Book>()
     val viewModel = ViewModelProvider.create(
