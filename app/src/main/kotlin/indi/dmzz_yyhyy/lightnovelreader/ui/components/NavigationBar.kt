@@ -37,7 +37,7 @@ fun LnrNavigationBar(
 
     val showPlaceholder =
         !showBottomBar &&
-                Build.VERSION.SDK_INT < Build.VERSION_CODES.P &&
+                Build.VERSION.SDK_INT <= Build.VERSION_CODES.P &&
                 navHeight > 0.dp
 
     Box(
