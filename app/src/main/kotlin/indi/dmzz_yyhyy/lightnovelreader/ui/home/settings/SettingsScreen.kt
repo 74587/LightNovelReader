@@ -114,6 +114,17 @@ fun SettingsScreen(
                 }
                 item {
                     SettingsCategory(
+                        title = stringResource(R.string.app_settings),
+                    ) {
+                        AppSettingsList(
+                            settingState = settingState,
+                            onClickLogcat = onClickLogcat,
+                            onClickPluginManager = onClickPluginManager,
+                        )
+                    }
+                }
+                item {
+                    SettingsCategory(
                         title = stringResource(R.string.about_settings),
                     ) {
                         AboutSettingsList(

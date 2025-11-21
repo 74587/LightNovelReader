@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -93,6 +94,7 @@ private fun Content(
 ) {
     if (downloadItemIdList.isEmpty())
         EmptyPage(
+            modifier = Modifier.navigationBarsPadding(),
             icon = painterResource(id = R.drawable.download_24px),
             title = stringResource(R.string.nothing_here),
             description = stringResource(R.string.nothing_here_desc_book_manager),

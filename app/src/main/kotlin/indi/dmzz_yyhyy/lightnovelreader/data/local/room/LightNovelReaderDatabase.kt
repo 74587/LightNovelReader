@@ -3,7 +3,6 @@ package indi.dmzz_yyhyy.lightnovelreader.data.local.room
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
-import android.util.Log
 import androidx.core.net.toUri
 import androidx.room.Database
 import androidx.room.Room
