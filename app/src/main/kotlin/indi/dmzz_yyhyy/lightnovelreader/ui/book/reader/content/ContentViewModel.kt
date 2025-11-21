@@ -1,20 +1,29 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.content
 
-import indi.dmzz_yyhyy.lightnovelreader.data.book.ChapterContent
-import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.PreviewContentUiState
+import io.nightfish.lightnovelreader.api.book.ChapterContent
+import io.nightfish.lightnovelreader.api.content.ContentData
+import kotlinx.serialization.json.JsonObject
 
 interface ContentViewModel {
     val uiState: ContentUiState
-    fun changeBookId(id: Int)
+    fun changeBookId(id: String)
     fun loadNextChapter()
     fun loadLastChapter()
-    fun changeChapter(id: Int)
+    fun changeChapter(id: String)
 
     companion object {
         class EmptyContentViewModel: ContentViewModel {
-            override val uiState: ContentUiState = PreviewContentUiState(-1, ChapterContent.empty())
+            override val uiState: ContentUiState = object: ContentUiState {
+                override val bookId: String = ""
+                override val readingChapterContent: ChapterContent = ChapterContent.empty()
+                override val readingProgress: Float = 1f
+                override val loadNextChapter: () -> Unit = {}
+                override val loadLastChapter: () -> Unit = {}
+                override val changeChapter: (String) -> Unit = {}
+                override val getContentData: (JsonObject) -> ContentData = { ContentData.empty() }
+            }
 
-            override fun changeBookId(id: Int) {
+            override fun changeBookId(id: String) {
             }
 
             override fun loadNextChapter() {
@@ -23,7 +32,7 @@ interface ContentViewModel {
             override fun loadLastChapter() {
             }
 
-            override fun changeChapter(id: Int) {
+            override fun changeChapter(id: String) {
             }
 
         }

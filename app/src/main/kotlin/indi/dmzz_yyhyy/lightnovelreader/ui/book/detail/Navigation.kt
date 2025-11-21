@@ -10,14 +10,14 @@ import androidx.activity.result.ActivityResult
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import androidx.work.WorkInfo
 import indi.dmzz_yyhyy.lightnovelreader.R
-import indi.dmzz_yyhyy.lightnovelreader.ui.LocalNavController
+import io.nightfish.lightnovelreader.api.ui.LocalNavController
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.navigateToBookReaderDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.navigateToImageViewerDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.navigateToAddBookToBookshelfDialog
@@ -39,10 +39,10 @@ fun NavGraphBuilder.bookDetailDestination() {
         val viewModel = hiltViewModel<DetailViewModel>(entry)
         val context = LocalContext.current
         val coroutineScope = rememberCoroutineScope()
-        val exportBookToEPUBLauncher = uriLauncher {
+        val exportBookToEPUBLauncher = uriLauncher { uri ->
             CoroutineScope(Dispatchers.Main).launch {
                 Toast.makeText(context, context.getString(R.string.export_book_started, viewModel.uiState.bookInformation.title), Toast.LENGTH_SHORT).show()
-                viewModel.exportToEpub(it, bookId, viewModel.uiState.bookInformation.title).collect {
+                viewModel.exportToEpub(uri, bookId, viewModel.uiState.bookInformation.title).collect {
                     if (it != null)
                         when (it.state) {
                             WorkInfo.State.SUCCEEDED -> {
@@ -82,7 +82,7 @@ fun NavGraphBuilder.bookDetailDestination() {
                 }
             },
             onClickContinueReading = {
-                if (viewModel.uiState.userReadingData.lastReadChapterId == -1)
+                if (viewModel.uiState.userReadingData.lastReadChapterId.isBlank())
                     viewModel.uiState.bookVolumes.volumes.firstOrNull()?.chapters?.firstOrNull()?.id?.let {
                         navController.navigateToBookReaderDestination(bookId, it, context)
                     }
@@ -139,7 +139,7 @@ fun NavGraphBuilder.bookDetailDestination() {
     }
 }
 
-fun NavController.navigateToBookDetailDestination(bookId: Int) {
+fun NavController.navigateToBookDetailDestination(bookId: String) {
     if (!this.isResumed()) return
     navigate(Route.Book.Detail(bookId))
 }

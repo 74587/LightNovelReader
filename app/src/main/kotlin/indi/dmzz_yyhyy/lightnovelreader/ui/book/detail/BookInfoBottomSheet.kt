@@ -30,9 +30,9 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import indi.dmzz_yyhyy.lightnovelreader.R
-import indi.dmzz_yyhyy.lightnovelreader.data.book.BookInformation
-import indi.dmzz_yyhyy.lightnovelreader.data.book.BookVolumes
-import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
+import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
+import io.nightfish.lightnovelreader.api.book.BookInformation
+import io.nightfish.lightnovelreader.api.book.BookVolumes
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.time.format.DateTimeFormatter

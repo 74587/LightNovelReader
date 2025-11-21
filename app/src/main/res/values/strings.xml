@@ -16,6 +16,9 @@
     <!-- Operations -->
     <string name="cancel">Cancel</string>
     <string name="apply">Apply</string>
+    <string name="confirm">Confirm</string>
+    <string name="next">Next</string>
+    <string name="abort">Abort</string>
     <string name="decline">Decline</string>
     <string name="copied">Content copied</string>
     <string name="select_all">Select All</string>
@@ -52,6 +55,7 @@
     <string name="download_item_progress">%s downloaded %d%%</string>
     <string name="download_item_finished">%s completed</string>
     <string name="download_item_failed">%s failed, please check your network or seek developer assistance</string>
+    <string name="book_updated_to_title">Updated to:</string>
 
     <!-- Hints -->
     <string name="nothing_here">Nothing Here</string>
@@ -86,7 +90,7 @@
     <!-- Settings -->
     <string name="reading_settings">Reading</string>
     <string name="theme_settings">Theme</string>
-
+    <string name="app_settings">App</string>
     <string name="app_updates">Updates</string>
     <string name="settings_auto_check_updates">Auto Check for Updates</string>
     <string name="settings_auto_check_updates_desc">Enable automatic update checks upon app launch</string>
@@ -235,7 +239,7 @@
     <string name="filter_by_publishing_house">Filter by Publishing House</string>
     <string name="filter_by_publishing_house_desc">Filter by the book\'s publishing house</string>
     <string name="book_info_update_date">Updated on %1$d-%2$d-%3$d</string>
-    <string name="book_info_word_count_kilo">%sK Words</string>
+    <string name="book_info_word_count_kilo">%s Words</string>
     <string name="name">Name</string>
     <string name="bookshelf_name">Bookshelf Name</string>
     <string name="bookshelf_name_suggestion">Name your bookshelf with a simple name</string>

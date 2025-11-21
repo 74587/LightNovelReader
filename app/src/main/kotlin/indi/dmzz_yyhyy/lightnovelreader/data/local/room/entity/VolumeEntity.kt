@@ -10,14 +10,14 @@ import indi.dmzz_yyhyy.lightnovelreader.data.local.room.converter.ListConverter
 @Entity(tableName = "volume")
 data class VolumeEntity(
     @ColumnInfo(name = "book_id")
-    val bookId: Int,
+    val bookId: String,
     @PrimaryKey
     @ColumnInfo(name = "volume_id")
-    val volumeId: Int,
+    val volumeId: String,
     @ColumnInfo(name = "volume_title")
     val volumeTitle: String,
     @ColumnInfo(name = "chapter_id_list")
-    val chapterIds: List<Int>,
+    val chapterIds: List<String>,
     @ColumnInfo(name = "volume_index")
     val index: Int
 )

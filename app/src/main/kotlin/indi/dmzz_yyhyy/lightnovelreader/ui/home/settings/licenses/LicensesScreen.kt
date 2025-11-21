@@ -36,8 +36,8 @@ import com.mikepenz.aboutlibraries.entity.Library
 import com.mikepenz.aboutlibraries.ui.compose.android.produceLibraries
 import com.mikepenz.aboutlibraries.ui.compose.util.author
 import indi.dmzz_yyhyy.lightnovelreader.R
-import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
 import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
+import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 
 @Composable
 fun LicensesScreen(

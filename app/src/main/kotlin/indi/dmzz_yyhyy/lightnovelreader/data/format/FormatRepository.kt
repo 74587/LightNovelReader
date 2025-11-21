@@ -2,14 +2,13 @@ package indi.dmzz_yyhyy.lightnovelreader.data.format
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import indi.dmzz_yyhyy.lightnovelreader.data.book.BookInformation
-import indi.dmzz_yyhyy.lightnovelreader.data.book.BookVolumes
-import indi.dmzz_yyhyy.lightnovelreader.data.book.ChapterContent
-import indi.dmzz_yyhyy.lightnovelreader.data.exploration.ExplorationDisplayBook
 import indi.dmzz_yyhyy.lightnovelreader.data.json.AppUserDataContent
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.dao.FormattingRuleDao
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.entity.FormattingRuleEntity
-import indi.dmzz_yyhyy.lightnovelreader.data.text.TextProcessor
+import io.nightfish.lightnovelreader.api.book.BookInformation
+import io.nightfish.lightnovelreader.api.book.BookVolumes
+import io.nightfish.lightnovelreader.api.explore.ExploreDisplayBook
+import io.nightfish.lightnovelreader.api.text.TextProcessor
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -22,7 +21,7 @@ class FormatRepository @Inject constructor(
     private val formattingRuleDao: FormattingRuleDao,
 ): TextProcessor {
     override val enabled = true
-    private val processorMap = mutableMapOf<Int, SnapshotStateList<FormattingRule>>()
+    private val processorMap = mutableMapOf<String, SnapshotStateList<FormattingRule>>()
 
     init {
         CoroutineScope(Dispatchers.IO).launch {
@@ -79,9 +78,9 @@ class FormatRepository @Inject constructor(
         return result
     }
 
-    private fun processText(bookId: Int, text: String): String {
+    private fun processText(bookId: String, text: String): String {
         var result = text
-        for (formattingRule in processorMap.getOrDefault(-1, emptyList()).filter { it.isEnabled }) {
+        for (formattingRule in processorMap.getOrDefault("", emptyList()).filter { it.isEnabled }) {
             try {
                 result = if (formattingRule.isRegex)
                     result.replaceTextWithRegex(
@@ -118,7 +117,7 @@ class FormatRepository @Inject constructor(
         )
     }
 
-    suspend fun insertRule(bookId: Int, formattingRule: FormattingRule) {
+    suspend fun insertRule(bookId: String, formattingRule: FormattingRule) {
         formattingRuleDao.insertRuleEntity(
             FormattingRuleEntity(
                 bookId = bookId,
@@ -131,7 +130,7 @@ class FormatRepository @Inject constructor(
         )
     }
 
-    suspend fun updateRule(bookId: Int, formattingRule: FormattingRule) {
+    suspend fun updateRule(bookId: String, formattingRule: FormattingRule) {
         formattingRule.id ?: return
         formattingRuleDao.update(
             id = formattingRule.id,
@@ -148,9 +147,9 @@ class FormatRepository @Inject constructor(
         formattingRuleDao.deleteRule(ruleId)
     }
 
-    fun getFormattingMap(): Map<Int, List<FormattingRule>> = processorMap
+    fun getFormattingMap(): Map<String, List<FormattingRule>> = processorMap
 
-    fun getStateBookFormattingRules(bookId: Int): List<FormattingRule> {
+    fun getStateBookFormattingRules(bookId: String): List<FormattingRule> {
         if (!processorMap.contains(bookId))
             processorMap[bookId] = mutableStateListOf()
         return processorMap[bookId]!!
@@ -161,7 +160,7 @@ class FormatRepository @Inject constructor(
     override fun <T> Map<T, String>.process() = this
     override fun processSearchTypeNameMap(map: Map<String, String>): Map<String, String> = map
     override fun processSearchTipMap(map: Map<String, String>): Map<String, String> = map
-    override fun processExplorationBooksRow(explorationDisplayBook: ExplorationDisplayBook): ExplorationDisplayBook = explorationDisplayBook
+    override fun processExploreBooksRow(exploreDisplayBook: ExploreDisplayBook): ExploreDisplayBook = exploreDisplayBook
     override fun processBookInformation(bookInformation: BookInformation): BookInformation = bookInformation.toMutable().apply {
         val bookId = bookInformation.id
         this.title = processText(bookId, title)
@@ -181,9 +180,6 @@ class FormatRepository @Inject constructor(
                 }
             )
         })
-    override fun processChapterContent(bookId: Int, chapterContent: ChapterContent): ChapterContent = chapterContent.toMutable().apply {
-        this.content = processText(bookId, content)
-    }
 
     suspend fun importFormattingRules(data: AppUserDataContent) {
         data.formattingRuleData?.forEach { formattingRuleData ->

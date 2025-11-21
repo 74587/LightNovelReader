@@ -8,11 +8,11 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import indi.dmzz_yyhyy.lightnovelreader.data.book.BookInformation
 import indi.dmzz_yyhyy.lightnovelreader.data.book.BookRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.format.FormatRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.format.FormattingGroup
 import indi.dmzz_yyhyy.lightnovelreader.data.format.FormattingRule
+import io.nightfish.lightnovelreader.api.book.BookInformation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -24,10 +24,10 @@ class FormattingViewModel @Inject constructor(
 ) : ViewModel() {
     var formattingGroups by mutableStateOf(emptyList<FormattingGroup>())
         private set
-    var bookId = -1
+    var bookId = ""
     var rules by mutableStateOf(listOf<FormattingRule>())
         private set
-    val bookInformationMap = mutableStateMapOf<Int, BookInformation>()
+    val bookInformationMap = mutableStateMapOf<String, BookInformation>()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {
@@ -36,14 +36,14 @@ class FormattingViewModel @Inject constructor(
                     FormattingGroup(it.key, it.value.size)
                 }
                 for (group in formattingGroups) {
-                    if (group.id == -1) continue
+                    if (group.id.isBlank()) continue
                     bookInformationMap[group.id] = bookRepository.getStateBookInformation(group.id, viewModelScope)
                 }
             }
         }
     }
 
-    fun loadBookFormattingRules(bookId: Int) {
+    fun loadBookFormattingRules(bookId: String) {
         this.bookId = bookId
         rules = formattingRepository.getStateBookFormattingRules(bookId)
     }

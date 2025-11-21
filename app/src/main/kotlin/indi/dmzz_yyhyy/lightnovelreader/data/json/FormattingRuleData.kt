@@ -5,7 +5,7 @@ import com.google.gson.annotations.SerializedName
 
 data class FormattingRuleData(
     @SerializedName("book_id")
-    val bookId: Int,
+    val bookId: String,
     @SerializedName("name")
     val name: String,
     @SerializedName("is_regex")

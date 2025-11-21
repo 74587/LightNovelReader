@@ -37,10 +37,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import indi.dmzz_yyhyy.lightnovelreader.R
-import indi.dmzz_yyhyy.lightnovelreader.data.book.BookInformation
-import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
+import indi.dmzz_yyhyy.lightnovelreader.data.book.get
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Cover
 import indi.dmzz_yyhyy.lightnovelreader.utils.withHaptic
+import io.nightfish.lightnovelreader.api.book.BookInformation
+import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -84,7 +85,7 @@ fun BookCardContent(
                     Cover(
                         width = 94.dp,
                         height = 144.dp,
-                        url = bookInformation.coverUrl,
+                        uri = bookInformation.coverUri,
                         rounded = 8.dp
                     )
 
@@ -196,7 +197,7 @@ fun BookCardContent(
 
                     TagChip(painterResource(R.drawable.article_24px))
                     Text(
-                        text = "${bookInformation.wordCount / 1000} K",
+                        text = bookInformation.wordCount.get(),
                         style = AppTypography.labelMedium.copy(color = colorScheme.secondary)
                     )
                 }

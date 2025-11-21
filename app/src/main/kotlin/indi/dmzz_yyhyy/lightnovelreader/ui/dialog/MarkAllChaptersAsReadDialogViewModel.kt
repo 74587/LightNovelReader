@@ -8,7 +8,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import indi.dmzz_yyhyy.lightnovelreader.data.book.BookRepository
-import indi.dmzz_yyhyy.lightnovelreader.data.book.BookVolumes
+import io.nightfish.lightnovelreader.api.book.BookVolumes
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
@@ -18,10 +18,10 @@ import javax.inject.Inject
 class MarkAllChaptersAsReadDialogViewModel @Inject constructor(
     private val bookRepository: BookRepository
 ) : ViewModel() {
-    var bookVolumes by mutableStateOf(BookVolumes.empty(-1))
+    var bookVolumes by mutableStateOf(BookVolumes.empty())
         private set
 
-    var bookId: Int = -1
+    var bookId = ""
         set(value) {
             viewModelScope.launch(Dispatchers.IO) {
                 bookRepository.getBookVolumesFlow(bookId, viewModelScope).collect {
@@ -33,7 +33,7 @@ class MarkAllChaptersAsReadDialogViewModel @Inject constructor(
         }
 
     fun markAllChaptersAsRead() {
-        if (bookId == -1) return
+        if (bookId.isBlank()) return
         Log.i("MarkAllAsReadDialog", "Marked all chapters of book ($bookId) as read")
         viewModelScope.launch(Dispatchers.IO) {
             bookRepository.updateUserReadingData(bookId) { userReadingData ->

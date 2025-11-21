@@ -59,6 +59,21 @@ class EpubBuilder {
         chapters.add(chapter)
     }
 
+    fun imgRes(
+        href: String,
+        id: String,
+        file: File
+    ) {
+        manifestItems.add(
+            EpubManifest.Item(
+                href = href,
+                id = id,
+                mediaType = "image/jpeg",
+            )
+        )
+        resFiles[href] = file
+    }
+
     fun res(
         id: String,
         path: String,

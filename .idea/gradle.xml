@@ -10,12 +10,14 @@
         <option name="modules">
           <set>
             <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/api" />
             <option value="$PROJECT_DIR$/app" />
             <option value="$PROJECT_DIR$/epub" />
+            <option value="$PROJECT_DIR$/plugin" />
+            <option value="$PROJECT_DIR$/plugin/js" />
             <option value="$PROJECT_DIR$/proxy" />
           </set>
         </option>
-        <option name="resolveExternalAnnotations" value="false" />
       </GradleProjectSettings>
     </option>
   </component>

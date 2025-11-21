@@ -5,7 +5,7 @@ import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import indi.dmzz_yyhyy.lightnovelreader.data.book.BookInformation
+import io.nightfish.lightnovelreader.api.book.BookInformation
 import indi.dmzz_yyhyy.lightnovelreader.data.book.BookRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.entity.BookRecordEntity
 import indi.dmzz_yyhyy.lightnovelreader.data.statistics.StatsRepository

@@ -1,39 +1,60 @@
 [versions]
-androidGradlePlugin = "8.11.1"
-composeShimmer = "1.3.3"
+androidGradlePlugin = "8.12.3"
+apksig = "8.13.0"
 dom4j = "2.2.0"
-kotlin = "2.2.0"
+javet = "5.0.0"
+kotlin = "2.2.20"
 kotlinComposeCompilerPlugin = "2.1.20"
-ksp = "2.2.0-2.0.2"
-vico = "2.1.3"
-hilt = "2.56.2"
-androidXHilt = "1.2.0"
-nav = "2.9.1"
-coreKtx = "1.16.0"
+kotlinResult = "2.1.0"
+ksp = "2.2.20-2.0.3"
+materialIconsCore = "1.7.8"
+runtime = "1.9.2"
+vico = "2.2.0"
+hilt = "2.57.2"
+androidXHilt = "1.3.0"
+nav = "2.9.5"
+coreKtx = "1.17.0"
 splashscreen = "1.0.1"
-lifecycle = "2.9.1"
-activityCompose = "1.10.1"
-composeBom = "2025.08.01"
+lifecycle = "2.9.4"
+activityCompose = "1.11.0"
+composeBom = "2025.09.01"
 composeMaterial3 = "1.4.0"
-composeUi = "1.9.4"
-composeAnimationGraphics = "1.9.4"
+composeUi = "1.9.2"
+foundationLayout = "1.9.2"
+composeAnimationGraphics = "1.9.2"
+navigationRuntimeKtx = "2.9.5"
 coil = "2.7.0"
-jsoup = "1.21.1"
-gson = "2.13.1"
+jsoup = "1.21.2"
+gson = "2.13.2"
 markdown = "0.5.7"
-room = "2.7.2"
-work = "2.10.2"
+room = "2.8.1"
+work = "2.10.5"
 desugar = "2.1.5"
 junit = "4.13.2"
 swipe = "1.3.0"
 serializationJson = "1.9.0"
 kotlinxCoroutinesCore = "1.10.2"
-zoomableImageCoil = "0.16.0"
 aboutLibraries = "13.1.0"
+zoomableImageCoil = "0.17.0"
+composeShimmer = "1.3.3"
+foundation = "1.9.2"
+lightnovelreader = "refactoring-SNAPSHOT"
 
 [libraries]
+androidx-material-icons-core = { module = "androidx.compose.material:material-icons-core", version.ref = "materialIconsCore" }
+androidx-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "runtime" }
+caoccao-javet = { module = "com.caoccao.javet:javet", version.ref = "javet" }
+apksig = { module = "com.android.tools.build:apksig", version.ref = "apksig" }
 compose-shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version.ref = "composeShimmer" }
 dom4j = { module = "org.dom4j:dom4j", version.ref = "dom4j" }
+javet-node-android = { module = "com.caoccao.javet:javet-node-android", version.ref = "javet" }
+javet-node-linux-arm64 = { module = "com.caoccao.javet:javet-node-linux-arm64", version.ref = "javet" }
+javet-node-macos-arm64 = { module = "com.caoccao.javet:javet-node-macos-arm64", version.ref = "javet" }
+javet-node-linux-x86_x4 = { module = "com.caoccao.javet:javet-node-linux-x86_64", version.ref = "javet" }
+javet-node-windows-x86_x4 = { module = "com.caoccao.javet:javet-node-windows-x86_64", version.ref = "javet" }
+javet-node-macos-x86_x4 = { module = "com.caoccao.javet:javet-node-macos-x86_64", version.ref = "javet" }
+kotlin-result = { module = "com.michael-bull.kotlin-result:kotlin-result", version.ref = "kotlinResult" }
+kotlin-result-coroutines = { module = "com.michael-bull.kotlin-result:kotlin-result-coroutines", version.ref = "kotlinResult" }
 vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }
@@ -69,17 +90,22 @@ desugar_jdk_libs = { module = "com.android.tools:desugar_jdk_libs", version.ref 
 work-runtime-ktx = { module = "androidx.work:work-runtime-ktx", version.ref = "work" }
 junit = { module = "junit:junit", version.ref = "junit" }
 swipe = { module = "me.saket.swipe:swipe", version.ref = "swipe" }
-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serializationJson" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "serializationJson" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutinesCore" }
 zoomable-image-coil = { module = "me.saket.telephoto:zoomable-image-coil", version.ref = "zoomableImageCoil" }
 aboutlibraries-core = { module = "com.mikepenz:aboutlibraries-core", version.ref = "aboutLibraries" }
 aboutlibraries-compose-m3 = { module = "com.mikepenz:aboutlibraries-compose-m3", version.ref = "aboutLibraries" }      # Material 3 UI
+androidx-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
+androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
+androidx-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 
 [plugins]
 kotlin_serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin_android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 compose_compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 android_application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
+android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
 google_dagger_hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 google_ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+android-dynamic-feature = { id = "com.android.dynamic-feature", version.ref = "androidGradlePlugin" }
 aboutLibraries = { id = "com.mikepenz.aboutlibraries.plugin", version.ref = "aboutLibraries" }

@@ -35,12 +35,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import indi.dmzz_yyhyy.lightnovelreader.R
-import indi.dmzz_yyhyy.lightnovelreader.data.book.BookInformation
 import indi.dmzz_yyhyy.lightnovelreader.data.download.DownloadItem
-import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Cover
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.EmptyPage
 import indi.dmzz_yyhyy.lightnovelreader.utils.formTime
+import io.nightfish.lightnovelreader.api.book.BookInformation
+import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -48,7 +48,7 @@ import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 fun DownloadManagerScreen(
     onClickBack: () -> Unit,
     downloadItemIdList: List<DownloadItem>,
-    bookInformationMap: Map<Int, BookInformation>,
+    bookInformationMap: Map<String, BookInformation>,
     onClickCancel: (DownloadItem) -> Unit,
     onClickClearCompleted: () -> Unit
 ) {
@@ -87,7 +87,7 @@ fun DownloadManagerScreen(
 @Composable
 private fun Content(
     downloadItemIdList: List<DownloadItem>,
-    bookInformationMap: Map<Int, BookInformation>,
+    bookInformationMap: Map<String, BookInformation>,
     onClickCancel: (DownloadItem) -> Unit,
     onClickClearCompleted: () -> Unit
 ) {
@@ -181,7 +181,7 @@ private fun Card(
         Cover(
             width = 64.dp,
             height = 93.dp,
-            url = bookInformation.coverUrl
+            uri = bookInformation.coverUri
         )
         Box(Modifier.width(16.dp))
         Column(

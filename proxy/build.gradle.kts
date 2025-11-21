@@ -5,7 +5,7 @@ plugins {
 
 dependencies {
     implementation(libs.jsoup)
-    implementation(libs.serialization.json)
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.coroutines.core)
 }
 

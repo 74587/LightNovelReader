@@ -4,15 +4,15 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
-import indi.dmzz_yyhyy.lightnovelreader.data.local.room.converter.LocalDateTimeConverter
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.converter.ListConverter
+import indi.dmzz_yyhyy.lightnovelreader.data.local.room.converter.LocalDateTimeConverter
 import java.time.LocalDateTime
 
 @TypeConverters(ListConverter::class, LocalDateTimeConverter::class)
 @Entity(tableName = "user_reading_data")
 data class UserReadingDataEntity(
     @PrimaryKey
-    val id: Int,
+    val id: String,
     @ColumnInfo(name = "last_read_time")
     val lastReadTime: LocalDateTime,
     @ColumnInfo(name = "total_read_time")
@@ -20,11 +20,11 @@ data class UserReadingDataEntity(
     @ColumnInfo(name = "reading_progress")
     val readingProgress: Float,
     @ColumnInfo(name = "last_read_chapter_id")
-    val lastReadChapterId: Int,
+    val lastReadChapterId: String,
     @ColumnInfo(name = "last_read_chapter_title")
     val lastReadChapterTitle: String,
     @ColumnInfo(name = "last_read_chapter_progress")
     val lastReadChapterProgress: Float,
     @ColumnInfo(name = "read_completed_chapter_ids", defaultValue = "")
-    val readCompletedChapterIds: List<Int>,
+    val readCompletedChapterIds: List<String>,
 )

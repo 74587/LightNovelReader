@@ -36,12 +36,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import indi.dmzz_yyhyy.lightnovelreader.R
-import indi.dmzz_yyhyy.lightnovelreader.data.bookshelf.Bookshelf
-import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SectionHeader
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalClaimSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.showSnackbar
+import io.nightfish.lightnovelreader.api.bookshelf.Bookshelf
+import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

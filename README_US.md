@@ -6,7 +6,7 @@
     <a><img alt="Kotlin" src="https://img.shields.io/badge/Kotlin-0095D5.svg?logo=kotlin&logoColor=white&style=for-the-badge"/></a>
     <a><img alt="Jetpack Compose" src="https://img.shields.io/badge/Jetpack%20Compose-4285F4?logo=jetpackcompose&logoColor=white&style=for-the-badge"></a>
     <a href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=P__gXIArh5UDBsEq7ttd4WhIYnNh3y1t&authKey=GAsRKEZ%2FwHpzRv19hNJsDnknOc86lYzNIHMPy2Jxt3S3U8f90qestOd760IAj%2F3l&noverify=0&group_code=867785526"><img alt="QQ Group" src="https://img.shields.io/badge/QQ讨论群-867785526-brightgreen.svg?logoColor=white&style=for-the-badge"></a>
-    <a href="https://discord.gg/bfvPqSWX"><img alt="Discord" src="https://img.shields.io/badge/Discord-JOIN-4285F4.svg?logo=discord&logoColor=white&style=for-the-badge"></a>
+    <a href="https://discord.gg/pnf4ABmDJt"><img alt="Discord" src="https://img.shields.io/badge/Discord-JOIN-4285F4.svg?logo=discord&logoColor=white&style=for-the-badge"></a>
     <a href="https://t.me/lightnoble"><img alt="Discord" src="https://img.shields.io/badge/Telegram-JOIN-188FCA.svg?logo=telegram&logoColor=white&style=for-the-badge"></a>
     <p>Light novel reading application built with Jetpack Compose</p>
     <img src="assets/header.png" alt="drawing" width="80%"/>
@@ -27,6 +27,14 @@ LightNovelReader <sup>*Refactored Version*</sup> is an open-source app for readi
 - EPUB export functionality for your favorite novels
 - Active development with passionate contributors
 
+## Plugin Development and Custom Data Sources
+
+You can add custom data sources and plugins to LightNovelReader.
+
+You can start with the [sample plugin](https://github.com/dmzz-yyhyy/LightNovelReaderPlugin-Template)
+
+Developers are welcome to contribute!
+
 ## Download
 
 Download the latest release from [GitHub Releases](https://github.com/dmzz-yyhyy/LightNovelReader/releases/latest). To experience the latest features and bug fixes, download the latest build from [Actions](https://github.com/dmzz-yyhyy/LightNovelReader/actions).
@@ -35,7 +43,7 @@ Download the latest release from [GitHub Releases](https://github.com/dmzz-yyhyy
 
 - Found a bug or have a feature idea? Submit it [**here**](https://github.com/dmzz-yyhyy/LightNovelReader/issues/new/choose)
 - Join the QQ discussion group: `867785526` | [**Invitation Link**](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=P__gXIArh5UDBsEq7ttd4WhIYnNh3y1t&authKey=GAsRKEZ%2FwHpzRv19hNJsDnknOc86lYzNIHMPy2Jxt3S3U8f90qestOd760IAj%2F3l&noverify=0&group_code=867785526)
-- Join our Discord server: [**Invitation Link**](https://discord.gg/bfvPqSWX)
+- Join our Discord server: [**Invitation Link**](https://discord.gg/pnf4ABmDJt)
 - Join our Telegram group: [**Invitation Link**](https://t.me/lightnoble)
 
 ## Screenshots
@@ -69,11 +77,18 @@ We welcome contributions to LightNovelReader! Here's how you can get involved:
 
 ### Version Management
 Versions are managed in `app/build.gradle.kts`:
-- `versionNameStr`: The public version (e.g., "1.3.1"). Follow semantic versioning (major.minor.patch).
-- `debugNumber`: Increment for development builds (0 for releases).
-- `versionCode`: Auto-calculated as major*1000000 + minor*10000 + patch*1000 + debugNumber.
+- `versionName`: The public version (e.g., "1.3.1"). Follow semantic versioning (major.minor.patch).
+- `versionCode`: Increases naturally as development progresses.
 
-For releases, update `versionNameStr` and reset `debugNumber` to 0.
+## Support the Project
+
+[![Support Us on Aifadian](https://img.shields.io/badge/❤%20Support%20Us-ifdian-orange)](https://www.ifdian.net/a/lightnovelreader)
+
+LightNovelReader is a fully free and open-source project.  
+If you enjoy using it or find it helpful, consider supporting us through [Aifadian](https://www.ifdian.net/a/lightnovelreader) (a China-based platform similar to Patreon).  
+All contributions go toward continuous development, new features, possible future server maintenance, and community growth.
+Your support helps keep the project alive and makes reading even better for everyone.
+
 
 ## License
 

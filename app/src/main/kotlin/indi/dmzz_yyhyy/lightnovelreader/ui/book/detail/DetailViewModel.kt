@@ -19,6 +19,7 @@ import indi.dmzz_yyhyy.lightnovelreader.data.bookshelf.BookshelfRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.download.DownloadProgressRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.download.DownloadType
 import indi.dmzz_yyhyy.lightnovelreader.data.work.ExportBookToEPUBWork
+import io.nightfish.lightnovelreader.api.web.WebDataSourcePriority
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -39,13 +40,13 @@ class DetailViewModel @Inject constructor(
     var isInitialized by mutableStateOf(false)
         private set
 
-    fun init(bookId: Int) {
+    fun init(bookId: String) {
         Log.d("DetailViewModel", "Init bookId = $bookId")
         if (isInitialized) return
         isInitialized = true
         viewModelScope.launch(Dispatchers.IO) {
-            bookRepository.getBookInformationFlow(bookId, viewModelScope).collect {
-                if (it.id == -1) return@collect
+            bookRepository.getBookInformationFlow(bookId, viewModelScope, WebDataSourcePriority.High).collect {
+                if (it.id.isBlank()) return@collect
                 _uiState.bookInformation = it
                 _uiState.isLoading = false
                 val bookshelfBookMetadata = bookshelfRepository.getBookshelfBookMetadata(bookId) ?: return@collect
@@ -56,7 +57,7 @@ class DetailViewModel @Inject constructor(
             }
         }
         viewModelScope.launch(Dispatchers.IO) {
-            bookRepository.getBookVolumesFlow(bookId, viewModelScope).collect {
+            bookRepository.getBookVolumesFlow(bookId, viewModelScope, WebDataSourcePriority.High).collect {
                 if (it.volumes.isEmpty()) return@collect
                 _uiState.bookVolumes = it
             }
@@ -81,7 +82,7 @@ class DetailViewModel @Inject constructor(
         }
     }
 
-    fun cacheBook(bookId: Int): Flow<WorkInfo?> {
+    fun cacheBook(bookId: String): Flow<WorkInfo?> {
         val work = bookRepository.cacheBook(bookId)
         val isCachedFlow = bookRepository.isCacheBookWorkFlow(work.id)
         viewModelScope.launch(Dispatchers.IO) {
@@ -100,7 +101,7 @@ class DetailViewModel @Inject constructor(
     }
 
 
-    fun exportToEpub(uri: Uri, bookId: Int, title: String): Flow<WorkInfo?> {
+    fun exportToEpub(uri: Uri, bookId: String, title: String): Flow<WorkInfo?> {
         val workRequest = OneTimeWorkRequestBuilder<ExportBookToEPUBWork>()
             .setInputData(
                 workDataOf(
@@ -114,7 +115,7 @@ class DetailViewModel @Inject constructor(
             )
             .build()
         workManager.enqueueUniqueWork(
-            bookId.toString(),
+            bookId,
             ExistingWorkPolicy.KEEP,
             workRequest
         )

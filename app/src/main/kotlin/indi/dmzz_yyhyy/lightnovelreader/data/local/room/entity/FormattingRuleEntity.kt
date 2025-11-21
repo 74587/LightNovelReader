@@ -9,7 +9,7 @@ data class FormattingRuleEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Int? = null,
     @ColumnInfo(name = "book_id")
-    val bookId: Int,
+    val bookId: String,
     val name: String,
     @ColumnInfo(name = "is_regex")
     val isRegex: Boolean,

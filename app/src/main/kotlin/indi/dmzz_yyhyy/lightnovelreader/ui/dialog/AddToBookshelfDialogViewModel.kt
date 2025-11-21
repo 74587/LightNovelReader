@@ -23,7 +23,7 @@ class AddToBookshelfDialogViewModel @Inject constructor(
     val coroutineScope = CoroutineScope(Dispatchers.IO)
 
     var navController: NavController? = null
-    var bookId: Int = -1
+    var bookId = ""
         set(value) {
             viewModelScope.launch(Dispatchers.IO) {
                 _addToBookshelfDialogUiState.allBookShelf.addAll(
@@ -39,25 +39,25 @@ class AddToBookshelfDialogViewModel @Inject constructor(
     val addToBookshelfDialogUiState = _addToBookshelfDialogUiState
 
     fun onSelectBookshelf(bookshelfId: Int) {
-        if (bookId == -1) return
+        if (bookId.isBlank()) return
         _addToBookshelfDialogUiState.selectedBookshelfIds += listOf(bookshelfId)
     }
 
     fun onDeselectBookshelf(bookshelfId: Int) {
-        if (bookId == -1) return
+        if (bookId.isBlank()) return
         _addToBookshelfDialogUiState.selectedBookshelfIds =
             _addToBookshelfDialogUiState.selectedBookshelfIds.apply { removeAll { it == bookshelfId } }
     }
 
     fun onDismissAddToBookshelfRequest() {
         navController?.popBackStack()
-        if (bookId == -1) return
+        if (bookId.isBlank()) return
         _addToBookshelfDialogUiState.selectedBookshelfIds.clear()
     }
 
     fun processAddToBookshelfRequest() {
         navController?.popBackStack()
-        if (bookId == -1) return
+        if (bookId.isBlank()) return
         viewModelScope.launch(Dispatchers.IO) {
             val oldBookShelfIds = bookshelfRepository.getBookshelfBookMetadata(bookId)?.bookShelfIds ?: emptyList()
             viewModelScope.launch(Dispatchers.IO) {

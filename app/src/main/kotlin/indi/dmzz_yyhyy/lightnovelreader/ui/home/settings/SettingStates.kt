@@ -3,8 +3,8 @@ package indi.dmzz_yyhyy.lightnovelreader.ui.home.settings
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import indi.dmzz_yyhyy.lightnovelreader.data.setting.AbstractSettingState
-import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataPath
 import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataRepository
+import io.nightfish.lightnovelreader.api.userdata.UserDataPath
 import kotlinx.coroutines.CoroutineScope
 
 @Stable

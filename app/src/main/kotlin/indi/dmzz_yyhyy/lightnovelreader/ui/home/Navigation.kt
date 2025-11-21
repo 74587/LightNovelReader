@@ -22,7 +22,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.navigation
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.bookshelf.bookshelfNavigation
-import indi.dmzz_yyhyy.lightnovelreader.ui.home.exploration.explorationNavigation
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.explore.exploreNavigation
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.readingNavigation
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.settingsNavigation
 import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
@@ -53,7 +53,7 @@ fun NavGraphBuilder.homeNavigation(sharedTransitionScope: SharedTransitionScope)
         }
     ) {
         readingNavigation(sharedTransitionScope)
-        explorationNavigation(sharedTransitionScope)
+        exploreNavigation(sharedTransitionScope)
         bookshelfNavigation(sharedTransitionScope)
         settingsNavigation(sharedTransitionScope)
     }
@@ -81,12 +81,12 @@ fun HomeNavigateBar(
 
     val isReading = selectedRoute is Route.Main.Reading
     val isBookshelf = selectedRoute is Route.Main.Bookshelf
-    val isExploration = selectedRoute is Route.Main.Exploration
+    val isExploration = selectedRoute is Route.Main.Explore
     val isSettings = selectedRoute is Route.Main.Settings
 
     val avdReading = AnimatedImageVector.animatedVectorResource(R.drawable.animated_book)
     val avdShelf = AnimatedImageVector.animatedVectorResource(R.drawable.animated_bookshelf)
-    val avdExplore = AnimatedImageVector.animatedVectorResource(R.drawable.animated_exploration)
+    val avdExplore = AnimatedImageVector.animatedVectorResource(R.drawable.animated_explore)
     val avdSettings = AnimatedImageVector.animatedVectorResource(R.drawable.animated_settings)
 
 
@@ -109,7 +109,7 @@ fun HomeNavigateBar(
         )
         NavigationBarItem(
             selected = isExploration,
-            onClick = { controller.navigateSingleTopTo(Route.Main.Exploration) },
+            onClick = { controller.navigateSingleTopTo(Route.Main.Explore) },
             icon = { Icon(painter = rememberAnimatedVectorPainter(avdExplore, isExploration), null) },
             label = { Text(stringResource(R.string.nav_explore), maxLines = 1) }
         )

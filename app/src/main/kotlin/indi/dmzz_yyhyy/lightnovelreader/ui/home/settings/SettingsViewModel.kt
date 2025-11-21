@@ -15,7 +15,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val userDataRepository: UserDataRepository,
+    userDataRepository: UserDataRepository,
     private val workManager: WorkManager,
 ) : ViewModel() {
     var settingState: SettingState = SettingState(userDataRepository, viewModelScope)
@@ -36,5 +36,4 @@ class SettingsViewModel @Inject constructor(
         )
         return workRequest
     }
-
 }

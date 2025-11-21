@@ -21,8 +21,8 @@ android {
         minSdk = 24
         targetSdk = 36
         // 版本号为x.y.z则versionCode为x*1000000+y*10000+z*1000+debug版本号(开发需要时迭代, 三位数)
-        versionCode = 1_01_06_008
-        versionName = "1.1.6"
+        versionCode = 1_02_00_010
+        versionName = "1.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -95,6 +95,7 @@ dependencies {
     implementation(libs.compose.material3)
     androidTestImplementation(platform(libs.compose.bom))
     implementation(libs.compose.ui)
+    implementation(libs.androidx.material.icons.core)
     implementation(libs.compose.ui.graphics)
     implementation(libs.compose.ui.tooling.preview)
     debugImplementation(libs.compose.ui.tooling)
@@ -131,7 +132,7 @@ dependencies {
     implementation(libs.work.runtime.ktx)
     // Potato EPUB
     implementation(project(":epub"))
-    implementation(libs.serialization.json)
+    implementation(libs.kotlinx.serialization.json)
     // Swipe
     implementation(libs.swipe)
     // Chart
@@ -145,9 +146,16 @@ dependencies {
     // About Libraries
     implementation(libs.aboutlibraries.core)
     implementation(libs.aboutlibraries.compose.m3)
+    // LNR API
+    implementation(project(":api"))
+    implementation(libs.dom4j)
+    implementation(libs.kotlin.result)
+    implementation(libs.kotlin.result.coroutines)
+    // apksig
+    implementation(libs.apksig)
 }
 
-configurations.implementation{
+configurations.implementation {
     exclude(group = "com.intellij", module = "annotations")
 }
 

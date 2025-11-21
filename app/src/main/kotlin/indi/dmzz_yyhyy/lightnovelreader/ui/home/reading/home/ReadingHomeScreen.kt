@@ -38,6 +38,7 @@ import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -67,9 +68,6 @@ import androidx.lifecycle.compose.LifecycleEventEffect
 import com.valentinilk.shimmer.shimmer
 import com.valentinilk.shimmer.unclippedBoundsInWindow
 import indi.dmzz_yyhyy.lightnovelreader.R
-import indi.dmzz_yyhyy.lightnovelreader.data.book.BookInformation
-import indi.dmzz_yyhyy.lightnovelreader.data.book.UserReadingData
-import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Cover
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.ElasticPressContainer
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.EmptyPage
@@ -81,6 +79,9 @@ import indi.dmzz_yyhyy.lightnovelreader.utils.formTime
 import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 import indi.dmzz_yyhyy.lightnovelreader.utils.removeFromBookshelfAction
 import indi.dmzz_yyhyy.lightnovelreader.utils.showSnackbar
+import io.nightfish.lightnovelreader.api.book.BookInformation
+import io.nightfish.lightnovelreader.api.book.UserReadingData
+import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import kotlinx.coroutines.delay
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
@@ -90,17 +91,18 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun ReadingScreen(
     updateReadingBooks: () -> Unit,
-    recentReadingBookInformationMap: Map<Int, BookInformation>,
-    recentReadingUserReadingDataMap: Map<Int, UserReadingData>,
-    recentReadingBookIds: List<Int>,
-    onClickBook: (Int) -> Unit,
-    onClickContinueReading: (Int, Int) -> Unit,
+    recentReadingBookInformationMap: Map<String, BookInformation>,
+    recentReadingUserReadingDataMap: Map<String, UserReadingData>,
+    recentReadingBookIds: List<String>,
+    onClickBook: (String) -> Unit,
+    onClickContinueReading: (String, String) -> Unit,
     onClickDownloadManager: () -> Unit,
     onClickStats: () -> Unit,
-    onRemoveBook: (Int) -> Unit,
+    onRemoveBook: (String) -> Unit,
+    onAddBook: (String) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
-    loadBookInfo: (Int) -> Unit,
-    onClickOpenChapters: (Int) -> Unit
+    loadBookInfo: (String) -> Unit,
+    onClickOpenChapters: (String) -> Unit,
 ) {
     LifecycleEventEffect(Lifecycle.Event.ON_CREATE) {
         updateReadingBooks()
@@ -137,6 +139,7 @@ fun ReadingScreen(
                 onClickBook = onClickBook,
                 onClickContinueReading = onClickContinueReading,
                 onClickOpenChapters = onClickOpenChapters,
+                onAddBook = onAddBook,
                 onRemoveBook = onRemoveBook,
                 recentReadingBookInformationMap = recentReadingBookInformationMap,
                 recentReadingUserReadingDataMap = recentReadingUserReadingDataMap,
@@ -151,14 +154,15 @@ fun ReadingScreen(
 @Composable
 private fun ReadingContent(
     modifier: Modifier,
-    onClickBook: (Int) -> Unit,
-    onClickContinueReading: (Int, Int) -> Unit,
-    onRemoveBook: (Int) -> Unit,
-    recentReadingBookInformationMap: Map<Int, BookInformation>,
-    recentReadingUserReadingDataMap: Map<Int, UserReadingData>,
-    recentReadingBookIds: List<Int>,
-    loadBookInfo: (Int) -> Unit,
-    onClickOpenChapters: (Int) -> Unit
+    onClickBook: (String) -> Unit,
+    onClickContinueReading: (String, String) -> Unit,
+    onAddBook: (String) -> Unit,
+    onRemoveBook: (String) -> Unit,
+    recentReadingBookInformationMap: Map<String, BookInformation>,
+    recentReadingUserReadingDataMap: Map<String, UserReadingData>,
+    recentReadingBookIds: List<String>,
+    loadBookInfo: (String) -> Unit,
+    onClickOpenChapters: (String) -> Unit
 ) {
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
@@ -262,7 +266,10 @@ private fun ReadingContent(
                                     ),
                                     actionLabel = context.getString(R.string.undo),
                                 ) {
-                                    if (it == SnackbarResult.ActionPerformed) onRemoveBook(-id)
+                                    when (it) {
+                                        SnackbarResult.Dismissed -> { }
+                                        SnackbarResult.ActionPerformed -> onAddBook(id)
+                                    }
                                 }
                             }
                         )
@@ -405,7 +412,7 @@ private fun ReadingBookCard(
             Cover(
                 width = 94.dp,
                 height = 144.dp,
-                url = bookInformation.coverUrl,
+                uri = bookInformation.coverUri,
                 rounded = 8.dp,
             )
 
@@ -475,8 +482,8 @@ private fun ReadingBookCard(
 fun ReadingHeaderCardPager(
     items: List<Pair<BookInformation, UserReadingData>>,
     modifier: Modifier = Modifier,
-    onClickContinueReading: (Int, Int) -> Unit,
-    onClickOpenChapters: (Int) -> Unit
+    onClickContinueReading: (String, String) -> Unit,
+    onClickOpenChapters: (String) -> Unit
 ) {
     val pageCount = items.size.coerceIn(1, 3)
     val pagerState = rememberPagerState(initialPage = 0) { pageCount }
@@ -584,8 +591,8 @@ private fun VerticalDotsIndicator(
 private fun ReadingHeaderCardPage(
     info: BookInformation,
     data: UserReadingData,
-    onClickContinueReading: (Int, Int) -> Unit,
-    onClickOpenDetail: (Int) -> Unit,
+    onClickContinueReading: (String, String) -> Unit,
+    onClickOpenDetail: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val density = LocalDensity.current
@@ -605,7 +612,7 @@ private fun ReadingHeaderCardPage(
         Cover(
             height = 172.dp,
             width = 118.dp,
-            url = info.coverUrl,
+            uri = info.coverUri,
             rounded = 8.dp
         )
 

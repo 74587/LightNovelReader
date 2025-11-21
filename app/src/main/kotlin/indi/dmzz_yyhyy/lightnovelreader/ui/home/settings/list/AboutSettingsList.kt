@@ -13,7 +13,7 @@ import androidx.compose.ui.res.stringResource
 import indi.dmzz_yyhyy.lightnovelreader.BuildConfig
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsAboutInfoDialog
-import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsClickableEntry
+import io.nightfish.lightnovelreader.api.ui.components.SettingsClickableEntry
 
 @Composable
 fun AboutSettingsList(
@@ -52,6 +52,13 @@ fun AboutSettingsList(
         title = stringResource(R.string.settings_github_repo),
         description = stringResource(R.string.settings_github_repo_desc),
         openUrl = "https://github.com/dmzz-yyhyy/LightNovelReader"
+    )
+    SettingsClickableEntry(
+        modifier = Modifier.background(colorScheme.surfaceContainer),
+        painter = painterResource(R.drawable.volunteer_activism_24px),
+        title = "请作者喝茶",
+        description = "夜鱼很可爱, 请给夜鱼💰",
+        openUrl = "https://afdian.com/a/lightnovelreader"
     )
     /* SettingsSwitchEntry(
         modifier = Modifier.background(colorScheme.surfaceContainer),

@@ -15,12 +15,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 data class ReadingStatsUpdate(
-    val bookId: Int,
+    val bookId: String,
     val secondDelta: Int = 0,
     val sessionDelta: Int = 0,
     val localTime: LocalTime = LocalTime.now(),
-    val startedBooks: List<Int> = emptyList(),
-    val favoriteBooks: List<Int> = emptyList()
+    val startedBooks: List<String> = emptyList(),
+    val favoriteBooks: List<String> = emptyList()
 )
 
 @Singleton
@@ -28,9 +28,9 @@ class StatsRepository @Inject constructor(
     private val readingStatisticsDao: ReadingStatisticsDao,
     private val bookRecordDao: BookRecordDao
 ) {
-    private val bookReadTimeBuffer = mutableMapOf<Int, Pair<LocalTime, Int>>()
+    private val bookReadTimeBuffer = mutableMapOf<String, Pair<LocalTime, Int>>()
 
-    suspend fun accumulateBookReadTime(bookId: Int, seconds: Int) {
+    suspend fun accumulateBookReadTime(bookId: String, seconds: Int) {
         if (seconds < 0) {
             bookReadTimeBuffer.keys.toList().forEach { _ ->
                 clearBookReadTimeBuffer(bookId)
@@ -47,7 +47,7 @@ class StatsRepository @Inject constructor(
         }
     }
 
-    private suspend fun clearBookReadTimeBuffer(bookId: Int) {
+    private suspend fun clearBookReadTimeBuffer(bookId: String) {
         val (startTime, totalSeconds) = bookReadTimeBuffer[bookId] ?: return
 
         updateReadingStatistics(
@@ -128,14 +128,14 @@ class StatsRepository @Inject constructor(
     private fun createTotalRecordEntity(): BookRecordEntity = BookRecordEntity(
         id = -721,
         date = LocalDate.now(),
-        bookId = -721,
+        bookId = "-721",
         sessions = 0,
         totalTime = 0,
         firstSeen = LocalTime.now(),
         lastSeen = LocalTime.now()
     )
 
-    private fun createRecordEntity(bookId: Int): BookRecordEntity = BookRecordEntity(
+    private fun createRecordEntity(bookId: String): BookRecordEntity = BookRecordEntity(
         id = null,
         date = LocalDate.now(),
         bookId = bookId,
@@ -194,7 +194,7 @@ class StatsRepository @Inject constructor(
     }
 
     suspend fun updateBookStatus(
-        bookId: Int,
+        bookId: String,
         isFavorite: Boolean = false,
         isFirstReading: Boolean = false,
         isFinishedReading: Boolean = false
@@ -221,7 +221,7 @@ class StatsRepository @Inject constructor(
         return count
     }
 
-    fun updateList(list: List<Int>, item: Int, add: Boolean): List<Int> =
+    fun updateList(list: List<String>, item: String, add: Boolean): List<String> =
         if (add) {
             if (item !in list) list + item else list
         } else list - item

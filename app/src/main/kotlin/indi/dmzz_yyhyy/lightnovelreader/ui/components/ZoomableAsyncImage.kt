@@ -4,6 +4,7 @@ import androidx.compose.animation.core.Animatable
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
 import androidx.compose.foundation.gestures.calculatePan
+import android.net.Uri
 import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,17 +37,18 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.SubcomposeAsyncImage
 import coil.request.ImageRequest
-import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
+import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import kotlinx.coroutines.launch
 
 @Composable
 fun ZoomableImage(
-    imageUrl: String,
+    imageUri: Uri,
     modifier: Modifier = Modifier,
     onZoomEnd: () -> Unit,
     maxScale: Float = 3f,
     minScale: Float = 1f,
-    placeholderHeight: Dp = 200.dp
+    placeholderHeight: Dp = 200.dp,
+    header: Map<String, String>
 ) {
     var retryKey by remember { mutableIntStateOf(0) }
     var offset by remember { mutableStateOf(Offset.Zero) }
@@ -59,7 +61,7 @@ fun ZoomableImage(
         key(retryKey) {
             SubcomposeAsyncImage(
                 model = ImageRequest.Builder(LocalContext.current)
-                    .data(imageUrl)
+                    .data(imageUri)
                     .crossfade(true)
                     .listener(
                         onSuccess = { _, _ ->
@@ -69,6 +71,11 @@ fun ZoomableImage(
                             lastError = result.throwable.message
                         }
                     )
+                    .also { builder ->
+                        header.forEach {
+                            builder.addHeader(it.key, it.value)
+                        }
+                    }
                     .build(),
                 contentDescription = null,
                 contentScale = ContentScale.FillWidth,

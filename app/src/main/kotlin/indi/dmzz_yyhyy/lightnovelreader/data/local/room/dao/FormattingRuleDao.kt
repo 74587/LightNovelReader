@@ -19,11 +19,11 @@ interface FormattingRuleDao {
     suspend fun getAllBookRuleEntity(): List<FormattingRuleEntity>
 
     @Query("select * from formatting_rule where book_id = :bookId")
-    fun getBookRuleEntityFlow(bookId: Int): Flow<List<FormattingRuleEntity>>
+    fun getBookRuleEntityFlow(bookId: String): Flow<List<FormattingRuleEntity>>
 
     @Query("replace into formatting_rule (id, book_id, name, is_regex, `match`, replacement, is_enabled) " +
             "values (:id, :bookId, :name, :isRegex, :match, :replacement, :isEnabled)")
-    suspend fun update(id: Int, bookId: Int, name: String, isRegex: Boolean, match: String, replacement: String, isEnabled: Boolean)
+    suspend fun update(id: Int, bookId: String, name: String, isRegex: Boolean, match: String, replacement: String, isEnabled: Boolean)
 
     @Query("select * from formatting_rule where id = :id")
     suspend fun getBookRuleEntity(id: Int): FormattingRuleEntity

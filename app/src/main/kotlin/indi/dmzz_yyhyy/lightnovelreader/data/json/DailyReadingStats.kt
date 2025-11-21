@@ -15,11 +15,11 @@ data class DailyReadingStats(
     @SerializedName("foreground_time")
     val foregroundTime: Int,
     @SerializedName("favorite_books")
-    val favoriteBooks: List<Int>,
+    val favoriteBooks: List<String>,
     @SerializedName("started_books")
-    val startedBooks: List<Int>,
+    val startedBooks: List<String>,
     @SerializedName("finished_books")
-    val finishedBooks: List<Int>,
+    val finishedBooks: List<String>,
     @SerializedName("book_records")
     val bookRecords: List<BookRecordData>
 )
@@ -30,7 +30,7 @@ data class BookRecordData(
     @SerializedName("date")
     val date: LocalDate,
     @SerializedName("book_id")
-    val bookId: Int,
+    val bookId: String,
     @SerializedName("sessions")
     val sessions: Int,
     @SerializedName("total_time")

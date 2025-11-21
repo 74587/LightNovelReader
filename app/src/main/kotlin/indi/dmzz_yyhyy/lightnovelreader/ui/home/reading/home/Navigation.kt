@@ -6,10 +6,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import indi.dmzz_yyhyy.lightnovelreader.ui.LocalNavController
+import io.nightfish.lightnovelreader.api.ui.LocalNavController
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.detail.navigateToBookDetailDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.ChapterSelectorBottomSheet
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.navigateToBookReaderDestination
@@ -44,7 +44,8 @@ fun NavGraphBuilder.readingHomeDestination(sharedTransitionScope: SharedTransiti
             onClickStats = navController::navigateToReadingStatsDestination,
             loadBookInfo = viewModel::loadBookInfo,
             onRemoveBook = viewModel::removeFromReadingList,
-            onClickOpenChapters = viewModel::openChapters
+            onClickOpenChapters = viewModel::openChapters,
+            onAddBook = viewModel::addToReadingList
         )
 
         if (chapterSheetUi != null) {

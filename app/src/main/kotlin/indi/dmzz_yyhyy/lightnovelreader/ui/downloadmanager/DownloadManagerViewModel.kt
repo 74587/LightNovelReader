@@ -4,10 +4,10 @@ import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import indi.dmzz_yyhyy.lightnovelreader.data.book.BookInformation
 import indi.dmzz_yyhyy.lightnovelreader.data.book.BookRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.download.DownloadItem
 import indi.dmzz_yyhyy.lightnovelreader.data.download.DownloadProgressRepository
+import io.nightfish.lightnovelreader.api.book.BookInformation
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,8 +18,8 @@ class DownloadManagerViewModel @Inject constructor(
     private val downloadProgressRepository: DownloadProgressRepository
 ) : ViewModel() {
     val downloadItemIdList = downloadProgressRepository.downloadItemIdList
-    private val _bookInformationMap = mutableStateMapOf<Int, BookInformation>()
-    val bookInformationMap: Map<Int, BookInformation> = _bookInformationMap
+    private val _bookInformationMap = mutableStateMapOf<String, BookInformation>()
+    val bookInformationMap: Map<String, BookInformation> = _bookInformationMap
 
     init {
         viewModelScope.launch(Dispatchers.IO) {

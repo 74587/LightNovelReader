@@ -19,13 +19,13 @@ import javax.inject.Inject
 class EditTextFormattingRuleDialogViewModel @Inject constructor(
     private val formattingRepository: FormatRepository,
 ) : ViewModel() {
-    private var bookId: Int? = null
+    private var bookId: String? = null
     var formattingRule: FormattingRule? by mutableStateOf(null)
         private set
     var matchTextFieldValue by mutableStateOf(TextFieldValue())
         private set
 
-    fun load(bookId: Int, ruleId: Int) {
+    fun load(bookId: String, ruleId: Int) {
         this.bookId = bookId
         if (ruleId == -1) {
             formattingRule = FormattingRule(

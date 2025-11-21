@@ -29,10 +29,10 @@ interface BookRecordDao {
     suspend fun getBookRecordsBetweenDates(start: LocalDate, end: LocalDate): List<BookRecordEntity>
 
     @Query("SELECT * FROM book_records WHERE book_id = :bookId AND date = :date")
-    suspend fun getBookRecordByIdAndDate(bookId: Int, date: LocalDate): BookRecordEntity?
+    suspend fun getBookRecordByIdAndDate(bookId: String, date: LocalDate): BookRecordEntity?
 
     @Query("SELECT * FROM book_records WHERE book_id = :bookId")
-    suspend fun getBookRecordsByBookId(bookId: Int): List<BookRecordEntity>
+    suspend fun getBookRecordsByBookId(bookId: String): List<BookRecordEntity>
 
     @Delete
     suspend fun deleteBookRecord(record: BookRecordEntity)

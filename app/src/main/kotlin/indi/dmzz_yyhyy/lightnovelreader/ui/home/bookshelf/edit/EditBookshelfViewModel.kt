@@ -3,9 +3,9 @@ package indi.dmzz_yyhyy.lightnovelreader.ui.home.bookshelf.edit
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import indi.dmzz_yyhyy.lightnovelreader.data.bookshelf.Bookshelf
+import io.nightfish.lightnovelreader.api.bookshelf.Bookshelf
 import indi.dmzz_yyhyy.lightnovelreader.data.bookshelf.BookshelfRepository
-import indi.dmzz_yyhyy.lightnovelreader.data.bookshelf.MutableBookshelf
+import io.nightfish.lightnovelreader.api.bookshelf.MutableBookshelf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Inject

@@ -9,12 +9,12 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import androidx.work.workDataOf
 import dagger.hilt.android.lifecycle.HiltViewModel
-import indi.dmzz_yyhyy.lightnovelreader.data.book.BookInformation
 import indi.dmzz_yyhyy.lightnovelreader.data.book.BookRepository
-import indi.dmzz_yyhyy.lightnovelreader.data.book.BookVolumes
 import indi.dmzz_yyhyy.lightnovelreader.data.bookshelf.BookshelfRepository
-import indi.dmzz_yyhyy.lightnovelreader.data.bookshelf.MutableBookshelf
 import indi.dmzz_yyhyy.lightnovelreader.data.work.ImportDataWork
+import io.nightfish.lightnovelreader.api.book.BookInformation
+import io.nightfish.lightnovelreader.api.book.BookVolumes
+import io.nightfish.lightnovelreader.api.bookshelf.MutableBookshelf
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.SharingStarted
@@ -32,8 +32,8 @@ class BookshelfHomeViewModel @Inject constructor(
     private val _uiState = MutableBookshelfHomeUiState()
     val uiState: BookshelfHomeUiState = _uiState
 
-    private val bookInfoStateFlows = mutableMapOf<Int, StateFlow<BookInformation>>()
-    private val bookVolumesStateFlows = mutableMapOf<Int, StateFlow<BookVolumes>>()
+    private val bookInfoStateFlows = mutableMapOf<String, StateFlow<BookInformation>>()
+    private val bookVolumesStateFlows = mutableMapOf<String, StateFlow<BookVolumes>>()
 
     fun load() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -46,7 +46,7 @@ class BookshelfHomeViewModel @Inject constructor(
         }
     }
 
-    fun getBookInfoStateFlow(id: Int): StateFlow<BookInformation> {
+    fun getBookInfoStateFlow(id: String): StateFlow<BookInformation> {
         return bookInfoStateFlows.getOrPut(id) {
             bookRepository.getBookInformationFlow(id, viewModelScope)
                 .stateIn(
@@ -57,7 +57,7 @@ class BookshelfHomeViewModel @Inject constructor(
         }
     }
 
-    fun getBookVolumesStateFlow(id: Int): StateFlow<BookVolumes> {
+    fun getBookVolumesStateFlow(id: String): StateFlow<BookVolumes> {
         return bookVolumesStateFlows.getOrPut(id) {
             bookRepository.getBookVolumesFlow(id, viewModelScope)
                 .stateIn(
@@ -114,7 +114,7 @@ class BookshelfHomeViewModel @Inject constructor(
         _uiState.selectedBookIds.clear()
     }
 
-    fun changeBookSelectState(bookId: Int) {
+    fun changeBookSelectState(bookId: String) {
         if (_uiState.selectedBookIds.contains(bookId))
             _uiState.selectedBookIds.remove(bookId)
         else _uiState.selectedBookIds.add(bookId)
@@ -130,17 +130,14 @@ class BookshelfHomeViewModel @Inject constructor(
         _uiState.selectedBookIds.addAll(_uiState.selectedBookshelf.allBookIds)
     }
 
-    fun pinSelectedBooks(bookId: Int?) {
+    fun pinSelectedBooks() {
         viewModelScope.launch(Dispatchers.IO) {
             val pinnedBookIds = _uiState.selectedBookshelf.pinnedBookIds
             val newPinnedBooksIds = _uiState.selectedBookIds
                 .filter { pinnedBookIds.contains(it) }
                 .toMutableList()
-                .apply {
-                    if (bookId != null && bookId < 0) add(-bookId)
-                }
                 .let { removeList ->
-                    (pinnedBookIds + (if (bookId == null || bookId < 0) _uiState.selectedBookIds else listOf(bookId)))
+                    (pinnedBookIds + (_uiState.selectedBookIds))
                         .toMutableList()
                         .apply {
                             removeAll { removeList.contains(it) }

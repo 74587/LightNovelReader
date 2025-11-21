@@ -1,5 +1,6 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.components
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
@@ -20,7 +21,7 @@ import coil.request.CachePolicy
 import coil.request.ImageRequest
 
 @Composable
-fun Cover(width: Dp, height: Dp, url: String, rounded: Dp = 8.dp) {
+fun Cover(width: Dp, height: Dp, uri: Uri, rounded: Dp = 8.dp) {
     Box(modifier = Modifier
         .size(width, height)
         .graphicsLayer {
@@ -41,7 +42,7 @@ fun Cover(width: Dp, height: Dp, url: String, rounded: Dp = 8.dp) {
 
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(url)
+                .data(uri)
                 .crossfade(true)
                 .memoryCachePolicy(CachePolicy.ENABLED)
                 .networkCachePolicy(CachePolicy.ENABLED)

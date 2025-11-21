@@ -6,17 +6,22 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
-import indi.dmzz_yyhyy.lightnovelreader.data.book.BookInformation
 import indi.dmzz_yyhyy.lightnovelreader.data.json.AppUserDataContent
 import indi.dmzz_yyhyy.lightnovelreader.data.json.AppUserDataJsonBuilder
 import indi.dmzz_yyhyy.lightnovelreader.data.json.toJsonData
-import indi.dmzz_yyhyy.lightnovelreader.data.local.room.converter.LocalDateTimeConverter.dateToString
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.converter.ListConverter.intListToString
+import indi.dmzz_yyhyy.lightnovelreader.data.local.room.converter.LocalDateTimeConverter.dateToString
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.dao.BookshelfDao
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.entity.BookshelfEntity
-import indi.dmzz_yyhyy.lightnovelreader.data.web.WebBookDataSource
+import indi.dmzz_yyhyy.lightnovelreader.data.web.WebBookDataSourceProvider
 import indi.dmzz_yyhyy.lightnovelreader.data.work.CacheBookWork
 import indi.dmzz_yyhyy.lightnovelreader.data.work.SaveBookshelfWork
+import io.nightfish.lightnovelreader.api.book.BookInformation
+import io.nightfish.lightnovelreader.api.bookshelf.Bookshelf
+import io.nightfish.lightnovelreader.api.bookshelf.BookshelfBookMetadata
+import io.nightfish.lightnovelreader.api.bookshelf.BookshelfRepositoryApi
+import io.nightfish.lightnovelreader.api.bookshelf.BookshelfSortType
+import io.nightfish.lightnovelreader.api.bookshelf.MutableBookshelf
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.Instant
@@ -28,11 +33,24 @@ import javax.inject.Singleton
 class BookshelfRepository @Inject constructor(
     private val bookshelfDao: BookshelfDao,
     private val workManager: WorkManager,
-    private val webBookDataSource: WebBookDataSource
-) {
-    fun getAllBookshelfIds(): List<Int> = bookshelfDao.getAllBookshelfIds()
+    private val webBookDataSourceProvider: WebBookDataSourceProvider
+): BookshelfRepositoryApi {
+    override fun getAllBookshelfIds(): List<Int> = bookshelfDao.getAllBookshelfIds()
 
-    fun getAllBookshelvesFlow(): Flow<List<MutableBookshelf>> = bookshelfDao.getAllBookshelfFlow().map { bookshelfEntities ->
+    override fun getAllBookshelves(): List<MutableBookshelf> = bookshelfDao.getAllBookshelves().map { bookshelfEntity ->
+        MutableBookshelf().apply {
+            this.id =   bookshelfEntity.id
+            this.name = bookshelfEntity.name
+            this.sortType = BookshelfSortType.entries.first { it.key == bookshelfEntity.sortType }
+            this.autoCache = bookshelfEntity.autoCache
+            this.systemUpdateReminder = bookshelfEntity.systemUpdateReminder
+            this.allBookIds = bookshelfEntity.allBookIds
+            this.pinnedBookIds = bookshelfEntity.pinnedBookIds
+            this.updatedBookIds = bookshelfEntity.updatedBookIds
+        }
+    }
+
+    override fun getAllBookshelvesFlow(): Flow<List<MutableBookshelf>> = bookshelfDao.getAllBookshelvesFlow().map { bookshelfEntities ->
         bookshelfEntities.map { bookshelfEntity ->
             MutableBookshelf().apply {
                 this.id =   bookshelfEntity.id
@@ -47,7 +65,7 @@ class BookshelfRepository @Inject constructor(
         }
     }
 
-    fun getBookshelf(id: Int): MutableBookshelf? = MutableBookshelf().apply {
+    override fun getBookshelf(id: Int): MutableBookshelf? = MutableBookshelf().apply {
         val bookshelfEntity = bookshelfDao.getBookshelf(id) ?: return null
         this.id = id
         this.name = bookshelfEntity.name
@@ -59,7 +77,7 @@ class BookshelfRepository @Inject constructor(
         this.updatedBookIds = bookshelfEntity.updatedBookIds
     }
 
-    fun getBookshelfFlow(id: Int): Flow<MutableBookshelf?> = bookshelfDao
+    override fun getBookshelfFlow(id: Int): Flow<MutableBookshelf?> = bookshelfDao
         .getBookShelfFlow(id)
         .map { bookshelfEntity ->
             bookshelfEntity ?: return@map null
@@ -75,8 +93,8 @@ class BookshelfRepository @Inject constructor(
             }
         }
 
-    fun createBookShelf(
-        id: Int = Instant.now().epochSecond.hashCode(),
+    override fun createBookShelf(
+        id: Int,
         name: String,
         sortType: BookshelfSortType,
         autoCache: Boolean,
@@ -95,7 +113,7 @@ class BookshelfRepository @Inject constructor(
         return Instant.now().epochSecond.hashCode()
     }
 
-    fun deleteBookshelf(bookshelfId: Int) {
+    override fun deleteBookshelf(bookshelfId: Int) {
         bookshelfDao.getBookshelf(bookshelfId)?.let { bookshelf ->
             bookshelf.allBookIds.forEach { bookId ->
                 clearBookshelfIdFromBookshelfBookMetadata(bookshelfId, bookId)
@@ -104,7 +122,7 @@ class BookshelfRepository @Inject constructor(
         bookshelfDao.deleteBookshelf(bookshelfId)
     }
 
-    fun addBookIntoBookShelf(bookshelfId: Int, bookInformation: BookInformation) {
+    override fun addBookIntoBookShelf(bookshelfId: Int, bookInformation: BookInformation) {
         val bookshelf = bookshelfDao.getBookshelf(bookshelfId) ?: return
         bookshelfDao.addBookshelfMetadata(
             id = bookInformation.id,
@@ -120,7 +138,7 @@ class BookshelfRepository @Inject constructor(
                 )
                 .build()
             workManager.enqueueUniqueWork(
-                bookInformation.id.toString(),
+                bookInformation.id,
                 ExistingWorkPolicy.KEEP,
                 workRequest
             )
@@ -134,7 +152,7 @@ class BookshelfRepository @Inject constructor(
         }
     }
 
-    fun addUpdatedBooksIntoBookShelf(bookShelfId: Int, bookId: Int) {
+    override fun addUpdatedBooksIntoBookShelf(bookShelfId: Int, bookId: String) {
         val bookshelf = bookshelfDao.getBookshelf(bookShelfId) ?: return
         (bookshelf.updatedBookIds + listOf(bookId)).let {
             bookshelfDao.updateBookshelfEntity(
@@ -145,7 +163,7 @@ class BookshelfRepository @Inject constructor(
         }
     }
 
-    fun updateBookshelf(bookshelfId: Int, updater: (MutableBookshelf) -> Bookshelf) {
+    override fun updateBookshelf(bookshelfId: Int, updater: (MutableBookshelf) -> Bookshelf) {
         this.getBookshelf(bookshelfId)?.let { oldBookshelf ->
             updater(oldBookshelf).let { newBookshelf ->
                 bookshelfDao.updateBookshelfEntity(
@@ -164,7 +182,7 @@ class BookshelfRepository @Inject constructor(
         }
     }
 
-    fun getAllBookshelfBooksMetadata(): List<BookshelfBookMetadata> = bookshelfDao
+    override fun getAllBookshelfBooksMetadata(): List<BookshelfBookMetadata> = bookshelfDao
         .getAllBookshelfBookEntities()
         .map {
             BookshelfBookMetadata(
@@ -174,11 +192,11 @@ class BookshelfRepository @Inject constructor(
             )
         }
 
-    fun getAllBookshelfBookIdsFlow(): Flow<List<Int>> = bookshelfDao.getAllBookshelfBookIdsFlow()
+    override fun getAllBookshelfBookIdsFlow(): Flow<List<String>> = bookshelfDao.getAllBookshelfBookIdsFlow()
 
-    fun getBookshelfBookMetadata(id: Int): BookshelfBookMetadata? = bookshelfDao.getBookshelfBookMetadata(id)
+    override fun getBookshelfBookMetadata(id: String): BookshelfBookMetadata? = bookshelfDao.getBookshelfBookMetadata(id)
 
-    fun getBookshelfBookMetadataFlow(id: Int): Flow<BookshelfBookMetadata?> = bookshelfDao.getBookshelfBookMetadataEntityFlow(id).map {
+    override fun getBookshelfBookMetadataFlow(id: String): Flow<BookshelfBookMetadata?> = bookshelfDao.getBookshelfBookMetadataEntityFlow(id).map {
         it ?: return@map null
         BookshelfBookMetadata(
             it.id,
@@ -187,7 +205,7 @@ class BookshelfRepository @Inject constructor(
         )
     }
 
-    private fun clearBookshelfIdFromBookshelfBookMetadata(bookshelfId: Int, bookId: Int) {
+    private fun clearBookshelfIdFromBookshelfBookMetadata(bookshelfId: Int, bookId: String) {
         bookshelfDao.getBookshelfBookMetadata(bookId)?.let { bookshelfBookMetadata ->
             bookshelfBookMetadata.bookShelfIds
                 .toMutableList()
@@ -205,7 +223,7 @@ class BookshelfRepository @Inject constructor(
         }
     }
 
-    fun deleteBookFromBookshelf(bookshelfId: Int, bookId: Int) {
+    override fun deleteBookFromBookshelf(bookshelfId: Int, bookId: String) {
         clearBookshelfIdFromBookshelfBookMetadata(bookshelfId, bookId)
         updateBookshelf(bookshelfId) { oldBookshelf ->
             oldBookshelf.apply {
@@ -216,7 +234,7 @@ class BookshelfRepository @Inject constructor(
         }
     }
 
-    fun deleteBookFromBookshelfUpdatedBookIds(bookshelfId: Int, bookId: Int) {
+    override fun deleteBookFromBookshelfUpdatedBookIds(bookshelfId: Int, bookId: String) {
         updateBookshelf(bookshelfId) { oldBookshelf ->
             oldBookshelf.apply {
                 this.updatedBookIds = updatedBookIds.toMutableList().apply { removeAll { it == bookId } }
@@ -224,7 +242,7 @@ class BookshelfRepository @Inject constructor(
         }
     }
 
-    fun updateBookshelfBookMetadataLastUpdateTime(bookId: Int, time: LocalDateTime) {
+    override fun updateBookshelfBookMetadataLastUpdateTime(bookId: String, time: LocalDateTime) {
         bookshelfDao.updateBookshelfBookMetaDataEntity(
             bookId,
             dateToString(time) ?: "",
@@ -234,7 +252,7 @@ class BookshelfRepository @Inject constructor(
 
     fun exportAllBookshelvesJson(): String = AppUserDataJsonBuilder()
         .data {
-            webDataSourceId(webBookDataSource.id)
+            webDataSourceId(webBookDataSourceProvider.default.id)
             getAllBookshelfIds()
                 .mapNotNull { (getBookshelf(it)) }
                 .map { (it as Bookshelf).toJsonData() }
@@ -248,11 +266,17 @@ class BookshelfRepository @Inject constructor(
 
     fun exportBookshelfToJson(id: Int): String = AppUserDataJsonBuilder()
         .data {
-            webDataSourceId(webBookDataSource.id)
+            webDataSourceId(webBookDataSourceProvider.default.id)
             getBookshelf(id)?.toJsonData()?.let(::bookshelf)
             getBookshelf(id)?.allBookIds
                 ?.mapNotNull(::getBookshelfBookMetadata)
-                ?.map { BookshelfBookMetadata(id = it.id, lastUpdate = it.lastUpdate, bookShelfIds = listOf(id)) }
+                ?.map {
+                    BookshelfBookMetadata(
+                        id = it.id,
+                        lastUpdate = it.lastUpdate,
+                        bookShelfIds = listOf(id)
+                    )
+                }
                 ?.map(BookshelfBookMetadata::toJsonData)
                 ?.forEach(::bookshelfBookMetaData)
         }
@@ -313,5 +337,5 @@ class BookshelfRepository @Inject constructor(
         return true
     }
 
-    fun clear() = bookshelfDao.clear()
+    override fun clear() = bookshelfDao.clear()
 }

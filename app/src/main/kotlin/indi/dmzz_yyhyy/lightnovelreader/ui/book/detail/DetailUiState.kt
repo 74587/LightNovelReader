@@ -4,10 +4,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.google.android.material.bottomsheet.BottomSheetBehavior.State
-import indi.dmzz_yyhyy.lightnovelreader.data.book.BookInformation
-import indi.dmzz_yyhyy.lightnovelreader.data.book.BookVolumes
-import indi.dmzz_yyhyy.lightnovelreader.data.book.UserReadingData
 import indi.dmzz_yyhyy.lightnovelreader.data.download.DownloadItem
+import io.nightfish.lightnovelreader.api.book.BookInformation
+import io.nightfish.lightnovelreader.api.book.BookVolumes
+import io.nightfish.lightnovelreader.api.book.UserReadingData
 
 @State
 interface DetailUiState {
@@ -23,7 +23,7 @@ interface DetailUiState {
 class MutableDetailUiState: DetailUiState {
     override var isLoading: Boolean by mutableStateOf(true)
     override var bookInformation: BookInformation by mutableStateOf(BookInformation.empty())
-    override var bookVolumes: BookVolumes by mutableStateOf(BookVolumes.empty(-1))
+    override var bookVolumes: BookVolumes by mutableStateOf(BookVolumes.empty(""))
     override var userReadingData: UserReadingData by mutableStateOf(UserReadingData.empty())
     override var isCached: Boolean by mutableStateOf(false)
     override var downloadItem: DownloadItem? by mutableStateOf(null)

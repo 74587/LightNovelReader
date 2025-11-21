@@ -3,9 +3,11 @@ package indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.content.scroll
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.unit.IntSize
 import indi.dmzz_yyhyy.lightnovelreader.data.book.BookRepository
+import indi.dmzz_yyhyy.lightnovelreader.data.content.ContentComponentRepository
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.SettingState
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.content.ContentViewModel
 import indi.dmzz_yyhyy.lightnovelreader.utils.throttleLatest
+import io.nightfish.lightnovelreader.api.web.WebDataSourcePriority
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -17,7 +19,8 @@ class ScrollContentViewModel(
     val bookRepository: BookRepository,
     val coroutineScope: CoroutineScope,
     val settingState: SettingState,
-    val updateReadingProgress: (Int, Float) -> Unit
+    val contentComponentRepository: ContentComponentRepository,
+    val updateReadingProgress: (String, Float) -> Unit
 ) : ContentViewModel {
     private var progressScrollLoadJob: Job? = null
     private val loadChapterJobs: MutableList<Job> = mutableListOf()
@@ -31,7 +34,10 @@ class ScrollContentViewModel(
         setLazyColumnSize = {
             lazyColumnSize = it
         },
-        writeProgressRightNow = ::writeProgressRightNow
+        writeProgressRightNow = ::writeProgressRightNow,
+        getContentData =  {
+            contentComponentRepository.getContentDataFromJson(it)
+        }
     )
 
     init {
@@ -164,7 +170,7 @@ class ScrollContentViewModel(
         }
     }
 
-    override fun changeBookId(id: Int) {
+    override fun changeBookId(id: String) {
         uiState.bookId = id
     }
 
@@ -186,13 +192,13 @@ class ScrollContentViewModel(
         }
     }
 
-    override fun changeChapter(id: Int) {
+    override fun changeChapter(id: String) {
         loadChapterJobs.forEach(Job::cancel)
         uiState.contentList.clear()
         uiState.readingContentId = id
         uiState.readingProgress = 0f
         coroutineScope.launch(Dispatchers.IO) {
-            val chapterContent = bookRepository.getChapterContent(id, uiState.bookId)
+            val chapterContent = bookRepository.getChapterContent(id, uiState.bookId, WebDataSourcePriority.High)
             bookRepository.updateUserReadingData(uiState.bookId) {
                 it.apply {
                     lastReadChapterProgress =
@@ -219,7 +225,8 @@ class ScrollContentViewModel(
                         bookRepository.getStateChapterContent(
                             chapterContent.lastChapter,
                             uiState.bookId,
-                            coroutineScope
+                            coroutineScope,
+                            WebDataSourcePriority.High
                         )
                     )
                 }

@@ -1,7 +1,7 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.dialog
 
 import androidx.compose.runtime.mutableStateListOf
-import indi.dmzz_yyhyy.lightnovelreader.data.bookshelf.Bookshelf
+import io.nightfish.lightnovelreader.api.bookshelf.Bookshelf
 
 interface AddToBookshelfDialogUiState {
     val allBookShelf: List<Bookshelf>

@@ -3,87 +3,55 @@ package indi.dmzz_yyhyy.lightnovelreader.utils
 import android.content.ContentValues
 import android.content.Context
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Environment
 import android.provider.MediaStore
-import android.util.Size
 import coil.ImageLoader
 import coil.request.ErrorResult
 import coil.request.ImageRequest
 import coil.request.SuccessResult
-import kotlinx.coroutines.CoroutineScope
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.Result
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.net.HttpURLConnection
-import java.net.URL
 
 object ImageUtils {
-
-    fun getImageSize(imageUrl: String?): Size? {
-        var connection: HttpURLConnection? = null
-        try {
-            val requestUrl = URL(imageUrl)
-            connection = requestUrl.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-            connection.connectTimeout = 8000
-            connection.readTimeout = 8000
-            val responseCode = connection.responseCode
-            if (responseCode == 200) {
-                val inputStream = connection.inputStream
-                val options = BitmapFactory.Options()
-                options.inJustDecodeBounds = true
-                BitmapFactory.decodeStream(inputStream, null, options)
-                return Size(options.outWidth, options.outHeight)
-            } else {
-                return null
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        } finally {
-            connection?.disconnect()
-        }
-        return null
-    }
-
-    fun urlToBitmap(
-        scope: CoroutineScope,
-        imageURL: String,
+    suspend fun uriToBitmap(
+        imageUri: Uri,
         context: Context,
-        onSuccess: (Bitmap) -> Unit,
-        onError: (Throwable) -> Unit
-    ) {
-        scope.launch(Dispatchers.IO) {
-            try {
-                val loader = ImageLoader(context)
-                val request = ImageRequest.Builder(context)
-                    .data(imageURL)
-                    .allowHardware(false)
-                    .build()
-
-                val result = loader.execute(request)
-
-                if (result is SuccessResult) {
-                    val bitmap = (result.drawable as? BitmapDrawable)?.bitmap
-                    if (bitmap != null) {
-                        withContext(Dispatchers.Main) {
-                            onSuccess(bitmap)
-                        }
-                    } else {
-                        withContext(Dispatchers.Main) {
-                            onError(Throwable("Failed to cast drawable to BitmapDrawable"))
-                        }
+        header: Map<String, String> = emptyMap()
+    ):  Result<Bitmap, Throwable> = withContext(Dispatchers.IO) {
+        try {
+            val loader = ImageLoader(context)
+            val request = ImageRequest.Builder(context)
+                .also { builder ->
+                    header.forEach {
+                        builder.addHeader(it.key, it.value)
                     }
-                } else if (result is ErrorResult) {
-                    throw result.throwable
+                }
+                .data(imageUri)
+                .allowHardware(false)
+                .build()
+
+            val result = loader.execute(request)
+
+            if (result is SuccessResult) {
+                val bitmap = (result.drawable as? BitmapDrawable)?.bitmap
+                if (bitmap != null) {
+                    return@withContext Ok(bitmap)
                 } else {
-                    throw Throwable("Unknown result type")
+                    return@withContext Err(Throwable("Failed to cast drawable to BitmapDrawable"))
                 }
-            } catch (e: Throwable) {
-                withContext(Dispatchers.Main) {
-                    onError(e)
-                }
+            } else if (result is ErrorResult) {
+                return@withContext Err(result.throwable)
+            } else {
+                return@withContext Err(Throwable("Unknown result type"))
+            }
+        } catch (e: Throwable) {
+            withContext(Dispatchers.Main) {
+                return@withContext Err(Throwable("Failed to cast drawable to BitmapDrawable"))
             }
         }
     }
@@ -91,8 +59,8 @@ object ImageUtils {
     suspend fun saveBitmapAsPng(
         context: Context,
         bitmap: Bitmap
-    ): String? {
-        return withContext(Dispatchers.IO) {
+    ): Result<String, Throwable> =
+        withContext(Dispatchers.IO) {
             try {
                 val fileName = "${System.currentTimeMillis()}.png"
                 val mimeType = "image/png"
@@ -109,7 +77,7 @@ object ImageUtils {
 
                 val resolver = context.contentResolver
                 val uri = resolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values)
-                    ?: return@withContext null
+                    ?: return@withContext Err(Throwable("failed to get uri"))
 
                 resolver.openOutputStream(uri)?.use { out ->
                     bitmap.compress(Bitmap.CompressFormat.PNG, 100, out)
@@ -119,11 +87,10 @@ object ImageUtils {
                 values.put(MediaStore.Images.Media.IS_PENDING, 0)
                 resolver.update(uri, values, null, null)
 
-                fileName
+                Ok(fileName)
             } catch (e: Exception) {
                 e.printStackTrace()
-                null
+                Err(e)
             }
         }
-    }
 }

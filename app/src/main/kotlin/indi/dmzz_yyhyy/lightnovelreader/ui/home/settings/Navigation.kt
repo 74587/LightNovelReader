@@ -15,7 +15,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -24,14 +24,12 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import indi.dmzz_yyhyy.lightnovelreader.ui.LocalNavController
+import io.nightfish.lightnovelreader.api.ui.LocalNavController
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.ExportContext
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.ExportUserDataDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.MutableExportContext
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SliderValueDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SourceChangeDialog
-import indi.dmzz_yyhyy.lightnovelreader.ui.components.wenku8ApiWebDataSourceItem
-import indi.dmzz_yyhyy.lightnovelreader.ui.components.zaiComicWebDataSourceItem
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.SliderValueDialogViewModel
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.UpdatesAvailableDialogViewModel
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.debug.navigateToSettingsDebugDestination
@@ -40,6 +38,8 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.licenses.navigateToSett
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.licenses.settingsLicensesDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.logcat.navigateToSettingsLogcatDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.logcat.settingsLogcatDestination
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.navigateToSettingsPluginManagerHomeDestination
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.settingsPluginManagerNavigation
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.textformatting.editTextFormattingRuleDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.textformatting.navigateToSettingsTextFormattingManagerDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.textformatting.settingsTextFormattingNavigation
@@ -71,6 +71,7 @@ fun NavGraphBuilder.settingsDestination(sharedTransitionScope: SharedTransitionS
             onClickExportUserData = navController::navigateToExportUserDataDialog,
             onClickLogcat = navController::navigateToSettingsLogcatDestination,
             onClickTextFormatting = navController::navigateToSettingsTextFormattingManagerDestination,
+            onClickPluginManager = navController::navigateToSettingsPluginManagerHomeDestination,
             onClickThemeSettings = navController::navigateToSettingsThemeDestination,
             animatedVisibilityScope = this,
             sharedTransitionScope = sharedTransitionScope
@@ -92,6 +93,7 @@ fun NavGraphBuilder.settingsNavigation(sharedTransitionScope: SharedTransitionSc
         settingsLogcatDestination()
         settingsThemeDestination()
         settingsTextFormattingNavigation()
+        settingsPluginManagerNavigation()
         settingsLicensesDestination()
     }
 }
@@ -116,7 +118,7 @@ private fun NavGraphBuilder.sourceChangeDialog() {
                 viewModel.changeWebSource(selectedWebDataSourceId, File(context.filesDir, "data"))
                 navController.popBackStack()
             },
-            webDataSourceItems = listOf(wenku8ApiWebDataSourceItem, zaiComicWebDataSourceItem),
+            webDataSourceItems = viewModel.webDataSourceItems,
             selectedWebDataSourceId = selectedWebDataSourceId,
             onClickItem = {
                 selectedWebDataSourceId = it
@@ -160,9 +162,9 @@ private fun NavGraphBuilder.exportUserDataDialog() {
         val workManager = WorkManager.getInstance(context)
         val viewModel = hiltViewModel<ExportUserDataDialogViewModel>()
         var exportContext: ExportContext by remember { mutableStateOf(MutableExportContext()) }
-        val saveDataToFileLauncher = uriLauncher {
+        val saveDataToFileLauncher = uriLauncher { uri ->
             CoroutineScope(Dispatchers.Main).launch {
-                workManager.getWorkInfoByIdFlow(viewModel.exportToFile(it, exportContext).id).collect {
+                workManager.getWorkInfoByIdFlow(viewModel.exportToFile(uri, exportContext).id).collect {
                     when (it?.state) {
                         WorkInfo.State.FAILED -> {
                             Toast.makeText(context, "导出失败", Toast.LENGTH_SHORT).show()

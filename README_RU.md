@@ -6,7 +6,7 @@
     <a><img alt="Kotlin" src="https://img.shields.io/badge/Kotlin-0095D5.svg?logo=kotlin&logoColor=white&style=for-the-badge"/></a>
     <a><img alt="Jetpack Compose" src="https://img.shields.io/badge/Jetpack%20Compose-4285F4?logo=jetpackcompose&logoColor=white&style=for-the-badge"></a>
     <a href="http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=P__gXIArh5UDBsEq7ttd4WhIYnNh3y1t&authKey=GAsRKEZ%2FwHpzRv19hNJsDnknOc86lYzNIHMPy2Jxt3S3U8f90qestOd760IAj%2F3l&noverify=0&group_code=867785526"><img alt="QQ Group" src="https://img.shields.io/badge/QQ讨论群-867785526-brightgreen.svg?logoColor=white&style=for-the-badge"></a>
-    <a href="https://discord.gg/bfvPqSWX"><img alt="Discord" src="https://img.shields.io/badge/Discord-JOIN-4285F4.svg?logo=discord&logoColor=white&style=for-the-badge"></a>
+    <a href="https://discord.gg/pnf4ABmDJt"><img alt="Discord" src="https://img.shields.io/badge/Discord-JOIN-4285F4.svg?logo=discord&logoColor=white&style=for-the-badge"></a>
     <a href="https://t.me/lightnoble"><img alt="Discord" src="https://img.shields.io/badge/Telegram-JOIN-188FCA.svg?logo=telegram&logoColor=white&style=for-the-badge"></a>
     <p>Приложение для чтения ранобэ, созданное с использованием Jetpack Compose</p>
     <img src="assets/header.png" alt="drawing" width="80%"/>
@@ -35,7 +35,7 @@ LightNovelReader <sup>*Переработанная версия*</sup> — эт
 
 - Нашли ошибку или есть идеи? Сообщите [**здесь**](https://github.com/dmzz-yyhyy/LightNovelReader/issues/new/choose)
 - Присоединяйтесь к группе обсуждений QQ: `867785526` | [**Ссылка-приглашение**](http://qm.qq.com/cgi-bin/qm/qr?_wv=1027&k=P__gXIArh5UDBsEq7ttd4WhIYnNh3y1t&authKey=GAsRKEZ%2FwHpzRv19hNJsDnknOc86lYzNIHMPy2Jxt3S3U8f90qestOd760IAj%2F3l&noverify=0&group_code=867785526)
-- Присоединяйтесь к нашему серверу Discord: [**Ссылка-приглашение**](https://discord.gg/bfvPqSWX)
+- Присоединяйтесь к нашему серверу Discord: [**Ссылка-приглашение**](https://discord.gg/pnf4ABmDJt)
 - Присоединяйтесь к нашей группе в Telegram: [**Ссылка-приглашение**](https://t.me/lightnoble)
 
 

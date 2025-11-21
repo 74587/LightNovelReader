@@ -3,7 +3,7 @@ package indi.dmzz_yyhyy.lightnovelreader.data.json
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
-import indi.dmzz_yyhyy.lightnovelreader.data.bookshelf.BookshelfSortType
+import io.nightfish.lightnovelreader.api.bookshelf.BookshelfSortType
 import indi.dmzz_yyhyy.lightnovelreader.data.statistics.Count
 import java.time.LocalDate
 import java.time.LocalDateTime

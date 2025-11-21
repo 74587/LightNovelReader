@@ -14,6 +14,7 @@
     <!-- Operations -->
     <string name="cancel">取消</string>
     <string name="apply">设定</string>
+    <string name="confirm">确定</string>
     <string name="decline">拒绝</string>
     <string name="copied">内容已复制</string>
     <string name="select_all">全选</string>
@@ -50,7 +51,7 @@
     <string name="download_item_progress">%s 已下载 %d%%</string>
     <string name="download_item_finished">%s完成</string>
     <string name="download_item_failed">%s 失败, 请检查您的网络环境或寻求开发者帮助</string>
-    <string name="book_updated_to_title">更新至：</string>
+    <string name="book_updated_to_title">更新至:</string>
 
     <!-- Hints -->
     <string name="nothing_here">没有内容</string>
@@ -85,7 +86,7 @@
     <!-- Settings -->
     <string name="reading_settings">阅读</string>
     <string name="theme_settings">主题</string>
-
+    <string name="app_settings">应用</string>
     <string name="app_updates">更新</string>
     <string name="settings_auto_check_updates">自动检查更新</string>
     <string name="settings_auto_check_updates_desc">应用启动后自动检查更新</string>
@@ -236,7 +237,7 @@
     <string name="filter_by_publishing_house">文库筛选</string>
     <string name="filter_by_publishing_house_desc">根据小说文库的筛选。</string>
     <string name="book_info_update_date">%1$d-%2$d-%3$d 更新</string>
-    <string name="book_info_word_count_kilo">%sK 字</string>
+    <string name="book_info_word_count_kilo">%s 字</string>
     <string name="name">名称</string>
     <string name="bookshelf_name">书架名称</string>
     <string name="bookshelf_name_suggestion">为书架命名，建议长度在6个汉字以内</string>

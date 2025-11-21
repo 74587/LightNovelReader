@@ -25,9 +25,13 @@ import androidx.navigation.NavController
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.withContext
+import java.io.File
 import java.util.Collections
+import java.util.zip.ZipInputStream
 
 @Composable
 fun withHaptic(action: (() -> Unit)?): () -> Unit {
@@ -124,7 +128,7 @@ private fun partition(arr: MutableList<Int>, left: Int, right: Int): Int {
 }
 
 val homeRoutes = listOf(
-    "Reading.Home", "Bookshelf.Home", "Exploration.Home", "Settings.Home"
+    "Reading.Home", "Bookshelf.Home", "Explore.Home", "Settings.Home"
 )
 
 fun isInMainNavigation(from: NavDestination, to: NavDestination): Boolean {
@@ -138,13 +142,33 @@ fun isInMainNavigation(from: NavDestination, to: NavDestination): Boolean {
     return toMatch
 }
 
+suspend fun unzipFile(zipFile: File, outFile: File) {
+    withContext(Dispatchers.IO) {
+        ZipInputStream(zipFile.inputStream().buffered()).use { zis ->
+            var entry = zis.nextEntry
+            while (entry != null) {
+                if (!entry.isDirectory) {
+                    outFile.outputStream().buffered().use { outStream ->
+                        val buffer = ByteArray(8 * 1024)
+                        var len: Int
+                        while (zis.read(buffer).also { len = it } > 0) {
+                            outStream.write(buffer, 0, len)
+                        }
+                    }
+                }
+                entry = zis.nextEntry
+            }
+        }
+    }
+}
+
 fun NavDestination?.currentMainRoute(): Any? {
     if (this == null) return null
     return hierarchy.firstNotNullOfOrNull { dest ->
         when (dest.route) {
             Route.Main.Reading.Home::class.qualifiedName -> Route.Main.Reading
             Route.Main.Bookshelf.Home::class.qualifiedName -> Route.Main.Bookshelf
-            Route.Main.Exploration.Home::class.qualifiedName -> Route.Main.Exploration
+            Route.Main.Explore.Home::class.qualifiedName -> Route.Main.Explore
             Route.Main.Settings.Home::class.qualifiedName -> Route.Main.Settings
             else -> null
         }

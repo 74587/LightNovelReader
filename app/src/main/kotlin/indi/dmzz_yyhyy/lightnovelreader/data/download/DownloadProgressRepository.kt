@@ -4,8 +4,8 @@ import android.util.Log
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.snapshotFlow
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.dao.UserDataDao
-import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserData
-import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataPath
+import io.nightfish.lightnovelreader.api.userdata.UserData
+import io.nightfish.lightnovelreader.api.userdata.UserDataPath
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
@@ -34,7 +34,7 @@ class DownloadProgressRepository @Inject constructor(
                 try {
                     return@mapNotNull MutableDownloadItem(
                         DownloadType.valueOf(values[0].trim()),
-                        values[1].toInt()
+                        values[1]
                     ).apply { progress = 1f }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -48,7 +48,7 @@ class DownloadProgressRepository @Inject constructor(
             return userDataDao.getFlow(path).map { value ->
                 value?.split(",")?.map {
                     val values = it.split("|")
-                    MutableDownloadItem(DownloadType.valueOf(values[0].trim()), values[1].toInt()).apply { progress = 1f }
+                    MutableDownloadItem(DownloadType.valueOf(values[0].trim()), values[1]).apply { progress = 1f }
                 }
             }
         }

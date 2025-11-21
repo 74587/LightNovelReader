@@ -24,9 +24,9 @@ data class ReadingStatisticsEntity(
     @ColumnInfo(name = "foreground_time")
     val foregroundTime: Int,
     @ColumnInfo(name = "favorite_books")
-    val favoriteBooks: List<Int>,
+    val favoriteBooks: List<String>,
     @ColumnInfo(name = "started_books")
-    val startedBooks: List<Int>,
+    val startedBooks: List<String>,
     @ColumnInfo(name = "finished_books")
-    val finishedBooks: List<Int>
+    val finishedBooks: List<String>
 )

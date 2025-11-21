@@ -36,10 +36,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -55,9 +51,7 @@ import androidx.compose.ui.text.style.TextOverflow.Companion.Ellipsis
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import indi.dmzz_yyhyy.lightnovelreader.R
-import indi.dmzz_yyhyy.lightnovelreader.data.book.BookInformation
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.entity.BookRecordEntity
-import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.AnimatedText
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.HeatMapCalendar
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.calendar.core.CalendarDay
@@ -67,6 +61,8 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.components.calendar.core.displayText
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.calendar.core.yearMonth
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.calendar.rememberHeatMapCalendarState
 import indi.dmzz_yyhyy.lightnovelreader.utils.DurationFormat
+import io.nightfish.lightnovelreader.api.book.BookInformation
+import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -135,7 +131,6 @@ private fun CalendarBlock(
     viewModel: StatsOverviewViewModel,
     onSelectedDate: (LocalDate) -> Unit,
 ) {
-    var selection by remember { mutableStateOf(LocalDate.now()) }
     val uiState = viewModel.uiState
     val now = LocalDate.now()
     val startDate = uiState.startDate
@@ -167,7 +162,6 @@ private fun CalendarBlock(
                     week = week,
                     level = level,
                 ) { date ->
-                    selection = date
                     onSelectedDate(date)
                 }
             },
@@ -317,7 +311,7 @@ private fun NoRecords() {
 
 private fun computeDailyDetails(
     records: List<BookRecordEntity>,
-    bookInfoMap: Map<Int, BookInformation>
+    bookInfoMap: Map<String, BookInformation>
 ): DailyDateDetails? {
     if (records.isEmpty()) return null
 

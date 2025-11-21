@@ -65,21 +65,21 @@ import androidx.core.net.toUri
 import coil.compose.rememberAsyncImagePainter
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.theme.AppTheme
-import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalAppTheme
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalDarkColorScheme
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalLightColorScheme
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.SettingState
-import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsClickableEntry
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsMenuEntry
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsSliderEntry
-import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsSwitchEntry
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.SettingsCategory
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.data.MenuOptions
 import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 import indi.dmzz_yyhyy.lightnovelreader.utils.readerTextColor
 import indi.dmzz_yyhyy.lightnovelreader.utils.rememberReaderBackgroundPainter
 import indi.dmzz_yyhyy.lightnovelreader.utils.rememberReaderFontFamily
+import io.nightfish.lightnovelreader.api.ui.components.SettingsClickableEntry
+import io.nightfish.lightnovelreader.api.ui.components.SettingsSwitchEntry
+import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -210,7 +210,7 @@ fun DarkModeSettings(
                             shape = shapeBottom
                         }
 
-                    LightThemeSettingsItem(modifier = modifierTop,)
+                    LightThemeSettingsItem(modifier = modifierTop)
                     DarkThemeSettingsItem(modifier = modifierBottom)
                 }
 
@@ -275,8 +275,6 @@ fun ReaderThemeSettingsList(
     settingState: SettingState,
     onClickChangeBackgroundColor: () -> Unit
 ) {
-
-
     SettingsCategory(
         title = stringResource(R.string.paper_settings),
     ) {
@@ -348,10 +346,21 @@ fun ReaderTextSettings(settingState: SettingState, context: Context, onClickChan
             description = stringResource(R.string.settings_theme_text_color_desc),
             onClick = onClickChangeTextColor,
             trailingContent = {
-                Canvas(modifier = Modifier.size(44.dp)) {
-                    drawCircle(color = onSecondaryContainer, radius = 20.dp.toPx())
-                    drawCircle(color = background, radius = 17.5.dp.toPx())
-                    drawCircle(color = currentColor, radius = 17.5.dp.toPx())
+                Canvas(
+                    modifier = Modifier.size(44.dp)
+                ) {
+                    drawCircle(
+                        color = onSecondaryContainer,
+                        radius = 20.dp.toPx(),
+                    )
+                    drawCircle(
+                        color = background,
+                        radius = 17.5.dp.toPx(),
+                    )
+                    drawCircle(
+                        color = currentColor,
+                        radius = 17.5.dp.toPx(),
+                    )
                 }
             }
         )

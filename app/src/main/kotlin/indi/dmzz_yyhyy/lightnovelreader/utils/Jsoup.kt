@@ -10,7 +10,7 @@ import java.io.IOException
 import java.net.SocketException
 import javax.net.ssl.SSLHandshakeException
 
-suspend fun Connection.autoReconnectionGet(reconnectTime: Int = 3, reconnectDelay: Long = 250, isUesProxy: Boolean = false): Document? =
+suspend fun Connection.autoReconnectionGet(reconnectTime: Int = 5, reconnectDelay: Long = 250, isUesProxy: Boolean = false): Document? =
     autoReconnection(
         reconnectTime,
         reconnectDelay,
@@ -19,7 +19,7 @@ suspend fun Connection.autoReconnectionGet(reconnectTime: Int = 3, reconnectDela
         { this@autoReconnectionGet.proxyGet() }
     )
 
-suspend fun Connection.autoReconnectionPost(reconnectTime: Int = 3, reconnectDelay: Long = 250, isUesProxy: Boolean = false): Document? =
+suspend fun Connection.autoReconnectionPost(reconnectTime: Int = 5, reconnectDelay: Long = 250, isUesProxy: Boolean = false): Document? =
     autoReconnection(
         reconnectTime,
         reconnectDelay,
@@ -43,28 +43,29 @@ private suspend fun autoReconnection(
         else return block.invoke()
     } catch (e: HttpStatusException) {
         Log.e("Network", "failed to get data from ${e.url}, last reconnection times: $reconnectTime")
-        retry(reconnectTime, reconnectDelay) {
-            autoReconnection(reconnectTime - 1, reconnectDelay, isUesProxy, block, block2)
+        e.printStackTrace()
+        return retry(reconnectTime, reconnectDelay) {
+            autoReconnection(reconnectTime - 1, (reconnectDelay * 2), isUesProxy, block, block2)
         }
     } catch (e: SocketException) {
         Log.e("Network", "failed to get data from ${e.cause}, last reconnection times: $reconnectTime")
-        retry(reconnectTime, reconnectDelay) {
-            autoReconnection(reconnectTime - 1, reconnectDelay, isUesProxy, block, block2)
+        e.printStackTrace()
+        return retry(reconnectTime, reconnectDelay) {
+            autoReconnection(reconnectTime - 1, (reconnectDelay * 2), isUesProxy, block, block2)
         }
     } catch (e: SSLHandshakeException) {
         Log.e("Network", "failed to get data, last reconnection times: $reconnectTime")
         e.printStackTrace()
-        retry(reconnectTime, reconnectDelay) {
-            autoReconnection(reconnectTime - 1, reconnectDelay, isUesProxy, block, block2)
+        return retry(reconnectTime, reconnectDelay) {
+            autoReconnection(reconnectTime - 1, (reconnectDelay * 2), isUesProxy, block, block2)
         }
     } catch (e: IOException) {
         Log.e("Network", "failed to get data, last reconnection times:  $reconnectTime")
         e.printStackTrace()
-        retry(reconnectTime, reconnectDelay) {
-            autoReconnection(reconnectTime - 1, reconnectDelay, isUesProxy, block, block2)
+        return retry(reconnectTime, reconnectDelay) {
+            autoReconnection(reconnectTime - 1, (reconnectDelay * 2), isUesProxy, block, block2)
         }
     }
-    return null
 }
 
 private suspend fun retry(reconnectTimes: Int, reconnectDelay: Long, block: suspend () -> Document?): Document? {

@@ -42,15 +42,15 @@ interface ReadingStatisticsDao {
     suspend fun getReadingStatisticsBetweenDates(start: LocalDate, end: LocalDate): List<ReadingStatisticsEntity>
 
     @Query("SELECT * FROM reading_statistics WHERE date = :date LIMIT 1")
-    suspend fun getFavoriteBooksForDate(date: LocalDate): List<Int>? =
+    suspend fun getFavoriteBooksForDate(date: LocalDate): List<String>? =
         getReadingStatisticsForDate(date)?.favoriteBooks
 
     @Query("SELECT * FROM reading_statistics WHERE date = :date LIMIT 1")
-    suspend fun getStartedBooksForDate(date: LocalDate): List<Int>? =
+    suspend fun getStartedBooksForDate(date: LocalDate): List<String>? =
         getReadingStatisticsForDate(date)?.startedBooks
 
     @Query("SELECT * FROM reading_statistics WHERE date = :date LIMIT 1")
-    suspend fun getFinishedBooksForDate(date: LocalDate): List<Int>? =
+    suspend fun getFinishedBooksForDate(date: LocalDate): List<String>? =
         getReadingStatisticsForDate(date)?.finishedBooks
 
     @Query("SELECT * FROM reading_statistics WHERE date = :date LIMIT 1")

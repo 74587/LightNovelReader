@@ -45,13 +45,13 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import indi.dmzz_yyhyy.lightnovelreader.data.userdata.BooleanUserData
-import indi.dmzz_yyhyy.lightnovelreader.data.userdata.FloatUserData
-import indi.dmzz_yyhyy.lightnovelreader.data.userdata.StringUserData
-import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
-import indi.dmzz_yyhyy.lightnovelreader.ui.LocalNavController
+import io.nightfish.lightnovelreader.api.ui.LocalNavController
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.data.MenuOptions
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.navigateToSliderValueDialog
+import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
+import io.nightfish.lightnovelreader.api.userdata.BooleanUserData
+import io.nightfish.lightnovelreader.api.userdata.FloatUserData
+import io.nightfish.lightnovelreader.api.userdata.StringUserData
 import java.text.DecimalFormat
 import kotlin.math.roundToInt
 

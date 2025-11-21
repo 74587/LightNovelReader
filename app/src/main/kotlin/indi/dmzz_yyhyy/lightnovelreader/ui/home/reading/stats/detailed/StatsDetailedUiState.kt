@@ -5,9 +5,9 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import indi.dmzz_yyhyy.lightnovelreader.data.book.BookInformation
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.entity.BookRecordEntity
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.entity.ReadingStatisticsEntity
+import io.nightfish.lightnovelreader.api.book.BookInformation
 import java.time.LocalDate
 
 interface StatsDetailedUiState {
@@ -17,7 +17,7 @@ interface StatsDetailedUiState {
     var selectedDate: LocalDate
     var selectedViewIndex: Int
     val isLoading: Boolean
-    val bookInformationMap: Map<Int, BookInformation>
+    val bookInformationMap: Map<String, BookInformation>
 }
 
 class MutableStatsDetailedUiState : StatsDetailedUiState {
@@ -27,7 +27,7 @@ class MutableStatsDetailedUiState : StatsDetailedUiState {
     override var selectedDate: LocalDate by mutableStateOf(LocalDate.now())
     override var selectedViewIndex: Int by mutableIntStateOf(0)
     override var isLoading: Boolean by mutableStateOf(false)
-    override val bookInformationMap: MutableMap<Int, BookInformation> = mutableStateMapOf()
+    override val bookInformationMap: MutableMap<String, BookInformation> = mutableStateMapOf()
 }
 
 val StatsDetailedUiState.currentViewOption: StatsViewOption

@@ -93,15 +93,15 @@ import com.valentinilk.shimmer.ShimmerBounds
 import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.unclippedBoundsInWindow
 import indi.dmzz_yyhyy.lightnovelreader.R
-import indi.dmzz_yyhyy.lightnovelreader.data.book.BookInformation
-import indi.dmzz_yyhyy.lightnovelreader.data.book.BookVolumes
 import indi.dmzz_yyhyy.lightnovelreader.data.work.SaveBookshelfWork
-import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.AnimatedText
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.BookCardItem
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.EmptyPage
 import indi.dmzz_yyhyy.lightnovelreader.utils.bottomBarSpacer
 import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
+import io.nightfish.lightnovelreader.api.book.BookInformation
+import io.nightfish.lightnovelreader.api.book.BookVolumes
+import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
@@ -113,15 +113,15 @@ import java.io.File
 fun BookshelfHomeScreen(
     init: () -> Unit,
     changePage: (Int) -> Unit,
-    changeBookSelectState: (Int) -> Unit,
+    changeBookSelectState: (String) -> Unit,
     uiState: BookshelfHomeUiState,
     onClickCreate: () -> Unit,
     onClickEdit: (Int) -> Unit,
-    onClickBook: (Int) -> Unit,
+    onClickBook: (String) -> Unit,
     onClickEnableSelectMode: () -> Unit,
     onClickDisableSelectMode: () -> Unit,
     onClickSelectAll: () -> Unit,
-    onClickPin: (Int?) -> Unit,
+    onClickPin: () -> Unit,
     onClickRemove: () -> Unit,
     onClickMarkSelectedBooks: () -> Unit,
     saveAllBookshelfJsonData: (Uri) -> Unit,
@@ -130,8 +130,8 @@ fun BookshelfHomeScreen(
     clearToast: () -> Unit,
     animatedVisibilityScope: AnimatedVisibilityScope,
     sharedTransitionScope: SharedTransitionScope,
-    getBookInfoFlow: (Int) -> StateFlow<BookInformation>,
-    getBookVolumesFlow: (Int) -> StateFlow<BookVolumes>,
+    getBookInfoFlow: (String) -> StateFlow<BookInformation>,
+    getBookVolumesFlow: (String) -> StateFlow<BookVolumes>,
 ) {
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
@@ -144,7 +144,7 @@ fun BookshelfHomeScreen(
     val saveThisBookshelfLauncher = launcher(saveBookshelfJsonData)
     val importBookshelfLauncher = launcher(importBookshelf)
 
-    val onLongPress: (Int) -> Unit = { bookId ->
+    val onLongPress: (String) -> Unit = { bookId ->
         if (!uiState.selectMode) {
             onClickEnableSelectMode.invoke()
         }
@@ -313,8 +313,8 @@ fun BookshelfHomeScreen(
                 ) {
                     EmptyPage(
                         icon = painterResource(R.drawable.bookmarks_90px),
-                        titleId = R.string.nothing_here,
-                        descriptionId = R.string.nothing_here_desc_bookshelf
+                        title = stringResource(R.string.nothing_here),
+                        description = stringResource(R.string.nothing_here_desc_bookshelf)
                     )
                 }
 
@@ -527,7 +527,7 @@ fun TopBar(
     onClickEdit: () -> Unit,
     onClickDisableSelectMode: () -> Unit,
     onClickSelectAll: () -> Unit,
-    onClickPin: (Int?) -> Unit,
+    onClickPin: () -> Unit,
     onClickRemove: () -> Unit,
     onClickBookmark: () -> Unit,
     onClickShareBookshelf: () -> Unit,
@@ -706,7 +706,7 @@ fun TopBar(
                         contentDescription = "select all"
                     )
                 }
-                IconButton({ onClickPin(null) }) {
+                IconButton({ onClickPin() }) {
                     Icon(
                         painter = painterResource(R.drawable.keep_24px),
                         contentDescription = "pin"

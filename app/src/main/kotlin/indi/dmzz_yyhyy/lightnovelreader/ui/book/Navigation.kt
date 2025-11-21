@@ -8,7 +8,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
 
 fun NavGraphBuilder.bookNavigation() {
     navigation<Route.Book>(
-        startDestination = Route.Book.Detail(1),
+        startDestination = Route.Book.Detail(""),
     ) {
         bookDetailDestination()
         bookReaderDestination()

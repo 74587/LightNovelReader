@@ -1,8 +1,8 @@
 package indi.dmzz_yyhyy.lightnovelreader.data.json
 
 import com.google.gson.annotations.SerializedName
-import indi.dmzz_yyhyy.lightnovelreader.data.bookshelf.Bookshelf
-import indi.dmzz_yyhyy.lightnovelreader.data.bookshelf.BookshelfSortType
+import io.nightfish.lightnovelreader.api.bookshelf.Bookshelf
+import io.nightfish.lightnovelreader.api.bookshelf.BookshelfSortType
 
 data class BookshelfData(
     @SerializedName("id")
@@ -16,11 +16,11 @@ data class BookshelfData(
     @SerializedName("system_update_reminder")
     val systemUpdateReminder: Boolean,
     @SerializedName("all_book_ids")
-    val allBookIds: List<Int>,
+    val allBookIds: List<String>,
     @SerializedName("pinned_book_ids")
-    val pinnedBookIds: List<Int>,
+    val pinnedBookIds: List<String>,
     @SerializedName("updatedBookIds")
-    val updatedBookIds: List<Int>,
+    val updatedBookIds: List<String>,
 )
 
 fun Bookshelf.toJsonData(): BookshelfData =

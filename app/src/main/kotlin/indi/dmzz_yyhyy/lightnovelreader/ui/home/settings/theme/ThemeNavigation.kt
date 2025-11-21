@@ -1,15 +1,15 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.theme
 
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataPath
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalAppTheme
-import indi.dmzz_yyhyy.lightnovelreader.ui.LocalNavController
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.navigateToColorPickerDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
 import indi.dmzz_yyhyy.lightnovelreader.utils.popBackStackIfResumed
+import io.nightfish.lightnovelreader.api.ui.LocalNavController
+import io.nightfish.lightnovelreader.api.userdata.UserDataPath
 
 fun NavGraphBuilder.settingsThemeDestination() {
     composable<Route.Main.Settings.Theme> {

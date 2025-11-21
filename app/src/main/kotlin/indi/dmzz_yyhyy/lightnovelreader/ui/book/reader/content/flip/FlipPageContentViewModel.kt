@@ -4,7 +4,9 @@ import android.util.Log
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.snapshotFlow
 import indi.dmzz_yyhyy.lightnovelreader.data.book.BookRepository
+import indi.dmzz_yyhyy.lightnovelreader.data.content.ContentComponentRepository
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.content.ContentViewModel
+import io.nightfish.lightnovelreader.api.web.WebDataSourcePriority
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -16,7 +18,8 @@ import kotlin.math.roundToInt
 class FlipPageContentViewModel(
     val bookRepository: BookRepository,
     val coroutineScope: CoroutineScope,
-    val updateReadingProgress: (Int, Float) -> Unit
+    val updateReadingProgress: (String, Float) -> Unit,
+    val contentComponentRepository: ContentComponentRepository
 ) : ContentViewModel {
     private var notRecoveredProgress = 0f
     private var collectProgressJob: Job? = null
@@ -24,7 +27,8 @@ class FlipPageContentViewModel(
         loadLastChapter = ::loadLastChapter,
         loadNextChapter = ::loadNextChapter,
         changeChapter = ::changeChapter,
-        updatePageState = ::updatePagerState
+        updatePageState = ::updatePagerState,
+        getContentData = contentComponentRepository::getContentDataFromJson
     )
 
     init {
@@ -56,7 +60,7 @@ class FlipPageContentViewModel(
         }
     }
 
-    override fun changeBookId(id: Int) {
+    override fun changeBookId(id: String) {
         uiState.bookId = id
     }
 
@@ -74,14 +78,19 @@ class FlipPageContentViewModel(
         )
     }
 
-    override fun changeChapter(id: Int) {
-        if (id < 0) {
+    override fun changeChapter(id: String) {
+        if (id.isBlank()) {
             Log.e("FlipPageContentViewModel", "a id less than 0 was transferred")
             return
         }
         notRecoveredProgress = 0f
         uiState.readingProgress = 0f
-        uiState.readingChapterContent = bookRepository.getStateChapterContent(id, uiState.bookId, coroutineScope)
+        uiState.readingChapterContent = bookRepository.getStateChapterContent(
+            id,
+            uiState.bookId,
+            coroutineScope,
+            WebDataSourcePriority.High
+        )
         uiState.readingChapterContent
         coroutineScope.launch(Dispatchers.IO) {
             snapshotFlow { uiState.readingChapterContent.title }.collect { title ->
@@ -99,11 +108,10 @@ class FlipPageContentViewModel(
         coroutineScope.launch(Dispatchers.IO) {
             snapshotFlow { uiState.readingChapterContent.nextChapter }.collect {
                 if (uiState.readingChapterContent.hasNextChapter()) {
-                    bookRepository.getChapterContentFlow(
+                    bookRepository.getChapterContent(
                         chapterId = it,
                         bookId = uiState.bookId,
-                        coroutineScope
-                    ).launchIn(coroutineScope)
+                    )
                 }
             }
         }

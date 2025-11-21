@@ -1,5 +1,6 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.book.detail
 
+import android.net.Uri
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
@@ -76,6 +77,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -83,23 +85,26 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.valentinilk.shimmer.shimmer
 import indi.dmzz_yyhyy.lightnovelreader.R
-import indi.dmzz_yyhyy.lightnovelreader.data.book.BookInformation
-import indi.dmzz_yyhyy.lightnovelreader.data.book.ChapterInformation
-import indi.dmzz_yyhyy.lightnovelreader.data.book.Volume
+import indi.dmzz_yyhyy.lightnovelreader.data.book.get
 import indi.dmzz_yyhyy.lightnovelreader.data.download.DownloadItem
-import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
-import indi.dmzz_yyhyy.lightnovelreader.ui.LocalNavController
+import io.nightfish.lightnovelreader.api.ui.LocalNavController
+import indi.dmzz_yyhyy.lightnovelreader.ui.components.AnimatedTextLine
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Cover
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.LnrSnackbar
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Loading
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SwitchChip
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.rememberSkeletonShimmer
+import indi.dmzz_yyhyy.lightnovelreader.ui.components.SwitchChip
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.bookshelf.home.BookStatusIcon
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.textformatting.rules.navigateToSettingsTextFormattingRulesDestination
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalClaimSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.fadingEdge
 import indi.dmzz_yyhyy.lightnovelreader.utils.isScrollingUp
+import io.nightfish.lightnovelreader.api.book.BookInformation
+import io.nightfish.lightnovelreader.api.book.ChapterInformation
+import io.nightfish.lightnovelreader.api.book.Volume
+import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import kotlinx.coroutines.delay
 import java.text.NumberFormat
 import java.util.Locale
@@ -110,13 +115,13 @@ fun DetailScreen(
     uiState: DetailUiState,
     onClickExportToEpub: (ExportSettings) -> Unit,
     onClickBackButton: () -> Unit,
-    onClickChapter: (Int) -> Unit,
+    onClickChapter: (String) -> Unit,
     onClickReadFromStart: () -> Unit,
     onClickContinueReading: () -> Unit,
-    cacheBook: (Int) -> Unit,
-    requestAddBookToBookshelf: (Int) -> Unit,
+    cacheBook: (String) -> Unit,
+    requestAddBookToBookshelf: (String) -> Unit,
     onClickTag: (String) -> Unit,
-    onClickCover: (String) -> Unit,
+    onClickCover: (Uri) -> Unit,
     onClickMarkAllRead: () -> Unit
 ) {
     val navController = LocalNavController.current
@@ -177,7 +182,7 @@ fun DetailScreen(
                             .padding(horizontal = 28.dp)
                             .padding(bottom = 72.dp),
                         onClick = {
-                            if (uiState.userReadingData.lastReadChapterId == -1)
+                            if (uiState.userReadingData.lastReadChapterId.isBlank())
                                 onClickReadFromStart()
                             else
                                 onClickContinueReading()
@@ -185,7 +190,7 @@ fun DetailScreen(
                         icon = { Icon(painterResource(R.drawable.filled_menu_book_24px), null) },
                         text = {
                             Text(
-                                if (uiState.userReadingData.lastReadChapterId == -1)
+                                if (uiState.userReadingData.lastReadChapterId.isBlank())
                                     stringResource(R.string.start_reading)
                                 else
                                     stringResource(R.string.continue_reading)
@@ -256,8 +261,7 @@ fun DetailScreen(
                 onClickExport = onClickExportToEpub
             )
         }
-
-        if (showInfoBottomSheet) {
+        AnimatedVisibility(visible = showInfoBottomSheet) {
             BookInfoBottomSheet(
                 bookInformation = uiState.bookInformation,
                 bookVolumes = uiState.bookVolumes,
@@ -265,6 +269,7 @@ fun DetailScreen(
                 onDismissRequest = { showInfoBottomSheet = false }
             )
         }
+
     }
 }
 
@@ -392,11 +397,11 @@ private fun DetailContent(
     modifier: Modifier = Modifier,
     uiState: DetailUiState,
     lazyListState: LazyListState,
-    onClickChapter: (Int) -> Unit,
-    cacheBook: (Int) -> Unit,
-    requestAddBookToBookshelf: (Int) -> Unit,
+    onClickChapter: (String) -> Unit,
+    cacheBook: (String) -> Unit,
+    requestAddBookToBookshelf: (String) -> Unit,
     onClickTag: (String) -> Unit,
-    onClickCover: (String) -> Unit,
+    onClickCover: (Uri) -> Unit,
     onClickShowInfo: () -> Unit
 ) {
     var hideReadChapters by remember { mutableStateOf(false) }
@@ -560,7 +565,12 @@ private fun TopBar(
                 }
                 DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
                     DropdownMenuItem(
-                        text = { Text(stringResource(R.string.mark_all_read), style = AppTypography.dropDownItem) },
+                        text = {
+                            Text(
+                                text = stringResource(R.string.mark_all_read),
+                                style = AppTypography.dropDownItem
+                            )
+                        },
                         onClick = {
                             menuExpanded = false
                             onClickMarkAllRead()
@@ -578,7 +588,7 @@ private fun TopBar(
 private fun BookCardBlock(
     bookInformation: BookInformation,
     modifier: Modifier,
-    onClickCover: (String) -> Unit
+    onClickCover: (Uri) -> Unit
 ) {
     val updateText = if (bookInformation.isComplete) {
         stringResource(R.string.book_completed)
@@ -590,10 +600,7 @@ private fun BookCardBlock(
             bookInformation.lastUpdated.dayOfMonth
         )
     }
-    val wordCountText = stringResource(
-        R.string.book_info_word_count_kilo,
-        NumberFormat.getNumberInstance(Locale.getDefault()).format(bookInformation.wordCount / 1000)
-    )
+    val wordCountText = bookInformation.wordCount.get()
 
     Row(
         modifier = modifier
@@ -607,14 +614,14 @@ private fun BookCardBlock(
                 .wrapContentSize()
                 .clickable(
                     onClick = {
-                        onClickCover(bookInformation.coverUrl)
+                        onClickCover(bookInformation.coverUri)
                     }
                 )
         ) {
             Cover(
                 height = 178.dp,
                 width = 122.dp,
-                url = bookInformation.coverUrl,
+                uri = bookInformation.coverUri,
                 rounded = 8.dp
             )
         }
@@ -898,10 +905,10 @@ private fun IntroBlock(description: String) {
 private fun VolumeItem(
     volume: Volume,
     hideReadChapters: Boolean = false,
-    readCompletedChapterIds: List<Int>,
-    onClickChapter: (Int) -> Unit,
+    readCompletedChapterIds: List<String>,
+    onClickChapter: (String) -> Unit,
     volumesSize: Int,
-    lastReadingChapterId: Int
+    lastReadingChapterId: String
 ) {
     val readIds = remember(readCompletedChapterIds) { readCompletedChapterIds.toSet() }
     val (readCount, totalCount) = remember(volume.volumeId, readIds) {
@@ -916,14 +923,13 @@ private fun VolumeItem(
 
     Column(modifier = Modifier.fillMaxWidth()) {
         Row(
-            modifier = Modifier
-                .clickable { expanded = !expanded }
-                .padding(horizontal = 20.dp),
+            modifier = Modifier.clickable { expanded = !expanded }.padding(horizontal = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier
                 .weight(5f)
-                .padding(vertical = 12.dp)) {
+                .padding(vertical = 12.dp)
+            ) {
                 Text(
                     text = volume.volumeTitle,
                     style = AppTypography.titleMedium,

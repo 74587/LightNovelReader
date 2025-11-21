@@ -44,13 +44,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.util.fastForEachIndexed
 import androidx.compose.ui.zIndex
 import indi.dmzz_yyhyy.lightnovelreader.R
-import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.AnimatedText
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Cover
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.stats.ActivityStatsCard
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.stats.MonthlyReadingTimeStatsCard
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.stats.ReadingDetailStatsCard
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.stats.WeeklyReadingTimeStatsCard
+import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters
@@ -231,7 +231,7 @@ fun StatsCard(
 fun BookStack(
     modifier: Modifier = Modifier,
     uiState: StatsDetailedUiState,
-    books: List<Int>,
+    books: List<String>,
     count: Int,
 ) {
     Box(
@@ -253,7 +253,7 @@ fun BookStack(
                     Cover(
                         width = 63.dp * scale,
                         height = 90.dp * scale,
-                        url = it.coverUrl,
+                        uri = it.coverUri,
                         rounded = 6.dp
                     )
                 }

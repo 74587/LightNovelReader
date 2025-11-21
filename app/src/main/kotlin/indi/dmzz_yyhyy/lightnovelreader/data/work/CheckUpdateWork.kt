@@ -15,29 +15,40 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
+import indi.dmzz_yyhyy.lightnovelreader.LightNovelReaderApplication
 import indi.dmzz_yyhyy.lightnovelreader.R
-import indi.dmzz_yyhyy.lightnovelreader.data.book.BookInformation
 import indi.dmzz_yyhyy.lightnovelreader.data.bookshelf.BookshelfRepository
-import indi.dmzz_yyhyy.lightnovelreader.data.web.WebBookDataSource
+import indi.dmzz_yyhyy.lightnovelreader.data.web.WebBookDataSourceProvider
+import io.nightfish.lightnovelreader.api.book.BookInformation
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.yield
 
 @HiltWorker
 class CheckUpdateWork @AssistedInject constructor(
     @Assisted private val appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    private val webBookDataSource: WebBookDataSource,
+    private val webBookDataSourceProvider: WebBookDataSourceProvider,
     private val bookshelfRepository: BookshelfRepository
 ) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
-        val reminderBookMap = mutableMapOf<Int, BookInformation>()
+        if (appContext !is LightNovelReaderApplication) return Result.failure()
+        val reminderBookMap = mutableMapOf<String, BookInformation>()
+        val needRemindBookIdSet = mutableSetOf<String>()
+        bookshelfRepository
+            .getAllBookshelves()
+            .filter { it.systemUpdateReminder }
+            .forEach {
+                needRemindBookIdSet.addAll(it.allBookIds)
+            }
         bookshelfRepository.getAllBookshelfBooksMetadata().forEach { bookshelfBookMetadata ->
             delay(3000)
-            if (bookshelfBookMetadata.bookShelfIds.all {
-                    bookshelfRepository.getBookshelf(it)?.systemUpdateReminder != true
-                }) return@forEach
+            while (!appContext.isAppStopped) {
+                yield()
+            }
+            if (!needRemindBookIdSet.contains(bookshelfBookMetadata.id)) return@forEach
             Log.d("CheckUpdateWork", "Updating book id=${bookshelfBookMetadata.id}")
-            val bookInformation = webBookDataSource.getBookInformation(bookshelfBookMetadata.id)
+            val bookInformation = webBookDataSourceProvider.lowPriority.getBookInformation(bookshelfBookMetadata.id)
             val webBookLastUpdate = bookInformation.lastUpdated
             if (webBookLastUpdate.isAfter(bookshelfBookMetadata.lastUpdate)) {
                 bookshelfBookMetadata.bookShelfIds.forEach {
@@ -60,7 +71,7 @@ class CheckUpdateWork @AssistedInject constructor(
                 }
                 createNotificationChannel()
                 notify(
-                    it.id,
+                    it.id.hashCode(),
                     NotificationCompat.Builder(appContext, "BookUpdate")
                         .setSmallIcon(R.drawable.icon_foreground)
                         .setContentTitle(appContext.getString(R.string.app_name))

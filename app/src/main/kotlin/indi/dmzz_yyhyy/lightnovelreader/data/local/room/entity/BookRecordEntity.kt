@@ -19,7 +19,7 @@ data class BookRecordEntity(
     @ColumnInfo(name = "date")
     val date: LocalDate,
     @ColumnInfo(name = "book_id")
-    val bookId: Int,
+    val bookId: String,
     @ColumnInfo(name = "sessions")
     val sessions: Int,
     @ColumnInfo(name = "total_time")

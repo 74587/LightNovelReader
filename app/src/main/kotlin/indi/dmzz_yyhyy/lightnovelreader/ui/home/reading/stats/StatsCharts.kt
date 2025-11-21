@@ -41,14 +41,13 @@ import com.patrykandpatrick.vico.core.cartesian.layer.ColumnCartesianLayer
 import com.patrykandpatrick.vico.core.cartesian.marker.CartesianMarker
 import com.patrykandpatrick.vico.core.cartesian.marker.CartesianMarkerVisibilityListener
 import com.patrykandpatrick.vico.core.cartesian.marker.ColumnCartesianLayerMarkerTarget
-import com.patrykandpatrick.vico.core.cartesian.marker.DefaultCartesianMarker
 import com.patrykandpatrick.vico.core.common.data.ExtraStore
 import com.patrykandpatrick.vico.core.common.shape.CorneredShape
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.entity.ReadingStatisticsEntity
-import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.stats.detailed.StatsDetailedUiState
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.stats.detailed.currentDateRange
+import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -113,7 +112,7 @@ private fun HourlyReadingTimeChart(
         val hourClockLabel = stringResource(R.string.unit_hour_clock)
         val minuteLabel = stringResource(R.string.unit_minutes)
 
-        val marker = rememberMarker(valueFormatter = DefaultCartesianMarker.ValueFormatter { _, targets ->
+        val marker = rememberMarker(valueFormatter = { _, targets ->
             val columnTarget = (targets.firstOrNull() as? ColumnCartesianLayerMarkerTarget)
             val entry = columnTarget?.columns?.firstOrNull()?.entry
             if (entry != null) {
@@ -200,7 +199,7 @@ fun ReadingTimeChart(
     }
 
     val marker = rememberMarker(
-        valueFormatter = DefaultCartesianMarker.ValueFormatter { _, targets ->
+        valueFormatter = { _, targets ->
             val columnTarget = (targets.firstOrNull() as? ColumnCartesianLayerMarkerTarget)
             val entry = columnTarget?.columns?.firstOrNull()?.entry
             if (entry != null) {

@@ -3,14 +3,18 @@ package indi.dmzz_yyhyy.lightnovelreader.data.local.room.dao
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
-import indi.dmzz_yyhyy.lightnovelreader.data.book.ChapterContent
+import androidx.room.TypeConverters
+import indi.dmzz_yyhyy.lightnovelreader.data.local.room.converter.JsonObjectConverter
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.entity.ChapterContentEntity
+import io.nightfish.lightnovelreader.api.book.ChapterContent
+import kotlinx.serialization.json.JsonObject
 
 @Dao
 interface ChapterContentDao {
+    @TypeConverters(JsonObjectConverter::class)
     @Query("replace into chapter_content (id, title, content, lastChapter, nextChapter) " +
             "values (:id, :title, :content, :lastChapter, :nextChapter)")
-    fun update(id: Int, title: String, content: String, lastChapter: Int, nextChapter: Int)
+    fun update(id: String, title: String, content: JsonObject, lastChapter: String, nextChapter: String)
 
     @Transaction
     fun update(chapterContent: ChapterContent) {
@@ -24,10 +28,10 @@ interface ChapterContentDao {
     }
 
     @Query("select * from chapter_content where id = :id")
-    suspend fun get(id: Int): ChapterContentEntity?
+    suspend fun get(id: String): ChapterContentEntity?
 
     @Query("select id from chapter_content where id = :id")
-    suspend fun getId(id: Int): Int?
+    suspend fun getId(id: String): String?
 
     @Query("delete from chapter_content")
     fun clear()

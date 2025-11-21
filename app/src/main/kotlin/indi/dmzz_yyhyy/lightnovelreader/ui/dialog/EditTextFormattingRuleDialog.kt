@@ -20,8 +20,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.format.FormattingRule
-import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SwitchChip
+import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 
 @Composable
 fun EditTextFormattingRuleDialog(
@@ -89,7 +89,9 @@ fun EditTextFormattingRuleDialog(
                 SwitchChip(
                     label = stringResource(R.string.rule_is_regex),
                     selected = rule.isRegex,
-                    onClick = { onIsRegexChange(!rule.isRegex) }
+                    onClick = {
+                        onIsRegexChange(!rule.isRegex)
+                    }
                 )
             }
         },

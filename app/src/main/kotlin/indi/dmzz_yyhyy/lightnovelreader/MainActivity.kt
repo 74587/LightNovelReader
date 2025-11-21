@@ -20,15 +20,16 @@ import androidx.work.PeriodicWorkRequestBuilder
 import androidx.work.WorkManager
 import dagger.hilt.android.AndroidEntryPoint
 import indi.dmzz_yyhyy.lightnovelreader.data.bookshelf.BookshelfRepository
-import indi.dmzz_yyhyy.lightnovelreader.data.bookshelf.BookshelfSortType
 import indi.dmzz_yyhyy.lightnovelreader.data.logging.LoggerRepository
+import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginManager
 import indi.dmzz_yyhyy.lightnovelreader.data.update.UpdateCheckRepository
-import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataPath
 import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.work.CheckUpdateWork
 import indi.dmzz_yyhyy.lightnovelreader.theme.LightNovelReaderTheme
 import indi.dmzz_yyhyy.lightnovelreader.ui.LightNovelReaderApp
 import indi.dmzz_yyhyy.lightnovelreader.utils.LogUtils
+import io.nightfish.lightnovelreader.api.bookshelf.BookshelfSortType
+import io.nightfish.lightnovelreader.api.userdata.UserDataPath
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -43,6 +44,7 @@ class MainActivity : ComponentActivity() {
     @Inject lateinit var userDataRepository: UserDataRepository
     @Inject lateinit var updateCheckRepository: UpdateCheckRepository
     @Inject lateinit var workManager: WorkManager
+    @Inject lateinit var pluginManager: PluginManager
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,7 +61,7 @@ class MainActivity : ComponentActivity() {
         workManager.enqueueUniquePeriodicWork(
             "checkUpdate",
             ExistingPeriodicWorkPolicy.KEEP,
-            PeriodicWorkRequestBuilder<CheckUpdateWork>(2, TimeUnit.HOURS)
+            PeriodicWorkRequestBuilder<CheckUpdateWork>(12, TimeUnit.HOURS)
                 .build()
         )
         coroutineScope.launch(Dispatchers.IO) {
@@ -122,7 +124,13 @@ class MainActivity : ComponentActivity() {
                 lightThemeName = lightThemeName,
                 darkThemeName = darkThemeName
             ) {
-                LightNovelReaderApp()
+                LightNovelReaderApp(
+                    onBuildNavHost = {
+                        with(pluginManager) {
+                            onBuildNavHost()
+                        }
+                    }
+                )
             }
         }
     }

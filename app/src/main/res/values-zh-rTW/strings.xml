@@ -14,6 +14,7 @@
     <!-- Operations -->
     <string name="cancel">取消</string>
     <string name="apply">套用</string>
+    <string name="confirm">確認</string>
     <string name="decline">拒絕</string>
     <string name="export">導出</string>
     <string name="undo">撤銷</string>
@@ -50,7 +51,7 @@
     <string name="download_item_progress">%s 已下載 %d%%</string>
     <string name="download_item_finished">%s完成</string>
     <string name="download_item_failed">%s失敗, 請檢查您的網絡環境或尋求開發者幫助</string>
-    <string name="book_updated_to_title">更新至：</string>
+    <string name="book_updated_to_title">更新至:</string>
 
     <!-- Hints -->
     <string name="nothing_here">沒有內容</string>
@@ -85,7 +86,7 @@
     <!-- Settings -->
     <string name="reading_settings">閲讀</string>
     <string name="theme_settings">主題</string>
-
+    <string name="app_settings">應用程式</string>
     <string name="app_updates">更新</string>
     <string name="settings_auto_check_updates">自動檢查更新</string>
     <string name="settings_auto_check_updates_desc">應用程式啟動後自動檢查更新</string>
@@ -236,7 +237,7 @@
     <string name="filter_by_publishing_house">文庫篩選</string>
     <string name="filter_by_publishing_house_desc">根據小說文庫的篩選。</string>
     <string name="book_info_update_date">%1$d-%2$d-%3$d 更新</string>
-    <string name="book_info_word_count_kilo">%sK 字</string>
+    <string name="book_info_word_count_kilo">%s 字</string>
     <string name="name">名稱</string>
     <string name="bookshelf_name">書架名稱</string>
     <string name="bookshelf_name_suggestion">為書架命名，建議長度在6個漢字以內</string>

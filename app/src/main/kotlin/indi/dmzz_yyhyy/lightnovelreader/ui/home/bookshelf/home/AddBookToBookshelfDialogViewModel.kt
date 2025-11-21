@@ -16,7 +16,7 @@ class AddBookToBookshelfDialogViewModel @Inject constructor(
 ) : ViewModel() {
     var allBookshelfFlow = bookshelfRepository.getAllBookshelvesFlow()
 
-    fun markSelectedBooks(selectedBookIds: List<Int>, bookshelfIds: List<Int>) {
+    fun markSelectedBooks(selectedBookIds: List<String>, bookshelfIds: List<Int>) {
         CoroutineScope(Dispatchers.IO).launch {
             selectedBookIds.forEach { bookId ->
                 localBookDataSource.getBookInformation(bookId)?.let { bookInformation ->

@@ -34,14 +34,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import indi.dmzz_yyhyy.lightnovelreader.R
-import indi.dmzz_yyhyy.lightnovelreader.data.book.BookInformation
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.entity.BookRecordEntity
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.entity.ReadingStatisticsEntity
-import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.stats.detailed.BookStack
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.stats.detailed.StatsCard
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.stats.detailed.StatsDetailedUiState
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.stats.detailed.currentDateRange
+import io.nightfish.lightnovelreader.api.book.BookInformation
+import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
@@ -60,7 +60,7 @@ val predefinedColors = listOf(
 
 private fun assignColors(
     records: List<BookRecordEntity>
-): Map<Int, Color> {
+): Map<String, Color> {
     return records
         .groupBy { it.bookId }
         .mapValues { (_, list) -> list.sumOf { it.totalTime } }
@@ -83,8 +83,8 @@ private fun assignColors(
 private fun getBooksInRange(
     statsMap: Map<LocalDate, ReadingStatisticsEntity>,
     dateRange: ClosedRange<LocalDate>,
-    selector: (ReadingStatisticsEntity) -> List<Int>
-): List<Int> {
+    selector: (ReadingStatisticsEntity) -> List<String>
+): List<String> {
     return statsMap
         .filterKeys { it in dateRange }
         .values
@@ -97,8 +97,8 @@ private fun getBooksInRange(
 @Composable
 private fun BookActivitySection(
     titleResId: Int,
-    bookIds: List<Int>,
-    bookInfoMap: Map<Int, BookInformation>,
+    bookIds: List<String>,
+    bookInfoMap: Map<String, BookInformation>,
     uiState: StatsDetailedUiState,
     modifier: Modifier = Modifier
 ) {
@@ -287,7 +287,7 @@ fun MonthlyReadingTimeStatsCard(
 @Composable
 fun ReadingTimeBar(
     recordList: List<BookRecordEntity>?,
-    bookInformationMap: Map<Int, BookInformation>
+    bookInformationMap: Map<String, BookInformation>
 ) {
     if (recordList.isNullOrEmpty()) {
         Box(

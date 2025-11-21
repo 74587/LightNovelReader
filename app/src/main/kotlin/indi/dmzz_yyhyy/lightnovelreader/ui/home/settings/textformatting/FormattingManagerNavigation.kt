@@ -1,6 +1,6 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.textformatting
 
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.navigation.NavController
@@ -9,7 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
-import indi.dmzz_yyhyy.lightnovelreader.ui.LocalNavController
+import io.nightfish.lightnovelreader.api.ui.LocalNavController
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.EditTextFormattingRuleDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.textformatting.rules.navigateToSettingsTextFormattingRulesDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.textformatting.rules.settingsTextFormattingRulesDestination
@@ -47,13 +47,13 @@ fun NavGraphBuilder.editTextFormattingRuleDialog() {
     }
 }
 
-fun NavController.navigateToEditTextFormattingRuleDialog(bookId: Int, ruleId: Int) {
+fun NavController.navigateToEditTextFormattingRuleDialog(bookId: String, ruleId: Int) {
     if (!this.isResumed()) return
     navigate(Route.Main.EditTextFormattingRuleDialog(bookId, ruleId))
 }
 
 fun NavGraphBuilder.settingsTextFormattingNavigation() {
-    navigation<Route.Main.Reading.Stats>(
+    navigation<Route.Main.Settings.TextFormatting>(
         startDestination = Route.Main.Settings.TextFormatting.Manager
     ) {
         settingsTextFormattingManagerDestination()

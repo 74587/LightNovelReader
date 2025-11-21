@@ -19,9 +19,9 @@ data class BookshelfEntity(
     @ColumnInfo(name = "system_update_reminder")
     val systemUpdateReminder: Boolean,
     @ColumnInfo(name = "all_book_ids")
-    val allBookIds: List<Int>,
+    val allBookIds: List<String>,
     @ColumnInfo(name = "pinned_book_ids")
-    val pinnedBookIds: List<Int>,
+    val pinnedBookIds: List<String>,
     @ColumnInfo(name = "updated_book_ids")
-    val updatedBookIds: List<Int>,
+    val updatedBookIds: List<String>,
 )

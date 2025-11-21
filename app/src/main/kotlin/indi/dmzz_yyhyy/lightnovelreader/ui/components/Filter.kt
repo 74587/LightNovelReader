@@ -25,13 +25,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import indi.dmzz_yyhyy.lightnovelreader.R
-import indi.dmzz_yyhyy.lightnovelreader.data.web.exploration.filter.Filter
-import indi.dmzz_yyhyy.lightnovelreader.data.web.exploration.filter.SingleChoiceFilter
-import indi.dmzz_yyhyy.lightnovelreader.data.web.exploration.filter.SliderFilter
-import indi.dmzz_yyhyy.lightnovelreader.data.web.exploration.filter.SwitchFilter
-import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
+import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
+import io.nightfish.lightnovelreader.api.web.explore.filter.Filter
+import io.nightfish.lightnovelreader.api.web.explore.filter.SingleChoiceFilter
+import io.nightfish.lightnovelreader.api.web.explore.filter.SliderFilter
+import io.nightfish.lightnovelreader.api.web.explore.filter.SwitchFilter
 
 @Composable
 fun Filter.Component(dialog: (@Composable () -> Unit) -> Unit) {
@@ -65,8 +64,8 @@ fun Filter.Component(dialog: (@Composable () -> Unit) -> Unit) {
                         FilterChipsDialog(
                             enable = displayDialog,
                             selected = selected,
-                            title = stringResource(this@Component.dialogTitleId),
-                            description = stringResource(this@Component.descriptionId),
+                            title = this@Component.dialogTitle,
+                            description = this@Component.description,
                             onSelectedChange = {
                                 selected = it
                                 enabled = it != this@Component.getDefaultChoice()

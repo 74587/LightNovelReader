@@ -1,5 +1,6 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.imageview
 
+import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -23,9 +24,10 @@ import me.saket.telephoto.zoomable.zoomable
 
 @Composable
 fun ImageViewerScreen(
-    imageUrl: String,
+    imageUri: Uri,
     onDismissRequest: () -> Unit,
-    onClickSave: () -> Unit
+    onClickSave: () -> Unit,
+    header: Map<String, String> = emptyMap()
 ) {
     val zoomableState = rememberZoomableState()
 
@@ -39,7 +41,12 @@ fun ImageViewerScreen(
                 .fillMaxSize()
                 .zoomable(state = zoomableState),
             model = ImageRequest.Builder(LocalContext.current)
-                .data(imageUrl)
+                .also { builder ->
+                    header.forEach {
+                        builder.addHeader(it.key, it.value)
+                    }
+                }
+                .data(imageUri)
                 .crossfade(true)
                 .build(),
             contentDescription = null

@@ -14,6 +14,9 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
@@ -30,6 +33,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.safeContent
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -65,6 +69,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.isUnspecified
@@ -84,9 +89,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.compose.LifecycleResumeEffect
 import indi.dmzz_yyhyy.lightnovelreader.R
-import indi.dmzz_yyhyy.lightnovelreader.data.book.BookVolumes
-import indi.dmzz_yyhyy.lightnovelreader.data.book.ChapterContent
-import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.content.ContentComponent
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.AnimatedText
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.AnimatedTextLine
@@ -97,6 +99,9 @@ import indi.dmzz_yyhyy.lightnovelreader.utils.LocalClaimSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.rememberReaderBackgroundPainter
 import indi.dmzz_yyhyy.lightnovelreader.utils.showSnackbar
+import io.nightfish.lightnovelreader.api.book.BookVolumes
+import io.nightfish.lightnovelreader.api.book.ChapterContent
+import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalTime
@@ -108,13 +113,12 @@ fun ReaderScreen(
     readingScreenUiState: ReaderScreenUiState,
     settingState: SettingState,
     onClickBackButton: () -> Unit,
-    accumulateReadTime: (Int, Int) -> Unit,
-    updateTotalReadingTime: (Int, Int) -> Unit,
+    accumulateReadTime: (bookId: String, Int) -> Unit,
+    updateTotalReadingTime: (bookId: String, Int) -> Unit,
     onClickPrevChapter: () -> Unit,
     onClickNextChapter: () -> Unit,
-    onChangeChapter: (Int) -> Unit,
-    onClickThemeSettings: () -> Unit,
-    onZoomImage: (String) -> Unit
+    onChangeChapter: (chapterId: String) -> Unit,
+    onClickThemeSettings: () -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     var isImmersive by remember { mutableStateOf(true) }
@@ -124,7 +128,7 @@ fun ReaderScreen(
     var lastBackPressTime: Long by remember { mutableLongStateOf(0) }
     var showSettingsBottomSheet by remember { mutableStateOf(false) }
     var showChapterSelectorBottomSheet by remember { mutableStateOf(false) }
-    var selectedVolumeId by remember { mutableIntStateOf(-1) }
+    var selectedVolumeId by remember { mutableStateOf("") }
 
     val coroutineScope = rememberCoroutineScope()
     val settingsBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
@@ -226,8 +230,9 @@ fun ReaderScreen(
             updateTotalReadingTime = updateTotalReadingTime,
             onClickPrevChapter = onClickPrevChapter,
             onClickNextChapter = onClickNextChapter,
+            onChangeChapter = onChangeChapter,
             onChangeIsImmersive = { isImmersive = !isImmersive },
-            onZoomImage = onZoomImage,
+            onClickThemeSettings = onClickThemeSettings
         )
     }
     AnimatedVisibility(visible = showSettingsBottomSheet) {
@@ -261,7 +266,7 @@ fun ReaderScreen(
                 showChapterSelectorBottomSheet = false
                 selectedVolumeId =
                     readingScreenUiState.bookVolumes.volumes.firstOrNull { volume -> volume.chapters.any { it.id == readingScreenUiState.contentUiState.readingChapterContent.id } }?.volumeId
-                        ?: -1
+                        ?: ""
             },
             onClickChapter = onChangeChapter,
             onChangeSelectedVolumeId = {
@@ -270,7 +275,7 @@ fun ReaderScreen(
         )
     }
     LaunchedEffect(readingScreenUiState.bookVolumes) {
-        selectedVolumeId = readingScreenUiState.bookVolumes.volumes.firstOrNull { volume -> volume.chapters.any { it.id == readingScreenUiState.contentUiState.readingChapterContent.id } }?.volumeId ?: -1
+        selectedVolumeId = readingScreenUiState.bookVolumes.volumes.firstOrNull { volume -> volume.chapters.any { it.id == readingScreenUiState.contentUiState.readingChapterContent.id } }?.volumeId ?: ""
     }
 }
 
@@ -280,15 +285,17 @@ fun Content(
     isImmersive: Boolean,
     readingScreenUiState: ReaderScreenUiState,
     settingState: SettingState,
-    updateTotalReadingTime: (Int, Int) -> Unit,
-    accumulateReadingTime: (Int, Int) -> Unit,
+    updateTotalReadingTime: (bookId: String, Int) -> Unit,
+    accumulateReadingTime: (bookId: String, Int) -> Unit,
     onClickPrevChapter: () -> Unit,
     onClickNextChapter: () -> Unit,
+    onChangeChapter: (chapterId: String) -> Unit,
     onChangeIsImmersive: () -> Unit,
-    onZoomImage: (String) -> Unit
+    onClickThemeSettings: () -> Unit
 ) {
     val activity = LocalActivity.current as Activity
     val window = activity.window
+    val coroutineScope = rememberCoroutineScope()
     val density = LocalDensity.current
 
     val stableSafeTopDp by remember {
@@ -308,6 +315,7 @@ fun Content(
 
     var isRunning by remember { mutableStateOf(false) }
     var totalReadingTime by remember { mutableIntStateOf(0) }
+    var selectedVolumeId by remember { mutableStateOf("") }
 
     LaunchedEffect(
         isImmersive,
@@ -336,6 +344,7 @@ fun Content(
             window.decorView.systemUiVisibility = originalUiFlags
         }
     }
+
     LifecycleResumeEffect(Unit) {
         isRunning = true
         onPauseOrDispose {
@@ -407,7 +416,7 @@ fun Content(
                         if (settingState.autoPadding)
                             PaddingValues(
                                 top = stableSafeTopDp,
-                                bottom = if (isEnableIndicator) 46.dp else 12.dp,
+                                bottom = WindowInsets.safeContent.getBottom(density).dp + if (isEnableIndicator) 26.dp else 0.dp,
                                 start = 16.dp,
                                 end = 16.dp
                             )
@@ -420,7 +429,6 @@ fun Content(
                             end = settingState.rightPadding.dp
                         ),
                     changeIsImmersive = onChangeIsImmersive,
-                    onZoomImage = onZoomImage,
                     onClickPrevChapter = onClickPrevChapter,
                     onClickNextChapter = onClickNextChapter
                 )
@@ -605,15 +613,14 @@ private fun BottomBar(
 @Composable
 fun ChapterSelectorBottomSheet(
     sheetState: SheetState,
-    selectedVolumeId: Int,
+    selectedVolumeId: String,
     bookVolumes: BookVolumes,
-    readingChapterId: Int,
+    readingChapterId: String,
     onDismissRequest: () -> Unit,
-    onClickChapter: (Int) -> Unit,
-    onChangeSelectedVolumeId: (Int) -> Unit
+    onClickChapter: (chapterId: String) -> Unit,
+    onChangeSelectedVolumeId: (volumeId: String) -> Unit
 ) {
     val lazyColumnState = rememberLazyListState()
-
     val flatItems = remember(bookVolumes) {
         bookVolumes.volumes.flatMap { volume ->
             listOf(volume to null) + volume.chapters.map { volume to it }
@@ -621,7 +628,7 @@ fun ChapterSelectorBottomSheet(
     }
 
     LaunchedEffect(readingChapterId, flatItems) {
-        if (readingChapterId <= 0) return@LaunchedEffect
+        if (readingChapterId.isBlank()) return@LaunchedEffect
 
         val targetIndex = flatItems.indexOfFirst { (_, chapter) ->
             chapter?.id == readingChapterId
@@ -677,7 +684,7 @@ fun ChapterSelectorBottomSheet(
                         modifier = Modifier
                             .clickable {
                                 onChangeSelectedVolumeId(
-                                    if (selectedVolumeId == volume.volumeId) -1
+                                    if (selectedVolumeId == volume.volumeId) ""
                                     else volume.volumeId
                                 )
                             }
@@ -728,12 +735,7 @@ fun ChapterSelectorBottomSheet(
                             .animateContentSize(animationSpec = tween(durationMillis = 200))
                     ) {
                         if (expanded) {
-                            val alpha by animateFloatAsState(
-                                targetValue = 1f,
-                                animationSpec = tween(180),
-                                label = "chapterItemAlpha"
-                            )
-
+                            val alpha by animateFloatAsState(targetValue = 1f, animationSpec = tween(180))
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -742,10 +744,7 @@ fun ChapterSelectorBottomSheet(
                                     .padding(horizontal = 22.dp),
                                 contentAlignment = Alignment.CenterStart
                             ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    modifier = Modifier.alpha(alpha)
-                                ) {
+                                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.alpha(alpha)) {
                                     val isSelected = readingChapterId == chapter.id
                                     if (isSelected) {
                                         Icon(
@@ -775,7 +774,6 @@ fun ChapterSelectorBottomSheet(
         }
     }
 }
-
 
 @Composable
 fun Indicator(

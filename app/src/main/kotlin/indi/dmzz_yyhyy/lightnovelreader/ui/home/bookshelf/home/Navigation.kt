@@ -7,19 +7,19 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.toRoute
 import indi.dmzz_yyhyy.lightnovelreader.R
-import indi.dmzz_yyhyy.lightnovelreader.data.bookshelf.Bookshelf
-import indi.dmzz_yyhyy.lightnovelreader.ui.LocalNavController
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.detail.navigateToBookDetailDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.AddBookToBookshelfDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.bookshelf.edit.navigateToBookshelfEditDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
+import io.nightfish.lightnovelreader.api.bookshelf.Bookshelf
+import io.nightfish.lightnovelreader.api.ui.LocalNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -96,6 +96,6 @@ private fun NavGraphBuilder.addBookToBookshelfDialog() {
     }
 }
 
-private fun NavController.navigateToAddBookToBookshelfDialog(selectedBookIds: List<Int>) {
+private fun NavController.navigateToAddBookToBookshelfDialog(selectedBookIds: List<String>) {
     navigate(Route.Main.Bookshelf.AddBookToBookshelfDialog(selectedBookIds))
 }

@@ -18,16 +18,17 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalBottomBarController
-import indi.dmzz_yyhyy.lightnovelreader.ui.LocalNavController
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.bookNavigation
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.LnrNavigationBar
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.LnrSnackbar
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.addBookToBookshelfDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.markAllChaptersAsReadDialog
+import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.pluginInstallerDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.updatesAvailableDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.downloadmanager.downloadManager
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.homeNavigation
@@ -38,11 +39,13 @@ import indi.dmzz_yyhyy.lightnovelreader.utils.expandEnter
 import indi.dmzz_yyhyy.lightnovelreader.utils.expandExit
 import indi.dmzz_yyhyy.lightnovelreader.utils.expandPopEnter
 import indi.dmzz_yyhyy.lightnovelreader.utils.expandPopExit
+import io.nightfish.lightnovelreader.api.ui.LocalNavController
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun LightNovelReaderNavHost(
-    navController: NavHostController
+    navController: NavHostController,
+    onBuildNavHost: NavGraphBuilder.() -> Unit
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -92,7 +95,9 @@ fun LightNovelReaderNavHost(
                         updatesAvailableDialog()
                         addBookToBookshelfDialog()
                         downloadManager()
+                        pluginInstallerDialog()
                         markAllChaptersAsReadDialog()
+                        onBuildNavHost.invoke(this)
                     }
                 }
 

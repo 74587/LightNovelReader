@@ -29,15 +29,16 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.work.OneTimeWorkRequest
 import indi.dmzz_yyhyy.lightnovelreader.R
-import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SectionHeader
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.AboutSettingsList
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.AppSettingsList
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.DataSettingsList
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.DisplaySettingsList
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.ReadingSettingsList
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.UpdatesSettingsList
 import indi.dmzz_yyhyy.lightnovelreader.utils.bottomBarSpacer
 import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
+import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
@@ -52,6 +53,7 @@ fun SettingsScreen(
     onClickDebugMode: () -> Unit,
     onClickLicenses: () -> Unit,
     onClickThemeSettings: () -> Unit,
+    onClickPluginManager: () -> Unit,
     onClickTextFormatting: () -> Unit,
     animatedVisibilityScope: AnimatedVisibilityScope,
     sharedTransitionScope: SharedTransitionScope,
@@ -107,7 +109,6 @@ fun SettingsScreen(
                             onClickExportUserData = onClickExportUserData,
                             settingState = settingState,
                             importData = importData,
-                            onClickLogcat = onClickLogcat
                         )
                     }
                 }

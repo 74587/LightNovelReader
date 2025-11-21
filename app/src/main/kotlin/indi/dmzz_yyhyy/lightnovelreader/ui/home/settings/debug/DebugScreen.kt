@@ -12,7 +12,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -30,14 +29,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import indi.dmzz_yyhyy.lightnovelreader.R
-import indi.dmzz_yyhyy.lightnovelreader.theme.AppTypography
-import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsClickableEntry
+import io.nightfish.lightnovelreader.api.ui.components.SettingsClickableEntry
+import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DebugScreen(
     onClickBack: () -> Unit,
     onClickQuery: (String) -> Unit,
+    onClickOpenBook: (String) -> Unit,
     result: String
 ) {
     Scaffold(
@@ -60,13 +60,67 @@ fun DebugScreen(
                 },
             )
         }
-    ) {
+    ) { padding ->
         Column(
-            modifier = Modifier.padding(it).padding(horizontal = 16.dp)
+            modifier = Modifier.padding(padding).padding(horizontal = 16.dp)
         ) {
             val interactionSource = remember { MutableInteractionSource() }
             val isFocused by interactionSource.collectIsFocusedAsState()
             var sqlCommand by remember { mutableStateOf("") }
+            var bookId by remember { mutableStateOf("") }
+
+            Text(
+                modifier = Modifier.padding(vertical = 12.dp),
+                text = "打开书本",
+                style = AppTypography.labelLarge,
+                fontWeight = FontWeight.W600,
+                maxLines = 1
+            )
+            OutlinedTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(20.dp),
+                value = bookId,
+                onValueChange = { bookId = it },
+                label = { Text("书本ID") },
+                placeholder = { Text("输入书本ID") },
+                supportingText = { Text("输入书本ID") },
+                maxLines = 1,
+                interactionSource = interactionSource,
+                trailingIcon = {
+                    IconButton(onClick = { bookId = "" }) {
+                        Icon(
+                            painter = painterResource(R.drawable.cancel_24px),
+                            contentDescription = "cancel",
+                            tint =
+                                if (isFocused) OutlinedTextFieldDefaults.colors().focusedTrailingIconColor
+                                else OutlinedTextFieldDefaults.colors().unfocusedTrailingIconColor
+                        )
+                    }
+                }
+            )
+            Box(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Button(
+                    modifier = Modifier.align(Alignment.CenterEnd),
+                    onClick = {
+                        onClickOpenBook.invoke(bookId)
+                    }
+                ) {
+                    Text(
+                        text = "打开"
+                    )
+                }
+            }
+
+            Text(
+                modifier = Modifier.padding(vertical = 12.dp),
+                text = "SQL调试",
+                style = AppTypography.labelLarge,
+                fontWeight = FontWeight.W600,
+                maxLines = 1
+            )
             OutlinedTextField(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -109,6 +163,7 @@ fun DebugScreen(
                     .fillMaxWidth(),
                 text = result
             )
+
             Text(
                 modifier = Modifier.padding(vertical = 12.dp),
                 text = "崩溃测试",
@@ -133,28 +188,22 @@ fun DebugScreen(
                         Looper.getMainLooper().quit()
                     }
                 )
-
-                @Suppress("UNNECESSARY_NOT_NULL_ASSERTION")
                 SettingsClickableEntry(
                     modifier = Modifier.background(colorScheme.background),
                     title = "Crash by NPE",
                     description = "NullPointerException",
                     onClick = {
-                        val s: String? = null
-                        s!!
+                        throw NullPointerException()
                     }
                 )
-
-                @Suppress("DIVISION_BY_ZERO")
                 SettingsClickableEntry(
                     modifier = Modifier.background(colorScheme.background),
                     title = "Crash by divide by zero",
                     description = "x = 1 / 0",
                     onClick = {
-                        1 / 0
+                        throw ArithmeticException(" / by zero")
                     }
                 )
-
                 SettingsClickableEntry(
                     modifier = Modifier.background(colorScheme.background),
                     title = "Crash by RuntimeException",

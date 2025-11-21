@@ -3,7 +3,7 @@ package indi.dmzz_yyhyy.lightnovelreader.data.setting
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.snapshots.StateFactoryMarker
-import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserData
+import io.nightfish.lightnovelreader.api.userdata.UserData
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

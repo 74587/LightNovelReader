@@ -70,7 +70,7 @@ class StatsDetailedViewModel @Inject constructor(
         _uiState.targetDateRangeStatsMap = statsMap
         _uiState.targetDateRangeRecordsMap = recordsMap
 
-        val bookIds = mutableSetOf<Int>()
+        val bookIds = mutableSetOf<String>()
         statsMap.values.forEach { entity ->
             bookIds += entity.favoriteBooks
             bookIds += entity.startedBooks

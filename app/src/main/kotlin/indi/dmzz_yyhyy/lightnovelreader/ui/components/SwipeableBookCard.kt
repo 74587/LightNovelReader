@@ -6,7 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.valentinilk.shimmer.Shimmer
 import com.valentinilk.shimmer.shimmer
-import indi.dmzz_yyhyy.lightnovelreader.data.book.BookInformation
+import io.nightfish.lightnovelreader.api.book.BookInformation
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.bookshelf.home.BookCardContent
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.bookshelf.home.BookCardContentSkeleton
 import me.saket.swipe.SwipeAction

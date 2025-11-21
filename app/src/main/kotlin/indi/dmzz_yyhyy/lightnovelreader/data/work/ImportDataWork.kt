@@ -16,7 +16,7 @@ import indi.dmzz_yyhyy.lightnovelreader.data.json.AppUserDataContent
 import indi.dmzz_yyhyy.lightnovelreader.data.json.AppUserDataJson
 import indi.dmzz_yyhyy.lightnovelreader.data.statistics.StatsRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataRepository
-import indi.dmzz_yyhyy.lightnovelreader.data.web.WebBookDataSource
+import indi.dmzz_yyhyy.lightnovelreader.data.web.WebBookDataSourceProvider
 import java.io.FileInputStream
 import java.io.FileNotFoundException
 import java.io.IOException
@@ -26,7 +26,7 @@ import java.util.zip.ZipInputStream
 class ImportDataWork @AssistedInject constructor(
     @Assisted appContext: Context,
     @Assisted workerParams: WorkerParameters,
-    private val webBookDataSource: WebBookDataSource,
+    private val webBookDataSourceProvider: WebBookDataSourceProvider,
     private val bookshelfRepository: BookshelfRepository,
     private val bookRepository: BookRepository,
     private val userDataRepository: UserDataRepository,
@@ -56,14 +56,14 @@ class ImportDataWork @AssistedInject constructor(
         }
         if (jsonText == null) return Result.failure()
         try {
-            val appUserDataJson = AppUserDataJson.fromJson(jsonText!!)
+            val appUserDataJson = AppUserDataJson.fromJson(jsonText)
             if (appUserDataJson.type == "light novel reader data file")
-                data = appUserDataJson.data.firstOrNull { it.webDataSourceId == webBookDataSource.id }
+                data = appUserDataJson.data.firstOrNull { it.webDataSourceId == webBookDataSourceProvider.default.id }
             if (data == null) {
                 if(!ignoreDataIdCheck) {
                     Log.e(
                         "Data Importer",
-                        "failed to import the data into app, the data file's web source id is different from app(AppWebSourceId: ${webBookDataSource.id})"
+                        "failed to import the data into app, the data file's web source id is different from app(AppWebSourceId: ${webBookDataSourceProvider.default.id})"
                     )
                     return Result.failure()
                 } else {
