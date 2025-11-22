@@ -1,5 +1,6 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.book.reader
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context.BATTERY_SERVICE
 import android.os.BatteryManager
@@ -103,6 +104,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalTime
 import java.util.Locale
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ReaderScreen(
@@ -226,9 +228,7 @@ fun ReaderScreen(
             updateTotalReadingTime = updateTotalReadingTime,
             onClickPrevChapter = onClickPrevChapter,
             onClickNextChapter = onClickNextChapter,
-            onChangeChapter = onChangeChapter,
-            onChangeIsImmersive = { isImmersive = !isImmersive },
-            onClickThemeSettings = onClickThemeSettings
+            onChangeIsImmersive = { isImmersive = !isImmersive }
         )
     }
     AnimatedVisibility(visible = showSettingsBottomSheet) {
@@ -285,13 +285,10 @@ fun Content(
     accumulateReadingTime: (bookId: String, Int) -> Unit,
     onClickPrevChapter: () -> Unit,
     onClickNextChapter: () -> Unit,
-    onChangeChapter: (chapterId: String) -> Unit,
-    onChangeIsImmersive: () -> Unit,
-    onClickThemeSettings: () -> Unit
+    onChangeIsImmersive: () -> Unit
 ) {
     val activity = LocalActivity.current as Activity
     val window = activity.window
-    val coroutineScope = rememberCoroutineScope()
     val density = LocalDensity.current
 
     val stableSafeTopDp by remember {
@@ -306,12 +303,13 @@ fun Content(
         )
     }
 
-    @Suppress("deprecated")
-    val originalUiFlags = remember { window.decorView.systemUiVisibility }
+    val originalUiFlags = remember {
+        @Suppress("DEPRECATION")
+        window.decorView.systemUiVisibility
+    }
 
     var isRunning by remember { mutableStateOf(false) }
     var totalReadingTime by remember { mutableIntStateOf(0) }
-    var selectedVolumeId by remember { mutableStateOf("") }
 
     LaunchedEffect(
         isImmersive,
@@ -412,14 +410,14 @@ fun Content(
                         if (settingState.autoPadding)
                             PaddingValues(
                                 top = stableSafeTopDp,
-                                bottom = WindowInsets.safeContent.getBottom(density).dp + if (isEnableIndicator) 26.dp else 0.dp,
+                                bottom = with(density) { WindowInsets.safeContent.getBottom(density).toDp() } + if (isEnableIndicator) 40.dp else 0.dp,
                                 start = 16.dp,
                                 end = 16.dp
                             )
                         else PaddingValues(
                             top = settingState.topPadding.dp,
                             bottom = if (isEnableIndicator)
-                                (settingState.bottomPadding + 38).dp
+                                (settingState.bottomPadding + 40).dp
                             else settingState.bottomPadding.dp,
                             start = settingState.leftPadding.dp,
                             end = settingState.rightPadding.dp

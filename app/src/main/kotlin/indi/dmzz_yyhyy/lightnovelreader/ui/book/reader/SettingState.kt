@@ -60,7 +60,7 @@ class SettingState(
     val backgroundImageDisplayMode by backgroundImageDisplayModeUserData.safeAsState("fixed")
     val isUsingFlipPage by isUsingFlipPageUserData.safeAsState(false)
     val isUsingClickFlipPage by isUsingClickFlipPageUserData.safeAsState(false)
-    val isUsingContinuousScrolling by isUsingContinuousScrollingUserData.safeAsState(false)
+    val isUsingContinuousScrolling by isUsingContinuousScrollingUserData.safeAsState(true)
     val isUsingVolumeKeyFlip by isUsingVolumeKeyFlipUserData.safeAsState(false)
     val volumeKeyContinuousFlipInterval by volumeKeyContinuousFlipIntervalUserData.safeAsState(-1f)
     val flipAnime by flipAnimeUserData.safeAsState(MenuOptions.FlipAnimationOptions.ScrollWithoutShadow)

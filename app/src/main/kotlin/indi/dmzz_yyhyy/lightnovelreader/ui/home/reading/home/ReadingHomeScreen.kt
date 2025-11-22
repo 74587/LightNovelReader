@@ -234,7 +234,7 @@ private fun ReadingContent(
             }
         }
         items(
-            items = recentReadingBookIds,
+            items = recentReadingBookIds.filter { it.isNotBlank() },
             key = { it }
         ) { id ->
             LaunchedEffect(id) {

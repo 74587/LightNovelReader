@@ -3,7 +3,6 @@ package indi.dmzz_yyhyy.lightnovelreader.ui.home.explore.home
 import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.fadeIn
@@ -65,7 +64,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
-import androidx.navigation.NavController
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Cover
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Loading
@@ -85,14 +83,12 @@ import kotlinx.coroutines.launch
 fun ExploreHomeScreen(
     exploreUiState: ExploreUiState,
     exploreHomeUiState: ExploreHomeUiState,
-    controller: NavController,
     onClickExpand: (String) -> Unit,
     onClickBook: (String) -> Unit,
     init: () -> Unit,
     changePage: (Int) -> Unit,
     onClickSearch: () -> Unit,
     refresh: () -> Unit,
-    animatedVisibilityScope: AnimatedVisibilityScope,
     sharedTransitionScope: SharedTransitionScope
 ) {
     val enterAlwaysScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -302,7 +298,7 @@ fun ExplorePage(
                             }
 
                             items(
-                                items = exploreBooksRow.bookList,
+                                items = exploreBooksRow.bookList.filter { it.id.isNotBlank() },
                                 key = { it.id }
                             ) { exploreDisplayBook ->
                                 Column(
