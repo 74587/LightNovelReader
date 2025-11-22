@@ -55,6 +55,7 @@
     <string name="download_item_progress">%s downloaded %d%%</string>
     <string name="download_item_finished">%s completed</string>
     <string name="download_item_failed">%s failed, please check your network or seek developer assistance</string>
+    <string name="book_updated_to_title">Updated to:</string>
 
     <!-- Hints -->
     <string name="nothing_here">Nothing Here</string>
@@ -93,8 +94,8 @@
     <string name="app_updates">Updates</string>
     <string name="settings_auto_check_updates">Auto Check for Updates</string>
     <string name="settings_auto_check_updates_desc">Enable automatic update checks upon app launch</string>
-    <string name="settings_update_channel">Update Channel</string>
-    <string name="settings_update_channel_desc">Select your preferred update channel.</string>
+    <string name="settings_update_channel">Join Beta Program</string>
+    <string name="settings_update_channel_desc">Join the Beta program to experience upcoming features before the stable release and share your feedback.</string>
     <string name="settings_get_updates">Check for Updates</string>
     <string name="settings_get_updates_desc">Check and install the latest version.</string>
     <string name="settings_distribution_platform">Distribution Platform</string>
@@ -157,7 +158,7 @@
     <string name="settings_theme_bg_image_built_in_desc">Kraft Paper</string>
     <string name="settings_theme_bg_image_custom">Custom</string>
     <string name="settings_theme_bg_display_mode">Background Display Mode</string>
-    <string name="settings_theme_bg_display_mode_desc">Set how custom background images are displayed</string>
+    <string name="settings_theme_bg_display_mode_desc">Set how custom background images are displayed (effective in scroll mode only)</string>
     <string name="settings_theme_bg_color">Background Color</string>
     <string name="settings_theme_bg_color_desc">Customize reader background color</string>
     <string name="text_settings">Text</string>
@@ -338,7 +339,7 @@
     <string name="dialog_add_to_bookshelf_text">Add this book to the following bookshelves</string>
     <string name="dialog_export_to_epub">Export as EPUB</string>
     <string name="dialog_export_to_epub_text">EPUB (Electronic Publication) is an open e-book standard with a .epub format.\n\nDo you want to export this book as an EPUB?</string>
-    <string name="dialog_updates_available">Updates Available</string>
+    <string name="dialog_updates_available">Update Available</string>
     <string name="dialog_snap_user_data_text">Select the data to export</string>
     <string name="dialog_snap_bookshelf">Bookshelf</string>
     <string name="dialog_snap_bookshelf_text">Includes bookshelf and book information.</string>
@@ -353,4 +354,5 @@
     <string name="dialog_slider_custom_illegal_value">Please enter a valid number.</string>
     <string name="dialog_color_picker">Color Palette</string>
     <string name="dialog_color_picker_desc">Select a color for the reader background.</string>
+
 </resources>

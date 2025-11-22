@@ -4,6 +4,8 @@ import android.net.Uri
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
@@ -19,6 +21,8 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -28,7 +32,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
@@ -41,16 +44,19 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -66,33 +72,32 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.valentinilk.shimmer.ShimmerBounds
-import com.valentinilk.shimmer.rememberShimmer
 import com.valentinilk.shimmer.shimmer
-import com.valentinilk.shimmer.unclippedBoundsInWindow
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.book.get
 import indi.dmzz_yyhyy.lightnovelreader.data.download.DownloadItem
-import io.nightfish.lightnovelreader.api.ui.LocalNavController
-import indi.dmzz_yyhyy.lightnovelreader.ui.components.AnimatedTextLine
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Cover
+import indi.dmzz_yyhyy.lightnovelreader.ui.components.LnrSnackbar
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Loading
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SwitchChip
+import indi.dmzz_yyhyy.lightnovelreader.ui.components.rememberSkeletonShimmer
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.bookshelf.home.BookStatusIcon
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.textformatting.rules.navigateToSettingsTextFormattingRulesDestination
+import indi.dmzz_yyhyy.lightnovelreader.utils.LocalClaimSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.fadingEdge
 import indi.dmzz_yyhyy.lightnovelreader.utils.isScrollingUp
 import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.book.ChapterInformation
 import io.nightfish.lightnovelreader.api.book.Volume
+import io.nightfish.lightnovelreader.api.ui.LocalNavController
 import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -111,102 +116,132 @@ fun DetailScreen(
 ) {
     val navController = LocalNavController.current
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
-    var showExportBottomSheet by remember { mutableStateOf(false) }
-    var exportSettings by remember { mutableStateOf(ExportSettings()) }
+    val snackbarHostState = LocalSnackbarHost.current
+
     val exportBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+    val infoBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+
+    var showExportBottomSheet by remember { mutableStateOf(false) }
+    var showInfoBottomSheet by remember { mutableStateOf(false) }
+    var exportSettings by remember { mutableStateOf(ExportSettings()) }
+
     val lazyListState = rememberLazyListState()
     val volumesEmpty = uiState.bookVolumes.volumes.isEmpty()
 
     val isCollapsed by remember {
         derivedStateOf {
-            lazyListState.firstVisibleItemIndex > 0 ||
-                    lazyListState.firstVisibleItemScrollOffset > 650
+            val visibleItems = lazyListState.layoutInfo.visibleItemsInfo
+            if (visibleItems.isEmpty()) false
+            else visibleItems.none { it.index == 0 }
         }
     }
+
+    val claim = LocalClaimSnackbarHost.current
+
+    DisposableEffect(Unit) {
+        claim(true)
+        onDispose { claim(false) }
+    }
+
+    val fabVisible = uiState.bookVolumes.volumes.isNotEmpty() &&
+            lazyListState.canScrollForward &&
+            lazyListState.isScrollingUp().value
+
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
-        topBar = {
+        snackbarHost = {
+            Column(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                SnackbarHost(snackbarHostState) { data ->
+                    LnrSnackbar(
+                        data,
+                        modifier = Modifier
+                            .padding(bottom = animateDpAsState(if (fabVisible) 12.dp else 24.dp).value)
+                    )
+                }
+                AnimatedVisibility(
+                    modifier = Modifier.align(Alignment.End),
+                    visible = fabVisible,
+                    enter = expandVertically(animationSpec = tween(250)) + fadeIn(tween(250)),
+                    exit = shrinkVertically(animationSpec = tween(200)) + fadeOut(tween(200))
+                ) {
+                    ExtendedFloatingActionButton(
+                        modifier = Modifier
+                            .align(Alignment.End)
+                            .padding(horizontal = 28.dp)
+                            .padding(bottom = 72.dp),
+                        onClick = {
+                            if (uiState.userReadingData.lastReadChapterId.isBlank())
+                                onClickReadFromStart()
+                            else
+                                onClickContinueReading()
+                        },
+                        icon = { Icon(painterResource(R.drawable.filled_menu_book_24px), null) },
+                        text = {
+                            Text(
+                                if (uiState.userReadingData.lastReadChapterId.isBlank())
+                                    stringResource(R.string.start_reading)
+                                else
+                                    stringResource(R.string.continue_reading)
+                            )
+                        }
+                    )
+                }
+            }
+        },
+        contentWindowInsets = WindowInsets(0, 0, 0, 0)
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
             TopBar(
                 title = uiState.bookInformation.title,
                 volumesEmpty = volumesEmpty,
                 onClickBackButton = onClickBackButton,
                 onClickExport = { showExportBottomSheet = true },
                 onClickTextFormatting = {
-                    navController.navigateToSettingsTextFormattingRulesDestination(uiState.bookInformation.id)
+                    navController.navigateToSettingsTextFormattingRulesDestination(
+                        uiState.bookInformation.id
+                    )
                 },
                 onClickMarkAllRead = onClickMarkAllRead,
                 scrollBehavior = scrollBehavior,
                 isCollapsed = isCollapsed
             )
-        },
-        snackbarHost = {
-            Column(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalAlignment = Alignment.End
-            ) {
-                AnimatedVisibility(
-                    visible = lazyListState.canScrollForward && lazyListState.isScrollingUp().value && uiState.bookVolumes.volumes.isNotEmpty(),
-                    enter = fadeIn(),
-                    exit = fadeOut()
-                ) {
-                    ExtendedFloatingActionButton(
+
+            Crossfade(
+                targetState = uiState.isLoading || uiState.bookInformation.title.isEmpty(),
+                animationSpec = tween(300),
+                label = "DetailScreenCrossfade"
+            ) { empty ->
+                if (empty) {
+                    DetailContentSkeleton(
+                        Modifier
+                            .fillMaxSize()
+                            .background(colorScheme.surface)
+                    )
+                } else {
+                    DetailContent(
                         modifier = Modifier
-                            .padding(end = 24.dp, start = 16.dp)
-                            .padding(vertical = 14.dp),
-                        onClick = if (uiState.userReadingData.lastReadChapterId.isBlank()) onClickReadFromStart
-                        else onClickContinueReading,
-                        icon = {
-                            Icon(
-                                painter = painterResource(id = R.drawable.filled_menu_book_24px),
-                                contentDescription = null
-                            )
-                        },
-                        text = {
-                            Text(if (uiState.userReadingData.lastReadChapterId.isBlank()) stringResource(R.string.start_reading)
-                            else stringResource(id = R.string.continue_reading))
-                        }
+                            .fillMaxSize()
+                            .background(colorScheme.surface),
+                        uiState = uiState,
+                        onClickChapter = onClickChapter,
+                        lazyListState = lazyListState,
+                        cacheBook = cacheBook,
+                        requestAddBookToBookshelf = requestAddBookToBookshelf,
+                        onClickTag = onClickTag,
+                        onClickCover = onClickCover,
+                        onClickShowInfo = { showInfoBottomSheet = true }
                     )
                 }
-                AnimatedVisibility(
-                    LocalSnackbarHost.current.currentSnackbarData != null,
-                    enter = expandVertically(),
-                    exit = shrinkVertically()
-                ) {
-                    SnackbarHost(
-                        hostState = LocalSnackbarHost.current
-                    )
-                }
-                Spacer(Modifier.height(42.dp))
-            }
-        }
-    ) { paddingValues ->
-        val bookIsEmpty = uiState.bookInformation.title.isEmpty()
-        val infoBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
-        var showInfoBottomSheet by remember { mutableStateOf(false) }
-
-        Crossfade(
-            targetState = uiState.isLoading || bookIsEmpty,
-            animationSpec = tween(300),
-            label = "DetailScreenCrossfade"
-        ) { empty ->
-            if (empty) {
-                DetailContentSkeleton(Modifier.padding(paddingValues))
-            } else {
-                DetailContent(
-                    modifier = Modifier.padding(paddingValues),
-                    uiState = uiState,
-                    onClickChapter = onClickChapter,
-                    lazyListState = lazyListState,
-                    cacheBook = cacheBook,
-                    requestAddBookToBookshelf = requestAddBookToBookshelf,
-                    onClickTag = onClickTag,
-                    onClickCover = onClickCover,
-                    onClickShowInfo = { showInfoBottomSheet = true }
-                )
             }
         }
 
-        AnimatedVisibility(visible = showExportBottomSheet) {
+        if (showExportBottomSheet) {
             ExportBottomSheet(
                 sheetState = exportBottomSheetState,
                 bookVolumes = uiState.bookVolumes,
@@ -228,19 +263,27 @@ fun DetailScreen(
     }
 }
 
+
 @Composable
 private fun DetailContentSkeleton(modifier: Modifier = Modifier) {
-    val skeletonColor = MaterialTheme.colorScheme.surfaceContainerHigh
     val rounded = RoundedCornerShape(6.dp)
-    val shimmerInstance = rememberShimmer(ShimmerBounds.Custom)
+    var started by remember { mutableStateOf(false) }
+
+    LaunchedEffect(Unit) {
+        delay(500)
+        started = true
+    }
+
+    val baseColor = colorScheme.surfaceContainerLow
+    val highlightColor = colorScheme.surfaceContainerHigh
+
+    val shimmer = rememberSkeletonShimmer(
+        baseColor, highlightColor
+    )
 
     Column(
         modifier = modifier
-            .onGloballyPositioned { layoutCoordinates ->
-                val position = layoutCoordinates.unclippedBoundsInWindow()
-                shimmerInstance.updateBounds(position)
-            }
-            .shimmer(shimmerInstance),
+            .then(if (started) Modifier.shimmer(shimmer) else Modifier),
         verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.Top),
     ) {
         Row(
@@ -254,11 +297,10 @@ private fun DetailContentSkeleton(modifier: Modifier = Modifier) {
                 modifier = Modifier
                     .size(width = 122.dp, height = 178.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(skeletonColor)
+                    .background(baseColor)
             )
             Column(
-                modifier = Modifier
-                    .padding(start = 16.dp),
+                modifier = Modifier.padding(start = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 repeat(3) {
@@ -267,7 +309,7 @@ private fun DetailContentSkeleton(modifier: Modifier = Modifier) {
                             .fillMaxWidth(0.8f)
                             .height(20.dp)
                             .clip(rounded)
-                            .background(skeletonColor)
+                            .background(baseColor)
                     )
                 }
             }
@@ -285,7 +327,7 @@ private fun DetailContentSkeleton(modifier: Modifier = Modifier) {
                         .width(64.dp)
                         .height(32.dp)
                         .clip(RoundedCornerShape(50))
-                        .background(skeletonColor)
+                        .background(baseColor)
                 )
             }
         }
@@ -294,9 +336,8 @@ private fun DetailContentSkeleton(modifier: Modifier = Modifier) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 18.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp),
-
-            ) {
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
             repeat(3) {
                 Box(
                     modifier = Modifier
@@ -304,7 +345,7 @@ private fun DetailContentSkeleton(modifier: Modifier = Modifier) {
                         .height(90.dp)
                         .padding(vertical = itemVerticalPadding)
                         .clip(RoundedCornerShape(8.dp))
-                        .background(skeletonColor)
+                        .background(baseColor)
                 )
             }
         }
@@ -320,7 +361,7 @@ private fun DetailContentSkeleton(modifier: Modifier = Modifier) {
                     .fillMaxWidth(0.4f)
                     .height(24.dp)
                     .clip(rounded)
-                    .background(skeletonColor)
+                    .background(baseColor)
             )
             Spacer(Modifier.height(10.dp))
             repeat(4) {
@@ -329,13 +370,13 @@ private fun DetailContentSkeleton(modifier: Modifier = Modifier) {
                         .fillMaxWidth()
                         .height(18.dp)
                         .clip(rounded)
-                        .background(skeletonColor)
+                        .background(baseColor)
                 )
             }
         }
-
     }
 }
+
 
 private val itemHorizontalPadding = 18.dp
 private val itemVerticalPadding = 8.dp
@@ -462,53 +503,57 @@ private fun TopBar(
     isCollapsed: Boolean
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
-    val detailTitle = stringResource(R.string.detail_title)
+    val progress by animateFloatAsState(
+        targetValue = if (isCollapsed) 1f else 0f,
+        animationSpec = tween(
+            durationMillis = 300,
+            easing = FastOutSlowInEasing
+        )
+    )
 
     TopAppBar(
         title = {
-            Row(
-                modifier = Modifier
-                    .horizontalScroll(rememberScrollState())
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                AnimatedTextLine(
-                    text = if (isCollapsed) title else detailTitle,
+            val offset = 86f
+            Box(Modifier.fillMaxWidth()) {
+                Text(
+                    text = stringResource(R.string.detail_title),
                     style = AppTypography.titleTopBar,
-                    fontWeight = FontWeight.Normal,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 1
+                    modifier = Modifier.graphicsLayer {
+                        alpha = 1f - progress
+                        translationY = -offset * progress
+                    }
+                )
+
+                Text(
+                    text = title,
+                    maxLines = 1,
+                    style = AppTypography.titleTopBar,
+                    modifier = Modifier
+                        .horizontalScroll(rememberScrollState())
+                        .graphicsLayer {
+                            alpha = progress
+                            translationY = offset * (1f - progress)
+                        }
                 )
             }
         },
-        actions = {
-            IconButton(
-                enabled = !volumesEmpty,
-                onClick = onClickExport
-            ) {
-                Icon(painterResource(id = R.drawable.file_export_24px), "export to epub")
+        navigationIcon = {
+            IconButton(onClick = onClickBackButton) {
+                Icon(painterResource(id = R.drawable.arrow_back_24px), contentDescription = "back")
             }
-            IconButton(
-                enabled = !volumesEmpty,
-                onClick = onClickTextFormatting
-            ) {
-                Icon(painterResource(id = R.drawable.find_replace_24px), "text formating")
+        },
+        actions = {
+            IconButton(enabled = !volumesEmpty, onClick = onClickExport) {
+                Icon(painterResource(id = R.drawable.file_export_24px), contentDescription = "export")
+            }
+            IconButton(enabled = !volumesEmpty, onClick = onClickTextFormatting) {
+                Icon(painterResource(id = R.drawable.find_replace_24px), contentDescription = "formatting")
             }
             Box {
-                IconButton(
-                    enabled = !volumesEmpty,
-                    onClick = { menuExpanded = true }
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.more_vert_24px),
-                        contentDescription = "more"
-                    )
+                IconButton(enabled = !volumesEmpty, onClick = { menuExpanded = true }) {
+                    Icon(painterResource(id = R.drawable.more_vert_24px), contentDescription = "more")
                 }
-
-                DropdownMenu(
-                    expanded = menuExpanded,
-                    onDismissRequest = { menuExpanded = false }
-                ) {
+                DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
                     DropdownMenuItem(
                         text = {
                             Text(
@@ -524,15 +569,10 @@ private fun TopBar(
                 }
             }
         },
-        navigationIcon = {
-            IconButton(
-                onClick = onClickBackButton) {
-                Icon(painterResource(id = R.drawable.arrow_back_24px), "back")
-            }
-        },
-        scrollBehavior = scrollBehavior,
+        scrollBehavior = scrollBehavior
     )
 }
+
 
 @Composable
 private fun BookCardBlock(
@@ -592,7 +632,7 @@ private fun BookCardBlock(
                 Text(
                     text = bookInformation.subtitle,
                     maxLines = 2,
-                    color = MaterialTheme.colorScheme.secondary,
+                    color = colorScheme.secondary,
                     style = AppTypography.labelMedium
                 )
             }
@@ -600,7 +640,7 @@ private fun BookCardBlock(
                 text = bookInformation.author,
                 maxLines = 1,
                 fontWeight = FontWeight.W600,
-                color = MaterialTheme.colorScheme.primary,
+                color = colorScheme.primary,
                 style = AppTypography.labelLarge
             )
             Column {
@@ -614,7 +654,7 @@ private fun BookCardBlock(
                         Icon(
                             painter = painterResource(R.drawable.text_snippet_24px),
                             contentDescription = null,
-                            tint = MaterialTheme.colorScheme.outline,
+                            tint = colorScheme.outline,
                             modifier = Modifier
                                 .size(16.dp)
                                 .padding(top = 2.dp)
@@ -641,7 +681,7 @@ private fun InfoRow(
             text = text,
             maxLines = 1,
             style = AppTypography.labelMedium,
-            color = MaterialTheme.colorScheme.secondary
+            color = colorScheme.secondary
         )
     }
 }
@@ -652,24 +692,30 @@ private fun TagsBlock(
     bookInformation: BookInformation,
     onClickTag: (String) -> Unit
 ) {
-    LazyRow(
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(colorScheme.surface)
+            .horizontalScroll(rememberScrollState())
             .padding(vertical = itemVerticalPadding, horizontal = itemHorizontalPadding),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        content = {
-            if (bookInformation.publishingHouse.isNotEmpty()) {
-                item {
-                    SuggestionChip(label = { Text(bookInformation.publishingHouse) }, onClick = {})
-                }
-            }
-            items(bookInformation.tags, key = { it }) { tag ->
-                SuggestionChip(label = { Text(tag) }, onClick = { onClickTag(tag) })
-            }
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        if (bookInformation.publishingHouse.isNotEmpty()) {
+            SuggestionChip(
+                label = { Text(bookInformation.publishingHouse) },
+                onClick = {}
+            )
         }
-    )
+
+        bookInformation.tags.forEach { tag ->
+            SuggestionChip(
+                label = { Text(tag) },
+                onClick = { onClickTag(tag) }
+            )
+        }
+    }
 }
+
 
 @Composable
 fun QuickOperationButton(
@@ -684,7 +730,7 @@ fun QuickOperationButton(
             .height(72.dp)
             .fillMaxWidth(),
         colors = ButtonDefaults.buttonColors(
-            containerColor = MaterialTheme.colorScheme.surfaceContainerLow
+            containerColor = colorScheme.surfaceContainerLow
         ),
         shape = RoundedCornerShape(0.dp),
         onClick = onClick
@@ -696,11 +742,11 @@ fun QuickOperationButton(
                 modifier = Modifier.size(18.dp),
                 painter = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary
+                tint = colorScheme.primary
             )
             Text(
                 text = title,
-                color = MaterialTheme.colorScheme.primary,
+                color = colorScheme.primary,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -720,7 +766,7 @@ private fun QuickOperationsBlock(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(colorScheme.surface)
             .padding(horizontal = itemHorizontalPadding, vertical = itemVerticalPadding)
             .clip(RoundedCornerShape(16.dp)),
         horizontalArrangement = Arrangement.spacedBy(4.dp, Alignment.CenterHorizontally),
@@ -775,8 +821,8 @@ private fun QuickOperationsBlock(
 
 @Composable
 private fun IntroBlock(description: String) {
-    var expanded by remember { mutableStateOf(false) }
-    var overflowed by rememberSaveable(description.length) { mutableStateOf(false) }
+    var expanded by rememberSaveable { mutableStateOf(false) }
+    val overflowed = remember(description) { description.length > 220 }
 
     val fadingBrush = remember {
         Brush.verticalGradient(
@@ -785,15 +831,12 @@ private fun IntroBlock(description: String) {
         )
     }
     val whiteBrush = remember {
-        Brush.verticalGradient(
-            listOf(Color.White, Color.White)
-        )
+        Brush.verticalGradient(listOf(Color.White, Color.White))
     }
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surface)
             .padding(horizontal = itemHorizontalPadding, vertical = itemVerticalPadding),
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
@@ -804,46 +847,49 @@ private fun IntroBlock(description: String) {
             fontWeight = FontWeight.W600
         )
 
-        Text(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .animateContentSize()
                 .fadingEdge(
                     if (!expanded && overflowed) fadingBrush else whiteBrush
-                ),
-            text = description,
-            style = AppTypography.bodyLarge,
-            maxLines = if (!expanded) 4 else 99,
-            onTextLayout = { result ->
-                if (!overflowed && result.hasVisualOverflow) {
-                    overflowed = true
-                }
-            },
-            color = MaterialTheme.colorScheme.onSurface
-        )
+                )
+        ) {
+            Text(
+                text = description,
+                style = AppTypography.bodyLarge,
+                maxLines = if (!expanded && overflowed) 4 else Int.MAX_VALUE,
+                color = colorScheme.onSurface,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
 
         if (overflowed) {
             val rotation by animateFloatAsState(if (expanded) 0f else 180f)
-            Button(
+            TextButton(
                 modifier = Modifier.align(Alignment.End),
-                colors = ButtonDefaults.textButtonColors().copy(containerColor = Color.Transparent),
-                onClick = { expanded = !expanded }
+                onClick = { expanded = !expanded },
+                colors = ButtonDefaults.textButtonColors(containerColor = Color.Transparent)
             ) {
                 Icon(
-                    modifier = Modifier.rotate(rotation),
                     painter = painterResource(R.drawable.keyboard_arrow_up_24px),
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary
+                    modifier = Modifier.rotate(rotation),
+                    tint = colorScheme.primary
                 )
                 Text(
-                    text = if (expanded) stringResource(R.string.collapse) else stringResource(R.string.expand),
-                    color = MaterialTheme.colorScheme.primary
+                    text = if (expanded)
+                        stringResource(R.string.collapse)
+                    else
+                        stringResource(R.string.expand),
+                    color = colorScheme.primary
                 )
             }
+        } else {
+            Spacer(Modifier.height(10.dp))
         }
     }
 }
-
 
 @Composable
 private fun VolumeItem(
@@ -870,24 +916,29 @@ private fun VolumeItem(
             modifier = Modifier.clickable { expanded = !expanded }.padding(horizontal = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Column(modifier = Modifier.weight(5f).padding(vertical = 12.dp)) {
+            Column(modifier = Modifier
+                .weight(5f)
+                .padding(vertical = 12.dp)
+            ) {
                 Text(
                     text = volume.volumeTitle,
                     style = AppTypography.titleMedium,
-                    color = if (isFullyRead) MaterialTheme.colorScheme.secondary
-                    else MaterialTheme.colorScheme.onSurface
+                    color = if (isFullyRead) colorScheme.secondary
+                    else colorScheme.onSurface
                 )
                 Text(
                     text = if (isFullyRead) stringResource(R.string.info_reading_finished)
                     else stringResource(R.string.info_reading_progress, readCount, totalCount),
                     style = AppTypography.titleSmall,
-                    color = MaterialTheme.colorScheme.secondary
+                    color = colorScheme.secondary
                 )
             }
             if (!hideReadChapters || !isFullyRead) {
                 Spacer(Modifier.weight(1f))
                 Icon(
-                    modifier = Modifier.size(16.dp).rotate(rotation),
+                    modifier = Modifier
+                        .size(16.dp)
+                        .rotate(rotation),
                     painter = painterResource(id = R.drawable.arrow_forward_ios_24px),
                     contentDescription = null
                 )
@@ -937,8 +988,8 @@ private fun ChapterItem(
                 overflow = TextOverflow.Ellipsis,
                 style = AppTypography.titleSmall,
                 fontWeight = if (isRead) FontWeight.Normal else FontWeight.W600,
-                color = if (isRead) MaterialTheme.colorScheme.secondary
-                else MaterialTheme.colorScheme.onSurface
+                color = if (isRead) colorScheme.secondary
+                else colorScheme.onSurface
             )
             if (isLastRead) {
                 Text(
@@ -946,7 +997,7 @@ private fun ChapterItem(
                     maxLines = 1,
                     style = AppTypography.titleSmall,
                     fontWeight = FontWeight.W600,
-                    color = MaterialTheme.colorScheme.primary
+                    color = colorScheme.primary
                 )
             }
         }

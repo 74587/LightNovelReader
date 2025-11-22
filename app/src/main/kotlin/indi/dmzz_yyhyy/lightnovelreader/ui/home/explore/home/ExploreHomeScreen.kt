@@ -35,8 +35,6 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.PrimaryTabRow
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -69,15 +67,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import androidx.navigation.NavController
 import indi.dmzz_yyhyy.lightnovelreader.R
-import indi.dmzz_yyhyy.lightnovelreader.ui.SharedContentKey
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Cover
-import indi.dmzz_yyhyy.lightnovelreader.ui.components.LnrSnackbar
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Loading
-import indi.dmzz_yyhyy.lightnovelreader.ui.home.HomeNavigateBar
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.explore.ExploreScreen
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.explore.ExploreUiState
-import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
+import indi.dmzz_yyhyy.lightnovelreader.utils.bottomBarSpacer
 import indi.dmzz_yyhyy.lightnovelreader.utils.fadingEdge
+import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 import io.nightfish.lightnovelreader.api.explore.ExploreBooksRow
 import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import kotlinx.coroutines.delay
@@ -89,7 +85,6 @@ import kotlinx.coroutines.launch
 fun ExploreHomeScreen(
     exploreUiState: ExploreUiState,
     exploreHomeUiState: ExploreHomeUiState,
-    selectedRoute: Any,
     controller: NavController,
     onClickExpand: (String) -> Unit,
     onClickBook: (String) -> Unit,
@@ -104,32 +99,14 @@ fun ExploreHomeScreen(
     LifecycleEventEffect(Lifecycle.Event.ON_CREATE) {
         init()
     }
+
     with(sharedTransitionScope) {
-        Scaffold(
-            topBar = {
-                TopBar(
-                    scrollBehavior = enterAlwaysScrollBehavior,
-                    onClickSearch = onClickSearch
-                )
-            },
-            bottomBar = {
-                HomeNavigateBar(
-                    modifier = Modifier.sharedElement(
-                        sharedTransitionScope.rememberSharedContentState(SharedContentKey.HomeNavigateBar),
-                        animatedVisibilityScope,
-                    ),
-                    selectedRoute = selectedRoute,
-                    controller = controller
-                )
-            },
-            snackbarHost = {
-                SnackbarHost(LocalSnackbarHost.current) {
-                    LnrSnackbar(it)
-                }
-            }
-        ) { paddingValues ->
+        Column {
+            TopBar(
+                scrollBehavior = enterAlwaysScrollBehavior,
+                onClickSearch = onClickSearch
+            )
             ExploreScreen(
-                modifier = Modifier.padding(paddingValues),
                 refresh = refresh,
                 uiState = exploreUiState
             ) {
@@ -238,27 +215,36 @@ fun ExplorePage(
     nestedScrollConnection: NestedScrollConnection,
     refresh: () -> Unit
 ) {
-    val rememberPullToRefreshState = rememberPullToRefreshState()
-    var isRefreshing by remember{ mutableStateOf(false) }
+    val pullState = rememberPullToRefreshState()
+    var isRefreshing by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
+    val listState = rememberLazyListState()
+
     PullToRefreshBox(
         isRefreshing = isRefreshing,
         onRefresh = {
             isRefreshing = true
             refresh()
             scope.launch {
-                rememberPullToRefreshState.animateToHidden()
+                pullState.animateToHidden()
+                isRefreshing = false
             }
-            isRefreshing = false
         },
-        state = rememberPullToRefreshState
+        state = pullState
     ) {
         LazyColumn(
-            modifier = Modifier.nestedScroll(nestedScrollConnection)
+            modifier = Modifier
+                .fillMaxWidth()
+                .nestedScroll(nestedScrollConnection),
+            state = listState
         ) {
-            items(explorePageBooksRawList) { exploreBooksRow ->
+            items(
+                items = explorePageBooksRawList,
+                key = { it.title }
+            ) { exploreBooksRow ->
                 Column(
-                    modifier = Modifier.animateItem()
+                    modifier = Modifier
+                        .animateItem()
                 ) {
                     Row(
                         modifier = Modifier
@@ -291,6 +277,7 @@ fun ExplorePage(
                             }
                         }
                     }
+
                     val lazyRowState = rememberLazyListState()
 
                     CompositionLocalProvider(LocalOverscrollFactory provides null) {
@@ -314,7 +301,10 @@ fun ExplorePage(
                                 Box(modifier = Modifier.width(10.dp))
                             }
 
-                            items(exploreBooksRow.bookList) { exploreDisplayBook ->
+                            items(
+                                items = exploreBooksRow.bookList,
+                                key = { it.id }
+                            ) { exploreDisplayBook ->
                                 Column(
                                     modifier = Modifier
                                         .clip(RoundedCornerShape(10.dp))
@@ -340,11 +330,13 @@ fun ExplorePage(
                                         verticalArrangement = Arrangement.spacedBy(2.dp)
                                     ) {
                                         val titleLineHeight = 16.sp
+                                        val titleHeight = with(LocalDensity.current) {
+                                            (titleLineHeight * 2.2f).toDp()
+                                        }
+
                                         Text(
                                             modifier = Modifier
-                                                .height(
-                                                    with(LocalDensity.current) { (titleLineHeight * 2.2f).toDp() }
-                                                )
+                                                .height(titleHeight)
                                                 .wrapContentHeight(Alignment.Top),
                                             text = exploreDisplayBook.title,
                                             style = AppTypography.titleVerySmall.copy(
@@ -384,7 +376,8 @@ fun ExplorePage(
                     }
                 }
             }
+            navigationBarSpacer()
+            bottomBarSpacer()
         }
-
     }
 }

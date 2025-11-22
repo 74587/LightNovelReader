@@ -8,16 +8,18 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -28,8 +30,10 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import indi.dmzz_yyhyy.lightnovelreader.R
@@ -38,6 +42,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.components.Cover
 import indi.dmzz_yyhyy.lightnovelreader.utils.withHaptic
 import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun BookCardContent(
@@ -49,18 +54,19 @@ fun BookCardContent(
     onClick: () -> Unit,
     onLongPress: () -> Unit
 ) {
+    val lineHeight = AppTypography.labelLarge.lineHeight
+    val titleHeight = with(LocalDensity.current) { (lineHeight * 2.2f).toDp() }
 
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(136.dp)
+            .height(146.dp)
             .clip(RoundedCornerShape(12.dp))
             .combinedClickable(
                 onClick = onClick,
                 onLongClick = withHaptic { onLongPress() },
             )
     ) {
-
         Row(
             modifier = Modifier
                 .fillMaxSize()
@@ -68,7 +74,7 @@ fun BookCardContent(
         ) {
             Box(
                 modifier = Modifier
-                    .size(90.dp, 136.dp)
+                    .size(94.dp, 144.dp)
                     .clip(RoundedCornerShape(8.dp))
             ) {
                 val alpha by animateFloatAsState(if (selected) 0.7f else 1f)
@@ -77,8 +83,8 @@ fun BookCardContent(
                     modifier = Modifier.graphicsLayer(alpha = alpha)
                 ) {
                     Cover(
-                        width = 90.dp,
-                        height = 136.dp,
+                        width = 94.dp,
+                        height = 144.dp,
                         uri = bookInformation.coverUri,
                         rounded = 8.dp
                     )
@@ -131,8 +137,7 @@ fun BookCardContent(
                             )
                         }
                         Icon(
-                            modifier = Modifier
-                                .size(22.dp),
+                            modifier = Modifier.size(22.dp),
                             painter = painterResource(R.drawable.check_24px),
                             tint = colorScheme.onPrimary,
                             contentDescription = null
@@ -143,16 +148,21 @@ fun BookCardContent(
 
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .padding(start = 12.dp)
                     .fillMaxHeight()
-                    .padding(start = 12.dp),
+                    .weight(1f),
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
+                    modifier = Modifier
+                        .height(titleHeight)
+                        .wrapContentHeight(Alignment.CenterVertically),
                     text = bookInformation.title,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.titleMedium
+                    style = AppTypography.labelLarge.copy(
+                        fontWeight = FontWeight.W600
+                    )
                 )
 
                 Row(
@@ -163,52 +173,60 @@ fun BookCardContent(
                         text = bookInformation.author,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        color = colorScheme.primary,
-                        style = MaterialTheme.typography.titleSmall
+                        style = AppTypography.bodyMedium.copy(
+                            fontWeight = FontWeight.W600,
+                            color = colorScheme.primary
+                        )
                     )
                     BookStatusIcon(bookInformation.isComplete)
                 }
 
+                val dateText = bookInformation.lastUpdated.format(DateTimeFormatter.ISO_LOCAL_DATE)
+
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    horizontalArrangement = Arrangement.spacedBy(6.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
+                    TagChip(painterResource(R.drawable.update_24px))
                     Text(
-                        text = stringResource(
-                            R.string.book_info_update_date,
-                            bookInformation.lastUpdated.year,
-                            bookInformation.lastUpdated.monthValue,
-                            bookInformation.lastUpdated.dayOfMonth
-                        ),
-                        style = AppTypography.labelMedium
+                        text = dateText,
+                        style = AppTypography.labelMedium.copy(color = colorScheme.secondary)
                     )
+
+                    Spacer(Modifier.width(4.dp))
+
+                    TagChip(painterResource(R.drawable.article_24px))
                     Text(
                         text = bookInformation.wordCount.get(),
-                        style = AppTypography.labelMedium
+                        style = AppTypography.labelMedium.copy(color = colorScheme.secondary)
                     )
                 }
+
 
                 if (latestChapterTitle.isNullOrBlank()) {
                     Text(
                         text = bookInformation.description.trim(),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
-                        style = AppTypography.labelMedium,
-                        color = colorScheme.onSurfaceVariant
+                        style = AppTypography.bodyMedium.copy(
+                            color = colorScheme.secondary
+                        )
                     )
                 } else {
-                    Column {
-                        Text(
-                            text = "已更新至: ",
-                            style = AppTypography.labelMedium
-                        )
-                        Text(
-                            text = latestChapterTitle,
-                            maxLines = 1,
-                            overflow = TextOverflow.Ellipsis,
-                            style = AppTypography.labelMedium,
+                    Text(
+                        text = stringResource(R.string.book_updated_to_title),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = AppTypography.bodyMedium
+                    )
+                    Text(
+                        text = latestChapterTitle,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = AppTypography.bodyMedium.copy(
                             color = colorScheme.primary
                         )
-                    }
+                    )
                 }
             }
         }
@@ -216,18 +234,39 @@ fun BookCardContent(
 }
 
 @Composable
+private fun TagChip(
+    painter: Painter
+) {
+    Box(
+        modifier = Modifier
+            .clip(RoundedCornerShape(4.dp))
+            .background(colorScheme.surfaceContainer)
+            .padding(horizontal = 4.dp, vertical = 2.dp)
+    ) {
+        Icon(
+            modifier = Modifier.size(15.dp),
+            painter = painter,
+            contentDescription = null,
+            tint = colorScheme.onSurfaceVariant
+        )
+    }
+}
+
+
+@Composable
 fun BookCardContentSkeleton(modifier: Modifier = Modifier) {
-    val skeletonColor = colorScheme.surfaceContainerHigh
+    val skeletonColor = colorScheme.surfaceContainerLow
     val skeletonRoundedCorner = RoundedCornerShape(4.dp)
+
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(136.dp)
+            .height(146.dp)
             .padding(4.dp)
     ) {
         Box(
             modifier = Modifier
-                .size(90.dp, 136.dp)
+                .size(94.dp, 144.dp)
                 .clip(RoundedCornerShape(8.dp))
                 .background(skeletonColor)
         )
@@ -241,36 +280,28 @@ fun BookCardContentSkeleton(modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
-                    .height(28.dp)
+                    .height(40.dp)
                     .clip(skeletonRoundedCorner)
                     .background(skeletonColor)
-
             )
-
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.43f)
                     .height(20.dp)
                     .clip(skeletonRoundedCorner)
                     .background(skeletonColor)
-
             )
-
-
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth(0.75f)
-                    .height(20.dp)
-                    .clip(skeletonRoundedCorner)
-                    .background(skeletonColor)
-
-            )
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(40.dp)
+                    .height(32.dp)
+                    .clip(skeletonRoundedCorner)
+                    .background(skeletonColor)
+            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(32.dp)
                     .clip(skeletonRoundedCorner)
                     .background(skeletonColor)
             )

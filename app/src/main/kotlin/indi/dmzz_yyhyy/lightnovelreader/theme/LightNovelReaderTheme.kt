@@ -1,6 +1,7 @@
 package indi.dmzz_yyhyy.lightnovelreader.theme
 
 import android.app.Activity
+import android.graphics.Color
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
@@ -10,15 +11,14 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
-import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.WindowCompat
-import androidx.core.view.WindowInsetsControllerCompat
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalAppTheme
+import indi.dmzz_yyhyy.lightnovelreader.ui.LocalDarkColorScheme
+import indi.dmzz_yyhyy.lightnovelreader.ui.LocalLightColorScheme
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocaleUtil
 
 data class AppTheme(
@@ -37,64 +37,65 @@ fun LightNovelReaderTheme(
 ) {
     val context = LocalContext.current
     val view = LocalView.current
-    val isDark = when (darkMode) {
-        "Disabled" -> false
-        "Enabled" -> true
-        "FollowSystem" -> isSystemInDarkTheme()
-        else -> isSystemInDarkTheme()
+    val systemDark = isSystemInDarkTheme()
+
+    val isDark = remember(darkMode, systemDark) {
+        when (darkMode) {
+            "Enabled" -> true
+            "Disabled" -> false
+            else -> systemDark
+        }
     }
 
-    val colorScheme = if (isDynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
-        if (isDark) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-    else {
-        if (isDark)
-            when (darkThemeName) {
-                "dark_obsidian" -> DarkObsidianColorScheme
-                "dark_default"  -> DefaultDarkColorScheme
-                else            -> DefaultDarkColorScheme
-            }
-        else
-            when (lightThemeName) {
-                "light_default" -> DefaultLightColorScheme
-                else            -> DefaultLightColorScheme
-            }
+    val lightColorScheme = remember(lightThemeName, isDynamicColor) {
+        if (isDynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+            dynamicLightColorScheme(context)
+        else when (lightThemeName) {
+            "light_default" -> DefaultLightColorScheme
+            else -> DefaultLightColorScheme
+        }
     }
+
+    val darkColorScheme = remember(darkThemeName, isDynamicColor) {
+        if (isDynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S)
+            dynamicDarkColorScheme(context)
+        else when (darkThemeName) {
+            "dark_obsidian" -> DarkObsidianColorScheme
+            else -> DefaultDarkColorScheme
+        }
+    }
+
+    val colorScheme = if (isDark) darkColorScheme else lightColorScheme
+
     val appTheme = remember(isDark, colorScheme) {
-        AppTheme(
-            isDark = isDark,
-            colorScheme = colorScheme,
-        )
+        AppTheme(isDark = isDark, colorScheme = colorScheme)
     }
 
-    LaunchedEffect(colorScheme, isDark) {
+    @Suppress("deprecation")
+    SideEffect {
         val window = (view.context as Activity).window
-        val backgroundColor = colorScheme.background.toArgb()
+        val controller = WindowCompat.getInsetsController(window, view)
 
-        WindowCompat.setDecorFitsSystemWindows(window, false)
-
-        window.setBackgroundDrawable(backgroundColor.toDrawable())
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.VANILLA_ICE_CREAM) {
-            @Suppress("DEPRECATION")
-            window.statusBarColor = Color.Transparent.toArgb()
-        } else {
-            window.decorView.setOnApplyWindowInsetsListener { view, insets ->
-                view.setPadding(
-                    0, 0, 0, 0
-                )
-                insets
-            }
+        controller.isAppearanceLightStatusBars = !isDark
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O_MR1) {
+            controller.isAppearanceLightNavigationBars = !isDark
         }
-
-        WindowInsetsControllerCompat(window, view).apply {
-            isAppearanceLightStatusBars = !isDark
-            isAppearanceLightNavigationBars = !isDark
-        }
+        window.statusBarColor = Color.TRANSPARENT
+        window.navigationBarColor = Color.TRANSPARENT
     }
 
-    val (language, variant) = appLocale.split("-")
-    LocaleUtil.set(language = language, variant = variant)
+    LaunchedEffect(appLocale) {
+        val parts = appLocale.split("-")
+        val language = parts.getOrNull(0) ?: "en"
+        val variant = parts.getOrNull(1) ?: ""
+        LocaleUtil.set(language = language, variant = variant)
+    }
 
-    CompositionLocalProvider(LocalAppTheme provides appTheme) {
+    CompositionLocalProvider(
+        LocalAppTheme provides appTheme,
+        LocalLightColorScheme provides lightColorScheme,
+        LocalDarkColorScheme provides darkColorScheme
+    ) {
         MaterialTheme(
             colorScheme = colorScheme,
             content = content

@@ -77,7 +77,7 @@ suspend fun wenku8Api(request: String): Document? = ifCache(request) {
                         .prettyPrint(false)
                         .syntax(Document.OutputSettings.Syntax.xml)
                 )
-                delay(Random.Default.nextLong(450, 300))
+                delay(Random.Default.nextLong(300, 450))
                 doc
             }.also {
                 if (it == null) Log.w("Wenku8API", "request timeout: $request")

@@ -141,7 +141,7 @@ fun SettingsClickableEntry(
     title: String,
     option: String? = null,
     trailingContent: (@Composable () -> Unit)? = null,
-    description: String,
+    description: String? = null,
     onClick: () -> Unit
 ) {
     Row(
@@ -164,8 +164,7 @@ fun SettingsClickableEntry(
         }
 
         Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(3.dp)
+            modifier = Modifier.weight(1f)
         ) {
             Text(
                 text = title,
@@ -173,11 +172,13 @@ fun SettingsClickableEntry(
                 style = AppTypography.titleMedium,
                 fontWeight = FontWeight.Normal
             )
-            Text(
-                text = description,
-                color = colorScheme.onSurfaceVariant,
-                style = AppTypography.labelMedium
-            )
+            description?.let {
+                Text(
+                    text = it,
+                    color = colorScheme.onSurfaceVariant,
+                    style = AppTypography.labelMedium
+                )
+            }
             option?.let {
                 AnimatedTextLine(
                     text = it,

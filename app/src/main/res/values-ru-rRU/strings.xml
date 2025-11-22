@@ -182,7 +182,7 @@
     <string name="filter_by_publishing_house">Фильтр по издательству</string>
     <string name="filter_by_publishing_house_desc">Фильтр по издательству книги</string>
     <string name="book_info_update_date">Обновлено %1$d-%2$d-%3$d</string>
-    <string name="book_info_word_count_kilo">%s слов</string>
+、    <string name="book_info_word_count_kilo">%s слов</string>
     <string name="name">Название</string>
     <string name="bookshelf_name">Название полки</string>
     <string name="bookshelf_name_suggestion">Дайте вашей полке простое имя</string>

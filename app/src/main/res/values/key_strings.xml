@@ -12,9 +12,9 @@
     <string name="key_default_text">Default Font</string>
     <string name="key_customize_text">Customize Image</string>
     <!-- Update Channel -->
-    <string name="key_update_channel_release">Release Builds</string>
-    <string name="key_update_channel_development">Development Builds</string>
-    <string name="key_update_channel_ci" translatable="false">CI</string>
+    <string name="key_update_channel_release">None (Stable)</string>
+    <string name="key_update_channel_development">Beta Version</string>
+    <string name="key_update_channel_ci">Internal Test (Unstable)</string>
     <!-- Distribution Platform -->
     <string name="key_platform_github" translatable="false">GitHub</string>
     <string name="key_platform_appcenter" translatable="false">AppCenter</string>
@@ -52,7 +52,7 @@
     <!-- Reader Battery Indicator Display Mode -->
     <string name="key_reader_indicator_battery_display_mode_hidden">Hidden</string>
     <string name="key_reader_indicator_battery_display_mode_classic">Classic</string>
-    <string name="key_reader_indicator_battery_display_mode_immersed">Immersed</string>
+    <string name="key_reader_indicator_battery_display_mode_immersed">Show status bar</string>
     <!-- Reader Back Block Mode -->
     <string name="key_reader_back_block_mode_none">None</string>
     <string name="key_reader_back_block_mode_double_press">Double Press</string>

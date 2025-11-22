@@ -6,6 +6,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
@@ -38,7 +39,11 @@ import kotlinx.coroutines.launch
 fun NavGraphBuilder.bookReaderDestination() {
     composable<Route.Book.Reader> { navBackStackEntry ->
         val navController = LocalNavController.current
-        val viewModel = hiltViewModel<ReaderViewModel>(navController.getBackStackEntry<Route.Book>())
+        val parentEntry = remember(navBackStackEntry) {
+            navBackStackEntry.destination.parent?.route
+                ?.let(navController::getBackStackEntry)
+        }
+        val viewModel = hiltViewModel<ReaderViewModel>(parentEntry ?: navBackStackEntry)
         ReaderScreen(
             readingScreenUiState = viewModel.uiState,
             settingState = viewModel.settingState,
@@ -56,8 +61,9 @@ fun NavGraphBuilder.bookReaderDestination() {
 }
 
 fun NavController.navigateToBookReaderDestination(bookId: String, chapterId: String, context: Context) {
-    if (this.currentBackStackEntry?.destination?.route?.contains("indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route.Book.Detail") != true) {
-        return
+    navigate(Route.Book.Detail(bookId)) {
+        launchSingleTop = true
+        restoreState = true
     }
     val entry = this.getBackStackEntry<Route.Book>()
     val viewModel = ViewModelProvider.create(

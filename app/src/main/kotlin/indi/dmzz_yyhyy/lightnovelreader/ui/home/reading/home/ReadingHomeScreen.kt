@@ -1,11 +1,9 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.home
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -14,31 +12,33 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.pager.PagerDefaults
+import androidx.compose.foundation.pager.VerticalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -49,6 +49,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
@@ -57,21 +61,23 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
-import com.valentinilk.shimmer.ShimmerBounds
-import com.valentinilk.shimmer.rememberShimmer
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.LifecycleEventEffect
 import com.valentinilk.shimmer.shimmer
 import com.valentinilk.shimmer.unclippedBoundsInWindow
 import indi.dmzz_yyhyy.lightnovelreader.R
-import indi.dmzz_yyhyy.lightnovelreader.ui.SharedContentKey
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Cover
+import indi.dmzz_yyhyy.lightnovelreader.ui.components.ElasticPressContainer
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.EmptyPage
-import indi.dmzz_yyhyy.lightnovelreader.ui.components.LnrSnackbar
-import indi.dmzz_yyhyy.lightnovelreader.ui.home.HomeNavigateBar
+import indi.dmzz_yyhyy.lightnovelreader.ui.components.SectionHeader
+import indi.dmzz_yyhyy.lightnovelreader.ui.components.rememberSkeletonShimmer
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
+import indi.dmzz_yyhyy.lightnovelreader.utils.bottomBarPadding
+import indi.dmzz_yyhyy.lightnovelreader.utils.bottomBarSpacer
 import indi.dmzz_yyhyy.lightnovelreader.utils.formTime
+import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 import indi.dmzz_yyhyy.lightnovelreader.utils.removeFromBookshelfAction
 import indi.dmzz_yyhyy.lightnovelreader.utils.showSnackbar
 import io.nightfish.lightnovelreader.api.book.BookInformation
@@ -80,12 +86,12 @@ import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import kotlinx.coroutines.delay
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
+import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun ReadingScreen(
-    controller: NavController,
-    selectedRoute: Any,
+    updateReadingBooks: () -> Unit,
     recentReadingBookInformationMap: Map<String, BookInformation>,
     recentReadingUserReadingDataMap: Map<String, UserReadingData>,
     recentReadingBookIds: List<String>,
@@ -96,55 +102,34 @@ fun ReadingScreen(
     onRemoveBook: (String) -> Unit,
     onAddBook: (String) -> Unit,
     sharedTransitionScope: SharedTransitionScope,
-    animatedVisibilityScope: AnimatedVisibilityScope,
-    loadBookInfo: (String) -> Unit
+    loadBookInfo: (String) -> Unit,
+    onClickOpenChapters: (String) -> Unit,
 ) {
-    val pinnedScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
+    LifecycleEventEffect(Lifecycle.Event.ON_CREATE) {
+        updateReadingBooks()
+    }
 
     with(sharedTransitionScope) {
-        Scaffold(
-            topBar = {
-                TopBar(
-                    scrollBehavior = pinnedScrollBehavior,
-                    onClickDownloadManager = onClickDownloadManager,
-                    onClickStats = onClickStats
-                )
-            },
-            bottomBar = {
-                HomeNavigateBar(
-                    modifier = Modifier.sharedElement(
-                        sharedTransitionScope.rememberSharedContentState(SharedContentKey.HomeNavigateBar),
-                        animatedVisibilityScope = animatedVisibilityScope
-                    ),
-                    selectedRoute = selectedRoute,
-                    controller = controller
-                )
-            },
-            snackbarHost = {
-                SnackbarHost(LocalSnackbarHost.current) {
-                    LnrSnackbar(it)
-                }
-            }
-        ) {
+        Column {
+            TopBar(
+                onClickDownloadManager = onClickDownloadManager,
+                onClickStats = onClickStats
+            )
+
             var showEmptyPage by remember { mutableStateOf(false) }
 
             LaunchedEffect(recentReadingBookIds) {
-                if (recentReadingBookIds.isEmpty()) {
-                    delay(140)
-                    showEmptyPage = true
-                } else {
-                    showEmptyPage = false
-                }
+                showEmptyPage = recentReadingBookIds.isEmpty()
             }
 
             AnimatedVisibility(
-                modifier = Modifier.padding(it),
+                modifier = Modifier.fillMaxSize(),
                 visible = showEmptyPage,
-                enter = fadeIn(animationSpec = tween(durationMillis = 300)),
-                exit = fadeOut(animationSpec = tween(durationMillis = 300))
+                enter = fadeIn(),
+                exit = fadeOut()
             ) {
                 EmptyPage(
-                    modifier = Modifier.padding(it),
+                    modifier = Modifier.navigationBarsPadding().bottomBarPadding(),
                     icon = painterResource(R.drawable.empty_90dp),
                     title = stringResource(R.string.nothing_here),
                     description = stringResource(R.string.nothing_here_desc_reading),
@@ -152,15 +137,15 @@ fun ReadingScreen(
             }
 
             ReadingContent(
-                modifier = Modifier.padding(it),
+                modifier = Modifier.fillMaxSize(),
                 onClickBook = onClickBook,
                 onClickContinueReading = onClickContinueReading,
+                onClickOpenChapters = onClickOpenChapters,
                 onAddBook = onAddBook,
                 onRemoveBook = onRemoveBook,
                 recentReadingBookInformationMap = recentReadingBookInformationMap,
                 recentReadingUserReadingDataMap = recentReadingUserReadingDataMap,
                 recentReadingBookIds = recentReadingBookIds,
-                scrollBehavior = pinnedScrollBehavior,
                 loadBookInfo = loadBookInfo
             )
         }
@@ -178,74 +163,80 @@ private fun ReadingContent(
     recentReadingBookInformationMap: Map<String, BookInformation>,
     recentReadingUserReadingDataMap: Map<String, UserReadingData>,
     recentReadingBookIds: List<String>,
-    scrollBehavior: TopAppBarScrollBehavior,
-    loadBookInfo: (String) -> Unit
+    loadBookInfo: (String) -> Unit,
+    onClickOpenChapters: (String) -> Unit
 ) {
     val context = LocalContext.current
-    val shimmerInstance = rememberShimmer(ShimmerBounds.Custom)
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = LocalSnackbarHost.current
+    val listState = rememberLazyListState()
+
+    var started by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        delay(1000)
+        started = true
+    }
+
+    val shimmerInstance = rememberSkeletonShimmer(
+        baseColor = colorScheme.surfaceContainerLow,
+        highlightColor = colorScheme.surfaceContainerHigh
+    )
+
+    val headerItems = recentReadingBookIds
+        .take(3)
+        .mapNotNull { id ->
+            val info = recentReadingBookInformationMap[id]
+            val user = recentReadingUserReadingDataMap[id]
+            if (info != null && user != null && !info.isEmpty()) info to user else null
+        }
 
     LazyColumn(
         modifier = modifier
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
             .onGloballyPositioned { layoutCoordinates ->
                 val position = layoutCoordinates.unclippedBoundsInWindow()
                 shimmerInstance.updateBounds(position)
             },
-        verticalArrangement = Arrangement.spacedBy(12.dp)
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        state = listState
     ) {
-        if (recentReadingBookIds.isNotEmpty()
+        if (
+            recentReadingBookIds.isNotEmpty()
             && recentReadingUserReadingDataMap[recentReadingBookIds.first()] != null
             && recentReadingBookInformationMap[recentReadingBookIds.first()] != null
-            ) {
+        ) {
             item {
-                Box(
-                    modifier = Modifier
-                        .animateItem()
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                ) {
-                    Text(
-                        modifier = Modifier.padding(vertical = 4.dp),
-                        text = stringResource(R.string.continue_reading),
-                        maxLines = 1,
-                        style = AppTypography.titleSmall,
-                        fontWeight = FontWeight.W600,
-                        letterSpacing = 0.5.sp
+                if (headerItems.isNotEmpty()) {
+                    SectionHeader(
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .padding(bottom = 14.dp),
+                        text = stringResource(R.string.continue_reading)
+                    )
+                    ReadingHeaderCardPager(
+                        items = headerItems,
+                        modifier = Modifier
+                            .animateItem()
+                            .padding(horizontal = 8.dp),
+                        onClickContinueReading = onClickContinueReading,
+                        onClickOpenChapters = onClickOpenChapters
                     )
                 }
-            }
-            item {
-                ReadingHeaderCard(
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    bookInformation = recentReadingBookInformationMap[recentReadingBookIds.first()]!!,
-                    userReadingData = recentReadingUserReadingDataMap[recentReadingBookIds.first()]!!,
-                    onClickContinueReading = onClickContinueReading
-                )
             }
         }
         if (recentReadingBookIds.isNotEmpty()) {
             item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 20.dp)
-                ) {
-                    Text(
-                        modifier = Modifier.padding(vertical = 4.dp),
-                        text = stringResource(
-                            R.string.recent_reads, recentReadingBookIds.size,
-                        ),
-                        maxLines = 1,
-                        style = AppTypography.titleSmall,
-                        fontWeight = FontWeight.W600,
-                        letterSpacing = 0.5.sp
+                SectionHeader(
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    text = stringResource(
+                        R.string.recent_reads, recentReadingBookIds.size,
                     )
-                }
+                )
             }
         }
-        items(recentReadingBookIds) { id ->
+        items(
+            items = recentReadingBookIds,
+            key = { it }
+        ) { id ->
             LaunchedEffect(id) {
                 loadBookInfo(id)
             }
@@ -259,22 +250,22 @@ private fun ReadingContent(
             ) { loaded ->
                 if (loaded && info != null && userData != null) {
                     ReadingBookCard(
-                        modifier = Modifier.animateItem()
-                            .fillMaxWidth()
-                            .background(colorScheme.background)
-                            .padding(horizontal = 16.dp),
-                        bookInformation = recentReadingBookInformationMap[id]!!,
-                        userReadingData = recentReadingUserReadingDataMap[id]!!,
-                        onClick = {
-                            onClickBook(recentReadingBookInformationMap[id]!!.id)
-                        },
+                        modifier = Modifier
+                            .animateItem()
+                            .padding(horizontal = 12.dp),
+                        bookInformation = info,
+                        userReadingData = userData,
+                        onClick = { onClickBook(info.id) },
                         swipeToLeftActions = listOf(
                             removeFromBookshelfAction.toSwipeAction {
                                 onRemoveBook(id)
                                 showSnackbar(
                                     coroutineScope = coroutineScope,
                                     hostState = snackbarHostState,
-                                    message = context.getString(R.string.removed_item, recentReadingBookInformationMap[id]?.title),
+                                    message = context.getString(
+                                        R.string.removed_item,
+                                        recentReadingBookInformationMap[id]?.title
+                                    ),
                                     actionLabel = context.getString(R.string.undo),
                                 ) {
                                     when (it) {
@@ -288,16 +279,14 @@ private fun ReadingContent(
                 } else {
                     ReadingBookCardSkeleton(
                         modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .shimmer(shimmerInstance)
+                            .padding(horizontal = 12.dp)
+                            .then(if (started) Modifier.shimmer(shimmerInstance) else Modifier)
                     )
                 }
             }
         }
-
-        item {
-            Spacer(Modifier.height(12.dp))
-        }
+        navigationBarSpacer()
+        bottomBarSpacer()
     }
 }
 
@@ -305,8 +294,10 @@ private fun ReadingContent(
 fun ReadingBookCardSkeleton(
     modifier: Modifier = Modifier
 ) {
-    val skeletonColor = colorScheme.surfaceContainerHigh
-    val skeletonRoundedCorner = RoundedCornerShape(4.dp)
+    val roundedSmall = RoundedCornerShape(4.dp)
+    val roundedLarge = RoundedCornerShape(8.dp)
+    val baseColor = colorScheme.surfaceContainerLow
+
     Row(
         modifier = modifier
             .height(144.dp)
@@ -315,9 +306,10 @@ fun ReadingBookCardSkeleton(
         Box(
             modifier = Modifier
                 .size(94.dp, 142.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .background(skeletonColor)
+                .clip(roundedLarge)
+                .background(baseColor)
         )
+
         Column(
             modifier = Modifier
                 .fillMaxHeight()
@@ -327,45 +319,39 @@ fun ReadingBookCardSkeleton(
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.9f)
-                    .padding(top = 3.dp)
                     .height(40.dp)
-                    .clip(skeletonRoundedCorner)
-                    .background(skeletonColor)
+                    .clip(roundedSmall)
+                    .background(baseColor)
             )
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth(0.43f)
                     .height(20.dp)
-                    .clip(skeletonRoundedCorner)
-                    .background(skeletonColor)
-
+                    .clip(roundedSmall)
+                    .background(baseColor)
             )
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp)
-                    .clip(skeletonRoundedCorner)
-                    .background(skeletonColor)
+                    .clip(roundedSmall)
+                    .background(baseColor)
             )
-
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(6.dp)
-                    .clip(skeletonRoundedCorner)
-                    .background(skeletonColor)
-
+                    .clip(roundedSmall)
+                    .background(baseColor)
             )
         }
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopBar(
-    scrollBehavior: TopAppBarScrollBehavior,
     onClickDownloadManager: () -> Unit,
     onClickStats: () -> Unit
 ) {
@@ -387,222 +373,353 @@ private fun TopBar(
             IconButton(
                 onClick = onClickStats
             ) {
-                    Icon(
-                        painter = painterResource(R.drawable.analytics_24px),
-                        contentDescription = stringResource(R.string.nav_statistics)
-                    )
-                }
-        },
-        scrollBehavior = scrollBehavior
+                Icon(
+                    painter = painterResource(R.drawable.analytics_24px),
+                    contentDescription = stringResource(R.string.nav_statistics)
+                )
+            }
+        }
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun ReadingBookCard(
     modifier: Modifier = Modifier,
     bookInformation: BookInformation,
     userReadingData: UserReadingData,
     onClick: () -> Unit,
-    swipeToRightActions: List<SwipeAction> = listOf(),
-    swipeToLeftActions: List<SwipeAction> = listOf(),
+    swipeToRightActions: List<SwipeAction> = emptyList(),
+    swipeToLeftActions: List<SwipeAction> = emptyList(),
 ) {
+    val lineHeight = AppTypography.labelLarge.lineHeight
+    val titleHeight = with(LocalDensity.current) { (lineHeight * 2.2f).toDp() }
+
+    val lastRead = formTime(userReadingData.lastReadTime)
+    val minutes = stringResource(R.string.read_minutes, userReadingData.totalReadTime / 60)
+    val progress = "${(userReadingData.readingProgress * 100).toInt()}%"
+
+    val infoText = "$lastRead • $minutes • $progress"
+
     SwipeableActionsBox(
         startActions = swipeToRightActions,
         endActions = swipeToLeftActions
     ) {
-        Box(
+        Row(
             modifier = modifier
-                .height(144.dp)
+                .height(146.dp)
                 .clip(RoundedCornerShape(12.dp))
+                .combinedClickable(onClick = onClick)
+                .padding(4.dp)
         ) {
-            Row(
-                modifier = Modifier
-                    .combinedClickable(
-                        onClick = onClick
-                    )
-                    .padding(4.dp),
-            ) {
-                Cover(
-                    width = 94.dp,
-                    height = 142.dp,
-                    uri = bookInformation.coverUri,
-                    rounded = 8.dp,
-                )
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .fillMaxHeight()
-                        .padding(start = 12.dp),
-                    verticalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    val textStyle = AppTypography.labelLarge
-                    val textLineHeight = textStyle.lineHeight
-                    Text(
-                        modifier = Modifier
-                            .height(
-                                with(LocalDensity.current) { (textLineHeight * 2.2f).toDp() }
-                            )
-                            .wrapContentHeight(Alignment.CenterVertically),
-                        text = bookInformation.title,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        fontWeight = FontWeight.W600,
-                        style = AppTypography.labelLarge,
-                        lineHeight = textLineHeight,
-                    )
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = bookInformation.author,
-                            maxLines = 1,
-                            style = AppTypography.bodyMedium,
-                            fontWeight = FontWeight.W600,
-                            color = colorScheme.primary
-                        )
-                    }
-                    Text(
-                        text = bookInformation.description.trim(),
-                        maxLines = 2,
-                        fontWeight = FontWeight.Normal,
-                        overflow = TextOverflow.Ellipsis,
-                        style = AppTypography.bodyMedium,
-                        color = colorScheme.secondary,
-                    )
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Row {
-                            Icon(
-                                modifier = Modifier
-                                    .padding(top = 2.dp, end = 2.dp)
-                                    .size(14.dp)
-                                    .align(Alignment.CenterVertically),
-                                painter = painterResource(id = R.drawable.outline_schedule_24px),
-                                contentDescription = null,
-                                tint = colorScheme.secondary
-                            )
-                            val text = buildString {
-                                append(formTime(userReadingData.lastReadTime))
-                                append(" • ")
-                                append(
-                                    stringResource(
-                                        R.string.read_minutes,
-                                        userReadingData.totalReadTime / 60
-                                    )
-                                )
-                                append(" • ")
-                                append((userReadingData.readingProgress * 100).toInt())
-                                append("%")
-                            }
-                            Text(
-                                text = text,
-                                modifier = Modifier.align(Alignment.CenterVertically),
-                                style = AppTypography.labelSmall
-                            )
-                        }
-                    }
+            Cover(
+                width = 94.dp,
+                height = 144.dp,
+                uri = bookInformation.coverUri,
+                rounded = 8.dp,
+            )
 
-                    LinearProgressIndicator(
-                        modifier = Modifier.fillMaxWidth(),
-                        progress = { userReadingData.readingProgress }
+            Column(
+                modifier = Modifier
+                    .padding(start = 12.dp)
+                    .fillMaxHeight()
+                    .weight(1f),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    modifier = Modifier
+                        .height(titleHeight)
+                        .wrapContentHeight(Alignment.CenterVertically),
+                    text = bookInformation.title,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
+                    style = AppTypography.labelLarge.copy(
+                        fontWeight = FontWeight.W600
+                    )
+                )
+
+                Text(
+                    text = bookInformation.author,
+                    style = AppTypography.bodyMedium.copy(
+                        fontWeight = FontWeight.W600,
+                        color = colorScheme.primary
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Text(
+                    text = bookInformation.description.trim(),
+                    style = AppTypography.bodyMedium.copy(color = colorScheme.secondary),
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis
+                )
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(5.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.outline_schedule_24px),
+                        contentDescription = null,
+                        modifier = Modifier.size(12.dp),
+                        tint = colorScheme.secondary
+                    )
+                    Text(
+                        text = infoText,
+                        style = AppTypography.labelSmall.copy(color = colorScheme.secondary)
                     )
                 }
+
+                LinearProgressIndicator(
+                    modifier = Modifier.fillMaxWidth().padding(top = 2.dp),
+                    progress = { userReadingData.readingProgress }
+                )
             }
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun ReadingHeaderCard(
+fun ReadingHeaderCardPager(
+    items: List<Pair<BookInformation, UserReadingData>>,
     modifier: Modifier = Modifier,
-    bookInformation: BookInformation,
-    userReadingData: UserReadingData,
-    onClickContinueReading: (String, String) -> Unit
+    onClickContinueReading: (String, String) -> Unit,
+    onClickOpenChapters: (String) -> Unit
 ) {
-    Row(
+    val pageCount = items.size.coerceIn(1, 3)
+    val pagerState = rememberPagerState(initialPage = 0) { pageCount }
+
+    val showIndicator = remember { mutableStateOf(false) }
+    LaunchedEffect(pagerState.isScrollInProgress) {
+        if (pagerState.isScrollInProgress) {
+            showIndicator.value = true
+        } else {
+            delay(1800)
+            showIndicator.value = false
+        }
+    }
+
+    val isolatePager = remember {
+        object : NestedScrollConnection {
+            override fun onPreScroll(available: Offset, source: NestedScrollSource) = Offset.Zero
+
+            override fun onPostScroll(
+                consumed: Offset,
+                available: Offset,
+                source: NestedScrollSource
+            ) = Offset(0f, available.y)
+
+            override suspend fun onPostFling(consumed: Velocity, available: Velocity) = available
+        }
+    }
+
+    Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(178.dp)
-            .padding(horizontal = 4.dp),
+            .height(190.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .background(colorScheme.surface)
+            .nestedScroll(isolatePager)
     ) {
-        Box {
-            Cover(
-                height = 178.dp,
-                width = 122.dp,
-                uri = bookInformation.coverUri,
-                rounded = 8.dp
-            )
-        }
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(start = 16.dp),
-            verticalArrangement = Arrangement.SpaceBetween,
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+        VerticalPager(
+            state = pagerState,
+            pageSpacing = 12.dp,
+            flingBehavior = PagerDefaults.flingBehavior(state = pagerState)
+        ) { page ->
+            val (book, user) = items[page]
+
+            ElasticPressContainer(
+                pagerState = pagerState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(colorScheme.surfaceVariant.copy(alpha = 0.14f))
+                    .padding(8.dp)
             ) {
-                Icon(
-                    modifier = Modifier.size(18.dp),
-                    painter = painterResource(id = R.drawable.filled_menu_book_24px),
-                    contentDescription = null,
-                    tint = colorScheme.secondary
-                )
-                Text(
-                    text = stringResource(
-                        R.string.last_read_info,
-                        formTime(userReadingData.lastReadTime)
-                    ),
-                    color = colorScheme.secondary,
-                    style = AppTypography.labelMedium,
+                ReadingHeaderCardPage(
+                    info = book,
+                    data = user,
+                    onClickContinueReading = onClickContinueReading,
+                    onClickOpenDetail = onClickOpenChapters,
+                    modifier = Modifier.matchParentSize()
                 )
             }
-            val textStyle = AppTypography.titleLarge
-            val textLineHeight = textStyle.lineHeight
-            Text(
+        }
+
+        AnimatedVisibility(
+            modifier = Modifier.align(Alignment.CenterEnd),
+            visible = showIndicator.value,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            VerticalDotsIndicator(
+                pageCount = pageCount,
+                currentPage = pagerState.currentPage,
                 modifier = Modifier
-                    .height(
-                        with(LocalDensity.current) { (textLineHeight * 2.2f).toDp() }
+                    .padding(end = 6.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun VerticalDotsIndicator(
+    pageCount: Int,
+    currentPage: Int,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        repeat(pageCount) { idx ->
+            val selected = idx == currentPage
+            Box(
+                Modifier
+                    .size(width = 6.dp, height = if (selected) 14.dp else 6.dp)
+                    .clip(RoundedCornerShape(percent = 50))
+                    .background(
+                        if (selected) colorScheme.primary
+                        else colorScheme.outlineVariant
                     )
-                    .wrapContentHeight(Alignment.CenterVertically),
-                text = bookInformation.title,
+            )
+        }
+    }
+}
+
+@Composable
+private fun ReadingHeaderCardPage(
+    info: BookInformation,
+    data: UserReadingData,
+    onClickContinueReading: (String, String) -> Unit,
+    onClickOpenDetail: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val density = LocalDensity.current
+    val lineHeight = AppTypography.titleLarge.lineHeight
+    val titleHeight = with(density) { (lineHeight * 2.2f).toDp() }
+
+    val dateFormatter = remember { DateTimeFormatter.ofPattern("MM/dd") }
+    val timeFormatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
+
+    val dateText = data.lastReadTime.format(dateFormatter)
+    val timeText = data.lastReadTime.format(timeFormatter)
+
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Cover(
+            height = 172.dp,
+            width = 118.dp,
+            uri = info.coverUri,
+            rounded = 8.dp
+        )
+
+        Column(
+            modifier = Modifier
+                .padding(start = 14.dp)
+                .fillMaxHeight()
+                .weight(1f),
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            Row(
+                modifier = Modifier.padding(top = 4.dp),
+                horizontalArrangement = Arrangement.spacedBy(10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                InfoChip(text = dateText, leadingPainter = painterResource(R.drawable.calendar_today_24px))
+                InfoChip(text = timeText, leadingPainter = painterResource(R.drawable.schedule_90dp))
+            }
+
+            Text(
+                text = info.title,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 fontWeight = FontWeight.W700,
-                style = textStyle,
-                lineHeight = textLineHeight,
+                style = AppTypography.titleLarge,
+                lineHeight = lineHeight,
+                modifier = Modifier
+                    .height(titleHeight)
+                    .wrapContentHeight(Alignment.CenterVertically)
             )
+
             Text(
-                text = userReadingData.lastReadChapterTitle,
+                text = data.lastReadChapterTitle,
                 maxLines = 1,
                 style = AppTypography.labelMedium,
-                color = colorScheme.primary,
+                color = colorScheme.tertiary,
                 overflow = TextOverflow.Ellipsis,
                 fontWeight = FontWeight.W600
             )
-            Spacer(modifier = Modifier.height(2.dp))
+
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalArrangement = Arrangement.spacedBy(14.dp)
             ) {
+                FilledTonalButton(
+                    modifier = Modifier.weight(1f),
+                    onClick = { onClickOpenDetail(info.id) },
+                    shape = RoundedCornerShape(10.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.view_list_24px),
+                        contentDescription = null
+                    )
+                }
+
                 Button(
-                    modifier = Modifier.fillMaxWidth(),
-                    onClick = { onClickContinueReading(bookInformation.id, userReadingData.lastReadChapterId) }) {
+                    modifier = Modifier.weight(3f),
+                    onClick = { onClickContinueReading(info.id, data.lastReadChapterId) },
+                    shape = RoundedCornerShape(10.dp),
+                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
+                ) {
                     Text(
                         text = stringResource(R.string.resume_last_reading),
                         fontWeight = FontWeight.W600,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
+                        style = AppTypography.labelMedium,
+                        maxLines = 1
                     )
                 }
             }
         }
+
+    }
+}
+
+
+@Composable
+private fun InfoChip(
+    modifier: Modifier = Modifier,
+    text: String,
+    leadingPainter: Painter? = null
+) {
+    Row(
+        modifier = modifier
+            .clip(RoundedCornerShape(6.dp))
+            .background(colorScheme.surfaceVariant.copy(alpha = 0.9f))
+            .padding(horizontal = 8.dp, vertical = 4.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        if (leadingPainter != null) {
+            Icon(
+                painter = leadingPainter,
+                contentDescription = null,
+                modifier = Modifier
+                    .padding(end = 4.dp)
+                    .size(14.dp),
+                tint = colorScheme.onSurfaceVariant
+            )
+        }
+
+        Text(
+            text = text,
+            style = AppTypography.labelSmall,
+            color = colorScheme.onSurfaceVariant,
+            maxLines = 1
+        )
     }
 }

@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -23,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.EmptyPage
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
+import indi.dmzz_yyhyy.lightnovelreader.utils.bottomBarPadding
 import indi.dmzz_yyhyy.lightnovelreader.utils.showSnackbar
 import kotlinx.coroutines.launch
 
@@ -60,6 +62,7 @@ fun ExploreScreen(
             LazyColumn(Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
                 item {
                     EmptyPage(
+                        modifier = Modifier.navigationBarsPadding().bottomBarPadding(),
                         icon = painterResource(R.drawable.link_off_24px),
                         title = stringResource(R.string.offline),
                         description = stringResource(R.string.offline_desc)

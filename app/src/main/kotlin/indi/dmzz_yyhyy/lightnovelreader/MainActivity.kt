@@ -7,6 +7,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -47,6 +48,8 @@ class MainActivity : ComponentActivity() {
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        installSplashScreen()
+        enableEdgeToEdge()
         super.onCreate(savedInstanceState)
         Thread.setDefaultUncaughtExceptionHandler(LogUtils(applicationContext, loggerRepository))
         var appLocale by mutableStateOf("${Locale.current.platformLocale.language}-${Locale.current.platformLocale.variant}")
@@ -54,7 +57,6 @@ class MainActivity : ComponentActivity() {
         var dynamicColor by mutableStateOf(false)
         var lightThemeName by mutableStateOf("light_default")
         var darkThemeName by mutableStateOf("dark_default")
-        installSplashScreen()
 
         workManager.enqueueUniquePeriodicWork(
             "checkUpdate",

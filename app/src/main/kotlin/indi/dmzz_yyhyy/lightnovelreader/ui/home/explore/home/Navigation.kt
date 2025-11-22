@@ -31,7 +31,6 @@ fun NavGraphBuilder.exploreHomeDestination(sharedTransitionScope: SharedTransiti
             changePage = exploreHomeViewModel::changePage,
             onClickSearch = navController::navigateToSearchDestination,
             refresh = exploreHomeViewModel::refresh,
-            selectedRoute = Route.Main.Explore,
             controller = navController,
             animatedVisibilityScope = this,
             sharedTransitionScope = sharedTransitionScope

@@ -14,12 +14,12 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.dialog
 import androidx.navigation.toRoute
 import indi.dmzz_yyhyy.lightnovelreader.R
-import io.nightfish.lightnovelreader.api.ui.LocalNavController
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.detail.navigateToBookDetailDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.AddBookToBookshelfDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.bookshelf.edit.navigateToBookshelfEditDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
 import io.nightfish.lightnovelreader.api.bookshelf.Bookshelf
+import io.nightfish.lightnovelreader.api.ui.LocalNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,8 +31,6 @@ fun NavGraphBuilder.bookshelfHomeDestination(sharedTransitionScope: SharedTransi
         val navController = LocalNavController.current
         val bookshelfHomeViewModel = hiltViewModel<BookshelfHomeViewModel>()
         BookshelfHomeScreen(
-            controller = navController,
-            selectedRoute = Route.Main.Bookshelf,
             init = bookshelfHomeViewModel::load,
             changePage = bookshelfHomeViewModel::changePage,
             changeBookSelectState = bookshelfHomeViewModel::changeBookSelectState,

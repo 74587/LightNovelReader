@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -108,6 +109,7 @@ fun PluginManagerScreen(
             if (pluginInfoList.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     EmptyPage(
+                        modifier = Modifier.navigationBarsPadding(),
                         icon = painterResource(R.drawable.deployed_code_update_24px),
                         title = "没有插件",
                         description = "安装受支持的 .lnrp 格式插件",

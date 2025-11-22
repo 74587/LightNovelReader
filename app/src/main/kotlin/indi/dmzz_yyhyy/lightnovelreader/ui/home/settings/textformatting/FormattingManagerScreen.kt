@@ -37,6 +37,7 @@ import indi.dmzz_yyhyy.lightnovelreader.data.format.FormattingGroup
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Cover
 import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
+import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,7 +95,7 @@ fun TextFormattingScreen(
                             maxLines = 1
                         )
                         Text(
-                            text = stringResource(R.string.n_rules, groups.firstOrNull { it.id.isBlank() }?.size ?: 0),
+                            text = stringResource(R.string.n_rules, groups.firstOrNull { it.id.isEmpty() }?.size ?: 0),
                             style = AppTypography.labelMedium,
                             color = colorScheme.secondary
                         )
@@ -134,6 +135,7 @@ fun TextFormattingScreen(
                     )
                 }
             }
+            navigationBarSpacer()
         }
     }
 }

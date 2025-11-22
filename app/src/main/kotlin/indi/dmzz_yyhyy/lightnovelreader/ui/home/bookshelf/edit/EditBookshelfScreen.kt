@@ -25,19 +25,23 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import indi.dmzz_yyhyy.lightnovelreader.R
+import indi.dmzz_yyhyy.lightnovelreader.ui.components.SectionHeader
+import indi.dmzz_yyhyy.lightnovelreader.utils.LocalClaimSnackbarHost
+import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
+import indi.dmzz_yyhyy.lightnovelreader.utils.showSnackbar
 import io.nightfish.lightnovelreader.api.bookshelf.Bookshelf
 import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
-import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -53,12 +57,28 @@ fun EditBookshelfScreen(
     onAutoCacheChange: (Boolean) -> Unit,
     onSystemUpdateReminderChange: (Boolean) -> Unit,
 ) {
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = LocalSnackbarHost.current
     val pinnedScrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val interactionSource = remember { MutableInteractionSource() }
     val isFocused by interactionSource.collectIsFocusedAsState()
     val isNameEmpty = bookshelf.name.isBlank()
+    val bookshelfNamePlaceholder = stringResource(R.string.bookshelf_name_placeholder)
+    val showErrorSnackbar = {
+        showSnackbar(
+            coroutineScope = coroutineScope,
+            hostState = snackbarHostState,
+            message = bookshelfNamePlaceholder,
+        )
+    }
     LaunchedEffect(bookshelfId) {
         init(bookshelfId)
+    }
+    val claim = LocalClaimSnackbarHost.current
+
+    DisposableEffect(Unit) {
+        claim(true)
+        onDispose { claim(false) }
     }
     Scaffold(
         topBar = {
@@ -66,7 +86,7 @@ fun EditBookshelfScreen(
                 title = title,
                 scrollBehavior = pinnedScrollBehavior,
                 onClickBack = onClickBack,
-                onClickSave = if (isNameEmpty) { {} } else onClickSave
+                onClickSave = if (isNameEmpty) showErrorSnackbar else onClickSave
             )
         },
         snackbarHost = {
@@ -84,7 +104,7 @@ fun EditBookshelfScreen(
                 supportingText = {
                     if (isNameEmpty) {
                         Text(
-                            text = stringResource(R.string.bookshelf_name_placeholder),
+                            text = bookshelfNamePlaceholder,
                             color = MaterialTheme.colorScheme.error,
                             style = AppTypography.bodyMedium
                         )
@@ -105,13 +125,9 @@ fun EditBookshelfScreen(
                     }
                 }
             )
-            Text(
-                modifier = Modifier.padding(16.dp, 10.dp),
-                text = stringResource(R.string.bookshelf_settings),
-                style = AppTypography.titleSmall,
-                fontWeight = FontWeight.W600,
-                letterSpacing = 0.5.sp,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+            SectionHeader(
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 10.dp),
+                text = stringResource(R.string.bookshelf_settings)
             )
             SwitchSettingItem(
                 iconRes = R.drawable.cloud_download_24px,

@@ -18,7 +18,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -111,52 +110,35 @@ fun ScrollContentTextComponent(
 
                     when {
                         isAtTop -> {
-                            if (atTop) {
-                                coroutineScope.launch {
-                                    showSnackbar(
-                                        coroutineScope = coroutineScope,
-                                        hostState = snackbarHostState,
-                                        duration = SnackbarDuration.Short,
-                                        message = context.getString(R.string.reader_reached_top),
-                                        actionLabel = context.getString(R.string.previous_chapter)
-                                    ) {
-                                        if (it == SnackbarResult.ActionPerformed) {
-                                            onClickPrevChapter()
-                                        }
-                                    }
-                                }
+                            if (atTop) launch {
+                                showSnackbar(
+                                    coroutineScope = this,
+                                    hostState = snackbarHostState,
+                                    message = context.getString(R.string.reader_reached_top),
+                                    actionLabel = context.getString(R.string.previous_chapter)
+                                ) { if (it == SnackbarResult.ActionPerformed) onClickPrevChapter() }
                             }
-                            atTop = true
-                            atBottom = false
+                            atTop = true; atBottom = false
                         }
                         isAtBottom -> {
-                            if (atBottom) {
-                                coroutineScope.launch {
-                                    showSnackbar(
-                                        coroutineScope = coroutineScope,
-                                        hostState = snackbarHostState,
-                                        duration = SnackbarDuration.Short,
-                                        message = context.getString(R.string.reader_reached_bottom),
-                                        actionLabel = context.getString(R.string.next_chapter)
-                                    ) {
-                                        if (it == SnackbarResult.ActionPerformed) {
-                                            onClickNextChapter()
-                                        }
-                                    }
-                                }
+                            if (atBottom) launch {
+                                showSnackbar(
+                                    coroutineScope = this,
+                                    hostState = snackbarHostState,
+                                    message = context.getString(R.string.reader_reached_bottom),
+                                    actionLabel = context.getString(R.string.next_chapter)
+                                ) { if (it == SnackbarResult.ActionPerformed) onClickNextChapter() }
                             }
-                            atBottom = true
-                            atTop = false
+                            atBottom = true; atTop = false
                         }
                         else -> {
-                            atTop = false
-                            atBottom = false
+                            snackbarHostState.currentSnackbarData?.dismiss()
+                            atTop = false; atBottom = false
                         }
                     }
                 }
             }
     }
-
 
     if (settingState.enableBackgroundImage && settingState.backgroundImageDisplayMode == MenuOptions.ReaderBgImageDisplayModeOptions.Loop) {
         Image(

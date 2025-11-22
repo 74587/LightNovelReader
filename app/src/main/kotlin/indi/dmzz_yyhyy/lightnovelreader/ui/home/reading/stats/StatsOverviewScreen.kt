@@ -63,6 +63,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.components.calendar.rememberHeatMapCa
 import indi.dmzz_yyhyy.lightnovelreader.utils.DurationFormat
 import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
+import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.Month
@@ -118,6 +119,7 @@ fun StatsOverviewScreen(
                     }
                     item { DailyStatsBlock(uiState, onClickDetailScreen) }
                     item { TotalStatsBlock(uiState) }
+                    navigationBarSpacer()
                 }
             }
         }

@@ -12,8 +12,9 @@
     <string name="key_default_text">默认字体</string>
     <string name="key_customize_text">自定义字体</string>
     <!-- Update Channel -->
-    <string name="key_update_channel_release">正式发布版</string>
-    <string name="key_update_channel_development">开发版 (最新功能和错误修复)</string>
+    <string name="key_update_channel_release">不加入</string>
+    <string name="key_update_channel_development">Beta 测试版</string>
+    <string name="key_update_channel_ci">内部测试版 (不稳定)</string>
     <!-- Dark Mode -->
     <string name="key_dark_mode_follow_system">跟随系统</string>
     <string name="key_dark_mode_enabled">保持启用</string>
@@ -34,7 +35,7 @@
     <!-- Reader Battery Indicator Display Mode -->
     <string name="key_reader_indicator_battery_display_mode_hidden">隐藏</string>
     <string name="key_reader_indicator_battery_display_mode_classic">经典</string>
-    <string name="key_reader_indicator_battery_display_mode_immersed">沉浸</string>
+    <string name="key_reader_indicator_battery_display_mode_immersed">在状态栏显示</string>
     <!-- Reader Back Block Mode -->
     <string name="key_reader_back_block_mode_none">无</string>
     <string name="key_reader_back_block_mode_double_press">双击</string>

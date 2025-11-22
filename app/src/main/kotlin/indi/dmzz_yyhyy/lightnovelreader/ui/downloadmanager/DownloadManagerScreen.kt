@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -41,6 +42,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.components.EmptyPage
 import indi.dmzz_yyhyy.lightnovelreader.utils.formTime
 import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
+import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -92,6 +94,7 @@ private fun Content(
 ) {
     if (downloadItemIdList.isEmpty())
         EmptyPage(
+            modifier = Modifier.navigationBarsPadding(),
             icon = painterResource(id = R.drawable.download_24px),
             title = stringResource(R.string.nothing_here),
             description = stringResource(R.string.nothing_here_desc_book_manager),
@@ -157,6 +160,7 @@ private fun Content(
                 )
             }
         }
+        navigationBarSpacer()
     }
 }
 

@@ -4,27 +4,20 @@ import android.content.Context
 import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ketch.DownloadModel
-import com.ketch.Ketch
-import com.ketch.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginManager
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.PluginMetadata
-import indi.dmzz_yyhyy.lightnovelreader.utils.unzipFile
 import jakarta.inject.Inject
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
@@ -40,7 +33,6 @@ import java.io.OutputStream
 import java.net.HttpURLConnection
 import java.net.URL
 import kotlin.coroutines.cancellation.CancellationException
-import kotlin.coroutines.resume
 
 @Serializable
 data class RepoIndex(val plugins: List<RepoIndexEntry>)
@@ -61,7 +53,6 @@ sealed class DownloadResult {
 class PluginRepositoryViewModel @Inject constructor(
     @param:ApplicationContext private val context: Context,
     pluginManager: PluginManager,
-    private val ketch: Ketch,
 ) : ViewModel() {
 
     val pluginList = pluginManager.allPluginInfo
@@ -220,70 +211,7 @@ class PluginRepositoryViewModel @Inject constructor(
     }
 
     private suspend fun installPluginFromRepository(metadata: PluginMetadata) = withContext(Dispatchers.IO) {
-        val pluginId = metadata.id
-        val base = REPO_BASE_URL.trimEnd('/')
-        val tempDir = context.cacheDir.resolve("repo_plugin_temp").resolve(pluginId.hashCode().toString()).apply {
-            if (exists()) deleteRecursively()
-            mkdirs()
-        }
 
-        try {
-            repositoryUiState.progressMap[pluginId] = 0f
-
-            val downloadedFile = if (metadata.compressedFileNumber > 0) {
-                val partCount = metadata.compressedFileNumber
-                val parts = downloadParts(pluginId, base, tempDir, partCount)
-                val mergedZip = if (parts.size == 1) {
-                    val single = parts[0]
-                    val dst = tempDir.resolve("${pluginId.hashCode()}_merged.zip")
-                    val ok = try { single.renameTo(dst) } catch (_: Throwable) { false }
-                    if (!ok) {
-                        single.inputStream().use { input -> dst.outputStream().use { output -> input.copyTo(output) } }
-                        single.delete()
-                    }
-                    dst
-                } else {
-                    val out = tempDir.resolve("${pluginId.hashCode()}_merged.zip")
-                    mergePartsToFile(parts, out)
-                    out
-                }
-
-                val finalFile = tempDir.resolve("${pluginId.hashCode()}.tmp")
-                unzipFile(mergedZip, finalFile)
-
-                cleanupTempFiles(parts + listOf(mergedZip))
-                finalFile
-            } else {
-                val fileName = "${pluginId.hashCode()}.tmp"
-                val url = "$base/${pluginId}/plugin.apk.lnrp"
-                val res = downloadWithKetch(url, tempDir, fileName) { modelProgress ->
-                    repositoryUiState.progressMap[pluginId] = modelProgress.progress * 0.8f
-                }
-                when (res) {
-                    is DownloadResult.Success -> res.file
-                    is DownloadResult.Failed -> throw Exception(res.reason)
-                }
-            }
-
-            repositoryUiState.progressMap[pluginId] = 1.0f
-
-            try {
-                _navigateToInstallDialog.emit(downloadedFile) /*FIXME*/
-                showSnackbar("安装 ${metadata.name} 成功")
-            } catch (t: Throwable) {
-                throw t
-            }
-        } catch (e: CancellationException) {
-            showSnackbar("已取消安装 ${metadata.name}")
-            throw e
-        } catch (t: Throwable) {
-            t.printStackTrace()
-            showSnackbar("仓库插件安装失败：${t.message ?: "未知错误"}")
-            throw t
-        } finally {
-            delay(300)
-            repositoryUiState.progressMap.remove(pluginId)
-        }
     }
 
     private suspend fun mergePartsToFile(partFiles: List<File>, outputFile: File): File = withContext(Dispatchers.IO) {
@@ -412,61 +340,6 @@ class PluginRepositoryViewModel @Inject constructor(
             connection?.disconnect()
         }
     }
-
-    suspend fun downloadWithKetch(
-        url: String,
-        destDir: File,
-        destFileName: String,
-        modelCallback: (DownloadModel) -> Unit
-    ): DownloadResult = withContext(Dispatchers.IO) {
-        if (!destDir.exists()) destDir.mkdirs()
-
-        val destFile = destDir.resolve(destFileName)
-        val downloadId = ketch.download(url, destDir.absolutePath, destFile.name)
-
-        suspendCancellableCoroutine { cont ->
-            val collectJob = CoroutineScope(Dispatchers.IO).launch {
-                try {
-                    ketch.observeDownloadById(downloadId).collect { downloadModel ->
-                        if (downloadModel == null) return@collect
-                        modelCallback(downloadModel)
-
-                        when (downloadModel.status) {
-                            Status.SUCCESS -> {
-                                var waited = 0L
-                                while (!destFile.exists() && waited < 5_000L) {
-                                    delay(100)
-                                    waited += 100
-                                }
-                                if (destFile.exists()) {
-                                    if (!cont.isCompleted) cont.resume(DownloadResult.Success(destFile))
-                                } else {
-                                    if (!cont.isCompleted) cont.resume(DownloadResult.Failed("文件未出现"))
-                                }
-                            }
-
-                            Status.FAILED -> {
-                                val reason = downloadModel.failureReason
-                                if (!cont.isCompleted) cont.resume(DownloadResult.Failed("下载失败: $reason"))
-                            }
-
-                            else -> Unit
-                        }
-                    }
-                } catch (t: Throwable) {
-                    if (!cont.isCompleted) cont.resume(DownloadResult.Failed("观察异常: ${t.message}"))
-                }
-            }
-
-            cont.invokeOnCancellation {
-                collectJob.cancel()
-
-                try { ketch.clearDb(downloadId) } catch (_: Throwable) {}
-                try { if (destFile.exists()) destFile.delete() } catch (_: Throwable) {}
-            }
-        }
-    }
-
 
     private fun showSnackbar(message: String) {
         viewModelScope.launch { _snackbarFlow.emit(message) }

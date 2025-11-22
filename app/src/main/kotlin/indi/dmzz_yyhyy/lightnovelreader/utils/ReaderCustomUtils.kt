@@ -7,11 +7,8 @@ import android.widget.Toast
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.isUnspecified
 import androidx.compose.ui.graphics.painter.Painter
@@ -19,6 +16,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
+import coil.compose.AsyncImagePainter
 import coil.compose.rememberAsyncImagePainter
 import coil.request.ImageRequest
 import indi.dmzz_yyhyy.lightnovelreader.R
@@ -68,24 +66,23 @@ fun rememberReaderFontFamily(settingState: SettingState): FontFamily {
 fun rememberReaderBackgroundPainter(settingState: SettingState): Painter {
     val context = LocalContext.current
     val isDark = LocalAppTheme.current.isDark
-    val isCustomEmpty = (settingState.backgroundImageUri.toString().isEmpty() && settingState.backgroundDarkImageUri.toString().isEmpty())
 
-    var loadFailed by remember { mutableStateOf(false) }
-
-
-    if (isCustomEmpty) {
-        return painterResource(id = R.drawable.paper)
+    val backgroundUri = remember(
+        isDark,
+        settingState.backgroundImageUri,
+        settingState.backgroundDarkImageUri
+    ) {
+        if (isDark) settingState.backgroundDarkImageUri else settingState.backgroundImageUri
     }
 
-    val backgroundUri = remember(isDark) {
-        if (isDark) settingState.backgroundDarkImageUri
-        else settingState.backgroundImageUri
+    if (backgroundUri == Uri.EMPTY || backgroundUri.toString().isBlank()) {
+        return painterResource(id = R.drawable.paper)
     }
 
     val imageRequest = remember(backgroundUri) {
         ImageRequest.Builder(context)
             .data(backgroundUri)
-            .listener(onError = { _, _ -> loadFailed = true })
+            .crossfade(true)
             .build()
     }
 
@@ -94,21 +91,21 @@ fun rememberReaderBackgroundPainter(settingState: SettingState): Painter {
         error = painterResource(id = R.drawable.paper)
     )
 
-    if (loadFailed) {
-        LaunchedEffect(backgroundUri) {
-            when {
-                isDark && settingState.backgroundDarkImageUri != Uri.EMPTY ->
-                    settingState.backgroundDarkImageUriUserData.asynchronousSet(Uri.EMPTY)
-                else ->
-                    settingState.backgroundImageUriUserData.asynchronousSet(Uri.EMPTY)
+    val state = painter.state
+    LaunchedEffect(state, backgroundUri) {
+        if (state is AsyncImagePainter.State.Error) {
+            if (isDark) {
+                settingState.backgroundDarkImageUriUserData.asynchronousSet(Uri.EMPTY)
+            } else {
+                settingState.backgroundImageUriUserData.asynchronousSet(Uri.EMPTY)
             }
             Toast.makeText(context, "背景加载失败，已恢复默认", Toast.LENGTH_SHORT).show()
-            loadFailed = false
         }
     }
 
     return painter
 }
+
 
 @Composable
 fun readerTextColor(settingState: SettingState): Color {

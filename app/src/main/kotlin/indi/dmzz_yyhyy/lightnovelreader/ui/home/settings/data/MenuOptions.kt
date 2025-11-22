@@ -1,7 +1,6 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.data
 
 import indi.dmzz_yyhyy.lightnovelreader.R
-import indi.dmzz_yyhyy.lightnovelreader.data.update.AppCenterParser
 import indi.dmzz_yyhyy.lightnovelreader.data.update.GithubParser
 import indi.dmzz_yyhyy.lightnovelreader.data.update.UpdateParser
 
@@ -20,21 +19,44 @@ sealed class MenuOptions {
         return key
     }
 
-    open class MenuOptionsWithValues<T>: MenuOptions {
+    fun get(key: String): Option =
+        getOrNull(key) ?: throw NoSuchElementException("Option '$key' not found")
+
+    fun getOrNull(key: String): Option? =
+        optionList.firstOrNull { it.equals(key) }
+
+    fun getOrDefault(key: String, default: Option): Option =
+        getOrNull(key) ?: default
+
+    open class MenuOptionsWithValues<T> : MenuOptions {
+
         private val optionWithValueList: MutableList<OptionWithValue<T>>
+
         constructor(vararg options: OptionWithValue<T>) : super(options.toList()) {
             optionWithValueList = options.toMutableList()
         }
-        constructor(options: List<OptionWithValue<T>>): super(options) {
+
+        constructor(options: List<OptionWithValue<T>>) : super(options) {
             optionWithValueList = options.toMutableList()
         }
+
         fun option(key: String, nameId: Int, value: T): String {
             _optionList.add(Option(key, nameId))
             optionWithValueList.add(OptionWithValue(key, nameId, value))
             return key
         }
-        fun getOptionWithValue(key: String): OptionWithValue<T> = optionWithValueList.first { it.equals(key) }
+
+        fun getOptionWithValue(key: String): OptionWithValue<T> =
+            getOptionWithValueOrNull(key)
+                ?: throw NoSuchElementException("OptionWithValue '$key' not found")
+
+        fun getOptionWithValueOrNull(key: String): OptionWithValue<T>? =
+            optionWithValueList.firstOrNull { it.equals(key) }
+
+        fun getOptionWithValueOrDefault(key: String?): OptionWithValue<T> =
+            getOptionWithValueOrNull(key ?: "") ?: optionWithValueList.first()
     }
+
 
     open class Option(
         open val key: String,
@@ -43,8 +65,6 @@ sealed class MenuOptions {
         override fun equals(other: Any?): Boolean = this.key == other
         override fun hashCode(): Int = key.hashCode()
     }
-
-    fun get(key: String): Option = optionList.first { it.equals(key) }
 
     class OptionWithValue<T>(
         override val key: String,
@@ -65,14 +85,8 @@ sealed class MenuOptions {
         OptionWithValue("CI", R.string.key_update_channel_ci, GithubParser.CIParser)
     )
 
-    data object AppCenterUpdateChannelOptions: UpdateChannelOptions(
-        OptionWithValue(Release, R.string.key_update_channel_release, AppCenterParser.ReleaseParser),
-        OptionWithValue(Development, R.string.key_update_channel_development, AppCenterParser.DevelopmentParser),
-    )
-
     data object UpdatePlatformOptions: MenuOptionsWithValues<UpdateChannelOptions>() {
         val GitHub = option("GitHub", R.string.key_platform_github, GitHubUpdateChannelOptions)
-        val AppCenter = option("AppCenter", R.string.key_platform_appcenter, AppCenterUpdateChannelOptions)
     }
 
     data object DarkModeOptions: MenuOptions(
@@ -132,7 +146,6 @@ sealed class MenuOptions {
     data object ReaderIndicatorBatteryDisplayMode: MenuOptions() {
         val Hidden = option("hidden", R.string.key_reader_indicator_battery_display_mode_hidden)
         val Classic = option("classic", R.string.key_reader_indicator_battery_display_mode_classic)
-        val Immersed = option("immersed", R.string.key_reader_indicator_battery_display_mode_immersed)
     }
 
     data object ReaderBackBlockMode: MenuOptions() {

@@ -1,5 +1,12 @@
 package indi.dmzz_yyhyy.lightnovelreader.utils
 
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -13,9 +20,12 @@ import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hierarchy
+import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -153,3 +163,34 @@ suspend fun unzipFile(zipFile: File, outFile: File) {
     }
 }
 
+fun NavDestination?.currentMainRoute(): Any? {
+    if (this == null) return null
+    return hierarchy.firstNotNullOfOrNull { dest ->
+        when (dest.route) {
+            Route.Main.Reading.Home::class.qualifiedName -> Route.Main.Reading
+            Route.Main.Bookshelf.Home::class.qualifiedName -> Route.Main.Bookshelf
+            Route.Main.Explore.Home::class.qualifiedName -> Route.Main.Explore
+            Route.Main.Settings.Home::class.qualifiedName -> Route.Main.Settings
+            else -> null
+        }
+    }
+}
+
+fun LazyListScope.navigationBarSpacer() {
+    item {
+        Spacer(
+            modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars)
+        )
+    }
+}
+
+fun LazyListScope.bottomBarSpacer() {
+    item {
+        Spacer(
+            modifier = Modifier.height(80.dp)
+        )
+    }
+}
+
+fun Modifier.bottomBarPadding() =
+    this.padding(bottom = 80.dp)
