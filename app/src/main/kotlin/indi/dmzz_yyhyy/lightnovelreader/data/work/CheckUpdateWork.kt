@@ -44,7 +44,7 @@ class CheckUpdateWork @AssistedInject constructor(
         bookshelfRepository.getAllBookshelfBooksMetadata().forEach { bookshelfBookMetadata ->
             delay(3000)
             while (!appContext.isAppStopped) {
-                yield()
+                delay(5000)
             }
             if (!needRemindBookIdSet.contains(bookshelfBookMetadata.id)) return@forEach
             Log.d("CheckUpdateWork", "Updating book id=${bookshelfBookMetadata.id}")
