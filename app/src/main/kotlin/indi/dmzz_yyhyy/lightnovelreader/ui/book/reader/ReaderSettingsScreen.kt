@@ -1,11 +1,6 @@
 
 package indi.dmzz_yyhyy.lightnovelreader.ui.book.reader
 
-import android.app.Instrumentation
-import android.content.Intent
-import android.os.Build
-import android.provider.DocumentsContract
-import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -426,18 +421,4 @@ fun LazyListScope.PaddingPage(settingState: SettingState) {
             )
         }
     }
-}
-
-fun selectDataFile(launcher: ManagedActivityResultLauncher<Intent, Instrumentation.ActivityResult>, mime: String) {
-    val initUri = DocumentsContract.buildDocumentUri(
-        "com.android.externalstorage.pictures",
-        "primary:Pictures"
-    )
-    val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
-        addCategory(Intent.CATEGORY_OPENABLE)
-        type = mime
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O)
-            putExtra(DocumentsContract.EXTRA_INITIAL_URI, initUri)
-    }
-    launcher.launch(Intent.createChooser(intent, "选择背景图片"))
 }

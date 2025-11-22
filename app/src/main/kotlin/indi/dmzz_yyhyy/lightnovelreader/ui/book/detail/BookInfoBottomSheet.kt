@@ -30,11 +30,11 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import indi.dmzz_yyhyy.lightnovelreader.R
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
+import indi.dmzz_yyhyy.lightnovelreader.data.book.get
 import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.book.BookVolumes
+import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import kotlinx.coroutines.launch
-import java.text.NumberFormat
 import java.time.format.DateTimeFormatter
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
@@ -144,7 +144,7 @@ fun BookInfoBottomSheet(
 
             InfoItem(
                 title = stringResource(R.string.detail_info_id),
-                content = bookInformation.id.toString(),
+                content = bookInformation.id,
                 titleStyle = titleStyle,
                 contentStyle = contentStyle,
                 icon = painterResource(R.drawable.info_24px)
@@ -190,7 +190,7 @@ fun BookInfoBottomSheet(
                 title = stringResource(R.string.detail_info_stats),
                 content = stringResource(
                     R.string.detail_info_stats_content,
-                    NumberFormat.getInstance().format(bookInformation.wordCount),
+                    bookInformation.wordCount.get(),
                     bookVolumes.volumes.count(),
                     bookVolumes.volumes.sumOf { it.chapters.size }
                 ),

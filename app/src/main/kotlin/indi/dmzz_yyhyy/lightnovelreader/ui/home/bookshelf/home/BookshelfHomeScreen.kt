@@ -12,7 +12,6 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateColorAsState
@@ -130,7 +129,6 @@ fun BookshelfHomeScreen(
     saveBookshelfJsonData: (Uri) -> Unit,
     importBookshelf: (Uri) -> Unit,
     clearToast: () -> Unit,
-    animatedVisibilityScope: AnimatedVisibilityScope,
     sharedTransitionScope: SharedTransitionScope,
     getBookInfoFlow: (String) -> StateFlow<BookInformation>,
     getBookVolumesFlow: (String) -> StateFlow<BookVolumes>,
@@ -314,7 +312,9 @@ fun BookshelfHomeScreen(
                     exit = fadeOut()
                 ) {
                     EmptyPage(
-                        modifier = Modifier.navigationBarsPadding().bottomBarPadding(),
+                        modifier = Modifier
+                            .navigationBarsPadding()
+                            .bottomBarPadding(),
                         icon = painterResource(R.drawable.bookmarks_90px),
                         title = stringResource(R.string.nothing_here),
                         description = stringResource(R.string.nothing_here_desc_bookshelf)
@@ -570,7 +570,10 @@ fun TopBar(
                             style = AppTypography.dropDownItem
                         )
                     },
-                    onClick = onClickCreate
+                    onClick = {
+                        mainMenuExpended = false
+                        onClickCreate.invoke()
+                    }
                 )
                 DropdownMenuItem(
                     text = {
@@ -579,7 +582,10 @@ fun TopBar(
                             style = AppTypography.dropDownItem
                         )
                     },
-                    onClick = onClickEdit
+                    onClick = {
+                        mainMenuExpended = false
+                        onClickEdit.invoke()
+                    }
                 )
                 DropdownMenuItem(
                     text = {

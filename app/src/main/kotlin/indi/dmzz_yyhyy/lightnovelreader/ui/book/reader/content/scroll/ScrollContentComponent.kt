@@ -23,7 +23,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -82,7 +81,6 @@ fun ScrollContentTextComponent(
     onClickNextChapter: () -> Unit
 ) {
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = LocalSnackbarHost.current
     val density = LocalDensity.current
     val screenHeight = LocalResources.current.displayMetrics.heightPixels
@@ -110,24 +108,48 @@ fun ScrollContentTextComponent(
 
                     when {
                         isAtTop -> {
-                            if (atTop) launch {
-                                showSnackbar(
-                                    coroutineScope = this,
-                                    hostState = snackbarHostState,
-                                    message = context.getString(R.string.reader_reached_top),
-                                    actionLabel = context.getString(R.string.previous_chapter)
-                                ) { if (it == SnackbarResult.ActionPerformed) onClickPrevChapter() }
+                            if (atTop) {
+                                if (uiState.readingChapterContent.hasPrevChapter())
+                                    launch {
+                                        showSnackbar(
+                                            coroutineScope = this,
+                                            hostState = snackbarHostState,
+                                            message = context.getString(R.string.reader_reached_top),
+                                            actionLabel = context.getString(R.string.previous_chapter)
+                                        ) { if (it == SnackbarResult.ActionPerformed) onClickPrevChapter() }
+                                    }
+                                else
+                                    launch {
+                                        showSnackbar(
+                                            coroutineScope = this,
+                                            hostState = snackbarHostState,
+                                            message = "文章才刚刚开始",
+                                            actionLabel = context.getString(R.string.confirm)
+                                        )
+                                    }
                             }
                             atTop = true; atBottom = false
                         }
                         isAtBottom -> {
-                            if (atBottom) launch {
-                                showSnackbar(
-                                    coroutineScope = this,
-                                    hostState = snackbarHostState,
-                                    message = context.getString(R.string.reader_reached_bottom),
-                                    actionLabel = context.getString(R.string.next_chapter)
-                                ) { if (it == SnackbarResult.ActionPerformed) onClickNextChapter() }
+                            if (atBottom) {
+                                if (uiState.readingChapterContent.hasNextChapter())
+                                    launch {
+                                        showSnackbar(
+                                            coroutineScope = this,
+                                            hostState = snackbarHostState,
+                                            message = context.getString(R.string.reader_reached_bottom),
+                                            actionLabel = context.getString(R.string.next_chapter)
+                                        ) { if (it == SnackbarResult.ActionPerformed) onClickNextChapter() }
+                                    }
+                                else
+                                    launch {
+                                        showSnackbar(
+                                            coroutineScope = this,
+                                            hostState = snackbarHostState,
+                                            message = "已经结束了...",
+                                            actionLabel = context.getString(R.string.confirm)
+                                        )
+                                    }
                             }
                             atBottom = true; atTop = false
                         }
@@ -218,7 +240,8 @@ fun ScrollContentTextComponent(
                             val matchResult = titleRegex.find(chapterContent.title)
 
                             Column(
-                                modifier = Modifier.fillMaxWidth()
+                                modifier = Modifier
+                                    .fillMaxWidth()
                                     .padding(vertical = 36.dp),
                                 verticalArrangement = Arrangement.spacedBy(16.dp)
                             ) {

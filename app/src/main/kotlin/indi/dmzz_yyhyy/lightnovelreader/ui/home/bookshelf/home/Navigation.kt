@@ -59,7 +59,6 @@ fun NavGraphBuilder.bookshelfHomeDestination(sharedTransitionScope: SharedTransi
                 bookshelfHomeViewModel.disableSelectMode()
             },
             clearToast = bookshelfHomeViewModel::clearToast,
-            animatedVisibilityScope = this,
             sharedTransitionScope = sharedTransitionScope,
             getBookInfoFlow = bookshelfHomeViewModel::getBookInfoStateFlow,
             getBookVolumesFlow = bookshelfHomeViewModel::getBookVolumesStateFlow

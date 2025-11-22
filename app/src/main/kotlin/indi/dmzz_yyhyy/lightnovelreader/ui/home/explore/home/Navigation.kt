@@ -7,13 +7,13 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import io.nightfish.lightnovelreader.api.ui.LocalNavController
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.detail.navigateToBookDetailDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.explore.ExploreViewModel
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.explore.expanded.navigateToExploreExpandDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.explore.search.navigateToSearchDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
 import indi.dmzz_yyhyy.lightnovelreader.utils.isResumed
+import io.nightfish.lightnovelreader.api.ui.LocalNavController
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun NavGraphBuilder.exploreHomeDestination(sharedTransitionScope: SharedTransitionScope) {
@@ -31,8 +31,6 @@ fun NavGraphBuilder.exploreHomeDestination(sharedTransitionScope: SharedTransiti
             changePage = exploreHomeViewModel::changePage,
             onClickSearch = navController::navigateToSearchDestination,
             refresh = exploreHomeViewModel::refresh,
-            controller = navController,
-            animatedVisibilityScope = this,
             sharedTransitionScope = sharedTransitionScope
         )
     }
