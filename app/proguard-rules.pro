@@ -73,3 +73,7 @@
 -dontwarn org.dom4j.**
 -keep class org.dom4j.**{*;}
 -keep interface org.dom4j.** { *; }
+
+#CxHttp
+-keep class * extends cxhttp.response.CxHttpResult{*;}
+-keep class cxhttp.converter.*{*;}

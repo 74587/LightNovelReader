@@ -235,8 +235,7 @@ fun ExplorePage(
             state = listState
         ) {
             items(
-                items = explorePageBooksRawList,
-                key = { it.title }
+                items = explorePageBooksRawList
             ) { exploreBooksRow ->
                 Column(
                     modifier = Modifier

@@ -2,8 +2,7 @@ package indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore
 
 import androidx.core.net.toUri
 import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.Wenku8Api.host
-import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.wenku8Cookie
-import indi.dmzz_yyhyy.lightnovelreader.utils.autoReconnectionGet
+import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.autoReconnectionGetWithWenku8Cookie
 import io.nightfish.lightnovelreader.api.explore.ExploreBooksRow
 import io.nightfish.lightnovelreader.api.explore.ExploreDisplayBook
 import io.nightfish.lightnovelreader.api.explore.ExplorePage
@@ -13,7 +12,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
 object Wenku8AllExplorePage: ExplorePageDataSource {
@@ -50,10 +48,7 @@ object Wenku8AllExplorePage: ExplorePageDataSource {
     }
 
     private suspend fun getCompletedBooksRow(): ExploreBooksRow {
-        val soup = Jsoup
-            .connect("${host}/modules/article/articlelist.php?fullflag=1")
-            .wenku8Cookie()
-            .autoReconnectionGet()
+        val soup = autoReconnectionGetWithWenku8Cookie("${host}/modules/article/articlelist.php?fullflag=1")
         return getBooksRow(soup, "完结全本").copy(
             expandable = true,
             expandedPageDataSourceId = "allBook"
@@ -61,10 +56,7 @@ object Wenku8AllExplorePage: ExplorePageDataSource {
     }
 
     private suspend fun getTopListBookBooksRow(title: String, sort: String): ExploreBooksRow {
-        val soup = Jsoup
-            .connect("${host}/modules/article/toplist.php?sort=$sort")
-            .wenku8Cookie()
-            .autoReconnectionGet()
+        val soup = autoReconnectionGetWithWenku8Cookie("${host}/modules/article/toplist.php?sort=$sort")
         return getBooksRow(soup, title).copy(
             expandable = true,
             expandedPageDataSourceId = "${sort}Book"
@@ -72,10 +64,7 @@ object Wenku8AllExplorePage: ExplorePageDataSource {
     }
 
     private suspend fun getAllBookBooksRow(): ExploreBooksRow {
-        val soup = Jsoup
-            .connect("${host}/modules/article/articlelist.php")
-            .wenku8Cookie()
-            .autoReconnectionGet()
+        val soup = autoReconnectionGetWithWenku8Cookie("${host}/modules/article/articlelist.php")
         return getBooksRow(soup, "轻小说列表")
     }
 

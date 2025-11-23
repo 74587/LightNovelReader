@@ -16,10 +16,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
 
-enum class PluginInstallerOperation {
-    INSTALL, UNINSTALL, UPGRADE
-}
-
 @Singleton
 class PluginInstaller @Inject constructor(
     @param:ApplicationContext private val context: Context,
