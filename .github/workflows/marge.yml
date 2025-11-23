@@ -4,6 +4,7 @@ on:
     branches: [master, refactoring]
     paths:
       - app/src/**
+      - app/proguard-rules.pro
       - build.gradle.kts
       - gradle.properties
       - settings.gradle
