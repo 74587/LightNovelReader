@@ -2,8 +2,7 @@ package indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore.expanedpag
 
 import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.Wenku8Api
 import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.Wenku8Api.getBookInformationListFromBookCards
-import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.wenku8Cookie
-import indi.dmzz_yyhyy.lightnovelreader.utils.autoReconnectionGet
+import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.autoReconnectionGetWithWenku8Cookie
 import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.web.explore.ExploreExpandedPageDataSource
 import io.nightfish.lightnovelreader.api.web.explore.filter.Filter
@@ -11,7 +10,6 @@ import io.nightfish.lightnovelreader.api.web.explore.filter.LocalFilter
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
-import org.jsoup.Jsoup
 
 class HomeBookExpandPageDataSource(
     private val baseUrl: String = "${Wenku8Api.host}/modules/article/articlelist.php",
@@ -52,12 +50,9 @@ class HomeBookExpandPageDataSource(
 
     private suspend fun getBooks(
         pageIndex: Int,
-        min: Int = 10
+        min: Int = 1
     ): List<BookInformation> =
-        Jsoup
-            .connect("${baseUrl}?page=$pageIndex$arg$extendedParameters")
-            .wenku8Cookie()
-            .autoReconnectionGet()
+        autoReconnectionGetWithWenku8Cookie("${baseUrl}?page=$pageIndex$arg$extendedParameters")
             ?.let { document ->
                 document.selectFirst("#pagelink > a.last")?.text()?.toInt()?.let {
                     if (it == pageIndex) hasMore = false

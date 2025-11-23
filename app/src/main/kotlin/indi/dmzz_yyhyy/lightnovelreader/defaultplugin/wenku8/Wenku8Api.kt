@@ -3,9 +3,11 @@ package indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8
 import android.content.Context
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.util.Log
 import androidx.core.net.toUri
 import androidx.navigation.NavController
+import cxhttp.CxHttp
+import cxhttp.CxHttpHelper
+import cxhttp.converter.GsonConverter
 import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore.Wenku8AllExplorePage
 import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore.Wenku8HomeExplorePage
 import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore.Wenku8TagsExplorePage
@@ -13,6 +15,7 @@ import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore.expanedpage
 import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore.expanedpage.filter.FirstLetterSingleChoiceFilter
 import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore.expanedpage.filter.PublishingHouseSingleChoiceFilter
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.explore.expanded.navigateToExploreExpandDestination
+import indi.dmzz_yyhyy.lightnovelreader.utils.UserAgentGenerator
 import indi.dmzz_yyhyy.lightnovelreader.utils.update
 import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.book.BookVolumes
@@ -35,10 +38,9 @@ import io.nightfish.lightnovelreader.api.web.explore.ExplorePageDataSource
 import io.nightfish.lightnovelreader.api.web.explore.filter.IsCompletedSwitchFilter
 import io.nightfish.lightnovelreader.api.web.explore.filter.SingleChoiceFilter
 import io.nightfish.lightnovelreader.api.web.explore.filter.WordCountFilter
-import io.nightfish.potatoautoproxy.ProxyPool
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
@@ -52,10 +54,8 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
-import org.jsoup.Jsoup
 import org.jsoup.select.Elements
 import java.net.URLEncoder
-import java.net.UnknownHostException
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -66,6 +66,10 @@ import java.time.format.DateTimeFormatter
     "LightNovelReader from wenku8.net"
 )
 object Wenku8Api: WebBookDataSource {
+    init {
+        CxHttpHelper.init(scope=MainScope(), debugLog=true, converter = GsonConverter())
+    }
+
     private val tagList = listOf(
         "校园", "青春", "恋爱", "治愈", "群像",
         "竞技", "音乐", "美食", "旅行", "欢乐向",
@@ -85,7 +89,6 @@ object Wenku8Api: WebBookDataSource {
     private var coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     private val titleRegex = Regex("(.*) ?[(（](.*)[)）] ?$")
     private val hosts = listOf("https://www.wenku8.cc", "https://www.wenku8.net", "https://www.wenku8.com")
-    private var isLocalIpUnableUse = true
     override val cache = Cache(
         timeout = 5 * 60 * 1000
     )
@@ -124,93 +127,22 @@ object Wenku8Api: WebBookDataSource {
         }
     }
 
-    private suspend fun tryOrFalse(block: () -> Unit): Boolean = withContext(Dispatchers.IO) {
-        try {
-            block.invoke()
-            return@withContext false
-        } catch (e: UnknownHostException) {
-            Log.e("Wenku8Api", "DNS probe failed. ${e.message}")
-            true
-        } catch (e: Exception) {
-            Log.e("Wenku8Api", "${e.message}")
-            Log.d("Wenku8Api", "An error occurred", e)
-            return@withContext true
-        }
-    }
-
     override suspend fun isOffLine(): Boolean = withContext(Dispatchers.IO) {
-        val isApiOffLine =
-            async {
-                tryOrFalse {
-                    Jsoup
-                        .connect(update("eNpb85aBtYRBMaOkpMBKXz-xoECvPDUvu9RCLzk_Vz8xL6UoPzNFryCjAAAfiA5Q").toString())
-                        .userAgent("wenku8")
-                        .let {
-                            if (ProxyPool.enable && !isLocalIpUnableUse)
-                                ProxyPool.apply {
-                                    it.proxyGet()
-                                }
-                            else it.get()
-                        }
+        suspend fun webSite(index: Int): Boolean {
+            return !CxHttp
+                .get(hosts[index]) {
+                    header("user-agent", UserAgentGenerator.generate())
+                    header("cookie",wenku8Cookies().map { "${it.key}=${it.value}" }.joinToString(separator = ";"))
                 }
-            }
-        val isWebOffline1 =
-            async {
-                tryOrFalse {
-                    Jsoup
-                        .connect(hosts[0])
-                        .wenku8Cookie()
-                        .let {
-                            if (ProxyPool.enable && !isLocalIpUnableUse)
-                                ProxyPool.apply {
-                                    it.proxyGet()
-                                }
-                            else it.get()
-                        }
-                }.also {
-                    if (!it)
-                        host = hosts[0]
-                }
-            }
-        val isWebOffline2 =
-            async {
-                tryOrFalse {
-                    Jsoup
-                        .connect(hosts[1])
-                        .wenku8Cookie()
-                        .let {
-                            if (ProxyPool.enable && !isLocalIpUnableUse)
-                                ProxyPool.apply {
-                                    it.proxyGet()
-                                }
-                            else it.get()
-                        }
-                }.also {
-                    if (!it)
-                        host = hosts[1]
-                }
-            }
-
-        val isWebOffline3 =
-            async {
-                tryOrFalse {
-                    Jsoup
-                        .connect(hosts[2])
-                        .wenku8Cookie()
-                        .let {
-                            if (ProxyPool.enable && !isLocalIpUnableUse)
-                                ProxyPool.apply {
-                                    it.proxyGet()
-                                }
-                            else it.get()
-                        }
-                }.also {
-                    if (!it)
-                        host = hosts[2]
-                }
-            }
-
-        return@withContext isApiOffLine.await() || (isWebOffline1.await() && isWebOffline2.await() && isWebOffline3.await())
+                .await()
+                .isSuccessful
+                .also { host = hosts[index] }
+        }
+        return@withContext !CxHttp
+                .get(update("eNpb85aBtYRBMaOkpMBKXz-xoECvPDUvu9RCLzk_Vz8xL6UoPzNFryCjAAAfiA5Q").toString())
+                .await()
+                .isSuccessful
+            || (webSite(0) && webSite(1) && webSite(2))
     }
 
     override val id: Int = "wenku8".hashCode()

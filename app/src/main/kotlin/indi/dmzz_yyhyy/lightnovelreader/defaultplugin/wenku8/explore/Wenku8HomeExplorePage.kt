@@ -2,8 +2,7 @@ package indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore
 
 import androidx.core.net.toUri
 import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.Wenku8Api.host
-import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.wenku8Cookie
-import indi.dmzz_yyhyy.lightnovelreader.utils.autoReconnectionGet
+import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.autoReconnectionGetWithWenku8Cookie
 import io.nightfish.lightnovelreader.api.explore.ExploreBooksRow
 import io.nightfish.lightnovelreader.api.explore.ExploreDisplayBook
 import io.nightfish.lightnovelreader.api.explore.ExplorePage
@@ -13,7 +12,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 
 object Wenku8HomeExplorePage: ExplorePageDataSource {
@@ -26,10 +24,7 @@ object Wenku8HomeExplorePage: ExplorePageDataSource {
         if (!lock) {
             lock = true
             CoroutineScope(Dispatchers.IO).launch {
-                val soup = Jsoup
-                    .connect(host)
-                    .wenku8Cookie()
-                    .autoReconnectionGet()
+                val soup = autoReconnectionGetWithWenku8Cookie(host)
                 (0..2).map { index->
                     exploreBooksRows.update {
                         it + getBooksRow(index, soup)

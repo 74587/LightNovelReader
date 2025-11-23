@@ -2,8 +2,7 @@ package indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore
 
 import androidx.core.net.toUri
 import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.Wenku8Api.host
-import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.wenku8Cookie
-import indi.dmzz_yyhyy.lightnovelreader.utils.autoReconnectionGet
+import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.autoReconnectionGetWithWenku8Cookie
 import io.nightfish.lightnovelreader.api.explore.ExploreBooksRow
 import io.nightfish.lightnovelreader.api.explore.ExploreDisplayBook
 import io.nightfish.lightnovelreader.api.explore.ExplorePage
@@ -13,7 +12,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.net.URLEncoder
 
@@ -27,19 +25,13 @@ object Wenku8TagsExplorePage: ExplorePageDataSource {
         if (!lock) {
             lock = true
             CoroutineScope(Dispatchers.IO).launch {
-                Jsoup
-                    .connect("${host}/modules/article/tags.php")
-                    .wenku8Cookie()
-                    .autoReconnectionGet()
+                autoReconnectionGetWithWenku8Cookie("${host}/modules/article/tags.php")
                     ?.select("a[href~=tags\\.php\\?t=.*]")
                     ?.slice(0..48)
                     ?.map { "${host}/modules/article/" + it.attr("href") }
                     ?.map {url ->
-                        val soup = Jsoup
-                            .connect(url.split("=")[0] + "=" +
-                                    URLEncoder.encode(url.split("=")[1], "gb2312"))
-                            .wenku8Cookie()
-                            .autoReconnectionGet()
+                        val soup = autoReconnectionGetWithWenku8Cookie(url.split("=")[0] + "=" +
+                                URLEncoder.encode(url.split("=")[1], "gb2312"))
                         exploreBooksRows.update {
                             it + getExploreBookRow(
                                 soup = soup,
