@@ -4,6 +4,7 @@ import android.net.Uri
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,6 +17,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -28,6 +30,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.work.OneTimeWorkRequest
+import indi.dmzz_yyhyy.lightnovelreader.BuildConfig
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SectionHeader
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.AboutSettingsList
@@ -38,6 +41,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.ReadingSettingsLis
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.UpdatesSettingsList
 import indi.dmzz_yyhyy.lightnovelreader.utils.bottomBarSpacer
 import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
+import io.nightfish.lightnovelreader.api.ui.components.SettingsClickableEntry
 import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
@@ -128,9 +132,23 @@ fun SettingsScreen(
                         title = stringResource(R.string.about_settings),
                     ) {
                         AboutSettingsList(
-                            onClickDebugMode = onClickDebugMode,
                             onClickLicenses = onClickLicenses
                         )
+                    }
+                }
+                if (BuildConfig.DEBUG) {
+                    item {
+                        SettingsCategory(
+                            title = stringResource(R.string.debug_settings)
+                        ) {
+                            SettingsClickableEntry(
+                                modifier = Modifier.background(colorScheme.surfaceContainer),
+                                painter = painterResource(R.drawable.adb_24px),
+                                title = stringResource(R.string.settings_debug_tools),
+                                description = stringResource(R.string.settings_debug_tools_desc),
+                                onClick = onClickDebugMode
+                            )
+                        }
                     }
                 }
                 bottomBarSpacer()

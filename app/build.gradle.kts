@@ -89,7 +89,6 @@ dependencies {
     implementation(libs.lifecycle.runtime.compose)
     implementation(libs.lifecycle.viewmodel.compose)
     // Compose
-    implementation(libs.activity.compose)
     implementation(libs.compose.animation.graphics)
     implementation(platform(libs.compose.bom))
     implementation(libs.compose.material3)

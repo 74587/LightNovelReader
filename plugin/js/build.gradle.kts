@@ -57,7 +57,6 @@ tasks.withType<KotlinJvmCompile>().configureEach {
 dependencies {
     // Android lib
     coreLibraryDesugaring(libs.desugar.jdk.libs)
-    implementation(libs.activity.compose)
     implementation(libs.androidx.runtime)
     implementation(libs.navigation.ui.ktx)
     implementation(libs.navigation.compose)

@@ -182,8 +182,8 @@
     <string name="settings_auto_proxy">Auto Proxy</string>
     <string name="settings_auto_proxy_desc">Automatically fetch proxy IPs from the internet, <b>but this may allow the books you browse to be intercepted</b></string>
     <string name="about_settings">About</string>
-    <string name="settings_debug_tools">Debug Tools</string>
-    <string name="settings_debug_tools_desc">Debugging utilities</string>
+    <string name="settings_debug_tools">Debug Options</string>
+    <string name="settings_debug_tools_desc">Advanced debugging controls for development use</string>
     <string name="settings_about_source_code"><![CDATA[View the source code at %1$s<br/>Report bugs & request features via %2$s]]></string>
     <string name="settings_about_oss">LightNovelReader is the gift for all the light novel lovers in the world.</string>
     <string name="settings_github_repo">GitHub Repository</string>
@@ -193,6 +193,7 @@
     <string name="settings_statistics">Statistics</string>
     <string name="settings_statistics_desc">We use Microsoft AppCenter to collect anonymous statistics to improve LightNovelReader</string>
     <string name="experimental_settings">Experimental</string>
+    <string name="debug_settings">Debug</string>
     <string name="item_view_details">View Details</string>
     <string name="settings_auto_cache">Auto Cache</string>
     <string name="settings_auto_cache_desc">Automatically cache content of newly added books</string>

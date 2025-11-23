@@ -69,6 +69,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.LocalAppTheme
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalDarkColorScheme
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalLightColorScheme
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.SettingState
+import indi.dmzz_yyhyy.lightnovelreader.ui.components.SectionHeader
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsMenuEntry
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsSliderEntry
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.SettingsCategory
@@ -123,9 +124,10 @@ fun ThemeScreen(
 fun DarkModeSettings(
     settingState: SettingState
 ) {
-    SettingsCategory(
-        title = stringResource(R.string.settings_theme_dark_theme),
-    ) {  }
+    SectionHeader(
+        modifier = Modifier.padding(horizontal = 24.dp, vertical = 10.dp),
+        text = stringResource(R.string.settings_theme_dark_theme)
+    )
 
     val appTheme = AppTheme(
         isDark = LocalAppTheme.current.isDark,

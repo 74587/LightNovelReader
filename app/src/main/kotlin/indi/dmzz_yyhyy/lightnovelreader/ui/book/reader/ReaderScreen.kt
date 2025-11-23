@@ -8,7 +8,6 @@ import android.util.Log
 import android.view.Window
 import android.view.WindowManager
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.LocalActivity
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
@@ -74,6 +73,7 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -287,7 +287,8 @@ fun Content(
     onClickNextChapter: () -> Unit,
     onChangeIsImmersive: () -> Unit
 ) {
-    val activity = LocalActivity.current as Activity
+    val context = LocalContext.current
+    val activity = context as Activity
     val window = activity.window
     val density = LocalDensity.current
 

@@ -61,10 +61,6 @@ fun NavGraphBuilder.bookReaderDestination() {
 }
 
 fun NavController.navigateToBookReaderDestination(bookId: String, chapterId: String, context: Context) {
-    navigate(Route.Book.Detail(bookId)) {
-        launchSingleTop = true
-        restoreState = true
-    }
     val entry = this.getBackStackEntry<Route.Book>()
     val viewModel = ViewModelProvider.create(
         entry,
