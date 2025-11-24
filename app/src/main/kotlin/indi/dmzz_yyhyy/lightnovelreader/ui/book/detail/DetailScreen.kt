@@ -930,6 +930,7 @@ private fun VolumeItem(
                     text = if (isFullyRead) stringResource(R.string.info_reading_finished)
                     else stringResource(R.string.info_reading_progress, readCount, totalCount),
                     style = AppTypography.titleSmall,
+                    fontWeight = FontWeight.Normal,
                     color = colorScheme.secondary
                 )
             }
@@ -996,7 +997,7 @@ private fun ChapterItem(
                     text = stringResource(R.string.last_read),
                     maxLines = 1,
                     style = AppTypography.titleSmall,
-                    fontWeight = FontWeight.W600,
+                    fontWeight = FontWeight.Normal,
                     color = colorScheme.primary
                 )
             }

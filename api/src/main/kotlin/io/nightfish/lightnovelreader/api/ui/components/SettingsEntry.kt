@@ -2,7 +2,6 @@ package io.nightfish.lightnovelreader.api.ui.components
 
 import android.content.Intent
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -22,7 +21,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -80,14 +78,12 @@ fun SettingsSwitchEntry(
         }
 
         Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(3.dp)
+            modifier = Modifier.weight(1f)
         ) {
             Text(
                 text = title,
                 color = colorScheme.onSurface,
-                style = AppTypography.titleMedium,
-                fontWeight = FontWeight.Normal
+                style = AppTypography.titleSettings
             )
             Text(
                 text = description,
@@ -169,8 +165,7 @@ fun SettingsClickableEntry(
             Text(
                 text = title,
                 color = colorScheme.onSurface,
-                style = AppTypography.titleMedium,
-                fontWeight = FontWeight.Normal
+                style = AppTypography.titleSettings
             )
             description?.let {
                 Text(
