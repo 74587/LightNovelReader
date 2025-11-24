@@ -10,18 +10,13 @@ import android.view.WindowManager
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateDpAsState
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -33,19 +28,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeContent
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SheetState
-import androidx.compose.material3.SheetValue
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
@@ -65,17 +54,12 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.isUnspecified
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -96,7 +80,6 @@ import indi.dmzz_yyhyy.lightnovelreader.utils.LocalClaimSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.rememberReaderBackgroundPainter
 import indi.dmzz_yyhyy.lightnovelreader.utils.showSnackbar
-import io.nightfish.lightnovelreader.api.book.BookVolumes
 import io.nightfish.lightnovelreader.api.book.ChapterContent
 import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import kotlinx.coroutines.delay
@@ -125,12 +108,12 @@ fun ReaderScreen(
     val backBlockMode = settingState.backBlockMode
     var lastBackPressTime: Long by remember { mutableLongStateOf(0) }
     var showSettingsBottomSheet by remember { mutableStateOf(false) }
-    var showChapterSelectorBottomSheet by remember { mutableStateOf(false) }
+    var showChapterSelectionBottomSheet by remember { mutableStateOf(false) }
     var selectedVolumeId by remember { mutableStateOf("") }
 
     val coroutineScope = rememberCoroutineScope()
     val settingsBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
-    val chaptersBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = false)
+    val chaptersBottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     val claim = LocalClaimSnackbarHost.current
 
@@ -204,7 +187,7 @@ fun ReaderScreen(
                     onClickPrevChapter = onClickPrevChapter,
                     onClickNextChapter = onClickNextChapter,
                     onClickSettings = { showSettingsBottomSheet = true },
-                    onClickChapterSelector = { showChapterSelectorBottomSheet = true },
+                    onClickChapterSelector = { showChapterSelectionBottomSheet = true },
                 )
             }
         },
@@ -247,8 +230,8 @@ fun ReaderScreen(
         )
     }
 
-    AnimatedVisibility(visible = showChapterSelectorBottomSheet) {
-        ChapterSelectorBottomSheet(
+    AnimatedVisibility(visible = showChapterSelectionBottomSheet) {
+        ChapterSelectionBottomSheet(
             sheetState = chaptersBottomSheetState,
             selectedVolumeId = selectedVolumeId,
             bookVolumes = readingScreenUiState.bookVolumes,
@@ -256,10 +239,10 @@ fun ReaderScreen(
             onDismissRequest = {
                 coroutineScope.launch { chaptersBottomSheetState.hide() }.invokeOnCompletion {
                     if (!chaptersBottomSheetState.isVisible) {
-                        showChapterSelectorBottomSheet = false
+                        showChapterSelectionBottomSheet = false
                     }
                 }
-                showChapterSelectorBottomSheet = false
+                showChapterSelectionBottomSheet = false
                 selectedVolumeId =
                     readingScreenUiState.bookVolumes.volumes.firstOrNull { volume -> volume.chapters.any { it.id == readingScreenUiState.contentUiState.readingChapterContent.id } }?.volumeId
                         ?: ""
@@ -599,173 +582,6 @@ private fun BottomBar(
             }
 
             Spacer(Modifier.width(4.dp))
-        }
-    }
-
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun ChapterSelectorBottomSheet(
-    sheetState: SheetState,
-    selectedVolumeId: String,
-    bookVolumes: BookVolumes,
-    readingChapterId: String,
-    onDismissRequest: () -> Unit,
-    onClickChapter: (chapterId: String) -> Unit,
-    onChangeSelectedVolumeId: (volumeId: String) -> Unit
-) {
-    val lazyColumnState = rememberLazyListState()
-    val flatItems = remember(bookVolumes) {
-        bookVolumes.volumes.flatMap { volume ->
-            listOf(volume to null) + volume.chapters.map { volume to it }
-        }
-    }
-
-    LaunchedEffect(readingChapterId, flatItems) {
-        if (readingChapterId.isBlank()) return@LaunchedEffect
-
-        val targetIndex = flatItems.indexOfFirst { (_, chapter) ->
-            chapter?.id == readingChapterId
-        }
-        if (targetIndex < 0) return@LaunchedEffect
-
-        val (volume, _) = flatItems[targetIndex]
-
-        onChangeSelectedVolumeId(volume.volumeId)
-
-        if (sheetState.currentValue == SheetValue.PartiallyExpanded &&
-            sheetState.hasExpandedState
-        ) {
-            sheetState.expand()
-        }
-
-        lazyColumnState.scrollToItem(targetIndex)
-    }
-
-    ModalBottomSheet(
-        onDismissRequest = onDismissRequest,
-        sheetState = sheetState
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                painter = painterResource(R.drawable.read_more_24px),
-                contentDescription = null
-            )
-            Text(
-                modifier = Modifier.padding(start = 8.dp),
-                text = stringResource(R.string.select_chapter),
-                style = AppTypography.titleLarge,
-                fontWeight = FontWeight.W600
-            )
-        }
-
-        Spacer(Modifier.height(8.dp))
-
-        LazyColumn(state = lazyColumnState) {
-            items(
-                items = flatItems,
-                key = { (volume, chapter) ->
-                    chapter?.id ?: "v_${volume.volumeId}"
-                }
-            ) { (volume, chapter) ->
-                if (chapter == null) {
-                    Box(
-                        modifier = Modifier
-                            .clickable {
-                                onChangeSelectedVolumeId(
-                                    if (selectedVolumeId == volume.volumeId) ""
-                                    else volume.volumeId
-                                )
-                            }
-                            .padding(horizontal = 16.dp, vertical = 8.dp)
-                    ) {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 4.dp, horizontal = 6.dp),
-                            horizontalArrangement = Arrangement.spacedBy(10.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column {
-                                Text(
-                                    text = volume.volumeTitle,
-                                    fontWeight = FontWeight.W600,
-                                    style = AppTypography.titleMedium,
-                                    color = colorScheme.onSurface
-                                )
-                                Text(
-                                    text = stringResource(
-                                        R.string.info_volume_chapters_count,
-                                        volume.chapters.size
-                                    ),
-                                    color = colorScheme.secondary,
-                                    style = AppTypography.labelMedium
-                                )
-                            }
-                            Spacer(Modifier.weight(2f))
-                            Icon(
-                                modifier = Modifier
-                                    .scale(0.75f)
-                                    .rotate(
-                                        if (selectedVolumeId == volume.volumeId) -90f
-                                        else 90f
-                                    ),
-                                painter = painterResource(R.drawable.arrow_forward_ios_24px),
-                                tint = colorScheme.onSurface,
-                                contentDescription = null
-                            )
-                        }
-                    }
-                } else {
-                    val expanded = selectedVolumeId == volume.volumeId
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .animateContentSize(animationSpec = tween(durationMillis = 200))
-                    ) {
-                        if (expanded) {
-                            val alpha by animateFloatAsState(targetValue = 1f, animationSpec = tween(180))
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .height(42.dp)
-                                    .clickable { onClickChapter(chapter.id) }
-                                    .padding(horizontal = 22.dp),
-                                contentAlignment = Alignment.CenterStart
-                            ) {
-                                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.alpha(alpha)) {
-                                    val isSelected = readingChapterId == chapter.id
-                                    if (isSelected) {
-                                        Icon(
-                                            painter = painterResource(R.drawable.play_arrow_24px),
-                                            tint = colorScheme.outline,
-                                            contentDescription = null
-                                        )
-                                        Spacer(Modifier.width(8.dp))
-                                    }
-                                    Text(
-                                        text = chapter.title,
-                                        fontWeight = if (isSelected)
-                                            FontWeight.Bold
-                                        else
-                                            FontWeight.Normal,
-                                        style = AppTypography.titleSmall,
-                                        color = colorScheme.onSurfaceVariant,
-                                        maxLines = 2,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                }
-                            }
-                        }
-                    }
-                }
-            }
         }
     }
 }
