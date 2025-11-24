@@ -73,3 +73,20 @@
 -dontwarn org.dom4j.**
 -keep class org.dom4j.**{*;}
 -keep interface org.dom4j.** { *; }
+
+#CxHttp
+-keep class * extends cxhttp.response.CxHttpResult{*;}
+-keep class cxhttp.converter.*{*;}
+
+-dontwarn com.fasterxml.jackson.annotation.JsonInclude$Include
+-dontwarn com.fasterxml.jackson.core.json.JsonWriteFeature
+-dontwarn com.fasterxml.jackson.core.type.TypeReference
+-dontwarn com.fasterxml.jackson.databind.DeserializationFeature
+-dontwarn com.fasterxml.jackson.databind.Module
+-dontwarn com.fasterxml.jackson.databind.ObjectMapper
+-dontwarn com.fasterxml.jackson.databind.SerializationFeature
+-dontwarn com.fasterxml.jackson.databind.cfg.MapperBuilder
+-dontwarn com.fasterxml.jackson.databind.json.JsonMapper$Builder
+-dontwarn com.fasterxml.jackson.databind.json.JsonMapper
+-dontwarn com.fasterxml.jackson.module.kotlin.KotlinModule$Builder
+-dontwarn com.fasterxml.jackson.module.kotlin.KotlinModule

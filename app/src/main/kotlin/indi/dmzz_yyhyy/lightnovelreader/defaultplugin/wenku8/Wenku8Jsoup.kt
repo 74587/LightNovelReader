@@ -1,30 +1,29 @@
 package indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8
 
 import android.util.Log
+import cxhttp.CxHttp
+import cxhttp.response.Response
+import cxhttp.response.bodyOrNull
 import indi.dmzz_yyhyy.lightnovelreader.utils.UserAgentGenerator
-import indi.dmzz_yyhyy.lightnovelreader.utils.autoReconnectionPost
 import indi.dmzz_yyhyy.lightnovelreader.utils.update
 import io.nightfish.lightnovelreader.api.util.Cache
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeoutOrNull
-import org.jsoup.Connection
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import java.nio.charset.Charset
 import java.time.Instant
 import kotlin.io.encoding.Base64
 import kotlin.random.Random
 
 private val requestLimiter = Semaphore(4)
 private val pendingJobs = Channel<Unit>(capacity = 25, onBufferOverflow = BufferOverflow.DROP_OLDEST)
-
-fun Connection.wenku8Cookie(): Connection =
-    this
-        .userAgent(UserAgentGenerator.generate())
-        .cookies(wenku8Cookies())
 
 fun wenku8Cookies(): Map<String, String> = mapOf(
     "Hm_lvt_acfbfe93830e0272a88e1cc73d4d6d0f" to "1737964211",
@@ -62,23 +61,35 @@ suspend fun wenku8Api(request: String): Document? = ifCache(request) {
             Log.i("Wenku8API", "request to wenku8 with $request")
 
             withTimeoutOrNull(15_000L) {
-                val doc = Jsoup
-                    .connect(update("eNpb85aBtYRBMaOkpMBKXz-xoECvPDUvu9RCLzk_Vz8xL6UoPzNFryCjAAAfiA5Q").toString())
-                    .userAgent("wenku8")
-                    .data(
-                        "request", Base64.encode(request.toByteArray()),
-                        "timetoken", Instant.now().toEpochMilli().toString(),
-                        "appver", "1.21"
-                    )
-                    .autoReconnectionPost()
-
-                doc?.outputSettings(
-                    Document.OutputSettings()
-                        .prettyPrint(false)
-                        .syntax(Document.OutputSettings.Syntax.xml)
-                )
+                suspend fun post(): Response {
+                    return CxHttp
+                        .post(update("eNpb85aBtYRBMaOkpMBKXz-xoECvPDUvu9RCLzk_Vz8xL6UoPzNFryCjAAAfiA5Q").toString()){
+                            formBody {
+                                append("request", Base64.encode(request.toByteArray()))
+                                append("timetoken", Instant.now().toEpochMilli().toString())
+                                append("appver", "1.21")
+                            }
+                            header("user-agent", "wenku8")
+                        }
+                        .scope(this)
+                        .await()
+                }
+                var retryTime = 5
+                var retryDelay = 1500
+                var response = post()
+                while (!response.isSuccessful && retryTime >= 1) {
+                    response = post()
+                    retryTime--
+                    retryDelay = retryDelay * 2
+                }
                 delay(Random.Default.nextLong(300, 450))
-                doc
+                val doc = response.bodyOrNull<String>()?.let(Jsoup::parse)
+                    ?.outputSettings(
+                        Document.OutputSettings()
+                            .prettyPrint(false)
+                            .syntax(Document.OutputSettings.Syntax.xml)
+                    )
+                return@withTimeoutOrNull doc
             }.also {
                 if (it == null) Log.w("Wenku8API", "request timeout: $request")
             }
@@ -86,4 +97,34 @@ suspend fun wenku8Api(request: String): Document? = ifCache(request) {
     } finally {
         pendingJobs.tryReceive().getOrNull()
     }
+}
+
+suspend fun autoReconnectionGetWithWenku8Cookie(url: String): Document? = withContext(Dispatchers.IO) {
+    suspend fun get(): Response {
+        return CxHttp
+            .get(url){
+                header("user-agent", UserAgentGenerator.generate())
+                header("cookie",wenku8Cookies().map { "${it.key}=${it.value}" }.joinToString(separator = ";"))
+            }
+            .scope(this)
+            .await()
+    }
+    var retryTime = 5
+    var retryDelay = 1500
+    var response = get()
+    while (!response.isSuccessful && retryTime >= 1) {
+        response = get()
+        retryTime--
+        retryDelay = retryDelay * 2
+    }
+    val doc = response.body
+        ?.bytes()
+        ?.toString(charset = Charset.forName("GBK"))
+        ?.let(Jsoup::parse)
+        ?.outputSettings(
+            Document.OutputSettings()
+                .prettyPrint(false)
+                .syntax(Document.OutputSettings.Syntax.xml)
+        )
+    return@withContext doc
 }

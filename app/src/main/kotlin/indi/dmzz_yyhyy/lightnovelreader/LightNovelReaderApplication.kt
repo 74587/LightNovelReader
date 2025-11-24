@@ -7,6 +7,8 @@ import android.os.Bundle
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import androidx.work.WorkManager
+import cxhttp.CxHttpHelper
+import cxhttp.converter.GsonConverter
 import dagger.hilt.android.HiltAndroidApp
 import indi.dmzz_yyhyy.lightnovelreader.data.logging.LogLevel
 import indi.dmzz_yyhyy.lightnovelreader.data.logging.LoggerRepository
@@ -16,6 +18,7 @@ import io.nightfish.lightnovelreader.api.userdata.UserDataPath
 import io.nightfish.potatoautoproxy.ProxyPool
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -41,6 +44,7 @@ class LightNovelReaderApplication : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
+        CxHttpHelper.init(scope=MainScope(), debugLog=true, converter = GsonConverter())
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             override fun onActivityStarted(activity: Activity) {
                 isAppStopped = false

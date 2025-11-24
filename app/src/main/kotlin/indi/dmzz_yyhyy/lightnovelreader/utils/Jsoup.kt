@@ -10,6 +10,7 @@ import java.io.IOException
 import java.net.SocketException
 import javax.net.ssl.SSLHandshakeException
 
+@Deprecated("use CxHttp to get fast request")
 suspend fun Connection.autoReconnectionGet(reconnectTime: Int = 5, reconnectDelay: Long = 250, isUesProxy: Boolean = false): Document? =
     autoReconnection(
         reconnectTime,
@@ -19,6 +20,7 @@ suspend fun Connection.autoReconnectionGet(reconnectTime: Int = 5, reconnectDela
         { this@autoReconnectionGet.proxyGet() }
     )
 
+@Deprecated("use CxHttp to get fast request")
 suspend fun Connection.autoReconnectionPost(reconnectTime: Int = 5, reconnectDelay: Long = 250, isUesProxy: Boolean = false): Document? =
     autoReconnection(
         reconnectTime,
@@ -73,14 +75,3 @@ private suspend fun retry(reconnectTimes: Int, reconnectDelay: Long, block: susp
     delay(reconnectDelay)
     return block.invoke()
 }
-
-suspend fun Connection.autoReconnectionGetJsonText(): String? =
-    this.ignoreContentType(true)
-        .autoReconnectionGet()
-        ?.outputSettings(
-            Document.OutputSettings()
-                .prettyPrint(false)
-                .syntax(Document.OutputSettings.Syntax.xml)
-        )
-        ?.body()
-        ?.text()
