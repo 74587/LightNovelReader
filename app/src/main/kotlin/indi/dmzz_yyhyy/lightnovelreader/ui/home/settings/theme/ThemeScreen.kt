@@ -456,7 +456,7 @@ fun ReaderTextSettings(settingState: SettingState, context: Context, onClickChan
                 lineHeight = (settingState.fontLineHeight + settingState.fontSize).sp,
                 fontWeight = FontWeight(settingState.fontWeigh.toInt()),
                 textAlign = TextAlign.Center,
-                fontFamily = rememberReaderFontFamily(settingState),
+                fontFamily = rememberReaderFontFamily(settingState.fontFamilyUriUserData),
                 color = readerTextColor(settingState)
             )
         }
