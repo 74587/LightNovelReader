@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
@@ -42,7 +43,6 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.UpdatesSettingsLis
 import indi.dmzz_yyhyy.lightnovelreader.utils.bottomBarSpacer
 import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 import io.nightfish.lightnovelreader.api.ui.components.SettingsClickableEntry
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
@@ -168,7 +168,7 @@ private fun TopBar(
         title = {
             Text(
                 text = stringResource(R.string.nav_settings),
-                style = AppTypography.titleTopBar
+                style = typography.displayLarge
             )
         },
         navigationIcon = {

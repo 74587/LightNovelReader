@@ -20,6 +20,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
@@ -50,7 +51,6 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.stats.ActivityStatsCard
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.stats.MonthlyReadingTimeStatsCard
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.stats.ReadingDetailStatsCard
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.stats.WeeklyReadingTimeStatsCard
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.temporal.TemporalAdjusters
@@ -202,13 +202,13 @@ fun StatsCard(
         ) {
             Text(
                 text = title,
-                style = AppTypography.titleMedium,
+                style = typography.titleMedium,
                 fontWeight = FontWeight.W600
             )
             if (subTitle != null) {
                 Text(
                     text = subTitle,
-                    style = AppTypography.titleSmall,
+                    style = typography.titleSmall,
                     color = colorScheme.secondary
                 )
             }
@@ -307,7 +307,7 @@ private fun TopBar(
             Column {
                 Text(
                     text = stringResource(R.string.detail_title),
-                    style = AppTypography.titleTopBar,
+                    style = typography.displayLarge,
                     color = colorScheme.onSurface,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -315,7 +315,7 @@ private fun TopBar(
                 AnimatedText(
                     text = if (dateRange.first == dateRange.second) dateRange.second.toString()
                     else "${dateRange.first} " + stringResource(R.string.to) + " ${dateRange.second} ",
-                    style = AppTypography.titleSubTopBar,
+                    style = typography.labelMedium,
                     color = colorScheme.onSurfaceVariant
                 )
             }

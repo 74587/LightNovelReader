@@ -17,7 +17,6 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.text.style.LineBreak
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 
 @Composable
 fun EmptyPage(
@@ -43,7 +42,7 @@ fun EmptyPage(
             Spacer(Modifier.height(42.dp))
             Text(
                 text = title,
-                style = AppTypography.titleLarge,
+                style = MaterialTheme.typography.displayMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(Modifier.height(12.dp))
@@ -51,7 +50,7 @@ fun EmptyPage(
                 modifier = Modifier.padding(horizontal = 24.dp),
                 text = description,
                 textAlign = TextAlign.Center,
-                style = AppTypography.bodyLarge.copy(
+                style = MaterialTheme.typography.bodyLarge.copy(
                     lineBreak = LineBreak.Paragraph.copy(strategy = LineBreak.Strategy.Balanced)
                 ),
                 color = MaterialTheme.colorScheme.secondary,

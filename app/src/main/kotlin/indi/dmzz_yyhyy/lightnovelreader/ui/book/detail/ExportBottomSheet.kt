@@ -18,6 +18,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
@@ -30,7 +31,6 @@ import androidx.compose.ui.unit.dp
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SwitchChip
 import io.nightfish.lightnovelreader.api.book.BookVolumes
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -66,7 +66,7 @@ fun ExportBottomSheet(
                 Text(
                     modifier = Modifier.weight(1f),
                     text = stringResource(R.string.export_epub),
-                    style = AppTypography.titleLarge
+                    style = typography.displayMedium
                 )
                 Spacer(Modifier.width(16.dp))
                 Button(onClick = {
@@ -164,7 +164,7 @@ fun ExportBottomSheet(
                         Text(
                             modifier = Modifier.weight(1f, fill = true),
                             text = volume.volumeTitle,
-                            style = AppTypography.titleMedium,
+                            style = typography.titleMedium,
                             color = if (isInteractive) MaterialTheme.colorScheme.onSurface
                             else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.38f)
                         )

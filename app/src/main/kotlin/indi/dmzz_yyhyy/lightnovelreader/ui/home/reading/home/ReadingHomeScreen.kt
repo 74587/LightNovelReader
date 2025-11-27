@@ -36,6 +36,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -82,7 +83,6 @@ import indi.dmzz_yyhyy.lightnovelreader.utils.removeFromBookshelfAction
 import indi.dmzz_yyhyy.lightnovelreader.utils.showSnackbar
 import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.book.UserReadingData
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import kotlinx.coroutines.delay
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
@@ -359,7 +359,7 @@ private fun TopBar(
         title = {
             Text(
                 text = stringResource(R.string.nav_reading),
-                style = AppTypography.titleTopBar,
+                style = typography.displayLarge,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -391,7 +391,7 @@ private fun ReadingBookCard(
     swipeToRightActions: List<SwipeAction> = emptyList(),
     swipeToLeftActions: List<SwipeAction> = emptyList(),
 ) {
-    val lineHeight = AppTypography.labelLarge.lineHeight
+    val lineHeight = typography.labelLarge.lineHeight
     val titleHeight = with(LocalDensity.current) { (lineHeight * 2.2f).toDp() }
 
     val lastRead = formTime(userReadingData.lastReadTime)
@@ -432,14 +432,14 @@ private fun ReadingBookCard(
                     text = bookInformation.title,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    style = AppTypography.labelLarge.copy(
+                    style = typography.labelLarge.copy(
                         fontWeight = FontWeight.W600
                     )
                 )
 
                 Text(
                     text = bookInformation.author,
-                    style = AppTypography.bodyMedium.copy(
+                    style = typography.bodyMedium.copy(
                         fontWeight = FontWeight.W600,
                         color = colorScheme.primary
                     ),
@@ -449,7 +449,7 @@ private fun ReadingBookCard(
 
                 Text(
                     text = bookInformation.description.trim(),
-                    style = AppTypography.bodyMedium.copy(color = colorScheme.secondary),
+                    style = typography.bodyMedium.copy(color = colorScheme.secondary),
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -466,7 +466,7 @@ private fun ReadingBookCard(
                     )
                     Text(
                         text = infoText,
-                        style = AppTypography.labelSmall.copy(color = colorScheme.secondary)
+                        style = typography.labelMedium.copy(color = colorScheme.secondary)
                     )
                 }
 
@@ -598,7 +598,7 @@ private fun ReadingHeaderCardPage(
     modifier: Modifier = Modifier
 ) {
     val density = LocalDensity.current
-    val lineHeight = AppTypography.titleLarge.lineHeight
+    val lineHeight = typography.displayMedium.lineHeight
     val titleHeight = with(density) { (lineHeight * 2.2f).toDp() }
 
     val dateFormatter = remember { DateTimeFormatter.ofPattern("MM/dd") }
@@ -639,7 +639,7 @@ private fun ReadingHeaderCardPage(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 fontWeight = FontWeight.W700,
-                style = AppTypography.titleLarge,
+                style = typography.displayMedium,
                 lineHeight = lineHeight,
                 modifier = Modifier
                     .height(titleHeight)
@@ -649,7 +649,7 @@ private fun ReadingHeaderCardPage(
             Text(
                 text = data.lastReadChapterTitle,
                 maxLines = 1,
-                style = AppTypography.labelMedium,
+                style = typography.labelLarge,
                 color = colorScheme.tertiary,
                 overflow = TextOverflow.Ellipsis,
                 fontWeight = FontWeight.W600
@@ -680,8 +680,9 @@ private fun ReadingHeaderCardPage(
                     Text(
                         text = stringResource(R.string.resume_last_reading),
                         fontWeight = FontWeight.W600,
-                        style = AppTypography.labelMedium,
-                        maxLines = 1
+                        style = typography.labelLarge,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
@@ -717,7 +718,7 @@ private fun InfoChip(
 
         Text(
             text = text,
-            style = AppTypography.labelSmall,
+            style = typography.labelMedium,
             color = colorScheme.onSurfaceVariant,
             maxLines = 1
         )

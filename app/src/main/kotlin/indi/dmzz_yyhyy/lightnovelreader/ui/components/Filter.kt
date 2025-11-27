@@ -26,7 +26,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import indi.dmzz_yyhyy.lightnovelreader.R
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import io.nightfish.lightnovelreader.api.web.explore.filter.Filter
 import io.nightfish.lightnovelreader.api.web.explore.filter.SingleChoiceFilter
 import io.nightfish.lightnovelreader.api.web.explore.filter.SliderFilter
@@ -150,7 +149,7 @@ fun BaseFilter(
             ) {
                 Text(
                     text = title,
-                    style = AppTypography.labelMedium,
+                    style = MaterialTheme.typography.labelMedium,
                     fontWeight = FontWeight.W500,
                     color = it
                 )
@@ -221,7 +220,7 @@ fun FilterChipsDialog(
                             ) {
                                 Text(
                                     text = choice,
-                                    style = AppTypography.labelMedium,
+                                    style = MaterialTheme.typography.labelMedium,
                                     fontWeight = FontWeight.W500,
                                     color = it
                                 )

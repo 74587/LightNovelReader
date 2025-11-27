@@ -1,11 +1,11 @@
 package indi.dmzz_yyhyy.lightnovelreader.data.content.component
 
+import AppTypography
 import android.content.Context
 import android.net.Uri
 import android.util.DisplayMetrics
 import android.view.View
 import android.widget.Toast
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -31,7 +31,6 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.content.componet.SimpleTe
 import indi.dmzz_yyhyy.lightnovelreader.utils.loadReaderFontFamilySafe
 import io.nightfish.lightnovelreader.api.content.component.AbstractDivisibleContentComponent
 import io.nightfish.lightnovelreader.api.content.component.SimpleTextComponentData
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import io.nightfish.lightnovelreader.api.userdata.UriUserData
 import io.nightfish.lightnovelreader.api.userdata.UserDataPath
 import io.nightfish.lightnovelreader.api.userdata.UserDataRepositoryApi
@@ -122,7 +121,7 @@ class SimpleTextComponent(
             }
         }
 
-        return fontFamily ?: MaterialTheme.typography.bodyMedium.fontFamily as FontFamily
+        return fontFamily ?: FontFamily.Default
     }
 
     override fun split(

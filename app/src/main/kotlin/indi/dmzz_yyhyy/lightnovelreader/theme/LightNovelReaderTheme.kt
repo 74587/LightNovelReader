@@ -1,10 +1,13 @@
 package indi.dmzz_yyhyy.lightnovelreader.theme
 
+import AppTypography
 import android.app.Activity
 import android.graphics.Color
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
+import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
+import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -26,10 +29,12 @@ data class AppTheme(
     val colorScheme: ColorScheme
 )
 
+@OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun LightNovelReaderTheme(
     darkMode: String,
     isDynamicColor: Boolean = true,
+    enableM3E: Boolean = false,
     lightThemeName: String,
     darkThemeName: String,
     appLocale: String,
@@ -96,9 +101,18 @@ fun LightNovelReaderTheme(
         LocalLightColorScheme provides lightColorScheme,
         LocalDarkColorScheme provides darkColorScheme
     ) {
-        MaterialTheme(
-            colorScheme = colorScheme,
-            content = content
-        )
+        if (enableM3E) {
+            MaterialExpressiveTheme(
+                colorScheme = colorScheme,
+                typography = AppTypography,
+                content = content
+            )
+        } else {
+            MaterialTheme(
+                colorScheme = colorScheme,
+                typography = AppTypography,
+                content = content
+            )
+        }
     }
 }

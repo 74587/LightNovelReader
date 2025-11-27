@@ -30,6 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -61,7 +62,6 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.components.LnrSnackbar
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.PluginMetadata
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.showSnackbar
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -198,7 +198,7 @@ private fun PluginCard(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Column(modifier = Modifier.weight(1f)) {
-            Text(text = indexEntry.name, style = AppTypography.bodyLarge)
+            Text(text = indexEntry.name, style = typography.bodyLarge)
             Spacer(Modifier.height(4.dp))
 
             if (isLoadingMetadata || metadata == null) {
@@ -254,12 +254,12 @@ private fun SkeletonMetadataDisplay() {
 @Composable
 private fun LoadedMetadataDisplay(metadata: PluginMetadata) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(text = "版本 ${metadata.versionName} (${metadata.version})", style = AppTypography.bodySmall)
+        Text(text = "版本 ${metadata.versionName} (${metadata.version})", style = typography.bodySmall)
         Spacer(Modifier.width(8.dp))
-        Text(text = metadata.author, style = AppTypography.labelMedium)
+        Text(text = metadata.author, style = typography.labelMedium)
     }
     Spacer(Modifier.height(6.dp))
-    Text(text = metadata.description, style = AppTypography.bodyMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
+    Text(text = metadata.description, style = typography.bodyMedium, maxLines = 2, overflow = TextOverflow.Ellipsis)
 }
 
 @Composable
@@ -387,7 +387,7 @@ private fun TopBar(
             title = {
                 Text(
                     text = "插件仓库",
-                    style = AppTypography.titleTopBar,
+                    style = typography.displayLarge,
                     color = colorScheme.onSurface
                 )
             },

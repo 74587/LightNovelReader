@@ -8,6 +8,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -21,7 +22,6 @@ import androidx.compose.ui.unit.dp
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.format.FormattingRule
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SwitchChip
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 
 @Composable
 fun EditTextFormattingRuleDialog(
@@ -53,7 +53,7 @@ fun EditTextFormattingRuleDialog(
         title = {
             Text(
                 text = stringResource(R.string.edit_rule),
-                style = AppTypography.titleLarge,
+                style = typography.displayMedium,
                 color = colorScheme.onSurface,
             )
         },

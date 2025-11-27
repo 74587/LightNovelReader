@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
@@ -59,7 +58,7 @@ fun rememberReaderFontFamily(settingState: SettingState): FontFamily {
         }
     }
 
-    return fontFamily ?: MaterialTheme.typography.bodyMedium.fontFamily as FontFamily
+    return fontFamily ?: FontFamily.Default
 }
 
 @Composable

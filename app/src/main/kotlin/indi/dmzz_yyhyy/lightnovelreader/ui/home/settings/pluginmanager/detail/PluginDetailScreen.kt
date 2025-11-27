@@ -22,6 +22,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
@@ -44,7 +45,6 @@ import androidx.compose.ui.unit.dp
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginInfo
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.EmptyPage
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import kotlinx.coroutines.launch
 
 
@@ -185,7 +185,7 @@ private fun PluginSwitchBlock(
         ){
             Text(
                 text = "启用插件",
-                style = AppTypography.titleLarge,
+                style = typography.displayMedium,
                 fontWeight = FontWeight.Normal
             )
             Spacer(Modifier
@@ -218,9 +218,9 @@ private fun PluginSwitchBlock(
             )
             Spacer(Modifier.width(12.dp))
             Column {
-                Text("第三方插件", style = AppTypography.titleSmall)
+                Text("第三方插件", style = typography.titleSmall)
                 Spacer(Modifier.height(4.dp))
-                Text("该插件由第三方提供", style = AppTypography.bodyMedium)
+                Text("该插件由第三方提供", style = typography.bodyMedium)
             }
         }
     }
@@ -230,11 +230,11 @@ private fun PluginSwitchBlock(
 private fun PluginInfoBlock(
     pluginInfo: PluginInfo
 ) {
-    val titleStyle = AppTypography.titleMedium.copy(
+    val titleStyle = typography.titleMedium.copy(
         color = colorScheme.onSurface,
         fontWeight = FontWeight.W600
     )
-    val contentStyle = AppTypography.labelLarge.copy(
+    val contentStyle = typography.labelLarge.copy(
         color = colorScheme.secondary
     )
 
@@ -246,7 +246,7 @@ private fun PluginInfoBlock(
         Text(
             modifier = Modifier.padding(vertical = 12.dp),
             text = pluginInfo.description,
-            style = AppTypography.labelLarge
+            style = typography.labelLarge
         )
         HorizontalDivider(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp))
 
@@ -284,7 +284,7 @@ private fun TopBar(
         title = {
             Text(
                 text = title,
-                style = AppTypography.titleTopBar,
+                style = typography.displayLarge,
                 color = colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

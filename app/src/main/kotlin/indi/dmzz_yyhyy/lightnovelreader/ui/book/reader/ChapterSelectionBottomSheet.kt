@@ -21,6 +21,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.SheetValue
@@ -42,7 +43,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import indi.dmzz_yyhyy.lightnovelreader.R
 import io.nightfish.lightnovelreader.api.book.BookVolumes
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -105,7 +105,7 @@ fun ChapterSelectionBottomSheet(
                     Text(
                         modifier = Modifier.padding(start = 8.dp),
                         text = stringResource(R.string.select_chapter),
-                        style = AppTypography.titleLarge,
+                        style = typography.displayMedium,
                         fontWeight = FontWeight.W600
                     )
                 }
@@ -159,14 +159,14 @@ fun ChapterSelectionBottomSheet(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Column {
-                                            Text(text = volume.volumeTitle, fontWeight = FontWeight.W600, style = AppTypography.titleMedium, color = colorScheme.onSurface)
+                                            Text(text = volume.volumeTitle, fontWeight = FontWeight.W600, style = typography.titleMedium, color = colorScheme.onSurface)
                                             Text(
                                                 text = stringResource(
                                                     R.string.info_volume_chapters_count,
                                                     volume.chapters.size
                                                 ),
                                                 color = colorScheme.secondary,
-                                                style = AppTypography.labelMedium
+                                                style = typography.labelMedium
                                             )
                                         }
                                         Spacer(Modifier.weight(2f))
@@ -204,7 +204,7 @@ fun ChapterSelectionBottomSheet(
                                                 Text(
                                                     text = chapter.title,
                                                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                                    style = AppTypography.titleSmall,
+                                                    style = typography.titleSmall,
                                                     color = colorScheme.onSurfaceVariant,
                                                     maxLines = 2,
                                                     overflow = TextOverflow.Ellipsis

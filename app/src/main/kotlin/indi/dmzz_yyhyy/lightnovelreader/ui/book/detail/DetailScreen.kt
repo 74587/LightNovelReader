@@ -45,6 +45,7 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SuggestionChip
@@ -96,7 +97,6 @@ import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.book.ChapterInformation
 import io.nightfish.lightnovelreader.api.book.Volume
 import io.nightfish.lightnovelreader.api.ui.LocalNavController
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -438,7 +438,7 @@ private fun DetailContent(
             ) {
                 Text(
                     text = stringResource(R.string.detail_contents),
-                    style = AppTypography.titleLarge,
+                    style = typography.displayMedium,
                     fontWeight = FontWeight.W600
                 )
                 Spacer(Modifier.width(12.dp))
@@ -517,7 +517,8 @@ private fun TopBar(
             Box(Modifier.fillMaxWidth()) {
                 Text(
                     text = stringResource(R.string.detail_title),
-                    style = AppTypography.titleTopBar,
+                    maxLines = 1,
+                    style = typography.displayLarge,
                     modifier = Modifier.graphicsLayer {
                         alpha = 1f - progress
                         translationY = -offset * progress
@@ -527,7 +528,7 @@ private fun TopBar(
                 Text(
                     text = title,
                     maxLines = 1,
-                    style = AppTypography.titleTopBar,
+                    style = typography.displayLarge,
                     modifier = Modifier
                         .horizontalScroll(rememberScrollState())
                         .graphicsLayer {
@@ -558,7 +559,7 @@ private fun TopBar(
                         text = {
                             Text(
                                 text = stringResource(R.string.mark_all_read),
-                                style = AppTypography.dropDownItem
+                                style = typography.bodyLarge
                             )
                         },
                         onClick = {
@@ -625,7 +626,7 @@ private fun BookCardBlock(
                 maxLines = 3,
                 overflow = TextOverflow.Ellipsis,
                 fontWeight = FontWeight.W600,
-                style = AppTypography.titleLarge,
+                style = typography.displayMedium,
                 modifier = Modifier.padding(vertical = 4.dp)
             )
             if (bookInformation.subtitle.isNotEmpty()) {
@@ -633,7 +634,7 @@ private fun BookCardBlock(
                     text = bookInformation.subtitle,
                     maxLines = 2,
                     color = colorScheme.secondary,
-                    style = AppTypography.labelMedium
+                    style = typography.bodyMedium
                 )
             }
             Text(
@@ -641,7 +642,7 @@ private fun BookCardBlock(
                 maxLines = 1,
                 fontWeight = FontWeight.W600,
                 color = colorScheme.primary,
-                style = AppTypography.labelLarge
+                style = typography.labelLarge
             )
             Column {
                 InfoRow(
@@ -680,7 +681,7 @@ private fun InfoRow(
         Text(
             text = text,
             maxLines = 1,
-            style = AppTypography.labelMedium,
+            style = typography.labelMedium,
             color = colorScheme.secondary
         )
     }
@@ -843,7 +844,7 @@ private fun IntroBlock(description: String) {
         Text(
             modifier = Modifier.padding(vertical = 16.dp),
             text = stringResource(R.string.detail_introduction),
-            style = AppTypography.titleLarge,
+            style = typography.displayMedium,
             fontWeight = FontWeight.W600
         )
 
@@ -857,7 +858,7 @@ private fun IntroBlock(description: String) {
         ) {
             Text(
                 text = description,
-                style = AppTypography.bodyLarge,
+                style = typography.bodyLarge,
                 maxLines = if (!expanded && overflowed) 4 else Int.MAX_VALUE,
                 color = colorScheme.onSurface,
                 modifier = Modifier.fillMaxWidth()
@@ -922,14 +923,14 @@ private fun VolumeItem(
             ) {
                 Text(
                     text = volume.volumeTitle,
-                    style = AppTypography.titleMedium,
+                    style = typography.titleMedium,
                     color = if (isFullyRead) colorScheme.secondary
                     else colorScheme.onSurface
                 )
                 Text(
                     text = if (isFullyRead) stringResource(R.string.info_reading_finished)
                     else stringResource(R.string.info_reading_progress, readCount, totalCount),
-                    style = AppTypography.titleSmall,
+                    style = typography.titleSmall,
                     fontWeight = FontWeight.Normal,
                     color = colorScheme.secondary
                 )
@@ -987,7 +988,7 @@ private fun ChapterItem(
                 text = chapter.title,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
-                style = AppTypography.titleSmall,
+                style = typography.titleMedium,
                 fontWeight = if (isRead) FontWeight.Normal else FontWeight.W600,
                 color = if (isRead) colorScheme.secondary
                 else colorScheme.onSurface
@@ -996,7 +997,7 @@ private fun ChapterItem(
                 Text(
                     text = stringResource(R.string.last_read),
                     maxLines = 1,
-                    style = AppTypography.titleSmall,
+                    style = typography.titleMedium,
                     fontWeight = FontWeight.Normal,
                     color = colorScheme.primary
                 )

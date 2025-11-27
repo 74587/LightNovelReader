@@ -34,6 +34,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -81,7 +82,6 @@ import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.rememberReaderBackgroundPainter
 import indi.dmzz_yyhyy.lightnovelreader.utils.showSnackbar
 import io.nightfish.lightnovelreader.api.book.ChapterContent
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalTime
@@ -496,7 +496,7 @@ private fun TopBar(
                 AnimatedContent(title, label = "TitleAnimate") { text ->
                     Text(
                         text = text,
-                        style = AppTypography.titleTopBar,
+                        style = typography.displayLarge,
                         fontWeight = FontWeight.W400,
                         color = colorScheme.onSurface,
                         maxLines = 1,
@@ -612,15 +612,13 @@ fun Indicator(
                 RollingNumber(
                     modifier = Modifier.align(Alignment.CenterVertically),
                     number = batLevel,
-                    style = AppTypography.labelMedium.copy(
-                        fontWeight = FontWeight.W500
-                    ),
+                    style = typography.bodyLarge,
                     color = colorScheme.onSurfaceVariant,
                     length = 3
                 )
                 Text(
                     text = "%",
-                    style = AppTypography.labelMedium,
+                    style = typography.bodyLarge,
                     fontWeight = FontWeight.W500,
                     color = colorScheme.onSurfaceVariant
                 )
@@ -646,10 +644,9 @@ fun Indicator(
                 AnimatedText(
                     modifier = Modifier.align(Alignment.CenterVertically),
                     text = String.format(Locale.US, "%d:%02d", LocalTime.now().hour, LocalTime.now().minute),
-                    style = AppTypography.labelMedium.copy(
+                    style = typography.bodyLarge.copy(
                         letterSpacing = 1.sp
                     ),
-                    fontWeight = FontWeight.W500,
                     color = colorScheme.onSurfaceVariant
                 )
             }
@@ -666,7 +663,7 @@ fun Indicator(
                     modifier = Modifier.fillMaxWidth(),
                     text = chapterTitle,
                     textAlign = TextAlign.End,
-                    style = AppTypography.labelMedium,
+                    style = typography.bodyLarge,
                     color = colorScheme.onSurfaceVariant,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
@@ -681,7 +678,7 @@ fun Indicator(
                 RollingNumber(
                     modifier = Modifier.align(Alignment.CenterVertically),
                     number = (readingChapterProgress * 100).toInt(),
-                    style = AppTypography.labelMedium.copy(
+                    style = typography.bodyLarge.copy(
                         fontWeight = FontWeight.W500
                     ),
                     color = colorScheme.onSurfaceVariant,
@@ -689,7 +686,7 @@ fun Indicator(
                 )
                 Text(
                     text = "%",
-                    style = AppTypography.labelMedium,
+                    style = typography.bodyLarge,
                     fontWeight = FontWeight.W500,
                     color = colorScheme.onSurfaceVariant
                 )
