@@ -155,6 +155,7 @@ dependencies {
     implementation("com.zhzc0x.cxhttp:cxhttp:1.2.5")
     implementation("com.squareup.okhttp3:okhttp:4.9.3")
     implementation("com.squareup.okhttp3:logging-interceptor:5.3.2")
+    implementation(libs.androidx.profileinstaller)
 }
 
 configurations.implementation {

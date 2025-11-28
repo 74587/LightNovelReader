@@ -8,6 +8,7 @@ kotlinComposeCompilerPlugin = "2.1.20"
 kotlinResult = "2.1.0"
 ksp = "2.2.20-2.0.3"
 materialIconsCore = "1.7.8"
+profileinstaller = "1.4.1"
 runtime = "1.9.2"
 vico = "2.2.0"
 hilt = "2.57.2"
@@ -41,6 +42,7 @@ lightnovelreader = "refactoring-SNAPSHOT"
 
 [libraries]
 androidx-material-icons-core = { module = "androidx.compose.material:material-icons-core", version.ref = "materialIconsCore" }
+androidx-profileinstaller = { module = "androidx.profileinstaller:profileinstaller", version.ref = "profileinstaller" }
 androidx-runtime = { module = "androidx.compose.runtime:runtime", version.ref = "runtime" }
 caoccao-javet = { module = "com.caoccao.javet:javet", version.ref = "javet" }
 apksig = { module = "com.android.tools.build:apksig", version.ref = "apksig" }
