@@ -1,6 +1,5 @@
 package indi.dmzz_yyhyy.lightnovelreader.data.web
 
-import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.Wenku8Api
 import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.book.CanBeEmpty
 import io.nightfish.lightnovelreader.api.util.Cache
@@ -12,11 +11,11 @@ class CacheWebBookDataSource(
     val webBookDataSource: WebBookDataSource
 ): WebBookDataSource {
     private inline fun <reified T: CanBeEmpty> ifCache(id: String, block: () -> T): T {
-        val cacheData = Wenku8Api.cache.getCache<T>(id.hashCode())
+        val cacheData = cache.getCache<T>(id.hashCode())
         if (cacheData == null) {
             val data = block.invoke()
             if (data.isEmpty()) return data
-            Wenku8Api.cache.cache(id.hashCode(), data)
+            cache.cache(id.hashCode(), data)
             return data
         }
         return cacheData
