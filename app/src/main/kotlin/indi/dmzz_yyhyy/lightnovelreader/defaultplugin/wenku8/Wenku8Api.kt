@@ -90,10 +90,10 @@ object Wenku8Api: WebBookDataSource {
     private val titleRegex = Regex("(.*) ?[(（](.*)[)）] ?$")
     private val hosts = listOf("https://www.wenku8.cc", "https://www.wenku8.net", "https://www.wenku8.com")
     override val cache = Cache(
-        timeout = 5 * 60 * 1000
+        timeout = 2 * 60 * 60 * 1000
     )
     private val _cache = Cache(
-        timeout = 5 * 60 * 1000
+        timeout = 2 * 60 * 60 * 1000
     )
     var host  =  hosts[0]
 
