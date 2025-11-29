@@ -26,23 +26,29 @@ class AdvancedPrioritySemaphoreWebBookDataSource(
     override fun stopAllSearch() = webBookDataSource.stopAllSearch()
 
     override suspend fun getBookInformation(id: String): BookInformation {
-        advancedPrioritySemaphore.acquire(priority)
-        val result = webBookDataSource.getBookInformation(id)
-        advancedPrioritySemaphore.release()
-        return result
+        try {
+            advancedPrioritySemaphore.acquire(priority)
+            return webBookDataSource.getBookInformation(id)
+        } finally {
+            advancedPrioritySemaphore.release()
+        }
     }
 
     override suspend fun getBookVolumes(id: String): BookVolumes {
-        advancedPrioritySemaphore.acquire(priority)
-        val result = webBookDataSource.getBookVolumes(id)
-        advancedPrioritySemaphore.release()
-        return result
+        try {
+            advancedPrioritySemaphore.acquire(priority)
+            return webBookDataSource.getBookVolumes(id)
+        } finally {
+            advancedPrioritySemaphore.release()
+        }
     }
 
     override suspend fun getChapterContent(chapterId: String, bookId: String): ChapterContent {
-        advancedPrioritySemaphore.acquire(priority)
-        val result = webBookDataSource.getChapterContent(chapterId, bookId)
-        advancedPrioritySemaphore.release()
-        return result
+        try {
+            advancedPrioritySemaphore.acquire(priority)
+            return webBookDataSource.getChapterContent(chapterId, bookId)
+        } finally {
+            advancedPrioritySemaphore.release()
+        }
     }
 }

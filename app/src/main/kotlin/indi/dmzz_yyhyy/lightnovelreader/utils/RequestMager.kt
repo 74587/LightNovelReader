@@ -23,6 +23,7 @@ class RequestMarge {
             }
         }
         while (resultMap.contains(key) && resultMap[key] == null) {
+            println("wait for marge")
             delay(1)
         }
         val value = resultMap[key]?.let { it.value as T} ?: block.invoke()
