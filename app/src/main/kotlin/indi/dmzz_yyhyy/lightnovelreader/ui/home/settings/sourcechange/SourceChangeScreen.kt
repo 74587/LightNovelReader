@@ -43,7 +43,6 @@ import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.RadioButtonListItem
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SectionHeader
 import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import io.nightfish.lightnovelreader.api.web.WebDataSourceItem
 
 @Composable
@@ -247,8 +246,7 @@ private fun TopBar(
     TopAppBar(
         title = {
             Text(
-                text = stringResource(R.string.settings_select_data_source),
-                style = AppTypography.titleTopBar
+                text = stringResource(R.string.settings_select_data_source)
             )
         },
         navigationIcon = {
