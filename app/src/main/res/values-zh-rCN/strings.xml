@@ -13,7 +13,7 @@
     <string name="nav_statistics">统计</string>
     <!-- Operations -->
     <string name="cancel">取消</string>
-    <string name="apply">设定</string>
+    <string name="apply">应用</string>
     <string name="confirm">确定</string>
     <string name="decline">拒绝</string>
     <string name="copied">内容已复制</string>
@@ -68,6 +68,11 @@
     <string name="reader_last_page">已经是最后一页了</string>
     <string name="reader_reached_bottom">已经到底了</string>
     <string name="font_file_error">字体文件错误或已损坏, 请您检查后导入</string>
+    <string name="settings_data_source_pending_title">切换到 %s</string>
+    <string name="settings_data_source_pending_desc">
+        应用将清除缓存并重启。当前数据将在下次切换回「%s」时可用。
+    </string>
+    <string name="settings_data_source_applying">进行中……</string>
 
     <!-- Snackbar Hints -->
     <string name="cache_book_started">开始缓存：%1$s</string>

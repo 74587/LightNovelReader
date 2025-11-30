@@ -68,6 +68,11 @@
     <string name="reader_last_page">已經是最後一頁了</string>
     <string name="reader_reached_bottom">已經到底了</string>
     <string name="font_file_error">字體文件錯誤或已損壞, 請您檢查後導入</string>
+    <string name="settings_data_source_pending_title">切換到 %s</string>
+    <string name="settings_data_source_pending_desc">
+        系統將清除快取並重新啟動。當下次切換回「%s」時，您目前的資料將可再次使用。
+    </string>
+    <string name="settings_data_source_applying">處理中……</string>
 
     <!-- Snackbar Hints -->
     <string name="cache_book_started">開始快取：%1$s</string>

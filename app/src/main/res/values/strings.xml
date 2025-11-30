@@ -72,6 +72,11 @@
     <string name="reader_last_page">You are on the last page</string>
     <string name="reader_reached_bottom">You have reached the bottom</string>
     <string name="font_file_error">Font file is incorrect or corrupted, please check and import again</string>
+    <string name="settings_data_source_pending_title">Switch to %s</string>
+    <string name="settings_data_source_pending_desc">
+        The operation will clear cached data and restart the app. Your current data can be restored when switching back to "%s".
+    </string>
+    <string name="settings_data_source_applying">Processing…</string>
 
     <!-- Snackbar Hints -->
     <string name="cache_book_started">Caching started: %1$s</string>

@@ -40,14 +40,13 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import io.nightfish.lightnovelreader.api.ui.LocalNavController
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.data.MenuOptions
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.navigateToSliderValueDialog
+import io.nightfish.lightnovelreader.api.ui.LocalNavController
 import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import io.nightfish.lightnovelreader.api.userdata.BooleanUserData
 import io.nightfish.lightnovelreader.api.userdata.FloatUserData
@@ -111,8 +110,7 @@ fun SettingsSwitchEntry(
             Text(
                 text = title,
                 color = colorScheme.onSurface,
-                style = AppTypography.titleMedium,
-                fontWeight = FontWeight.Normal
+                style = AppTypography.titleMedium
             )
             Text(
                 text = description,
@@ -224,8 +222,7 @@ private fun SettingsSliderEntry(
             Text(
                 text = title,
                 color = colorScheme.onSurface,
-                style = AppTypography.titleMedium,
-                fontWeight = FontWeight.Normal
+                style = AppTypography.titleMedium
             )
 
             val displayValue = if (actualSteps != null)
@@ -343,8 +340,7 @@ fun SettingsMenuEntry(
             Text(
                 text = title,
                 color = colorScheme.onSurface,
-                style = AppTypography.titleMedium,
-                fontWeight = FontWeight.Normal
+                style = AppTypography.titleMedium
             )
             description?.let {
                 Text(
@@ -458,8 +454,7 @@ fun SettingsClickableEntry(
             Text(
                 text = title,
                 color = colorScheme.onSurface,
-                style = AppTypography.titleMedium,
-                fontWeight = FontWeight.Normal
+                style = AppTypography.titleMedium
             )
             description?.let {
                 Text(

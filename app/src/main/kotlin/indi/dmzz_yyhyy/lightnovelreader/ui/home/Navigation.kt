@@ -26,31 +26,11 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.home.explore.exploreNavigation
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.readingNavigation
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.settingsNavigation
 import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
-import indi.dmzz_yyhyy.lightnovelreader.utils.fadeEnter
-import indi.dmzz_yyhyy.lightnovelreader.utils.fadeExit
-import indi.dmzz_yyhyy.lightnovelreader.utils.fadePopEnter
-import indi.dmzz_yyhyy.lightnovelreader.utils.fadePopExit
-import indi.dmzz_yyhyy.lightnovelreader.utils.isInMainNavigation
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun NavGraphBuilder.homeNavigation(sharedTransitionScope: SharedTransitionScope) {
     navigation<Route.Main>(
-        startDestination = Route.Main.Reading,
-        enterTransition = {
-            if (isInMainNavigation(initialState.destination, targetState.destination)) fadeEnter()
-            else null
-        },
-        exitTransition = {
-            fadeExit()
-        },
-        popEnterTransition = {
-            if (isInMainNavigation(initialState.destination, targetState.destination)) fadePopEnter()
-            else null
-        },
-        popExitTransition = {
-            if (isInMainNavigation(initialState.destination, targetState.destination)) fadePopExit()
-            else null
-        }
+        startDestination = Route.Main.Reading
     ) {
         readingNavigation(sharedTransitionScope)
         exploreNavigation(sharedTransitionScope)
