@@ -9,13 +9,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import io.nightfish.lightnovelreader.api.ui.LocalNavController
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.detail.navigateToBookDetailDestination
-import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.ChapterSelectorBottomSheet
+import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.ChapterSelectionBottomSheet
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.navigateToBookReaderDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.downloadmanager.navigateToDownloadManager
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.stats.navigateToReadingStatsDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
+import io.nightfish.lightnovelreader.api.ui.LocalNavController
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)
 fun NavGraphBuilder.readingHomeDestination(sharedTransitionScope: SharedTransitionScope) {
@@ -27,7 +27,7 @@ fun NavGraphBuilder.readingHomeDestination(sharedTransitionScope: SharedTransiti
 
         val chapterSheetUi = viewModel.chapterSheetUi
         val volumesMap = viewModel.bookVolumesMap
-        val chapterSheetState = rememberModalBottomSheetState()
+        val chapterSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
         ReadingScreen(
             updateReadingBooks = viewModel::updateReadingBooks,
@@ -50,13 +50,14 @@ fun NavGraphBuilder.readingHomeDestination(sharedTransitionScope: SharedTransiti
 
         if (chapterSheetUi != null) {
             volumesMap[chapterSheetUi.bookId]?.let { volumes ->
-                ChapterSelectorBottomSheet(
+                ChapterSelectionBottomSheet(
                     sheetState = chapterSheetState,
                     selectedVolumeId = chapterSheetUi.selectedVolumeId,
                     bookVolumes = volumes,
                     readingChapterId = chapterSheetUi.readingChapterId,
                     onDismissRequest = viewModel::closeContents,
                     onClickChapter = { chapterId ->
+                        navController.navigateToBookDetailDestination(chapterSheetUi.bookId)
                         navController.navigateToBookReaderDestination(
                             chapterSheetUi.bookId,
                             chapterId,

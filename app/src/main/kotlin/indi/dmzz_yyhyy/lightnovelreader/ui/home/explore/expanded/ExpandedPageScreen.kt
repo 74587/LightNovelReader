@@ -59,7 +59,6 @@ import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.addToBookshelfAction
 import indi.dmzz_yyhyy.lightnovelreader.utils.fadingEdge
 import indi.dmzz_yyhyy.lightnovelreader.utils.withHaptic
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -211,7 +210,7 @@ fun TopBar(
         title = {
             Text(
                 text = stringResource(id = R.string.nav_explore_child, title),
-                style = AppTypography.titleTopBar,
+                style = MaterialTheme.typography.displayLarge,
                 fontWeight = FontWeight.W600,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,

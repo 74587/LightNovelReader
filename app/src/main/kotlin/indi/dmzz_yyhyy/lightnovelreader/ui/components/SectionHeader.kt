@@ -1,6 +1,7 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.components
 
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -16,7 +17,7 @@ fun SectionHeader(
         text = text,
         modifier = modifier,
         color = colorScheme.primary,
-        style = AppTypography.titleSmall,
+        style = typography.labelLarge,
         fontWeight = FontWeight.W600
     )
 }

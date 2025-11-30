@@ -73,7 +73,6 @@ import indi.dmzz_yyhyy.lightnovelreader.utils.bottomBarSpacer
 import indi.dmzz_yyhyy.lightnovelreader.utils.fadingEdge
 import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 import io.nightfish.lightnovelreader.api.explore.ExploreBooksRow
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -175,7 +174,7 @@ fun TopBar(
         title = {
             Text(
                 text = stringResource(id = R.string.nav_explore),
-                style = AppTypography.titleTopBar,
+                style = MaterialTheme.typography.displayLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -252,7 +251,7 @@ fun ExplorePage(
                         Text(
                             modifier = Modifier.weight(2f),
                             text = exploreBooksRow.title,
-                            style = AppTypography.titleMedium,
+                            style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.W600,
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -334,7 +333,7 @@ fun ExplorePage(
                                                 .height(titleHeight)
                                                 .wrapContentHeight(Alignment.Top),
                                             text = exploreDisplayBook.title,
-                                            style = AppTypography.titleVerySmall.copy(
+                                            style = MaterialTheme.typography.headlineMedium.copy(
                                                 letterSpacing = 0.5.sp
                                             ),
                                             lineHeight = titleLineHeight,
@@ -345,7 +344,7 @@ fun ExplorePage(
                                         if (exploreDisplayBook.author.isNotEmpty()) {
                                             Text(
                                                 text = exploreDisplayBook.author,
-                                                style = AppTypography.titleVerySmall.copy(
+                                                style = MaterialTheme.typography.headlineMedium.copy(
                                                     letterSpacing = 0.5.sp
                                                 ),
                                                 color = MaterialTheme.colorScheme.secondary,

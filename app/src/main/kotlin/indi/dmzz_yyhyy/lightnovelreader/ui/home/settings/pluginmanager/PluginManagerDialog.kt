@@ -22,6 +22,7 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -33,7 +34,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.utils.ApkSignatureInfo
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 
 @Composable
 fun InstallProgressDialog(
@@ -49,7 +49,7 @@ fun InstallProgressDialog(
         title = {
             Column {
                 val titleText = state.pluginAnnotation?.name?.takeIf { it.isNotEmpty() } ?: "正在准备"
-                Text(text = titleText, style = AppTypography.titleLarge, color = colorScheme.onSurface)
+                Text(text = titleText, style = typography.displayMedium, color = colorScheme.onSurface)
                 Spacer(Modifier.height(4.dp))
                 if (state.packageName.isNotEmpty()) {
                     Text(
@@ -58,7 +58,7 @@ fun InstallProgressDialog(
                             val ver = state.pluginAnnotation?.versionName.orEmpty()
                             if (ver.isNotEmpty()) append("\n版本 $ver")
                         },
-                        style = AppTypography.bodyMedium
+                        style = typography.bodyMedium
                     )
                 }
             }
@@ -76,7 +76,7 @@ fun InstallProgressDialog(
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = msg,
-                    style = AppTypography.bodyMedium
+                    style = typography.bodyMedium
                 )
             }
         },
@@ -162,12 +162,12 @@ fun DeleteProgressDialog(
 
     AlertDialog(
         onDismissRequest = { },
-        title = { Text(text = "删除 ${state.pluginName}", style = AppTypography.titleLarge, color = colorScheme.onSurface) },
+        title = { Text(text = "删除 ${state.pluginName}", style = typography.displayMedium, color = colorScheme.onSurface) },
         text = {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (state.finished) DoneIndicator() else CircularProgressIndicator(modifier = Modifier.size(36.dp))
                 Spacer(Modifier.width(16.dp))
-                Text(text = state.phase, style = AppTypography.bodyMedium)
+                Text(text = state.phase, style = typography.bodyMedium)
             }
         },
         confirmButton = {
@@ -191,9 +191,9 @@ fun UpdateCheckDialog(
         onDismissRequest = { },
         title = {
             Column {
-                Text(text = "检查更新", style = AppTypography.titleLarge, color = colorScheme.onSurface)
+                Text(text = "检查更新", style = typography.displayMedium, color = colorScheme.onSurface)
                 Spacer(Modifier.height(6.dp))
-                Text(text = state.pluginName, style = AppTypography.bodyLarge)
+                Text(text = state.pluginName, style = typography.bodyLarge)
             }
         },
         text = {
@@ -230,7 +230,7 @@ fun UpdateCheckDialog(
                     }
                     else -> ""
                 }
-                Text(text = msg, style = AppTypography.labelMedium)
+                Text(text = msg, style = typography.labelMedium)
             }
         },
         confirmButton = {
@@ -261,18 +261,18 @@ fun PluginNoSignatureDialog(
     AlertDialog(
         onDismissRequest = { },
         title = {
-            Text(text = "关于插件签名", style = AppTypography.titleLarge, color = colorScheme.onSurface)
+            Text(text = "关于插件签名", style = typography.displayMedium, color = colorScheme.onSurface)
         },
         text = {
             Column {
                 Text(
                     text = "插件签名可被用于确认插件文件的完整性与来源。\n允许安装未签名的插件，但请务必确认文件来自可信的渠道。",
-                    style = AppTypography.bodyMedium
+                    style = typography.bodyMedium
                 )
                 Text(
                     modifier = Modifier.padding(top = 20.dp, bottom = 14.dp),
                     text = "对插件开发者的建议",
-                    style = AppTypography.titleSmall,
+                    style = typography.titleSmall,
                     color = colorScheme.onSurface
                 )
                 Text("建议为插件生成并使用固定的签名证书，以便在版本更新时维持一致性，并确保插件在分发过程中不被篡改。")
@@ -296,7 +296,7 @@ fun PluginSignatureDialog(
         title = {
             Text(
                 text = "签名信息",
-                style = AppTypography.titleLarge,
+                style = typography.displayMedium,
                 color = colorScheme.onSurface
             )
         },
@@ -314,7 +314,7 @@ fun PluginSignatureDialog(
                         Column {
                             Text(
                                 text = "#${index + 1}",
-                                style = AppTypography.titleMedium
+                                style = typography.titleMedium
                             )
                             Spacer(modifier = Modifier.height(4.dp))
                             Text("所有者: ${sig.subject}")

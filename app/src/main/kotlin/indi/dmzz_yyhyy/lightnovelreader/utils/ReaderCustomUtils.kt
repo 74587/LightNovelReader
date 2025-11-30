@@ -4,9 +4,10 @@ import android.annotation.SuppressLint
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.graphics.Color
@@ -22,6 +23,7 @@ import coil.request.ImageRequest
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalAppTheme
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.SettingState
+import io.nightfish.lightnovelreader.api.userdata.UriUserData
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
@@ -41,25 +43,27 @@ fun loadReaderFontFamilySafe(uri: Uri): FontFamily? {
 
 @SuppressLint("CoroutineCreationDuringComposition")
 @Composable
-fun rememberReaderFontFamily(settingState: SettingState): FontFamily {
+fun rememberReaderFontFamily(fontFamilyUriUserData: UriUserData): FontFamily {
     val coroutineScope = rememberCoroutineScope()
-    val uri = settingState.fontFamilyUri
+    val uri by fontFamilyUriUserData.getFlowWithDefault(Uri.EMPTY).collectAsState(Uri.EMPTY)
     val fontFamily = remember(uri) {
         loadReaderFontFamilySafe(uri)
     }
 
     if (fontFamily == null && uri != Uri.EMPTY) {
         val context = LocalContext.current
-        coroutineScope.launch(Dispatchers.IO) {
-            settingState.fontFamilyUriUserData.set(Uri.EMPTY)
+        LaunchedEffect(Unit) {
+            coroutineScope.launch(Dispatchers.IO) {
+                fontFamilyUriUserData.set(Uri.EMPTY)
+            }
         }
         LaunchedEffect(uri) {
-            settingState.fontFamilyUriUserData.asynchronousSet(Uri.EMPTY)
+            fontFamilyUriUserData.asynchronousSet(Uri.EMPTY)
             Toast.makeText(context, "字体加载失败，已恢复为默认字体", Toast.LENGTH_SHORT).show()
         }
     }
 
-    return fontFamily ?: MaterialTheme.typography.bodyMedium.fontFamily as FontFamily
+    return fontFamily ?: FontFamily.Default
 }
 
 @Composable

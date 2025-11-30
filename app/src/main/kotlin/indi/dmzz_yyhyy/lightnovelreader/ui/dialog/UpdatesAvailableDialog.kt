@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -29,7 +30,6 @@ import dev.jeziellago.compose.markdowntext.MarkdownText
 import indi.dmzz_yyhyy.lightnovelreader.BuildConfig
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.update.Release
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import io.nightfish.lightnovelreader.api.ui.LocalNavController
 import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
 
@@ -76,7 +76,7 @@ fun UpdatesAvailableDialog(
                         item {
                             Text(
                                 text = stringResource(R.string.changelog),
-                                style = AppTypography.titleMedium,
+                                style = typography.titleMedium,
                             )
                             Spacer(Modifier.height(12.dp))
                         }

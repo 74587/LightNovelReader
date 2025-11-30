@@ -10,7 +10,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 
 @Composable
 fun ListItem(
@@ -27,13 +26,13 @@ fun ListItem(
             Text(
                 modifier = Modifier.padding(bottom = 4.dp),
                 text = title,
-                style = AppTypography.titleMedium,
+                style = MaterialTheme.typography.titleMedium,
             )
         },
         supportingContent = {
             Text(
                 text = supportingText,
-                style = AppTypography.labelMedium,
+                style = MaterialTheme.typography.labelMedium,
             )
         },
         trailingContent = trailingContent

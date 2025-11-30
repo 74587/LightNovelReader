@@ -16,6 +16,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -32,7 +33,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.format.FormattingRule
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.RegexText
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -110,7 +110,7 @@ private fun RuleListItem(
                 }
                 Text(
                     text = rule.name,
-                    style = AppTypography.labelLarge,
+                    style = typography.labelLarge,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -122,7 +122,7 @@ private fun RuleListItem(
                 if (rule.isRegex)
                     RegexText(
                         regex = rule.match,
-                        style = AppTypography.labelMedium,
+                        style = typography.labelMedium,
                         color = colorScheme.secondary,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -132,7 +132,7 @@ private fun RuleListItem(
                 else
                     Text(
                         text = rule.match,
-                        style = AppTypography.labelMedium,
+                        style = typography.labelMedium,
                         color = colorScheme.secondary,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
@@ -149,7 +149,7 @@ private fun RuleListItem(
                 )
                 Text(
                     text = rule.replacement,
-                    style = AppTypography.labelMedium,
+                    style = typography.labelMedium,
                     color = colorScheme.secondary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -188,7 +188,7 @@ private fun TopBar(
         title = {
             Text(
                 text = stringResource(id = R.string.book_rules),
-                style = AppTypography.titleTopBar,
+                style = typography.displayLarge,
                 color = colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

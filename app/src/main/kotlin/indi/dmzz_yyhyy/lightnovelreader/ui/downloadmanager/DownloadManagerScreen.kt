@@ -41,7 +41,6 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.components.Cover
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.EmptyPage
 import indi.dmzz_yyhyy.lightnovelreader.utils.formTime
 import io.nightfish.lightnovelreader.api.book.BookInformation
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -59,7 +58,7 @@ fun DownloadManagerScreen(
                 title = {
                     Text(
                         text = stringResource(R.string.book_management_title),
-                        style = AppTypography.titleTopBar,
+                        style = MaterialTheme.typography.displayLarge,
                         fontWeight = FontWeight.W600
                     )
                 },
@@ -108,7 +107,7 @@ private fun Content(
                 Text(
                     modifier = Modifier.height(34.dp).animateItem(),
                     text = stringResource(R.string.download_in_progress),
-                    style = AppTypography.bodyLarge,
+                    style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.W600
                 )
             }
@@ -133,14 +132,14 @@ private fun Content(
                 ) {
                     Text(
                         text = stringResource(R.string.completed),
-                        style = AppTypography.bodyLarge,
+                        style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.W600
                     )
                     Spacer(Modifier.weight(1f))
                     TextButton(onClickClearCompleted) {
                         Text(
                             text = stringResource(R.string.clear_all),
-                            style = AppTypography.bodyLarge,
+                            style = MaterialTheme.typography.bodyLarge,
                             fontWeight = FontWeight.W600,
                             color = MaterialTheme.colorScheme.primary
                         )
@@ -194,14 +193,14 @@ private fun Card(
                 text = bookInformation.title,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = AppTypography.titleMedium,
+                style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.W600
             )
             Text(
                 text = bookInformation.author,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = AppTypography.bodyMedium,
+                style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.W500,
                 letterSpacing = 0.15.sp,
                 color = MaterialTheme.colorScheme.primary
@@ -229,7 +228,7 @@ private fun Card(
                         else stringResource(R.string.download_item_failed, downloadItem.type.typeName),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    style = AppTypography.bodyMedium,
+                    style = MaterialTheme.typography.bodyMedium,
                     fontWeight = FontWeight.W500,
                     letterSpacing = 0.15.sp,
                     color = MaterialTheme.colorScheme.secondary

@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Badge
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,7 +42,6 @@ import indi.dmzz_yyhyy.lightnovelreader.data.book.get
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Cover
 import indi.dmzz_yyhyy.lightnovelreader.utils.withHaptic
 import io.nightfish.lightnovelreader.api.book.BookInformation
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -54,7 +54,7 @@ fun BookCardContent(
     onClick: () -> Unit,
     onLongPress: () -> Unit
 ) {
-    val lineHeight = AppTypography.labelLarge.lineHeight
+    val lineHeight = typography.labelLarge.lineHeight
     val titleHeight = with(LocalDensity.current) { (lineHeight * 2.2f).toDp() }
 
     Box(
@@ -160,7 +160,7 @@ fun BookCardContent(
                     text = bookInformation.title,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    style = AppTypography.labelLarge.copy(
+                    style = typography.labelLarge.copy(
                         fontWeight = FontWeight.W600
                     )
                 )
@@ -173,7 +173,7 @@ fun BookCardContent(
                         text = bookInformation.author,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        style = AppTypography.bodyMedium.copy(
+                        style = typography.bodyMedium.copy(
                             fontWeight = FontWeight.W600,
                             color = colorScheme.primary
                         )
@@ -190,7 +190,7 @@ fun BookCardContent(
                     TagChip(painterResource(R.drawable.update_24px))
                     Text(
                         text = dateText,
-                        style = AppTypography.labelMedium.copy(color = colorScheme.secondary)
+                        style = typography.labelMedium.copy(color = colorScheme.secondary)
                     )
 
                     Spacer(Modifier.width(4.dp))
@@ -198,7 +198,7 @@ fun BookCardContent(
                     TagChip(painterResource(R.drawable.article_24px))
                     Text(
                         text = bookInformation.wordCount.get(),
-                        style = AppTypography.labelMedium.copy(color = colorScheme.secondary)
+                        style = typography.labelMedium.copy(color = colorScheme.secondary)
                     )
                 }
 
@@ -208,7 +208,7 @@ fun BookCardContent(
                         text = bookInformation.description.trim(),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis,
-                        style = AppTypography.bodyMedium.copy(
+                        style = typography.bodyMedium.copy(
                             color = colorScheme.secondary
                         )
                     )
@@ -217,13 +217,13 @@ fun BookCardContent(
                         text = stringResource(R.string.book_updated_to_title),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        style = AppTypography.bodyMedium
+                        style = typography.bodyMedium
                     )
                     Text(
                         text = latestChapterTitle,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        style = AppTypography.bodyMedium.copy(
+                        style = typography.bodyMedium.copy(
                             color = colorScheme.primary
                         )
                     )

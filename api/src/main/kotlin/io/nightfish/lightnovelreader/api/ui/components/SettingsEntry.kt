@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,7 +25,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import io.nightfish.lightnovelreader.api.userdata.BooleanUserData
 
 @Composable
@@ -83,12 +83,12 @@ fun SettingsSwitchEntry(
             Text(
                 text = title,
                 color = colorScheme.onSurface,
-                style = AppTypography.titleMedium
+                style = typography.displaySmall
             )
             Text(
                 text = description,
                 color = colorScheme.onSurfaceVariant,
-                style = AppTypography.labelMedium
+                style = typography.bodyMedium
             )
         }
 
@@ -165,19 +165,19 @@ fun SettingsClickableEntry(
             Text(
                 text = title,
                 color = colorScheme.onSurface,
-                style = AppTypography.titleMedium
+                style = typography.headlineSmall
             )
             description?.let {
                 Text(
                     text = it,
                     color = colorScheme.onSurfaceVariant,
-                    style = AppTypography.labelMedium
+                    style = typography.bodyMedium
                 )
             }
             option?.let {
                 AnimatedTextLine(
                     text = it,
-                    style = AppTypography.labelMedium,
+                    style = typography.bodyMedium,
                     color = colorScheme.primary,
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis

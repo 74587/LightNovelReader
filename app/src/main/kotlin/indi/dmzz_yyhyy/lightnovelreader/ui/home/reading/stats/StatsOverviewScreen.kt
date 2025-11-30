@@ -28,6 +28,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -62,7 +63,6 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.components.calendar.core.yearMonth
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.calendar.rememberHeatMapCalendarState
 import indi.dmzz_yyhyy.lightnovelreader.utils.DurationFormat
 import io.nightfish.lightnovelreader.api.book.BookInformation
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -144,7 +144,7 @@ private fun CalendarBlock(
     Column(modifier = Modifier.padding(horizontal = 18.dp)) {
         Text(
             text = stringResource(R.string.calendar),
-            style = AppTypography.titleMedium,
+            style = typography.titleMedium,
             fontWeight = FontWeight.W600
         )
         Spacer(Modifier.height(8.dp))
@@ -177,7 +177,7 @@ private fun CalendarBlock(
         ) {
             Text(
                 text = stringResource(R.string.heatmap_indicator_less),
-                style = AppTypography.bodySmall
+                style = typography.bodySmall
             )
             Spacer(Modifier.width(6.dp))
             Level.entries.forEach { level ->
@@ -186,7 +186,7 @@ private fun CalendarBlock(
             Spacer(Modifier.width(6.dp))
             Text(
                 text = stringResource(R.string.heatmap_indicator_more, uiState.thresholds),
-                style = AppTypography.bodySmall
+                style = typography.bodySmall
             )
         }
     }
@@ -210,7 +210,7 @@ private fun DailyStatsBlock(
         ) {
             AnimatedText(
                 text = selectedDate.toString(),
-                style = AppTypography.titleMedium,
+                style = typography.titleMedium,
                 fontWeight = FontWeight.W600
             )
             Spacer(Modifier.weight(1f))
@@ -305,7 +305,7 @@ private fun NoRecords() {
         modifier = Modifier.fillMaxWidth(),
         textAlign = TextAlign.Center,
         color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-        style = AppTypography.bodyMedium
+        style = typography.bodyMedium
     )
 }
 
@@ -373,13 +373,13 @@ private fun StatSection(
             Spacer(Modifier.width(8.dp))
             Text(
                 text = title,
-                style = AppTypography.labelMedium,
+                style = typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurface
             )
             Spacer(Modifier.weight(1f))
             Text(
                 text = value,
-                style = AppTypography.labelMedium,
+                style = typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
@@ -397,14 +397,14 @@ private fun DataItem(leftText: String, rightText: String) {
         Text(
             modifier = Modifier.weight(1f),
             text = leftText,
-            style = AppTypography.bodyMedium,
+            style = typography.bodyMedium,
             maxLines = 1,
             overflow = Ellipsis
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = rightText,
-            style = AppTypography.bodyMedium,
+            style = typography.bodyMedium,
             color = MaterialTheme.colorScheme.outline,
             maxLines = 1
         )
@@ -424,7 +424,7 @@ fun TotalStatsBlock(
     ) {
         Text(
             text = stringResource(R.string.total_record),
-            style = AppTypography.titleMedium,
+            style = typography.titleMedium,
             fontWeight = FontWeight.W600
         )
         Spacer(Modifier.height(8.dp))
@@ -479,7 +479,7 @@ fun StatsCard(
         Box(modifier = Modifier.padding(16.dp)) {
             Text(
                 text = title,
-                style = AppTypography.titleMedium,
+                style = typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 2,
                 modifier = Modifier
@@ -527,7 +527,7 @@ private fun TopBar(
         title = {
             Text(
                 text = stringResource(R.string.nav_statistics),
-                style = AppTypography.titleTopBar,
+                style = typography.displayLarge,
                 fontWeight = FontWeight.W600,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
@@ -615,7 +615,7 @@ private fun WeekHeader(dayOfWeek: DayOfWeek) {
                 .align(Alignment.Center)
                 .padding(horizontal = 4.dp),
             text = text,
-            style = AppTypography.titleVerySmall,
+            style = typography.headlineMedium,
         )
     }
 }
@@ -638,7 +638,7 @@ private fun MonthHeader(
                 .fillMaxWidth()
                 .padding(horizontal = 4.dp),
         ) {
-            Text(text = title, style = AppTypography.titleVerySmall)
+            Text(text = title, style = typography.headlineMedium)
         }
     }
 }

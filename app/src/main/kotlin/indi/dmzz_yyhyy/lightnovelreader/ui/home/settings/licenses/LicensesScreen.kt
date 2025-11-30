@@ -19,6 +19,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -37,7 +38,6 @@ import com.mikepenz.aboutlibraries.ui.compose.android.produceLibraries
 import com.mikepenz.aboutlibraries.ui.compose.util.author
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 
 @Composable
 fun LicensesScreen(
@@ -87,7 +87,7 @@ fun LicenseItem(lib: Library) {
 
             Text(
                 text = lib.author,
-                style = AppTypography.bodySmall,
+                style = typography.bodySmall,
                 color = colorScheme.onSurfaceVariant
             )
         }
@@ -120,7 +120,7 @@ fun LicenseDialog(
                 )
                 Text(
                     text = lib.author,
-                    style = AppTypography.labelMedium,
+                    style = typography.labelMedium,
                     color = colorScheme.onSurfaceVariant,
                     modifier = Modifier.padding(top = 4.dp)
                 )
@@ -143,7 +143,7 @@ fun LicenseDialog(
             ) {
                 Text(
                     text = licenseText.ifBlank { "No license text provided." },
-                    style = AppTypography.bodyMedium,
+                    style = typography.bodyMedium,
                 )
             }
         },

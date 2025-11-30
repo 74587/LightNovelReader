@@ -63,7 +63,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import indi.dmzz_yyhyy.lightnovelreader.BuildConfig
 import indi.dmzz_yyhyy.lightnovelreader.R
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import io.nightfish.lightnovelreader.api.web.WebDataSourceItem
 import kotlin.math.round
 
@@ -96,7 +95,7 @@ fun BaseDialog(
             ) {
                 Text(
                     text = dismissText,
-                    style = AppTypography.labelMedium,
+                    style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary,
                 )
             }
@@ -105,7 +104,7 @@ fun BaseDialog(
             ) {
                 Text(
                     text = confirmationText,
-                    style = AppTypography.labelMedium,
+                    style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary,
                 )
             }
@@ -141,7 +140,7 @@ fun BaseDialog(
             Text(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 text = title,
-                style = AppTypography.titleLarge,
+                style = MaterialTheme.typography.displayMedium,
                 fontWeight = FontWeight.W500,
             )
             Box(Modifier.height(16.dp))
@@ -151,7 +150,7 @@ fun BaseDialog(
                     .padding(horizontal = 24.dp),
                 textAlign = TextAlign.Start,
                 text = description,
-                style = AppTypography.labelMedium,
+                style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Box(Modifier.height(16.dp))
@@ -192,18 +191,18 @@ fun SliderDialog(
             ) {
                 Text(
                     text = "字数限制：",
-                    style = AppTypography.labelMedium
+                    style = MaterialTheme.typography.labelMedium
                 )
                 Spacer(Modifier.weight(1f))
                 RollingNumber(
                     number = value.toInt(),
-                    style = AppTypography.labelMedium,
+                    style = MaterialTheme.typography.labelMedium,
                     separator = true
                 )
                 Spacer(Modifier.width(6.dp))
                 Text(
                     text = "以上",
-                    style = AppTypography.labelMedium
+                    style = MaterialTheme.typography.labelMedium
                 )
             }
 
@@ -309,7 +308,7 @@ fun ExportUserDataDialog(
             ) {
                 Text(
                     text = stringResource(R.string.cancel),
-                    style = AppTypography.labelMedium,
+                    style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary,
                 )
             }
@@ -318,7 +317,7 @@ fun ExportUserDataDialog(
             ) {
                 Text(
                     text = stringResource(R.string.export_and_share),
-                    style = AppTypography.labelMedium,
+                    style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary,
                 )
             }
@@ -327,7 +326,7 @@ fun ExportUserDataDialog(
             ) {
                 Text(
                     text = stringResource(R.string.export_to_file),
-                    style = AppTypography.labelMedium,
+                    style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary,
                 )
             }
@@ -397,11 +396,11 @@ fun SettingsAboutInfoDialog(
 
                         Text(
                             stringResource(id = R.string.app_name),
-                            style = AppTypography.titleLarge
+                            style = MaterialTheme.typography.displayMedium
                         )
                         Text(
                             BuildConfig.APPLICATION_ID,
-                            style = AppTypography.labelMedium
+                            style = MaterialTheme.typography.labelMedium
                         )
                     }
                 }
@@ -410,7 +409,7 @@ fun SettingsAboutInfoDialog(
 
                 Text(
                     text = stringResource(R.string.settings_about_oss),
-                    style = AppTypography.labelMedium
+                    style = MaterialTheme.typography.labelMedium
                 )
                 Spacer(Modifier.height(10.dp))
                 val annotatedString = AnnotatedString.Companion.fromHtml(
@@ -433,7 +432,7 @@ fun SettingsAboutInfoDialog(
                 )
                 Text(
                     text = annotatedString,
-                    style = AppTypography.bodyMedium
+                    style = MaterialTheme.typography.bodyMedium
                 )
 
                 Spacer(modifier = Modifier.height(18.dp))
@@ -596,14 +595,14 @@ fun DeleteBookshelfDialog(
         title = {
             Text(
                 text = stringResource(R.string.dialog_delete_bookshelf),
-                style = AppTypography.titleLarge,
+                style = MaterialTheme.typography.displayMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
         },
         text = {
             Text(
                 text = stringResource(R.string.dialog_delete_bookshelf_text),
-                style = AppTypography.bodyMedium,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         },

@@ -55,6 +55,7 @@ class MainActivity : ComponentActivity() {
         var appLocale by mutableStateOf("${Locale.current.platformLocale.language}-${Locale.current.platformLocale.variant}")
         var darkMode by mutableStateOf("FollowSystem")
         var dynamicColor by mutableStateOf(false)
+        var enableM3E by mutableStateOf(false)
         var lightThemeName by mutableStateOf("light_default")
         var darkThemeName by mutableStateOf("dark_default")
 
@@ -100,6 +101,11 @@ class MainActivity : ComponentActivity() {
                 it?.let { darkThemeName = it }
             }
         }
+        coroutineScope.launch(Dispatchers.IO) {
+            userDataRepository.booleanUserData(UserDataPath.Settings.Display.EnableM3E.path).getFlow().collect {
+                it?.let { enableM3E = it }
+            }
+        }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { /* Android 13 + */
             if (ContextCompat.checkSelfPermission(this, POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
                 ActivityCompat.requestPermissions(
@@ -121,6 +127,7 @@ class MainActivity : ComponentActivity() {
                 darkMode = darkMode,
                 appLocale = appLocale,
                 isDynamicColor = dynamicColor,
+                enableM3E = enableM3E,
                 lightThemeName = lightThemeName,
                 darkThemeName = darkThemeName
             ) {

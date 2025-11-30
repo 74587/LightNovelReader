@@ -23,6 +23,7 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
@@ -47,7 +48,6 @@ import androidx.core.net.toUri
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.data.MenuOptions
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.navigateToSliderValueDialog
 import io.nightfish.lightnovelreader.api.ui.LocalNavController
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import io.nightfish.lightnovelreader.api.userdata.BooleanUserData
 import io.nightfish.lightnovelreader.api.userdata.FloatUserData
 import io.nightfish.lightnovelreader.api.userdata.StringUserData
@@ -110,12 +110,12 @@ fun SettingsSwitchEntry(
             Text(
                 text = title,
                 color = colorScheme.onSurface,
-                style = AppTypography.titleMedium
+                style = typography.headlineSmall
             )
             Text(
                 text = description,
                 color = colorScheme.onSurfaceVariant,
-                style = AppTypography.labelMedium
+                style = typography.bodyMedium
             )
         }
 
@@ -222,7 +222,7 @@ private fun SettingsSliderEntry(
             Text(
                 text = title,
                 color = colorScheme.onSurface,
-                style = AppTypography.titleMedium
+                style = typography.headlineSmall
             )
 
             val displayValue = if (actualSteps != null)
@@ -241,7 +241,7 @@ private fun SettingsSliderEntry(
                 AnimatedText(
                     text = "${DecimalFormat("#.#").format(displayValue)}",
                     color = colorScheme.primary,
-                    style = AppTypography.labelMedium,
+                    style = typography.bodyMedium,
                     maxLines = 1
                 )
 
@@ -250,7 +250,7 @@ private fun SettingsSliderEntry(
                 Text(
                     text = unit,
                     color = colorScheme.primary,
-                    style = AppTypography.labelMedium,
+                    style = typography.bodyMedium,
                     maxLines = 1
                 )
             }
@@ -340,24 +340,22 @@ fun SettingsMenuEntry(
             Text(
                 text = title,
                 color = colorScheme.onSurface,
-                style = AppTypography.titleMedium
+                style = typography.headlineSmall
             )
             description?.let {
                 Text(
                     text = it,
                     color = colorScheme.onSurfaceVariant,
-                    style = AppTypography.labelMedium
+                    style = typography.bodyMedium
                 )
             }
             AnimatedTextLine(
                 text =
                     selectedOption?.let { stringResource(it.nameId) }
                         ?: "(null)",
-                style = AppTypography.labelMedium,
+                style = typography.bodyMedium,
                 color = colorScheme.primary
             )
-
-
 
             Box(
                 modifier = Modifier.offset {
@@ -385,7 +383,7 @@ fun SettingsMenuEntry(
                                 Text(
                                     modifier = Modifier.padding(vertical = 4.dp),
                                     text = stringResource(option.nameId),
-                                    style = AppTypography.dropDownItem
+                                    style = typography.bodyLarge
                                 )
                             }
                         )
@@ -454,19 +452,19 @@ fun SettingsClickableEntry(
             Text(
                 text = title,
                 color = colorScheme.onSurface,
-                style = AppTypography.titleMedium
+                style = typography.headlineSmall,
             )
             description?.let {
                 Text(
                     text = it,
                     color = colorScheme.onSurfaceVariant,
-                    style = AppTypography.labelMedium
+                    style = typography.bodyMedium
                 )
             }
             option?.let {
                 AnimatedTextLine(
                     text = it,
-                    style = AppTypography.labelMedium,
+                    style = typography.bodyMedium,
                     color = colorScheme.primary,
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis
