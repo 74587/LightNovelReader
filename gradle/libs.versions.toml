@@ -1,13 +1,16 @@
 [versions]
 androidGradlePlugin = "8.12.3"
 apksig = "8.13.0"
+cxhttp = "1.2.5"
 dom4j = "2.2.0"
 javet = "5.0.0"
 kotlin = "2.2.20"
 kotlinComposeCompilerPlugin = "2.1.20"
 kotlinResult = "2.1.0"
 ksp = "2.2.20-2.0.3"
+loggingInterceptor = "5.3.2"
 materialIconsCore = "1.7.8"
+okhttp = "5.3.2"
 runtime = "1.9.2"
 vico = "2.2.0"
 hilt = "2.57.2"
@@ -46,6 +49,7 @@ androidx-runtime = { module = "androidx.compose.runtime:runtime", version.ref = 
 caoccao-javet = { module = "com.caoccao.javet:javet", version.ref = "javet" }
 apksig = { module = "com.android.tools.build:apksig", version.ref = "apksig" }
 compose-shimmer = { module = "com.valentinilk.shimmer:compose-shimmer", version.ref = "composeShimmer" }
+cxhttp = { module = "com.zhzc0x.cxhttp:cxhttp", version.ref = "cxhttp" }
 dom4j = { module = "org.dom4j:dom4j", version.ref = "dom4j" }
 javet-node-android = { module = "com.caoccao.javet:javet-node-android", version.ref = "javet" }
 javet-node-linux-arm64 = { module = "com.caoccao.javet:javet-node-linux-arm64", version.ref = "javet" }
@@ -55,6 +59,8 @@ javet-node-windows-x86_x4 = { module = "com.caoccao.javet:javet-node-windows-x86
 javet-node-macos-x86_x4 = { module = "com.caoccao.javet:javet-node-macos-x86_64", version.ref = "javet" }
 kotlin-result = { module = "com.michael-bull.kotlin-result:kotlin-result", version.ref = "kotlinResult" }
 kotlin-result-coroutines = { module = "com.michael-bull.kotlin-result:kotlin-result-coroutines", version.ref = "kotlinResult" }
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }
+okhttp3-logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
 vico-compose-m3 = { group = "com.patrykandpatrick.vico", name = "compose-m3", version.ref = "vico" }
 hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { module = "com.google.dagger:hilt-android-compiler", version.ref = "hilt" }

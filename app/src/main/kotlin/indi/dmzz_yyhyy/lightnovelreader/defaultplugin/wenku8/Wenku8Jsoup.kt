@@ -55,12 +55,11 @@ suspend fun wenku8Api(request: String): Document? = ifCache(request) {
     if (!pendingJobs.trySend(Unit).isSuccess) {
         Log.w("Wenku8API", "request dropped: $request")
     }
-
     return try {
         requestLimiter.withPermit {
             Log.i("Wenku8API", "request to wenku8 with $request")
-
             withTimeoutOrNull(15_000L) {
+                delay(1)
                 suspend fun post(): Response {
                     return CxHttp
                         .post(update("eNpb85aBtYRBMaOkpMBKXz-xoECvPDUvu9RCLzk_Vz8xL6UoPzNFryCjAAAfiA5Q").toString()){
@@ -75,11 +74,12 @@ suspend fun wenku8Api(request: String): Document? = ifCache(request) {
                         .await()
                 }
                 var retryTime = 5
-                var retryDelay = 1500
+                var retryDelay = 1500L
                 var response = post()
                 while (!response.isSuccessful && retryTime >= 1) {
                     response = post()
                     retryTime--
+                    delay(retryDelay)
                     retryDelay = retryDelay * 2
                 }
                 delay(Random.Default.nextLong(300, 450))
@@ -110,11 +110,12 @@ suspend fun autoReconnectionGetWithWenku8Cookie(url: String): Document? = withCo
             .await()
     }
     var retryTime = 5
-    var retryDelay = 1500
+    var retryDelay = 1500L
     var response = get()
     while (!response.isSuccessful && retryTime >= 1) {
         response = get()
         retryTime--
+        delay(retryDelay)
         retryDelay = retryDelay * 2
     }
     val doc = response.body
