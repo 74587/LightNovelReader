@@ -232,7 +232,7 @@ fun ExploreSearchScreen(
                                         Text(
                                             modifier = Modifier.padding(start = 8.dp),
                                             text = it,
-                                            style = MaterialTheme.typography.labelLarge,
+                                            style = MaterialTheme.typography.bodyLarge,
                                             color = MaterialTheme.colorScheme.onSurface
                                         )
                                         Box(Modifier.weight(2f))

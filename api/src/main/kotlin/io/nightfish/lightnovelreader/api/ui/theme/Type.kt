@@ -14,16 +14,19 @@ val AppTypography = Typography(
     displayLarge = TextStyle(
         fontSize = 22.sp,
         lineHeight = 18.sp,
+        fontWeight = FontWeight.W600,
         lineHeightStyle = nonTrimLineHeightStyle
     ),
     displayMedium = TextStyle(
         fontSize = 19.sp,
         lineHeight = 26.sp,
+        fontWeight = FontWeight.W600,
         lineHeightStyle = nonTrimLineHeightStyle
     ),
     displaySmall = TextStyle(
         fontSize = 17.sp,
         lineHeight = 22.sp,
+        fontWeight = FontWeight.W600,
         lineHeightStyle = nonTrimLineHeightStyle
     ),
     headlineLarge = TextStyle(
@@ -62,7 +65,7 @@ val AppTypography = Typography(
         lineBreak = LineBreak.Paragraph
     ),
     labelLarge = TextStyle(
-        fontSize = 15.sp,
+        fontSize = 14.sp,
         lineHeight = 19.sp,
         lineHeightStyle = nonTrimLineHeightStyle
     ),

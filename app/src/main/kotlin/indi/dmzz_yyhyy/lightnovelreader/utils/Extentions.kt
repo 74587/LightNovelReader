@@ -128,21 +128,6 @@ private fun partition(arr: MutableList<Int>, left: Int, right: Int): Int {
     return i
 }
 
-val homeRoutes = listOf(
-    "Reading.Home", "Bookshelf.Home", "Explore.Home", "Settings.Home"
-)
-
-fun isInMainNavigation(from: NavDestination, to: NavDestination): Boolean {
-    val fromRoute = from.route ?: return false
-    val toRoute = to.route ?: return false
-
-    val fromMatch = homeRoutes.any(fromRoute::contains)
-    if (!fromMatch) return false
-
-    val toMatch = homeRoutes.any(toRoute::contains)
-    return toMatch
-}
-
 suspend fun unzipFile(zipFile: File, outFile: File) {
     withContext(Dispatchers.IO) {
         ZipInputStream(zipFile.inputStream().buffered()).use { zis ->

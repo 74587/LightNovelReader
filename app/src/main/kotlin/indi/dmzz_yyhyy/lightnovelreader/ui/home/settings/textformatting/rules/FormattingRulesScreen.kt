@@ -110,7 +110,7 @@ private fun RuleListItem(
                 }
                 Text(
                     text = rule.name,
-                    style = typography.labelLarge,
+                    style = typography.bodyLarge,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )

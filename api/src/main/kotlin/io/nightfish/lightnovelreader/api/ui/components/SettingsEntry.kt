@@ -83,7 +83,7 @@ fun SettingsSwitchEntry(
             Text(
                 text = title,
                 color = colorScheme.onSurface,
-                style = typography.displaySmall
+                style = typography.headlineSmall
             )
             Text(
                 text = description,

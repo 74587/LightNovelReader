@@ -54,8 +54,8 @@ fun BookCardContent(
     onClick: () -> Unit,
     onLongPress: () -> Unit
 ) {
-    val lineHeight = typography.labelLarge.lineHeight
-    val titleHeight = with(LocalDensity.current) { (lineHeight * 2.2f).toDp() }
+    val lineHeight = typography.titleMedium.lineHeight
+    val titleHeight = with(LocalDensity.current) { (lineHeight * 2.1f).toDp() }
 
     Box(
         modifier = modifier
@@ -160,9 +160,7 @@ fun BookCardContent(
                     text = bookInformation.title,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    style = typography.labelLarge.copy(
-                        fontWeight = FontWeight.W600
-                    )
+                    style = typography.titleMedium
                 )
 
                 Row(

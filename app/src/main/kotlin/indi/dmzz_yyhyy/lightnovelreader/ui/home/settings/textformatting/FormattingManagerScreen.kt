@@ -91,7 +91,7 @@ fun TextFormattingScreen(
                     ) {
                         Text(
                             text = stringResource(R.string.global_formatting_rules),
-                            style = typography.labelLarge,
+                            style = typography.bodyLarge,
                             maxLines = 1
                         )
                         Text(
@@ -167,7 +167,7 @@ private fun Group(
         ) {
             Text(
                 text = bookInformation.title,
-                style = typography.labelLarge,
+                style = typography.bodyLarge,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )

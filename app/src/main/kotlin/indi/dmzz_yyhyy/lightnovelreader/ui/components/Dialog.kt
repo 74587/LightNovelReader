@@ -63,7 +63,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import indi.dmzz_yyhyy.lightnovelreader.BuildConfig
 import indi.dmzz_yyhyy.lightnovelreader.R
-import io.nightfish.lightnovelreader.api.web.WebDataSourceItem
 import kotlin.math.round
 
 @Composable
@@ -374,7 +373,7 @@ fun SettingsAboutInfoDialog(
 
                 Text(
                     text = stringResource(R.string.settings_about_oss),
-                    style = MaterialTheme.typography.labelMedium
+                    style = MaterialTheme.typography.labelLarge
                 )
                 Spacer(Modifier.height(10.dp))
                 val annotatedString = AnnotatedString.Companion.fromHtml(
@@ -397,13 +396,13 @@ fun SettingsAboutInfoDialog(
                 )
                 Text(
                     text = annotatedString,
-                    style = MaterialTheme.typography.bodyMedium
+                    style = MaterialTheme.typography.labelLarge
                 )
 
                 Spacer(modifier = Modifier.height(18.dp))
 
                 val titleColor = MaterialTheme.colorScheme.onSurface
-                val contentColor = MaterialTheme.colorScheme.secondary
+                val contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                 Column {
                     Text(
                         stringResource(R.string.dialog_about_version), color = titleColor

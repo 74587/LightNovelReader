@@ -642,7 +642,7 @@ private fun BookCardBlock(
                 maxLines = 1,
                 fontWeight = FontWeight.W600,
                 color = colorScheme.primary,
-                style = typography.labelLarge
+                style = typography.bodyLarge
             )
             Column {
                 InfoRow(
@@ -737,7 +737,8 @@ fun QuickOperationButton(
         onClick = onClick
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(3.dp)
         ) {
             Icon(
                 modifier = Modifier.size(18.dp),

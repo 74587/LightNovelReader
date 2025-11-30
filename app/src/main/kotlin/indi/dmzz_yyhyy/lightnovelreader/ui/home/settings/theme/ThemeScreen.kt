@@ -138,7 +138,7 @@ fun DarkModeSettings(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 12.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Column(
@@ -153,7 +153,7 @@ fun DarkModeSettings(
                         selected = settingState.darkModeKey == "Disabled",
                         onClick = { settingState.darkModeKeyUserData.asynchronousSet("Disabled") }
                     )
-                    Text(stringResource(R.string.key_dark_mode_disabled), style = typography.labelMedium)
+                    Text(stringResource(R.string.key_dark_mode_disabled), style = typography.labelLarge)
                 }
             }
 
@@ -169,7 +169,7 @@ fun DarkModeSettings(
                         selected = settingState.darkModeKey == "Enabled",
                         onClick = { settingState.darkModeKeyUserData.asynchronousSet("Enabled") }
                     )
-                    Text(stringResource(R.string.key_dark_mode_enabled), style = typography.labelMedium)
+                    Text(stringResource(R.string.key_dark_mode_enabled), style = typography.labelLarge)
                 }
             }
 
@@ -224,7 +224,7 @@ fun DarkModeSettings(
                         selected = settingState.darkModeKey == "FollowSystem",
                         onClick = { settingState.darkModeKeyUserData.asynchronousSet("FollowSystem") }
                     )
-                    Text(stringResource(R.string.key_dark_mode_follow_system), style = typography.labelMedium)
+                    Text(stringResource(R.string.key_dark_mode_follow_system), style = typography.labelLarge)
                 }
             }
         }
@@ -653,7 +653,7 @@ private fun BackgroundCard(
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column {
                 Text(title, style = typography.headlineSmall)
-                desc?.let { Text(it, style = typography.bodyMedium, color = colorScheme.secondary) } // todo: use entry's style
+                desc?.let { Text(it, style = typography.bodyMedium, color = colorScheme.secondary) }
             }
             Spacer(Modifier.weight(1f))
             RadioButton(selected = selected, onClick = onClick, enabled = enabled)

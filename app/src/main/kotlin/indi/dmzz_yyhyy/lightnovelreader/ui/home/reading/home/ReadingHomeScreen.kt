@@ -391,8 +391,8 @@ private fun ReadingBookCard(
     swipeToRightActions: List<SwipeAction> = emptyList(),
     swipeToLeftActions: List<SwipeAction> = emptyList(),
 ) {
-    val lineHeight = typography.labelLarge.lineHeight
-    val titleHeight = with(LocalDensity.current) { (lineHeight * 2.2f).toDp() }
+    val lineHeight = typography.titleMedium.lineHeight
+    val titleHeight = with(LocalDensity.current) { (lineHeight * 2.1f).toDp() }
 
     val lastRead = formTime(userReadingData.lastReadTime)
     val minutes = stringResource(R.string.read_minutes, userReadingData.totalReadTime / 60)
@@ -432,9 +432,7 @@ private fun ReadingBookCard(
                     text = bookInformation.title,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    style = typography.labelLarge.copy(
-                        fontWeight = FontWeight.W600
-                    )
+                    style = typography.titleMedium
                 )
 
                 Text(

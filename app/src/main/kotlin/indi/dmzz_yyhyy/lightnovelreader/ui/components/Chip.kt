@@ -31,7 +31,6 @@ fun SwitchChip(
         label = {
             Text(
                 text = label,
-                style = MaterialTheme.typography.labelLarge,
                 color = if (selected)
                     MaterialTheme.colorScheme.onPrimaryContainer
                 else
