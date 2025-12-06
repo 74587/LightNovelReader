@@ -7,11 +7,14 @@ import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -25,10 +28,12 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -38,9 +43,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import indi.dmzz_yyhyy.lightnovelreader.R
-import indi.dmzz_yyhyy.lightnovelreader.ui.components.RadioButtonListItem
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SectionHeader
 import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 import io.nightfish.lightnovelreader.api.web.WebDataSourceItem
@@ -179,7 +184,9 @@ private fun SourceChangeContent(
     ) {
         item("source_title") {
             SectionHeader(
-                modifier = Modifier.padding(horizontal = 20.dp).padding(vertical = 10.dp),
+                modifier = Modifier
+                    .padding(horizontal = 20.dp)
+                    .padding(vertical = 10.dp),
                 text = "可用数据源"
             )
         }
@@ -192,15 +199,9 @@ private fun SourceChangeContent(
                 item = item,
                 selected = item.id == selectedSourceId,
                 onClick = { onSelectedChange(item.id) },
-                showDivider = index != uiState.webDataSourceItems.lastIndex
+                showDivider = index != uiState.webDataSourceItems.lastIndex,
             )
         }
-        /*item("source_specific_title") {
-            SectionHeader(
-                modifier = Modifier.padding(horizontal = 20.dp).padding(vertical = 10.dp),
-                text = "选项"
-            )
-        }*/
         navigationBarSpacer()
     }
 
@@ -211,32 +212,79 @@ private fun SourceRadioItem(
     item: WebDataSourceItem,
     selected: Boolean,
     onClick: () -> Unit,
+    settingsEnabled: Boolean = false,
+    onSettingsClick: () -> Unit = {},
     showDivider: Boolean
 ) {
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
     ) {
-        RadioButtonListItem(
+
+        Row(
             modifier = Modifier
                 .clickable(onClick = onClick)
-                .fillMaxWidth()
-                .padding(horizontal = 4.dp),
-            title = item.name,
-            supportingText = stringResource(
-                R.string.data_source_provider,
-                item.provider
-            ),
-            selected = selected,
-            onClick = onClick
-        )
+                .padding(horizontal = 14.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(vertical = 12.dp)
+                    .weight(1f)
+                    .padding(horizontal = 8.dp)
+            ) {
+                Text(
+                    text = item.name,
+                    style = MaterialTheme.typography.titleMedium
+                )
+
+                Text(
+                    text = stringResource(
+                        R.string.data_source_provider,
+                        item.provider
+                    ),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+            }
+
+            if (settingsEnabled) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .clickable { onSettingsClick() }
+                        .padding(20.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.outline_settings_24px),
+                        contentDescription = null
+                    )
+                }
+
+                VerticalDivider(
+                    modifier = Modifier
+                        .padding(horizontal = 4.dp)
+                        .height(24.dp),
+                    color = MaterialTheme.colorScheme.secondary
+                )
+            }
+
+            RadioButton(
+                modifier = Modifier.padding(horizontal = 10.dp),
+                selected = selected,
+                onClick = onClick
+            )
+        }
+
         if (showDivider) {
             HorizontalDivider(
-                modifier = Modifier
-                    .padding(horizontal = 24.dp, vertical = 6.dp)
+                modifier = Modifier.padding(horizontal = 22.dp, vertical = 6.dp)
             )
         }
     }
 }
+
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -246,7 +294,10 @@ private fun TopBar(
     TopAppBar(
         title = {
             Text(
-                text = stringResource(R.string.settings_select_data_source)
+                text = stringResource(R.string.settings_select_data_source),
+                style = MaterialTheme.typography.displayLarge,
+                fontWeight = FontWeight.W600,
+                color = MaterialTheme.colorScheme.onSurface
             )
         },
         navigationIcon = {

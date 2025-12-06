@@ -849,7 +849,12 @@ private fun TopBar(
     TopAppBar(
         title = {
             Column {
-                Text(stringResource(R.string.settings_theme))
+                Text(
+                    text = stringResource(R.string.settings_theme),
+                    style = typography.displayLarge,
+                    fontWeight = FontWeight.W600,
+                    color = colorScheme.onSurface
+                )
             }
         },
         navigationIcon = {
@@ -859,6 +864,6 @@ private fun TopBar(
                     contentDescription = "back"
                 )
             }
-        },
+        }
     )
 }

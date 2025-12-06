@@ -183,22 +183,30 @@ fun BookCardContent(
 
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
                 ) {
                     TagChip(painterResource(R.drawable.update_24px))
                     Text(
                         text = dateText,
-                        style = typography.labelMedium.copy(color = colorScheme.secondary)
+                        style = typography.labelMedium.copy(color = colorScheme.secondary),
+                        maxLines = 1,
+                        overflow = TextOverflow.StartEllipsis,
+                        modifier = Modifier.weight(1f, fill = false)
                     )
 
-                    Spacer(Modifier.width(4.dp))
+                    Spacer(Modifier.width(2.dp))
 
                     TagChip(painterResource(R.drawable.article_24px))
                     Text(
                         text = bookInformation.wordCount.get(),
-                        style = typography.labelMedium.copy(color = colorScheme.secondary)
+                        style = typography.labelMedium.copy(color = colorScheme.secondary),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f, fill = false)
                     )
                 }
+
 
 
                 if (latestChapterTitle.isNullOrBlank()) {

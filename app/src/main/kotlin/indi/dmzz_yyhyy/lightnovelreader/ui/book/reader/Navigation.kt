@@ -4,6 +4,8 @@ import android.content.Context
 import android.net.Uri
 import android.util.Log
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -35,6 +37,7 @@ import indi.dmzz_yyhyy.lightnovelreader.utils.popBackStackIfResumed
 import io.nightfish.lightnovelreader.api.ui.LocalNavController
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 fun NavGraphBuilder.bookReaderDestination() {
     composable<Route.Book.Reader> { navBackStackEntry ->
@@ -110,6 +113,53 @@ private fun NavGraphBuilder.imageViewerDialog() {
         val context = LocalContext.current
         val coroutineScope = rememberCoroutineScope()
 
+        val createDocumentLauncher =
+            rememberLauncherForActivityResult(
+                ActivityResultContracts.CreateDocument("image/png")
+            ) { targetUri ->
+                if (targetUri == null) return@rememberLauncherForActivityResult
+
+                coroutineScope.launch(Dispatchers.IO) {
+                    uriToBitmap(
+                        imageUri = route.imageUri.toUri(),
+                        context = context,
+                        header = viewModel.imageHeader
+                    ).onSuccess { bitmap ->
+                        val result = runCatching {
+                            context.contentResolver.openOutputStream(targetUri)?.use { out ->
+                                bitmap.compress(android.graphics.Bitmap.CompressFormat.PNG, 100, out)
+                            } ?: error("Cannot open output stream")
+                        }
+
+                        result.onSuccess {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.saved_to_pictures_dir, /* 这里你可以改成别的提示 */ ""),
+                                    Toast.LENGTH_LONG
+                                ).show()
+                            }
+                        }.onFailure {
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(
+                                    context,
+                                    context.getString(R.string.save_failed),
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        }
+                    }.onFailure {
+                        withContext(Dispatchers.Main) {
+                            Toast.makeText(
+                                context,
+                                context.getString(R.string.save_failed),
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    }
+                }
+            }
+
         ImageViewerScreen(
             imageUri = route.imageUri.toUri(),
             onDismissRequest = { navController.popBackStack() },
@@ -123,15 +173,19 @@ private fun NavGraphBuilder.imageViewerDialog() {
                         .onSuccess {
                             coroutineScope.launch {
                                 saveBitmapAsPng(context, it)
-                                    .onSuccess {
+                                    .onSuccess { path ->
                                         Toast.makeText(
                                             context,
-                                            context.getString(R.string.saved_to_pictures_dir, it),
+                                            context.getString(R.string.saved_to_pictures_dir, path),
                                             Toast.LENGTH_LONG
                                         ).show()
                                     }
                                     .onFailure {
-                                        Toast.makeText(context, context.getString(R.string.save_failed), Toast.LENGTH_SHORT).show()
+                                        Toast.makeText(
+                                            context,
+                                            context.getString(R.string.save_failed),
+                                            Toast.LENGTH_SHORT
+                                        ).show()
                                     }
                             }
                         }
@@ -144,6 +198,10 @@ private fun NavGraphBuilder.imageViewerDialog() {
                             ).show()
                         }
                 }
+            },
+            onLongClickSave = {
+                val defaultName = "lnr_${System.currentTimeMillis()}.png"
+                createDocumentLauncher.launch(defaultName)
             },
             header = viewModel.imageHeader
         )

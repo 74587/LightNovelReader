@@ -24,8 +24,7 @@ class ImageComponent(
         ZoomableImage(
             imageUri = data.uri,
             modifier = modifier.fillMaxSize(),
-            onZoomEnd = {
-                println("ciallo~")
+            onViewImage = {
                 navController.navigateToImageViewerDialog(data.uri)
             },
             header = imageHeader

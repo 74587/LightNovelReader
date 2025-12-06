@@ -2,17 +2,24 @@ package indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.imageview
 
 import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -27,12 +34,13 @@ fun ImageViewerScreen(
     imageUri: Uri,
     onDismissRequest: () -> Unit,
     onClickSave: () -> Unit,
+    onLongClickSave: () -> Unit,
     header: Map<String, String> = emptyMap()
 ) {
     val zoomableState = rememberZoomableState()
 
     Box(
-        Modifier
+        modifier = Modifier
             .fillMaxSize()
             .background(Color.Black.copy(alpha = 0.8f))
     ) {
@@ -67,20 +75,29 @@ fun ImageViewerScreen(
             )
         }
 
-        IconButton(
-            onClick = onClickSave,
+        Box(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(16.dp)
+                .padding(horizontal = 20.dp)
+                .padding(bottom = 46.dp)
                 .systemBarsPadding()
-                .background(Color.White, CircleShape)
+                .size(64.dp)
+                .combinedClickable(
+                    onClick = onClickSave,
+                    onLongClick = onLongClickSave
+                )
+                .background(
+                    MaterialTheme.colorScheme.secondaryContainer,
+                    RoundedCornerShape(10.dp)
+                ),
+            contentAlignment = Alignment.Center
         ) {
             Icon(
                 painter = painterResource(R.drawable.save_24px),
                 contentDescription = "save",
-                tint = Color.Black
+                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                modifier = Modifier.size(28.dp)
             )
         }
     }
 }
-

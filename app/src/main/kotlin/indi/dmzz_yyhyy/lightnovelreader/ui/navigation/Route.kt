@@ -73,7 +73,14 @@ object Route {
                 object Repository
             }
             @Serializable
-            object SourceChange
+            object SourceChange {
+                @Serializable
+                object List
+                @Serializable
+                data class Settings(
+                    val sourceId: String
+                )
+            }
             @Serializable
             object Debug
             @Serializable

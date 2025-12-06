@@ -4,6 +4,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -28,6 +31,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -574,14 +578,17 @@ private fun VerticalDotsIndicator(
     ) {
         repeat(pageCount) { idx ->
             val selected = idx == currentPage
+
+            val color by animateColorAsState(
+                targetValue = if (selected) colorScheme.primary else colorScheme.outlineVariant,
+                animationSpec = tween(durationMillis = 250, easing = FastOutSlowInEasing)
+            )
+
             Box(
                 Modifier
-                    .size(width = 6.dp, height = if (selected) 14.dp else 6.dp)
-                    .clip(RoundedCornerShape(percent = 50))
-                    .background(
-                        if (selected) colorScheme.primary
-                        else colorScheme.outlineVariant
-                    )
+                    .size(6.dp)
+                    .clip(CircleShape)
+                    .background(color)
             )
         }
     }
@@ -661,9 +668,10 @@ private fun ReadingHeaderCardPage(
                     modifier = Modifier.weight(1f),
                     onClick = { onClickOpenDetail(info.id) },
                     shape = RoundedCornerShape(10.dp),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+                    contentPadding = PaddingValues(8.dp)
                 ) {
                     Icon(
+                        modifier = Modifier.size(24.dp),
                         painter = painterResource(R.drawable.view_list_24px),
                         contentDescription = null
                     )
@@ -673,7 +681,7 @@ private fun ReadingHeaderCardPage(
                     modifier = Modifier.weight(3f),
                     onClick = { onClickContinueReading(info.id, data.lastReadChapterId) },
                     shape = RoundedCornerShape(10.dp),
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
+                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
                 ) {
                     Text(
                         text = stringResource(R.string.resume_last_reading),

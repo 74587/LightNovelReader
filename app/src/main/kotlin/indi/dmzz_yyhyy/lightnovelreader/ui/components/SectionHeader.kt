@@ -15,7 +15,7 @@ fun SectionHeader(
     Text(
         text = text,
         modifier = modifier,
-        color = colorScheme.primary,
+        color = colorScheme.onSurfaceVariant,
         style = typography.bodyLarge,
         fontWeight = FontWeight.W600
     )

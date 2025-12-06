@@ -46,7 +46,6 @@ fun BookInfoBottomSheet(
     onDismissRequest: () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val context = LocalContext.current
     val clipboard = LocalClipboard.current
 
     @Composable
@@ -85,8 +84,6 @@ fun BookInfoBottomSheet(
                 modifier = Modifier.weight(7f),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
-
                 Text(
                     text = content,
                     style = contentStyle,
@@ -99,8 +96,6 @@ fun BookInfoBottomSheet(
                                     val clipData = ClipData.newPlainText("content", content)
                                     val clipEntry = ClipEntry(clipData = clipData)
                                     clipboard.setClipEntry(clipEntry = clipEntry)
-                                    Toast.makeText(context, context.getString(R.string.copied), Toast.LENGTH_SHORT)
-                                        .show()
                                 }
                             },
                         )
@@ -117,8 +112,8 @@ fun BookInfoBottomSheet(
             color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.W600
         )
-        val contentStyle = typography.labelLarge.copy(
-            color = MaterialTheme.colorScheme.secondary
+        val contentStyle = typography.bodyLarge.copy(
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
         Column(

@@ -8,10 +8,13 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
@@ -22,10 +25,12 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -60,12 +65,15 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Brush
@@ -91,6 +99,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.home.bookshelf.home.BookStatusIcon
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.textformatting.rules.navigateToSettingsTextFormattingRulesDestination
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalClaimSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
+import indi.dmzz_yyhyy.lightnovelreader.utils.fadeInOnce
 import indi.dmzz_yyhyy.lightnovelreader.utils.fadingEdge
 import indi.dmzz_yyhyy.lightnovelreader.utils.isScrollingUp
 import io.nightfish.lightnovelreader.api.book.BookInformation
@@ -150,34 +159,54 @@ fun DetailScreen(
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         snackbarHost = {
-            Column(
-                modifier = Modifier.fillMaxWidth()
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+                    .padding(bottom = 24.dp)
             ) {
-                SnackbarHost(snackbarHostState) { data ->
-                    LnrSnackbar(
-                        data,
-                        modifier = Modifier
-                            .padding(bottom = animateDpAsState(if (fabVisible) 12.dp else 24.dp).value)
-                    )
+                val targetBottomPad = if (fabVisible) 90.dp else 32.dp
+                val snackbarBottomPad by animateDpAsState(
+                    targetValue = targetBottomPad,
+                    animationSpec = tween(durationMillis = 250, easing = FastOutSlowInEasing)
+                )
+
+                SnackbarHost(
+                    hostState = snackbarHostState,
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .padding(bottom = snackbarBottomPad)
+                ) { data ->
+                    LnrSnackbar(data)
                 }
+
                 AnimatedVisibility(
-                    modifier = Modifier.align(Alignment.End),
+                    modifier = Modifier.align(Alignment.BottomEnd),
                     visible = fabVisible,
-                    enter = expandVertically(animationSpec = tween(250)) + fadeIn(tween(250)),
-                    exit = shrinkVertically(animationSpec = tween(200)) + fadeOut(tween(200))
+                    enter = slideInVertically(
+                        initialOffsetY = { it / 4 },
+                        animationSpec = tween(250, easing = FastOutSlowInEasing)
+                    ) + fadeIn(tween(200, easing = FastOutSlowInEasing)),
+                    exit = slideOutVertically(
+                        targetOffsetY = { it / 4 },
+                        animationSpec = tween(200, easing = FastOutSlowInEasing)
+                    ) + fadeOut(tween(150, easing = FastOutSlowInEasing))
                 ) {
                     ExtendedFloatingActionButton(
                         modifier = Modifier
-                            .align(Alignment.End)
-                            .padding(horizontal = 28.dp)
-                            .padding(bottom = 72.dp),
+                            .padding(end = 28.dp, bottom = 28.dp),
                         onClick = {
                             if (uiState.userReadingData.lastReadChapterId.isBlank())
                                 onClickReadFromStart()
                             else
                                 onClickContinueReading()
                         },
-                        icon = { Icon(painterResource(R.drawable.filled_menu_book_24px), null) },
+                        icon = {
+                            Icon(
+                                painterResource(R.drawable.filled_menu_book_24px),
+                                null
+                            )
+                        },
                         text = {
                             Text(
                                 if (uiState.userReadingData.lastReadChapterId.isBlank())
@@ -199,6 +228,7 @@ fun DetailScreen(
         ) {
             TopBar(
                 title = uiState.bookInformation.title,
+                readingProgress = uiState.userReadingData.readingProgress,
                 volumesEmpty = volumesEmpty,
                 onClickBackButton = onClickBackButton,
                 onClickExport = { showExportBottomSheet = true },
@@ -395,15 +425,26 @@ private fun DetailContent(
     onClickShowInfo: () -> Unit
 ) {
     var hideReadChapters by remember { mutableStateOf(false) }
+    val deferred = 6
+    val framesPerStep = 2
+    var visible by rememberSaveable { mutableIntStateOf(0) }
+
+    LaunchedEffect(Unit) {
+        while (visible < deferred) {
+            repeat(framesPerStep) { withFrameNanos { } }
+            visible += 1
+        }
+    }
 
     LazyColumn(
         state = lazyListState,
         modifier = modifier
     ) {
-        item {
+        if (visible >= 1) item {
             BookCardBlock(
                 bookInformation = uiState.bookInformation,
                 modifier = Modifier
+                    .fadeInOnce("book")
                     .graphicsLayer {
                         translationY = lazyListState.firstVisibleItemScrollOffset * 0.5f
                     }
@@ -411,14 +452,18 @@ private fun DetailContent(
                 onClickCover = onClickCover
             )
         }
-        item {
+
+        if (visible >= 2) item {
             TagsBlock(
+                modifier = Modifier.fadeInOnce("tags"),
                 bookInformation = uiState.bookInformation,
                 onClickTag = onClickTag
             )
         }
-        item {
+
+        if (visible >= 3) item {
             QuickOperationsBlock(
+                modifier = Modifier.fadeInOnce("op"),
                 isInBookshelf = uiState.isInBookshelf,
                 isCached = uiState.isCached,
                 downloadItem = uiState.downloadItem,
@@ -427,12 +472,18 @@ private fun DetailContent(
                 onClickShowInfo = onClickShowInfo
             )
         }
-        item {
-            IntroBlock(uiState.bookInformation.description)
+
+        if (visible >= 4) item {
+            IntroBlock(
+                modifier = Modifier.fadeInOnce("intro"),
+                description = uiState.bookInformation.description
+            )
         }
-        item {
+
+        if (visible >= 5) item {
             Row(
                 modifier = Modifier
+                    .fadeInOnce("contents")
                     .padding(horizontal = 18.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -445,15 +496,14 @@ private fun DetailContent(
                 SwitchChip(
                     label = stringResource(R.string.hide_read),
                     selected = hideReadChapters,
-                    onClick = {
-                        hideReadChapters = !hideReadChapters
-                    }
+                    onClick = { hideReadChapters = !hideReadChapters }
                 )
             }
         }
 
-        item {
+        if (visible >= 6) item {
             AnimatedVisibility(
+                modifier = Modifier.fadeInOnce("loading"),
                 visible = uiState.bookVolumes.volumes.isEmpty(),
                 enter = fadeIn(tween(300, 1000)),
                 exit = shrinkVertically() + fadeOut()
@@ -461,7 +511,7 @@ private fun DetailContent(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 24.dp),
+                        .height(200.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     Loading()
@@ -469,11 +519,12 @@ private fun DetailContent(
             }
         }
 
-        items(
+        if (visible >= 6) items(
             items = uiState.bookVolumes.volumes,
             key = { it.volumeId }
         ) { volume ->
             VolumeItem(
+                modifier = Modifier.fadeInOnce(volume.volumeId),
                 volume = volume,
                 hideReadChapters = hideReadChapters,
                 readCompletedChapterIds = uiState.userReadingData.readCompletedChapterIds,
@@ -489,11 +540,11 @@ private fun DetailContent(
     }
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopBar(
     title: String,
+    readingProgress: Float,
     volumesEmpty: Boolean,
     onClickBackButton: () -> Unit,
     onClickExport: () -> Unit,
@@ -502,76 +553,119 @@ private fun TopBar(
     scrollBehavior: TopAppBarScrollBehavior,
     isCollapsed: Boolean
 ) {
-    var menuExpanded by remember { mutableStateOf(false) }
-    val progress by animateFloatAsState(
+    val titleProgress by animateFloatAsState(
         targetValue = if (isCollapsed) 1f else 0f,
-        animationSpec = tween(
-            durationMillis = 300,
-            easing = FastOutSlowInEasing
-        )
+        animationSpec = tween(300, easing = FastOutSlowInEasing),
+        label = "titleProgress"
     )
 
-    TopAppBar(
-        title = {
-            val offset = 86f
-            Box(Modifier.fillMaxWidth()) {
-                Text(
-                    text = stringResource(R.string.detail_title),
-                    maxLines = 1,
-                    style = typography.displayLarge,
-                    modifier = Modifier.graphicsLayer {
-                        alpha = 1f - progress
-                        translationY = -offset * progress
-                    }
-                )
+    val barAlpha by animateFloatAsState(
+        targetValue = if (isCollapsed) 1f else 0f,
+        animationSpec = tween(180, easing = FastOutSlowInEasing),
+        label = "barAlpha"
+    )
 
-                Text(
-                    text = title,
-                    maxLines = 1,
-                    style = typography.displayLarge,
-                    modifier = Modifier
-                        .horizontalScroll(rememberScrollState())
-                        .graphicsLayer {
-                            alpha = progress
-                            translationY = offset * (1f - progress)
-                        }
-                )
-            }
-        },
-        navigationIcon = {
-            IconButton(onClick = onClickBackButton) {
-                Icon(painterResource(id = R.drawable.arrow_back_24px), contentDescription = "back")
-            }
-        },
-        actions = {
-            IconButton(enabled = !volumesEmpty, onClick = onClickExport) {
-                Icon(painterResource(id = R.drawable.file_export_24px), contentDescription = "export")
-            }
-            IconButton(enabled = !volumesEmpty, onClick = onClickTextFormatting) {
-                Icon(painterResource(id = R.drawable.find_replace_24px), contentDescription = "formatting")
-            }
-            Box {
-                IconButton(enabled = !volumesEmpty, onClick = { menuExpanded = true }) {
-                    Icon(painterResource(id = R.drawable.more_vert_24px), contentDescription = "more")
-                }
-                DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                text = stringResource(R.string.mark_all_read),
-                                style = typography.bodyLarge
-                            )
-                        },
-                        onClick = {
-                            menuExpanded = false
-                            onClickMarkAllRead()
+    val barProgress by animateFloatAsState(
+        targetValue = readingProgress.coerceIn(0f, 1f),
+        animationSpec = tween(300, easing = FastOutSlowInEasing),
+        label = "barProgress"
+    )
+
+    Box {
+        TopAppBar(
+            title = {
+                val offset = 86f
+                Box(Modifier.fillMaxWidth()) {
+                    Text(
+                        text = stringResource(R.string.detail_title),
+                        maxLines = 1,
+                        style = typography.displayLarge,
+                        modifier = Modifier.graphicsLayer {
+                            alpha = 1f - titleProgress
+                            translationY = -offset * titleProgress
                         }
                     )
+                    Text(
+                        text = title,
+                        maxLines = 1,
+                        style = typography.displayLarge,
+                        modifier = Modifier
+                            .horizontalScroll(rememberScrollState())
+                            .graphicsLayer {
+                                alpha = titleProgress
+                                translationY = offset * (1f - titleProgress)
+                            }
+                    )
                 }
+            },
+            navigationIcon = {
+                IconButton(onClick = onClickBackButton) {
+                    Icon(painterResource(id = R.drawable.arrow_back_24px), contentDescription = "back")
+                }
+            },
+            actions = {
+                TopBarActions(
+                    volumesEmpty = volumesEmpty,
+                    onClickExport = onClickExport,
+                    onClickTextFormatting = onClickTextFormatting,
+                    onClickMarkAllRead = onClickMarkAllRead
+                )
+            },
+            scrollBehavior = scrollBehavior
+        )
+
+        Box(
+            Modifier
+                .matchParentSize()
+        ) {
+            Box(
+                Modifier
+                    .align(Alignment.BottomStart)
+                    .alpha(barAlpha)
+                    .fillMaxWidth()
+                    .height(4.dp)
+                    .background(colorScheme.surfaceVariant)
+            ) {
+                Box(
+                    Modifier
+                        .fillMaxHeight()
+                        .fillMaxWidth(barProgress)
+                        .background(colorScheme.primary)
+                )
             }
-        },
-        scrollBehavior = scrollBehavior
-    )
+        }
+    }
+}
+
+@Composable
+private fun TopBarActions(
+    volumesEmpty: Boolean,
+    onClickExport: () -> Unit,
+    onClickTextFormatting: () -> Unit,
+    onClickMarkAllRead: () -> Unit
+) {
+    var menuExpanded by remember { mutableStateOf(false) }
+
+    IconButton(enabled = !volumesEmpty, onClick = onClickExport) {
+        Icon(painterResource(id = R.drawable.file_export_24px), contentDescription = "export")
+    }
+    IconButton(enabled = !volumesEmpty, onClick = onClickTextFormatting) {
+        Icon(painterResource(id = R.drawable.find_replace_24px), contentDescription = "formatting")
+    }
+    Box {
+        IconButton(enabled = !volumesEmpty, onClick = { menuExpanded = true }) {
+            Icon(painterResource(id = R.drawable.more_vert_24px), contentDescription = "more")
+        }
+        DropdownMenu(expanded = menuExpanded, onDismissRequest = { menuExpanded = false }) {
+            DropdownMenuItem(
+                text = { Text(stringResource(R.string.mark_all_read), style = typography.bodyLarge) },
+                onClick = {
+                    menuExpanded = false
+                    onClickMarkAllRead()
+                }
+            )
+        }
+    }
 }
 
 
@@ -690,11 +784,12 @@ private fun InfoRow(
 
 @Composable
 private fun TagsBlock(
+    modifier: Modifier,
     bookInformation: BookInformation,
     onClickTag: (String) -> Unit
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(colorScheme.surface)
             .horizontalScroll(rememberScrollState())
@@ -758,6 +853,7 @@ fun QuickOperationButton(
 
 @Composable
 private fun QuickOperationsBlock(
+    modifier: Modifier,
     isInBookshelf: Boolean,
     isCached: Boolean,
     downloadItem: DownloadItem?,
@@ -765,8 +861,13 @@ private fun QuickOperationsBlock(
     onClickCache: () -> Unit,
     onClickShowInfo: () -> Unit
 ) {
+    val bookmark = painterResource(R.drawable.bookmark_add_24px)
+    val filledBookmark = painterResource(R.drawable.filled_bookmark_add_24px)
+    val cloud = painterResource(R.drawable.cloud_download_24px)
+    val filledCloud = painterResource(R.drawable.filled_cloud_download_24px)
+    val info = painterResource(R.drawable.info_24px)
     Row(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .background(colorScheme.surface)
             .padding(horizontal = itemHorizontalPadding, vertical = itemVerticalPadding)
@@ -776,14 +877,14 @@ private fun QuickOperationsBlock(
     ) {
         if (isInBookshelf) {
             QuickOperationButton(
-                icon = painterResource(R.drawable.filled_bookmark_add_24px),
+                icon = filledBookmark,
                 title = stringResource(R.string.activity_collections),
                 onClick = onClickAddToBookShelf,
                 modifier = Modifier.weight(1f)
             )
         } else {
             QuickOperationButton(
-                icon = painterResource(R.drawable.bookmark_add_24px),
+                icon = bookmark,
                 title = stringResource(R.string.add_to_bookshelf),
                 onClick = onClickAddToBookShelf,
                 modifier = Modifier.weight(1f)
@@ -792,7 +893,7 @@ private fun QuickOperationsBlock(
 
         if (isCached) {
             QuickOperationButton(
-                icon = painterResource(R.drawable.filled_cloud_download_24px),
+                icon = filledCloud,
                 title = if (downloadItem == null || downloadItem.progress == 1f)
                     stringResource(R.string.cached)
                 else
@@ -802,7 +903,7 @@ private fun QuickOperationsBlock(
             )
         } else {
             QuickOperationButton(
-                icon = painterResource(R.drawable.cloud_download_24px),
+                icon = cloud,
                 title = if (downloadItem == null)
                     stringResource(R.string.cached_false)
                 else
@@ -813,7 +914,7 @@ private fun QuickOperationsBlock(
         }
 
         QuickOperationButton(
-            icon = painterResource(R.drawable.info_24px),
+            icon = info,
             title = stringResource(R.string.action_show_info),
             onClick = onClickShowInfo,
             modifier = Modifier.weight(1f)
@@ -822,7 +923,10 @@ private fun QuickOperationsBlock(
 }
 
 @Composable
-private fun IntroBlock(description: String) {
+private fun IntroBlock(
+    modifier: Modifier,
+    description: String
+) {
     var expanded by rememberSaveable { mutableStateOf(false) }
     val overflowed = remember(description) { description.length > 220 }
 
@@ -837,7 +941,7 @@ private fun IntroBlock(description: String) {
     }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = itemHorizontalPadding, vertical = itemVerticalPadding),
         verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -895,6 +999,7 @@ private fun IntroBlock(description: String) {
 
 @Composable
 private fun VolumeItem(
+    modifier: Modifier,
     volume: Volume,
     hideReadChapters: Boolean = false,
     readCompletedChapterIds: List<String>,
@@ -913,9 +1018,13 @@ private fun VolumeItem(
     }
     val rotation by animateFloatAsState(targetValue = if (expanded) 90f else 0f, animationSpec = tween(200))
 
-    Column(modifier = Modifier.fillMaxWidth()) {
+    Column(
+        modifier = modifier.fillMaxWidth()
+    ) {
         Row(
-            modifier = Modifier.clickable { expanded = !expanded }.padding(horizontal = 20.dp),
+            modifier = Modifier
+                .clickable { expanded = !expanded }
+                .padding(horizontal = 20.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column(modifier = Modifier
@@ -936,8 +1045,20 @@ private fun VolumeItem(
                     color = colorScheme.secondary
                 )
             }
-            if (!hideReadChapters || !isFullyRead) {
-                Spacer(Modifier.weight(1f))
+            Spacer(Modifier.weight(1f))
+            AnimatedVisibility(
+                visible = !hideReadChapters || !isFullyRead,
+                enter = fadeIn(animationSpec = tween(180)) +
+                        slideInHorizontally(
+                            animationSpec = tween(180),
+                            initialOffsetX = { it / 4 }
+                        ),
+                exit = fadeOut(animationSpec = tween(140)) +
+                        slideOutHorizontally(
+                            animationSpec = tween(140),
+                            targetOffsetX = { it / 4 }
+                        )
+            ) {
                 Icon(
                     modifier = Modifier
                         .size(16.dp)
@@ -945,8 +1066,8 @@ private fun VolumeItem(
                     painter = painterResource(id = R.drawable.arrow_forward_ios_24px),
                     contentDescription = null
                 )
-                Spacer(Modifier.width(12.dp))
             }
+            Spacer(Modifier.width(12.dp))
         }
         Column(modifier = Modifier.animateContentSize(animationSpec = tween(250))) {
             if (expanded) {
@@ -977,32 +1098,41 @@ private fun ChapterItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(
-                start = 32.dp,
-                end = 32.dp,
-                top = 12.dp,
-                bottom = if (isLastRead) 6.dp else 12.dp
-            )
+            .padding(horizontal = 32.dp, vertical = 12.dp)
     ) {
-        Column {
-            Text(
-                text = chapter.title,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                style = typography.titleMedium,
-                fontWeight = if (isRead) FontWeight.Normal else FontWeight.W600,
-                color = if (isRead) colorScheme.secondary
-                else colorScheme.onSurface
-            )
-            if (isLastRead) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column(
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(
-                    text = stringResource(R.string.last_read),
-                    maxLines = 1,
+                    text = chapter.title,
+                    maxLines = 2,
+                    overflow = TextOverflow.Ellipsis,
                     style = typography.titleMedium,
-                    fontWeight = FontWeight.Normal,
-                    color = colorScheme.primary
+                    fontWeight = if (isRead) FontWeight.Normal else FontWeight.W600,
+                    color = if (isRead) colorScheme.secondary
+                    else colorScheme.onSurface
                 )
+                if (isLastRead) {
+                    Text(
+                        text = stringResource(R.string.last_read),
+                        maxLines = 1,
+                        style = typography.titleSmall,
+                        fontWeight = FontWeight.Normal,
+                        color = colorScheme.primary
+                    )
+                }
             }
+            if (isLastRead)
+                Icon(
+                    modifier = Modifier.padding(start = 22.dp).size(24.dp),
+                    painter = painterResource(R.drawable.target_24px),
+                    tint = colorScheme.primary,
+                    contentDescription = "last_read"
+                )
+
         }
     }
 }

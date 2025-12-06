@@ -62,8 +62,8 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.components.calendar.core.displayText
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.calendar.core.yearMonth
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.calendar.rememberHeatMapCalendarState
 import indi.dmzz_yyhyy.lightnovelreader.utils.DurationFormat
-import io.nightfish.lightnovelreader.api.book.BookInformation
 import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
+import io.nightfish.lightnovelreader.api.book.BookInformation
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.Month
