@@ -135,7 +135,7 @@ private fun NavGraphBuilder.imageViewerDialog() {
                             withContext(Dispatchers.Main) {
                                 Toast.makeText(
                                     context,
-                                    context.getString(R.string.saved_to_pictures_dir, /* 这里你可以改成别的提示 */ ""),
+                                    context.getString(R.string.saved_to_pictures_dir, ""),
                                     Toast.LENGTH_LONG
                                 ).show()
                             }
