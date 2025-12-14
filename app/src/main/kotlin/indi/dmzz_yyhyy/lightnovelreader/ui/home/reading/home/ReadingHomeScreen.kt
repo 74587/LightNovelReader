@@ -4,6 +4,9 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -28,6 +31,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.PagerDefaults
 import androidx.compose.foundation.pager.VerticalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,6 +40,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -82,7 +87,6 @@ import indi.dmzz_yyhyy.lightnovelreader.utils.removeFromBookshelfAction
 import indi.dmzz_yyhyy.lightnovelreader.utils.showSnackbar
 import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.book.UserReadingData
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import kotlinx.coroutines.delay
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
@@ -359,7 +363,7 @@ private fun TopBar(
         title = {
             Text(
                 text = stringResource(R.string.nav_reading),
-                style = AppTypography.titleTopBar,
+                style = typography.displayLarge,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -391,8 +395,8 @@ private fun ReadingBookCard(
     swipeToRightActions: List<SwipeAction> = emptyList(),
     swipeToLeftActions: List<SwipeAction> = emptyList(),
 ) {
-    val lineHeight = AppTypography.labelLarge.lineHeight
-    val titleHeight = with(LocalDensity.current) { (lineHeight * 2.2f).toDp() }
+    val lineHeight = typography.titleMedium.lineHeight
+    val titleHeight = with(LocalDensity.current) { (lineHeight * 2.1f).toDp() }
 
     val lastRead = formTime(userReadingData.lastReadTime)
     val minutes = stringResource(R.string.read_minutes, userReadingData.totalReadTime / 60)
@@ -432,14 +436,12 @@ private fun ReadingBookCard(
                     text = bookInformation.title,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
-                    style = AppTypography.labelLarge.copy(
-                        fontWeight = FontWeight.W600
-                    )
+                    style = typography.titleMedium
                 )
 
                 Text(
                     text = bookInformation.author,
-                    style = AppTypography.bodyMedium.copy(
+                    style = typography.bodyMedium.copy(
                         fontWeight = FontWeight.W600,
                         color = colorScheme.primary
                     ),
@@ -449,7 +451,7 @@ private fun ReadingBookCard(
 
                 Text(
                     text = bookInformation.description.trim(),
-                    style = AppTypography.bodyMedium.copy(color = colorScheme.secondary),
+                    style = typography.bodyMedium.copy(color = colorScheme.secondary),
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -466,7 +468,7 @@ private fun ReadingBookCard(
                     )
                     Text(
                         text = infoText,
-                        style = AppTypography.labelSmall.copy(color = colorScheme.secondary)
+                        style = typography.labelMedium.copy(color = colorScheme.secondary)
                     )
                 }
 
@@ -576,14 +578,17 @@ private fun VerticalDotsIndicator(
     ) {
         repeat(pageCount) { idx ->
             val selected = idx == currentPage
+
+            val color by animateColorAsState(
+                targetValue = if (selected) colorScheme.primary else colorScheme.outlineVariant,
+                animationSpec = tween(durationMillis = 250, easing = FastOutSlowInEasing)
+            )
+
             Box(
                 Modifier
-                    .size(width = 6.dp, height = if (selected) 14.dp else 6.dp)
-                    .clip(RoundedCornerShape(percent = 50))
-                    .background(
-                        if (selected) colorScheme.primary
-                        else colorScheme.outlineVariant
-                    )
+                    .size(6.dp)
+                    .clip(CircleShape)
+                    .background(color)
             )
         }
     }
@@ -598,7 +603,7 @@ private fun ReadingHeaderCardPage(
     modifier: Modifier = Modifier
 ) {
     val density = LocalDensity.current
-    val lineHeight = AppTypography.titleLarge.lineHeight
+    val lineHeight = typography.displayMedium.lineHeight
     val titleHeight = with(density) { (lineHeight * 2.2f).toDp() }
 
     val dateFormatter = remember { DateTimeFormatter.ofPattern("MM/dd") }
@@ -639,7 +644,7 @@ private fun ReadingHeaderCardPage(
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis,
                 fontWeight = FontWeight.W700,
-                style = AppTypography.titleLarge,
+                style = typography.displayMedium,
                 lineHeight = lineHeight,
                 modifier = Modifier
                     .height(titleHeight)
@@ -649,7 +654,7 @@ private fun ReadingHeaderCardPage(
             Text(
                 text = data.lastReadChapterTitle,
                 maxLines = 1,
-                style = AppTypography.labelMedium,
+                style = typography.labelLarge,
                 color = colorScheme.tertiary,
                 overflow = TextOverflow.Ellipsis,
                 fontWeight = FontWeight.W600
@@ -663,9 +668,10 @@ private fun ReadingHeaderCardPage(
                     modifier = Modifier.weight(1f),
                     onClick = { onClickOpenDetail(info.id) },
                     shape = RoundedCornerShape(10.dp),
-                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 8.dp)
+                    contentPadding = PaddingValues(8.dp)
                 ) {
                     Icon(
+                        modifier = Modifier.size(24.dp),
                         painter = painterResource(R.drawable.view_list_24px),
                         contentDescription = null
                     )
@@ -675,13 +681,14 @@ private fun ReadingHeaderCardPage(
                     modifier = Modifier.weight(3f),
                     onClick = { onClickContinueReading(info.id, data.lastReadChapterId) },
                     shape = RoundedCornerShape(10.dp),
-                    contentPadding = PaddingValues(horizontal = 20.dp, vertical = 8.dp)
+                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
                 ) {
                     Text(
                         text = stringResource(R.string.resume_last_reading),
                         fontWeight = FontWeight.W600,
-                        style = AppTypography.labelMedium,
-                        maxLines = 1
+                        style = typography.labelLarge,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
                     )
                 }
             }
@@ -717,7 +724,7 @@ private fun InfoChip(
 
         Text(
             text = text,
-            style = AppTypography.labelSmall,
+            style = typography.labelMedium,
             color = colorScheme.onSurfaceVariant,
             maxLines = 1
         )

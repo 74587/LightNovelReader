@@ -54,7 +54,6 @@ import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.logging.LogEntry
 import indi.dmzz_yyhyy.lightnovelreader.data.logging.LogLevel
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.AnimatedTextLine
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -126,11 +125,11 @@ private fun TopBar(
             Column {
                 Text(
                     text = stringResource(R.string.logs_title),
-                    style = AppTypography.titleTopBar
+                    style = MaterialTheme.typography.displayLarge
                 )
                 AnimatedTextLine(
                     text = uiState.selectedLogFile,
-                    style = AppTypography.titleSubTopBar,
+                    style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.secondary,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -231,7 +230,7 @@ private fun BottomBar(
                                         if (subText.isNotEmpty()) {
                                             Text(
                                                 subText,
-                                                style = AppTypography.bodyLarge,
+                                                style = MaterialTheme.typography.bodyLarge,
                                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                                 maxLines = 1,
                                                 overflow = TextOverflow.Ellipsis
@@ -263,11 +262,11 @@ private fun BottomBar(
                     DropdownMenuItem(
                         text = {
                             Column {
-                                Text(stringResource(R.string.log_clear), style = AppTypography.dropDownItem)
+                                Text(stringResource(R.string.log_clear), style = MaterialTheme.typography.bodyLarge)
                                 Spacer(Modifier.height(4.dp))
                                 Text(
                                     text = stringResource(R.string.log_clear_desc),
-                                    style = AppTypography.labelMedium,
+                                    style = MaterialTheme.typography.labelMedium,
                                     color = MaterialTheme.colorScheme.secondary
                                 )
                             }
@@ -280,7 +279,7 @@ private fun BottomBar(
                     DropdownMenuItem(
                         text = {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(stringResource(R.string.auto_scroll), style = AppTypography.dropDownItem)
+                                Text(stringResource(R.string.auto_scroll), style = MaterialTheme.typography.bodyLarge)
                                 Spacer(Modifier.weight(1f))
                                 Switch(checked = autoScrollEnabled, onCheckedChange = onToggleAutoScroll)
                             }
@@ -290,7 +289,7 @@ private fun BottomBar(
                     DropdownMenuItem(
                         text = {
                             Row(verticalAlignment = Alignment.CenterVertically) {
-                                Text(stringResource(R.string.word_wrap), style = AppTypography.dropDownItem)
+                                Text(stringResource(R.string.word_wrap), style = MaterialTheme.typography.bodyLarge)
                                 Spacer(Modifier.weight(1f))
                                 Switch(checked = unwrapLogsText, onCheckedChange = onToggleWrap)
                             }

@@ -32,6 +32,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -69,6 +70,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.LocalAppTheme
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalDarkColorScheme
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalLightColorScheme
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.SettingState
+import indi.dmzz_yyhyy.lightnovelreader.ui.components.SectionHeader
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsMenuEntry
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsSliderEntry
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.SettingsCategory
@@ -79,7 +81,6 @@ import indi.dmzz_yyhyy.lightnovelreader.utils.rememberReaderBackgroundPainter
 import indi.dmzz_yyhyy.lightnovelreader.utils.rememberReaderFontFamily
 import io.nightfish.lightnovelreader.api.ui.components.SettingsClickableEntry
 import io.nightfish.lightnovelreader.api.ui.components.SettingsSwitchEntry
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -123,9 +124,10 @@ fun ThemeScreen(
 fun DarkModeSettings(
     settingState: SettingState
 ) {
-    SettingsCategory(
-        title = stringResource(R.string.settings_theme_dark_theme),
-    ) {  }
+    SectionHeader(
+        modifier = Modifier.padding(horizontal = 24.dp, vertical = 10.dp),
+        text = stringResource(R.string.settings_theme_dark_theme)
+    )
 
     val appTheme = AppTheme(
         isDark = LocalAppTheme.current.isDark,
@@ -136,7 +138,7 @@ fun DarkModeSettings(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 12.dp),
             horizontalArrangement = Arrangement.SpaceEvenly
         ) {
             Column(
@@ -151,7 +153,7 @@ fun DarkModeSettings(
                         selected = settingState.darkModeKey == "Disabled",
                         onClick = { settingState.darkModeKeyUserData.asynchronousSet("Disabled") }
                     )
-                    Text(stringResource(R.string.key_dark_mode_disabled), style = AppTypography.labelMedium)
+                    Text(stringResource(R.string.key_dark_mode_disabled), style = typography.labelLarge)
                 }
             }
 
@@ -167,7 +169,7 @@ fun DarkModeSettings(
                         selected = settingState.darkModeKey == "Enabled",
                         onClick = { settingState.darkModeKeyUserData.asynchronousSet("Enabled") }
                     )
-                    Text(stringResource(R.string.key_dark_mode_enabled), style = AppTypography.labelMedium)
+                    Text(stringResource(R.string.key_dark_mode_enabled), style = typography.labelLarge)
                 }
             }
 
@@ -222,7 +224,7 @@ fun DarkModeSettings(
                         selected = settingState.darkModeKey == "FollowSystem",
                         onClick = { settingState.darkModeKeyUserData.asynchronousSet("FollowSystem") }
                     )
-                    Text(stringResource(R.string.key_dark_mode_follow_system), style = AppTypography.labelMedium)
+                    Text(stringResource(R.string.key_dark_mode_follow_system), style = typography.labelLarge)
                 }
             }
         }
@@ -246,6 +248,14 @@ fun ThemeSettingsList(
             checked = settingState.dynamicColorsKey,
             booleanUserData = settingState.dynamicColorsKeyUserData,
             disabled = Build.VERSION.SDK_INT < Build.VERSION_CODES.S
+        )
+        SettingsSwitchEntry(
+            modifier = Modifier.background(colorScheme.surfaceContainer),
+            painter = painterResource(R.drawable.experiment_24px),
+            title = "Material 3 Expressive (Beta)",
+            description = "Enables the experimental expressive variant for Material 3. This feature is still in beta",
+            checked = settingState.enableM3E,
+            booleanUserData = settingState.enableM3EUserData
         )
         if (!settingState.dynamicColorsKey) {
             SettingsMenuEntry(
@@ -446,7 +456,7 @@ fun ReaderTextSettings(settingState: SettingState, context: Context, onClickChan
                 lineHeight = (settingState.fontLineHeight + settingState.fontSize).sp,
                 fontWeight = FontWeight(settingState.fontWeigh.toInt()),
                 textAlign = TextAlign.Center,
-                fontFamily = rememberReaderFontFamily(settingState),
+                fontFamily = rememberReaderFontFamily(settingState.fontFamilyUriUserData),
                 color = readerTextColor(settingState)
             )
         }
@@ -598,7 +608,7 @@ private fun BackgroundSelectRow(
             .padding(horizontal = 12.dp, vertical = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(label, style = AppTypography.labelLarge)
+        Text(label, style = typography.headlineSmall)
         Spacer(Modifier.weight(1f))
         Box(
             modifier = Modifier
@@ -642,8 +652,8 @@ private fun BackgroundCard(
     ) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Column {
-                Text(title, style = AppTypography.labelLarge)
-                desc?.let { Text(it, style = AppTypography.labelMedium, color = colorScheme.secondary) }
+                Text(title, style = typography.headlineSmall)
+                desc?.let { Text(it, style = typography.bodyMedium, color = colorScheme.secondary) }
             }
             Spacer(Modifier.weight(1f))
             RadioButton(selected = selected, onClick = onClick, enabled = enabled)
@@ -839,7 +849,12 @@ private fun TopBar(
     TopAppBar(
         title = {
             Column {
-                Text(stringResource(R.string.settings_theme))
+                Text(
+                    text = stringResource(R.string.settings_theme),
+                    style = typography.displayLarge,
+                    fontWeight = FontWeight.W600,
+                    color = colorScheme.onSurface
+                )
             }
         },
         navigationIcon = {
@@ -849,6 +864,6 @@ private fun TopBar(
                     contentDescription = "back"
                 )
             }
-        },
+        }
     )
 }

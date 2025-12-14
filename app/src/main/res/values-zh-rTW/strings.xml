@@ -31,7 +31,7 @@
     <string name="ignore_version">忽略此版本</string>
     <string name="switch_and_restart">切換並重新啟動</string>
     <string name="hide_read">僅顯示未讀</string>
-    <string name="mark_all_read">全部標為已讀</string>
+    <string name="mark_as_read">標記為已讀…</string>
     <string name="export_epub">導出為 Epub</string>
     <string name="export_include_images">包含圖片</string>
     <string name="export_split_volumes">分卷導出</string>
@@ -68,6 +68,11 @@
     <string name="reader_last_page">已經是最後一頁了</string>
     <string name="reader_reached_bottom">已經到底了</string>
     <string name="font_file_error">字體文件錯誤或已損壞, 請您檢查後導入</string>
+    <string name="settings_data_source_pending_title">切換到 %s</string>
+    <string name="settings_data_source_pending_desc">
+        系統將清除快取並重新啟動。當下次切換回「%s」時，您目前的資料將可再次使用。
+    </string>
+    <string name="settings_data_source_applying">處理中……</string>
 
     <!-- Snackbar Hints -->
     <string name="cache_book_started">開始快取：%1$s</string>
@@ -179,8 +184,8 @@
     <string name="settings_auto_proxy_desc">自動從網絡上獲取代理ip, <b>但這將導致您所瀏覽的書本數據可能會被截獲</b></string>
 
     <string name="about_settings">關於</string>
-    <string name="settings_debug_tools">除錯工具</string>
-    <string name="settings_debug_tools_desc">Debug 用除錯工具</string>
+    <string name="settings_debug_tools">調試選項</string>
+    <string name="settings_debug_tools_desc">供開發使用的調試與診斷功能</string>
     <string name="settings_about_source_code"><![CDATA[在 %1$s 查看原始碼<br/>在 %2$s 提交 Bug 或新功能請求]]></string>
     <string name="settings_about_oss">LightNovelReader 是獻給全世界所有閱讀愛好者的禮物。</string>
     <string name="settings_github_repo">GitHub 儲存庫</string>
@@ -190,6 +195,7 @@
     <string name="settings_statistics">匿名統計</string>
     <string name="settings_statistics_desc">我們使用 Microsoft AppCenter 匿名收集一些統計資料，以使 LightNovelReader 變得更好</string>
     <string name="experimental_settings">實驗性</string>
+    <string name="debug_settings">除錯</string>
     <string name="item_view_details">查看詳細資訊</string>
 
     <string name="settings_auto_cache">自動快取</string>

@@ -2,7 +2,6 @@ package io.nightfish.lightnovelreader.api.ui.components
 
 import android.content.Intent
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -14,6 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,11 +22,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import io.nightfish.lightnovelreader.api.userdata.BooleanUserData
 
 @Composable
@@ -80,19 +78,17 @@ fun SettingsSwitchEntry(
         }
 
         Column(
-            modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.spacedBy(3.dp)
+            modifier = Modifier.weight(1f)
         ) {
             Text(
                 text = title,
                 color = colorScheme.onSurface,
-                style = AppTypography.titleMedium,
-                fontWeight = FontWeight.Normal
+                style = typography.headlineSmall
             )
             Text(
                 text = description,
                 color = colorScheme.onSurfaceVariant,
-                style = AppTypography.labelMedium
+                style = typography.bodyMedium
             )
         }
 
@@ -169,20 +165,19 @@ fun SettingsClickableEntry(
             Text(
                 text = title,
                 color = colorScheme.onSurface,
-                style = AppTypography.titleMedium,
-                fontWeight = FontWeight.Normal
+                style = typography.headlineSmall
             )
             description?.let {
                 Text(
                     text = it,
                     color = colorScheme.onSurfaceVariant,
-                    style = AppTypography.labelMedium
+                    style = typography.bodyMedium
                 )
             }
             option?.let {
                 AnimatedTextLine(
                     text = it,
-                    style = AppTypography.labelMedium,
+                    style = typography.bodyMedium,
                     color = colorScheme.primary,
                     maxLines = 3,
                     overflow = TextOverflow.Ellipsis

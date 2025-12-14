@@ -73,14 +73,21 @@ object Route {
                 object Repository
             }
             @Serializable
+            object SourceChange {
+                @Serializable
+                object List
+                @Serializable
+                data class Settings(
+                    val sourceId: String
+                )
+            }
+            @Serializable
             object Debug
             @Serializable
             object Theme
             @Serializable
             object Licenses
         }
-        @Serializable
-        object SourceChangeDialog
         @Serializable
         object ExportUserDataDialog
         @Serializable

@@ -1,38 +1,38 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.components
 
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.clickable
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemColors
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
+import androidx.compose.ui.graphics.Color
 
 @Composable
 fun ListItem(
     modifier: Modifier = Modifier,
     title: String,
+    colors: ListItemColors = ListItemDefaults.colors(),
     supportingText: String,
     trailingContent: @Composable () -> Unit,
 ) {
     ListItem(
         modifier = modifier,
-        colors = ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.surfaceContainerHigh),
+        colors = colors,
         headlineContent = {
             Text(
-                modifier = Modifier.padding(bottom = 4.dp),
                 text = title,
-                style = AppTypography.titleMedium,
+                style = MaterialTheme.typography.titleMedium,
             )
         },
         supportingContent = {
             Text(
                 text = supportingText,
-                style = AppTypography.labelMedium,
+                style = MaterialTheme.typography.bodyMedium,
             )
         },
         trailingContent = trailingContent
@@ -44,12 +44,16 @@ fun CheckBoxListItem(
     modifier: Modifier = Modifier,
     title: String,
     supportingText: String,
+    colors: ListItemColors = ListItemDefaults.colors().copy(
+        containerColor = Color.Transparent
+    ),
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit,
 ) {
     ListItem(
-        modifier = modifier,
+        modifier = modifier.clickable { onCheckedChange(!checked) },
         title = title,
+        colors = colors,
         supportingText = supportingText,
     ) {
         Checkbox(
@@ -63,6 +67,9 @@ fun CheckBoxListItem(
 fun RadioButtonListItem(
     modifier: Modifier = Modifier,
     title: String,
+    colors: ListItemColors = ListItemDefaults.colors().copy(
+        containerColor = Color.Transparent
+    ),
     supportingText: String,
     selected: Boolean,
     onClick: () -> Unit,
@@ -70,6 +77,7 @@ fun RadioButtonListItem(
     ListItem(
         modifier = modifier,
         title = title,
+        colors = colors,
         supportingText = supportingText,
     ) {
         RadioButton(

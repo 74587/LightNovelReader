@@ -17,7 +17,6 @@ import io.nightfish.lightnovelreader.api.ui.components.SettingsClickableEntry
 
 @Composable
 fun AboutSettingsList(
-    onClickDebugMode: () -> Unit,
     onClickLicenses: () -> Unit
 ) {
     val appInfo: String = buildString {
@@ -74,12 +73,4 @@ fun AboutSettingsList(
         title = "开放源代码许可",
         onClick = onClickLicenses
     )
-    if (BuildConfig.DEBUG)
-        SettingsClickableEntry(
-            modifier = Modifier.background(colorScheme.surfaceContainer),
-            painter = painterResource(R.drawable.adb_24px),
-            title = stringResource(R.string.settings_debug_tools),
-            description = stringResource(R.string.settings_debug_tools_desc),
-            onClick = onClickDebugMode
-        )
 }

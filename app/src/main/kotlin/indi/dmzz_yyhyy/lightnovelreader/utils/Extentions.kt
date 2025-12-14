@@ -1,5 +1,8 @@
 package indi.dmzz_yyhyy.lightnovelreader.utils
 
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.height
@@ -9,10 +12,14 @@ import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
-import androidx.compose.runtime.produceState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.composed
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
@@ -71,21 +78,22 @@ fun <T> Flow<T>.throttleLatest(periodMillis: Long): Flow<T> = flow {
 
 @Composable
 fun LazyListState.isScrollingUp(): State<Boolean> {
-    return produceState(initialValue = true) {
-        var lastIndex = 0
-        var lastScroll = Int.MAX_VALUE
-        snapshotFlow {
-            firstVisibleItemIndex to firstVisibleItemScrollOffset
-        }.collect { (currentIndex, currentScroll) ->
-            if (currentIndex != lastIndex || currentScroll != lastScroll) {
-                value = currentIndex < lastIndex ||
+    val up = remember(this) { mutableStateOf(true) }
+
+    LaunchedEffect(this) {
+        var lastIndex = firstVisibleItemIndex
+        var lastScroll = firstVisibleItemScrollOffset
+        snapshotFlow { firstVisibleItemIndex to firstVisibleItemScrollOffset }
+            .collect { (currentIndex, currentScroll) ->
+                up.value = currentIndex < lastIndex ||
                         (currentIndex == lastIndex && currentScroll < lastScroll)
                 lastIndex = currentIndex
                 lastScroll = currentScroll
             }
-        }
     }
+    return up
 }
+
 
 fun NavController.popBackStackIfResumed() {
     if (isResumed()) {
@@ -126,21 +134,6 @@ private fun partition(arr: MutableList<Int>, left: Int, right: Int): Int {
     }
     Collections.swap(arr, i, right)
     return i
-}
-
-val homeRoutes = listOf(
-    "Reading.Home", "Bookshelf.Home", "Explore.Home", "Settings.Home"
-)
-
-fun isInMainNavigation(from: NavDestination, to: NavDestination): Boolean {
-    val fromRoute = from.route ?: return false
-    val toRoute = to.route ?: return false
-
-    val fromMatch = homeRoutes.any(fromRoute::contains)
-    if (!fromMatch) return false
-
-    val toMatch = homeRoutes.any(toRoute::contains)
-    return toMatch
 }
 
 suspend fun unzipFile(zipFile: File, outFile: File) {
@@ -194,3 +187,19 @@ fun LazyListScope.bottomBarSpacer() {
 
 fun Modifier.bottomBarPadding() =
     this.padding(bottom = 80.dp)
+
+private val FadeInOnceSpec = tween<Float>(durationMillis = 220, easing = FastOutSlowInEasing)
+
+fun Modifier.fadeInOnce(key: Any): Modifier = composed {
+    val appeared = rememberSaveable(key) { mutableStateOf(false) }
+    val alphaAnim = remember { Animatable(if (appeared.value) 1f else 0f) }
+
+    LaunchedEffect(key) {
+        if (!appeared.value) {
+            alphaAnim.snapTo(0f)
+            alphaAnim.animateTo(1f, FadeInOnceSpec)
+            appeared.value = true
+        }
+    }
+    this.graphicsLayer { alpha = alphaAnim.value }
+}

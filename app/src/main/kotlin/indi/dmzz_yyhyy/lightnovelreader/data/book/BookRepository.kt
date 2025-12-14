@@ -59,10 +59,13 @@ class BookRepository @Inject constructor(
             bookInformation.id = id
             coroutineScope.launch(Dispatchers.IO) {
                 localBookDataSource.getBookInformation(id)?.let(bookInformation::update)
-                priority.get().getBookInformation(id).let {
-                    if (it.isEmpty()) return@launch
-                    localBookDataSource.updateBookInformation(it)
-                    bookInformation.update(textProcessingRepository.processBookInformation { it })
+                priority.get().getBookInformation(id).let { webInfo ->
+                    if (!webInfo.isEmpty()) {
+                        localBookDataSource.updateBookInformation(webInfo)
+                        bookInformation.update(
+                            textProcessingRepository.processBookInformation { webInfo }
+                        )
+                    }
                 }
             }
             return@processBookInformation bookInformation

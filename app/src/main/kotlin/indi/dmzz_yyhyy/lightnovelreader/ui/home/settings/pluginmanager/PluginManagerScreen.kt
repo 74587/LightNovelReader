@@ -26,6 +26,7 @@ import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Switch
@@ -49,7 +50,6 @@ import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginInfo
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.EmptyPage
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -166,7 +166,7 @@ private fun ThirdPartyPluginTips() {
             )
             Spacer(Modifier.width(12.dp))
             Column {
-                Text("来自第三方的插件可以提供额外的数据源或功能。安装插件前，请确保其来源可信。\nLightNovelReader 不对插件可用性负责。", style = AppTypography.bodyMedium)
+                Text("来自第三方的插件可以提供额外的数据源或功能。安装插件前，请确保其来源可信。\nLightNovelReader 不对插件可用性负责。", style = typography.bodyMedium)
             }
         }
     }
@@ -202,9 +202,9 @@ private fun PluginCard(
             Column(Modifier.padding(20.dp)) {
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Column {
-                        Text(pluginInfo.name, style = AppTypography.titleMedium)
-                        Text(pluginInfo.versionName, style = AppTypography.labelMedium, color = colorScheme.secondary)
-                        Text("by ${pluginInfo.author}", style = AppTypography.labelMedium, color = colorScheme.secondary)
+                        Text(pluginInfo.name, style = typography.titleMedium)
+                        Text(pluginInfo.versionName, style = typography.labelMedium, color = colorScheme.secondary)
+                        Text("by ${pluginInfo.author}", style = typography.labelMedium, color = colorScheme.secondary)
                     }
                     Spacer(Modifier.weight(1f))
                     Switch(
@@ -286,7 +286,7 @@ private fun TopBar(
         title = {
             Text(
                 text = "扩展插件",
-                style = AppTypography.titleTopBar,
+                style = typography.displayLarge,
                 color = colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

@@ -10,7 +10,6 @@ import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -24,12 +23,10 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.toRoute
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import io.nightfish.lightnovelreader.api.ui.LocalNavController
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.ExportContext
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.ExportUserDataDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.MutableExportContext
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SliderValueDialog
-import indi.dmzz_yyhyy.lightnovelreader.ui.components.SourceChangeDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.SliderValueDialogViewModel
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.UpdatesAvailableDialogViewModel
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.debug.navigateToSettingsDebugDestination
@@ -40,6 +37,8 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.logcat.navigateToSettin
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.logcat.settingsLogcatDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.navigateToSettingsPluginManagerHomeDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.settingsPluginManagerNavigation
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.sourcechange.navigateToSettingsSourceChangeDestination
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.sourcechange.settingsSourceChangeDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.textformatting.editTextFormattingRuleDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.textformatting.navigateToSettingsTextFormattingManagerDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.textformatting.settingsTextFormattingNavigation
@@ -48,10 +47,10 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.theme.settingsThemeDest
 import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
 import indi.dmzz_yyhyy.lightnovelreader.utils.isResumed
 import indi.dmzz_yyhyy.lightnovelreader.utils.uriLauncher
+import io.nightfish.lightnovelreader.api.ui.LocalNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.io.File
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun NavGraphBuilder.settingsDestination(sharedTransitionScope: SharedTransitionScope) {
@@ -67,7 +66,7 @@ fun NavGraphBuilder.settingsDestination(sharedTransitionScope: SharedTransitionS
             importData = settingsViewModel::importFromFile,
             onClickDebugMode = navController::navigateToSettingsDebugDestination,
             onClickLicenses = navController::navigateToSettingsLicensesDestination,
-            onClickChangeSource = navController::navigateToSourceChangeDialog,
+            onClickChangeSource = navController::navigateToSettingsSourceChangeDestination,
             onClickExportUserData = navController::navigateToExportUserDataDialog,
             onClickLogcat = navController::navigateToSettingsLogcatDestination,
             onClickTextFormatting = navController::navigateToSettingsTextFormattingManagerDestination,
@@ -77,7 +76,7 @@ fun NavGraphBuilder.settingsDestination(sharedTransitionScope: SharedTransitionS
             sharedTransitionScope = sharedTransitionScope
         )
     }
-    sourceChangeDialog()
+    settingsSourceChangeDestination()
     exportUserDataDialog()
     editTextFormattingRuleDialog()
     sliderValueDialog()
@@ -101,34 +100,6 @@ fun NavGraphBuilder.settingsNavigation(sharedTransitionScope: SharedTransitionSc
 @Suppress("unused")
 fun NavController.navigateToSettingsDestination() {
     navigate(Route.Main.Settings)
-}
-
-private fun NavGraphBuilder.sourceChangeDialog() {
-    dialog<Route.Main.SourceChangeDialog> {
-        val navController = LocalNavController.current
-        val viewModel = hiltViewModel<SourceChangeDialogViewModel>()
-        var selectedWebDataSourceId by remember { mutableIntStateOf(viewModel.webBookDataSourceId) }
-        val context = LocalContext.current
-        SourceChangeDialog(
-            onDismissRequest = {
-                navController.popBackStack()
-                selectedWebDataSourceId = viewModel.webBookDataSourceId
-            },
-            onConfirmation = {
-                viewModel.changeWebSource(selectedWebDataSourceId, File(context.filesDir, "data"))
-                navController.popBackStack()
-            },
-            webDataSourceItems = viewModel.webDataSourceItems,
-            selectedWebDataSourceId = selectedWebDataSourceId,
-            onClickItem = {
-                selectedWebDataSourceId = it
-            }
-        )
-    }
-}
-
-private fun NavController.navigateToSourceChangeDialog() {
-    navigate(Route.Main.SourceChangeDialog)
 }
 
 private fun NavGraphBuilder.sliderValueDialog() {

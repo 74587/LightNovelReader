@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -47,7 +48,6 @@ import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.entity.ReadingStatisticsEntity
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.stats.detailed.StatsDetailedUiState
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.stats.detailed.currentDateRange
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import java.text.DecimalFormat
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -79,7 +79,7 @@ private fun HourlyReadingTimeChart(
     Text(
         modifier = Modifier.padding(top = 10.dp),
         text = stringResource(R.string.detail_of_date, formattedDate),
-        style = AppTypography.titleMedium
+        style = typography.titleMedium
     )
     val hourlyMap = statsMap[date]?.readingTimeCount?.getHourStatistics() ?: emptyMap()
     val total = hourlyMap.values.sum()

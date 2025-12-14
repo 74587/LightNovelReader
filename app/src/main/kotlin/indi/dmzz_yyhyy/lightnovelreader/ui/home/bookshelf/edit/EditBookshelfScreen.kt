@@ -41,7 +41,6 @@ import indi.dmzz_yyhyy.lightnovelreader.utils.LocalClaimSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.showSnackbar
 import io.nightfish.lightnovelreader.api.bookshelf.Bookshelf
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -106,7 +105,7 @@ fun EditBookshelfScreen(
                         Text(
                             text = bookshelfNamePlaceholder,
                             color = MaterialTheme.colorScheme.error,
-                            style = AppTypography.bodyMedium
+                            style = MaterialTheme.typography.bodyMedium
                         )
                     }
                 },
@@ -158,14 +157,14 @@ fun EditBookshelfScreen(
                     headlineContent = {
                         Text(
                             text = stringResource(R.string.settings_delete_bookshelf),
-                            style = AppTypography.titleMedium,
+                            style = MaterialTheme.typography.titleMedium,
                             modifier = Modifier.padding(bottom = 2.dp)
                         )
                     },
                     supportingContent = {
                         Text(
                             text = stringResource(R.string.settings_delete_bookshelf_desc),
-                            style = AppTypography.bodyMedium
+                            style = MaterialTheme.typography.bodyMedium
                         )
                     },
                 )
@@ -185,7 +184,7 @@ private fun TopBar(
         title = {
             Text(
                 text = title,
-                style = AppTypography.titleTopBar,
+                style = MaterialTheme.typography.displayLarge,
                 fontWeight = FontWeight.W600,
                 color = MaterialTheme.colorScheme.onSurface
             )
@@ -225,8 +224,8 @@ fun SwitchSettingItem(
 ) {
     ListItem(
         modifier = Modifier.clickable {onValueChange(!value)},
-        headlineContent = { Text(text = title, style = AppTypography.titleMedium, modifier = Modifier.padding(bottom = 2.dp)) },
-        supportingContent = { Text(text = description, style = AppTypography.bodyMedium) },
+        headlineContent = { Text(text = title, style = MaterialTheme.typography.titleMedium, modifier = Modifier.padding(bottom = 2.dp)) },
+        supportingContent = { Text(text = description, style = MaterialTheme.typography.bodyMedium) },
         trailingContent = {
             Switch(
                 checked = value,

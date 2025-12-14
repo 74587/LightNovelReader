@@ -58,7 +58,6 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.home.explore.ExploreUiState
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.addToBookshelfAction
 import indi.dmzz_yyhyy.lightnovelreader.utils.withHaptic
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -101,7 +100,7 @@ fun ExploreSearchScreen(
                                     exploreSearchUiState.searchTypeNameMap[it]?.let { it1 ->
                                         Text(
                                             text = it1,
-                                            style = AppTypography.dropDownItem
+                                            style = MaterialTheme.typography.bodyLarge
                                         )
                                     }
                                 },
@@ -131,7 +130,7 @@ fun ExploreSearchScreen(
                             onExpandedChange = { searchBarExpanded = it },
                             placeholder = { AnimatedText(
                                 text = exploreSearchUiState.searchTip,
-                                style = AppTypography.bodyLarge,
+                                style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             ) },
                             leadingIcon = {
@@ -188,7 +187,7 @@ fun ExploreSearchScreen(
                             ) {
                                 Text(
                                     text = stringResource(id = R.string.search_history),
-                                    style = AppTypography.titleSmall,
+                                    style = MaterialTheme.typography.titleSmall,
                                     fontWeight = FontWeight.W600
                                 )
 
@@ -204,7 +203,7 @@ fun ExploreSearchScreen(
                                 ) {
                                     Text(
                                         text = stringResource(id = R.string.clear_all),
-                                        style = AppTypography.titleSmall,
+                                        style = MaterialTheme.typography.titleSmall,
                                         fontWeight = FontWeight.W600,
                                     )
                                 }
@@ -233,7 +232,7 @@ fun ExploreSearchScreen(
                                         Text(
                                             modifier = Modifier.padding(start = 8.dp),
                                             text = it,
-                                            style = AppTypography.labelLarge,
+                                            style = MaterialTheme.typography.bodyLarge,
                                             color = MaterialTheme.colorScheme.onSurface
                                         )
                                         Box(Modifier.weight(2f))
@@ -292,7 +291,7 @@ fun ExploreSearchScreen(
                                     exploreSearchUiState.searchResult.size,
                                     if (exploreSearchUiState.isLoadingComplete) "" else "..."
                                 ),
-                                style = AppTypography.bodyMedium,
+                                style = MaterialTheme.typography.bodyMedium,
                                 fontWeight = FontWeight.W600,
                                 letterSpacing = 0.5.sp,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant

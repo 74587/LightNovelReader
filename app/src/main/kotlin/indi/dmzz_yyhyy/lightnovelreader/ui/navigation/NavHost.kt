@@ -2,9 +2,13 @@ package indi.dmzz_yyhyy.lightnovelreader.ui.navigation
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionLayout
+import androidx.compose.animation.core.animateDpAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -18,6 +22,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -50,9 +55,7 @@ fun LightNovelReaderNavHost(
     val snackbarHostState = remember { SnackbarHostState() }
 
     var claimCount by remember { mutableIntStateOf(0) }
-    val claim: (Boolean) -> Unit = remember {
-        { take -> claimCount += if (take) 1 else -1 }
-    }
+    val claim: (Boolean) -> Unit = remember { { take -> claimCount += if (take) 1 else -1 } }
 
     var bottomBarVisible by remember { mutableStateOf(true) }
 
@@ -71,10 +74,17 @@ fun LightNovelReaderNavHost(
             bottomBarVisible = true
         }
 
+        val bottomPadding by animateDpAsState(
+            if (bottomBarVisible && hasBottomBarByRoute) 80.dp else 0.dp,
+            animationSpec = tween(300)
+        )
+
         Scaffold(
             snackbarHost = {
                 if (claimCount == 0) {
-                    SnackbarHost(snackbarHostState) { data -> LnrSnackbar(data) }
+                    Box(Modifier.navigationBarsPadding().padding(bottom = bottomPadding)) {
+                        SnackbarHost(snackbarHostState) { data -> LnrSnackbar(data) }
+                    }
                 }
             },
             contentWindowInsets = WindowInsets(0, 0, 0, 0)

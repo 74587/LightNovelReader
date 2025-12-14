@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
@@ -33,7 +34,6 @@ import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.book.get
 import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.book.BookVolumes
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import kotlinx.coroutines.launch
 import java.time.format.DateTimeFormatter
 
@@ -46,7 +46,6 @@ fun BookInfoBottomSheet(
     onDismissRequest: () -> Unit,
 ) {
     val coroutineScope = rememberCoroutineScope()
-    val context = LocalContext.current
     val clipboard = LocalClipboard.current
 
     @Composable
@@ -85,8 +84,6 @@ fun BookInfoBottomSheet(
                 modifier = Modifier.weight(7f),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-
-
                 Text(
                     text = content,
                     style = contentStyle,
@@ -99,8 +96,6 @@ fun BookInfoBottomSheet(
                                     val clipData = ClipData.newPlainText("content", content)
                                     val clipEntry = ClipEntry(clipData = clipData)
                                     clipboard.setClipEntry(clipEntry = clipEntry)
-                                    Toast.makeText(context, context.getString(R.string.copied), Toast.LENGTH_SHORT)
-                                        .show()
                                 }
                             },
                         )
@@ -113,12 +108,12 @@ fun BookInfoBottomSheet(
         onDismissRequest = onDismissRequest,
         sheetState = sheetState
     ) {
-        val titleStyle = AppTypography.titleMedium.copy(
+        val titleStyle = typography.titleMedium.copy(
             color = MaterialTheme.colorScheme.onSurface,
             fontWeight = FontWeight.W600
         )
-        val contentStyle = AppTypography.labelLarge.copy(
-            color = MaterialTheme.colorScheme.secondary
+        val contentStyle = typography.bodyLarge.copy(
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
         Column(

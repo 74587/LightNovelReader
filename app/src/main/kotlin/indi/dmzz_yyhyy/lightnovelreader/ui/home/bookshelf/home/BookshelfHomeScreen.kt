@@ -102,7 +102,6 @@ import indi.dmzz_yyhyy.lightnovelreader.utils.bottomBarSpacer
 import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.book.BookVolumes
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.StateFlow
@@ -462,7 +461,7 @@ fun BookshelfHomeScreen(
                                     Text(
                                         modifier = Modifier.padding(vertical = 18.dp),
                                         text = stringResource(R.string.n_books, allBookIds.size),
-                                        style = AppTypography.labelMedium,
+                                        style = MaterialTheme.typography.labelMedium,
                                         fontWeight = FontWeight.W600,
                                         color = MaterialTheme.colorScheme.outline
                                     )
@@ -567,7 +566,7 @@ fun TopBar(
                     text = {
                         Text(
                             text = stringResource(R.string.bookshelf_create_title),
-                            style = AppTypography.dropDownItem
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     },
                     onClick = {
@@ -579,7 +578,7 @@ fun TopBar(
                     text = {
                         Text(
                             text = stringResource(R.string.bookshelf_settings),
-                            style = AppTypography.dropDownItem
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     },
                     onClick = {
@@ -591,7 +590,7 @@ fun TopBar(
                     text = {
                         Text(
                             text = stringResource(R.string.share_bookshelf),
-                            style = AppTypography.dropDownItem
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     },
                     onClick = onClickShareBookshelf
@@ -600,7 +599,7 @@ fun TopBar(
                     text = {
                         Text(
                             text = stringResource(R.string.import_and_export),
-                            style = AppTypography.dropDownItem
+                            style = MaterialTheme.typography.bodyLarge
                         )
                     },
                     trailingIcon = {
@@ -634,7 +633,7 @@ fun TopBar(
                 DropdownMenuItem(
                     text = { Text(
                         text = stringResource(R.string.export_to_lnr_file),
-                        style = AppTypography.dropDownItem
+                        style = MaterialTheme.typography.bodyLarge
                     ) },
                     onClick = {
                         onClickSaveThisBookshelf()
@@ -645,7 +644,7 @@ fun TopBar(
                 DropdownMenuItem(
                     text = { Text(
                         text = stringResource(R.string.export_all_to_lnr_file),
-                        style = AppTypography.dropDownItem
+                        style = MaterialTheme.typography.bodyLarge
                     ) },
                     onClick = {
                         onClickSaveAllBookshelf()
@@ -656,7 +655,7 @@ fun TopBar(
                 DropdownMenuItem(
                     text = { Text(
                         text = stringResource(R.string.import_from_file),
-                        style = AppTypography.dropDownItem
+                        style = MaterialTheme.typography.bodyLarge
                     ) },
                     onClick = {
                         onClickImportBookshelf()
@@ -673,7 +672,7 @@ fun TopBar(
             AnimatedText(
                 text = if (selectMode) stringResource(R.string.nav_bookshelf_select_mode, uiState.selectedBookIds.size)
                     else stringResource(R.string.nav_bookshelf),
-                style = AppTypography.titleTopBar,
+                style = MaterialTheme.typography.displayLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

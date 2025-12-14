@@ -63,8 +63,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import indi.dmzz_yyhyy.lightnovelreader.BuildConfig
 import indi.dmzz_yyhyy.lightnovelreader.R
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
-import io.nightfish.lightnovelreader.api.web.WebDataSourceItem
 import kotlin.math.round
 
 @Composable
@@ -96,7 +94,7 @@ fun BaseDialog(
             ) {
                 Text(
                     text = dismissText,
-                    style = AppTypography.labelMedium,
+                    style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary,
                 )
             }
@@ -105,7 +103,7 @@ fun BaseDialog(
             ) {
                 Text(
                     text = confirmationText,
-                    style = AppTypography.labelMedium,
+                    style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary,
                 )
             }
@@ -141,7 +139,7 @@ fun BaseDialog(
             Text(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 text = title,
-                style = AppTypography.titleLarge,
+                style = MaterialTheme.typography.displayMedium,
                 fontWeight = FontWeight.W500,
             )
             Box(Modifier.height(16.dp))
@@ -151,7 +149,7 @@ fun BaseDialog(
                     .padding(horizontal = 24.dp),
                 textAlign = TextAlign.Start,
                 text = description,
-                style = AppTypography.labelMedium,
+                style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             Box(Modifier.height(16.dp))
@@ -192,18 +190,18 @@ fun SliderDialog(
             ) {
                 Text(
                     text = "字数限制：",
-                    style = AppTypography.labelMedium
+                    style = MaterialTheme.typography.labelMedium
                 )
                 Spacer(Modifier.weight(1f))
                 RollingNumber(
                     number = value.toInt(),
-                    style = AppTypography.labelMedium,
+                    style = MaterialTheme.typography.labelMedium,
                     separator = true
                 )
                 Spacer(Modifier.width(6.dp))
                 Text(
                     text = "以上",
-                    style = AppTypography.labelMedium
+                    style = MaterialTheme.typography.labelMedium
                 )
             }
 
@@ -309,7 +307,7 @@ fun ExportUserDataDialog(
             ) {
                 Text(
                     text = stringResource(R.string.cancel),
-                    style = AppTypography.labelMedium,
+                    style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary,
                 )
             }
@@ -318,7 +316,7 @@ fun ExportUserDataDialog(
             ) {
                 Text(
                     text = stringResource(R.string.export_and_share),
-                    style = AppTypography.labelMedium,
+                    style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary,
                 )
             }
@@ -327,44 +325,9 @@ fun ExportUserDataDialog(
             ) {
                 Text(
                     text = stringResource(R.string.export_to_file),
-                    style = AppTypography.labelMedium,
+                    style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.primary,
                 )
-            }
-        }
-    }
-}
-
-@Composable
-fun SourceChangeDialog(
-    onDismissRequest: () -> Unit,
-    onConfirmation: () -> Unit,
-    webDataSourceItems: List<WebDataSourceItem>,
-    selectedWebDataSourceId: Int,
-    onClickItem: (Int) -> Unit
-) {
-    BaseDialog(
-        icon = painterResource(R.drawable.public_24px),
-        title = stringResource(R.string.settings_select_data_source),
-        description = stringResource(R.string.dialog_select_data_source_text),
-        onDismissRequest = onDismissRequest,
-        onConfirmation = onConfirmation,
-        dismissText = stringResource(R.string.cancel),
-        confirmationText = stringResource(R.string.switch_and_restart)
-    ) {
-        webDataSourceItems.forEachIndexed { index, webDataSourceItem ->
-            RadioButtonListItem(
-                modifier = Modifier
-                    .sizeIn(minWidth = 280.dp, maxWidth = 500.dp)
-                    .fillMaxWidth()
-                    .padding(horizontal = 14.dp),
-                title = webDataSourceItem.name,
-                supportingText = stringResource(R.string.data_source_provider, webDataSourceItem.provider),
-                selected = selectedWebDataSourceId == webDataSourceItem.id,
-                onClick = { onClickItem(webDataSourceItem.id) }
-            )
-            if (index != webDataSourceItems.size - 1) {
-                HorizontalDivider(Modifier.padding(horizontal = 14.dp))
             }
         }
     }
@@ -397,11 +360,11 @@ fun SettingsAboutInfoDialog(
 
                         Text(
                             stringResource(id = R.string.app_name),
-                            style = AppTypography.titleLarge
+                            style = MaterialTheme.typography.displayMedium
                         )
                         Text(
                             BuildConfig.APPLICATION_ID,
-                            style = AppTypography.labelMedium
+                            style = MaterialTheme.typography.labelMedium
                         )
                     }
                 }
@@ -410,7 +373,7 @@ fun SettingsAboutInfoDialog(
 
                 Text(
                     text = stringResource(R.string.settings_about_oss),
-                    style = AppTypography.labelMedium
+                    style = MaterialTheme.typography.labelLarge
                 )
                 Spacer(Modifier.height(10.dp))
                 val annotatedString = AnnotatedString.Companion.fromHtml(
@@ -433,13 +396,13 @@ fun SettingsAboutInfoDialog(
                 )
                 Text(
                     text = annotatedString,
-                    style = AppTypography.bodyMedium
+                    style = MaterialTheme.typography.labelLarge
                 )
 
                 Spacer(modifier = Modifier.height(18.dp))
 
                 val titleColor = MaterialTheme.colorScheme.onSurface
-                val contentColor = MaterialTheme.colorScheme.secondary
+                val contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                 Column {
                     Text(
                         stringResource(R.string.dialog_about_version), color = titleColor
@@ -596,14 +559,14 @@ fun DeleteBookshelfDialog(
         title = {
             Text(
                 text = stringResource(R.string.dialog_delete_bookshelf),
-                style = AppTypography.titleLarge,
+                style = MaterialTheme.typography.displayMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
         },
         text = {
             Text(
                 text = stringResource(R.string.dialog_delete_bookshelf_text),
-                style = AppTypography.bodyMedium,
+                style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         },

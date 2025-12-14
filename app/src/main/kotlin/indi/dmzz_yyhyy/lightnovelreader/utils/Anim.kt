@@ -23,57 +23,55 @@ fun expandEnter(): EnterTransition =
         initialOffsetX = { (0.1f * it).roundToInt() }
     ) + fadeIn(
         animationSpec = tween(
-            delayMillis = 45,
-            durationMillis = 90,
+            delayMillis = (0.35f * animDuration).roundToInt(),
+            durationMillis = (0.45f * animDuration).roundToInt(),
             easing = LinearEasing
         )
     )
 
 fun expandExit(): ExitTransition =
     slideOutHorizontally(
-        animationSpec =
-        tween(
+        animationSpec = tween(
             durationMillis = animDuration,
             easing = cubicBezierEasing
         ),
         targetOffsetX = { (-0.1f * it).roundToInt() }
     ) + fadeOut(
         animationSpec = tween(
-            durationMillis = 50,
+            durationMillis = (0.35f * animDuration).roundToInt(),
             easing = LinearEasing
         )
     )
 
 fun expandPopEnter(): EnterTransition =
     slideInHorizontally(
-        animationSpec =
-        tween(
+        animationSpec = tween(
             durationMillis = animDuration,
             easing = cubicBezierEasing
         ),
         initialOffsetX = { (-0.1f * it).roundToInt() }
     ) + fadeIn(
         animationSpec = tween(
-            delayMillis = 45,
-            durationMillis = 50,
+            delayMillis = (0.35f * animDuration).roundToInt(),
+            durationMillis = (0.45f * animDuration).roundToInt(),
             easing = LinearEasing
         )
     )
 
 fun expandPopExit(): ExitTransition =
     slideOutHorizontally(
-        animationSpec =
-        tween(
+        animationSpec = tween(
             durationMillis = animDuration,
             easing = cubicBezierEasing
         ),
         targetOffsetX = { (0.1f * it).roundToInt() }
     ) + fadeOut(
         animationSpec = tween(
-            durationMillis = 50,
+            durationMillis = (0.35f * animDuration).roundToInt(),
             easing = LinearEasing
         )
     )
+
 
 fun fadeEnter(): EnterTransition =
     fadeIn(

@@ -36,6 +36,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import indi.dmzz_yyhyy.lightnovelreader.R
@@ -85,7 +87,7 @@ fun ScrollContentTextComponent(
     val density = LocalDensity.current
     val screenHeight = LocalResources.current.displayMetrics.heightPixels
     val textColor = readerTextColor(settingState)
-    val fontFamily = rememberReaderFontFamily(settingState)
+    val fontFamily = rememberReaderFontFamily(settingState.fontFamilyUriUserData)
     val listState = uiState.lazyListState
 
     LaunchedEffect(listState) {
@@ -295,7 +297,7 @@ fun ScrollContentTextComponent(
                             }
                         }
                         val contentData = remember(chapterContent.content) { uiState.getContentData(chapterContent.content) }
-                        contentData.components.forEach {
+                        contentData.components.fastForEach {
                             it.Content(Modifier)
                         }
                     }

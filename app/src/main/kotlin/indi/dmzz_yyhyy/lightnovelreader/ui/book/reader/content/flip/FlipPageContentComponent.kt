@@ -44,6 +44,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.util.fastForEach
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.SettingState
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Loading
@@ -115,7 +116,7 @@ private fun SimpleFlipPageTextComponent(
         if (key == contentKey) return@remember emptyList()
         contentKey = key
         val result = mutableListOf<AbstractContentComponent<*>>()
-        uiState.getContentData(uiState.readingChapterContent.content).components.forEach {
+        uiState.getContentData(uiState.readingChapterContent.content).components.fastForEach {
             if (it is AbstractDivisibleContentComponent<*, *>) {
                 result.addAll(it.split(height, width))
             } else {

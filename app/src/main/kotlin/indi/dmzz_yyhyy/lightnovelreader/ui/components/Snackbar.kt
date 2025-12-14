@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Snackbar
 import androidx.compose.material3.SnackbarData
 import androidx.compose.material3.SnackbarDefaults
@@ -17,7 +18,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import indi.dmzz_yyhyy.lightnovelreader.R
 
 @Composable
@@ -76,7 +76,7 @@ fun LnrSnackbar(
                 Text(
                     modifier = Modifier.align(Alignment.Center).padding(vertical = 12.dp),
                     text = snackbarData.visuals.message,
-                    style = AppTypography.bodyMedium
+                    style = typography.bodyMedium
                 )
             }
         }

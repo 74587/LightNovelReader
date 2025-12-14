@@ -18,6 +18,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.MediumTopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -36,7 +37,6 @@ import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.format.FormattingGroup
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Cover
 import io.nightfish.lightnovelreader.api.book.BookInformation
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -91,12 +91,12 @@ fun TextFormattingScreen(
                     ) {
                         Text(
                             text = stringResource(R.string.global_formatting_rules),
-                            style = AppTypography.labelLarge,
+                            style = typography.bodyLarge,
                             maxLines = 1
                         )
                         Text(
                             text = stringResource(R.string.n_rules, groups.firstOrNull { it.id.isEmpty() }?.size ?: 0),
-                            style = AppTypography.labelMedium,
+                            style = typography.labelMedium,
                             color = colorScheme.secondary
                         )
                     }
@@ -119,7 +119,7 @@ fun TextFormattingScreen(
                             .fillMaxWidth()
                             .padding(16.dp, 8.dp),
                         text = stringResource(R.string.book_rules),
-                        style = AppTypography.titleSmall,
+                        style = typography.titleSmall,
                         letterSpacing = 0.5.sp,
                         color = colorScheme.onSurfaceVariant
                     )
@@ -167,18 +167,18 @@ private fun Group(
         ) {
             Text(
                 text = bookInformation.title,
-                style = AppTypography.labelLarge,
+                style = typography.bodyLarge,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
             Text(
                 text = bookInformation.author,
-                style = AppTypography.labelMedium,
+                style = typography.labelMedium,
                 color = colorScheme.primary
             )
             Text(
                 text = "${formattingGroup.size} 个规则",
-                style = AppTypography.labelMedium,
+                style = typography.labelMedium,
                 color = colorScheme.secondary
             )
         }
@@ -205,7 +205,7 @@ private fun TopBar(
         title = {
             Text(
                 text = stringResource(id = R.string.settings_text_formatting),
-                style = AppTypography.titleTopBar,
+                style = typography.displayLarge,
                 color = colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis

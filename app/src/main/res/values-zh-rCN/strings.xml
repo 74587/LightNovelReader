@@ -13,7 +13,7 @@
     <string name="nav_statistics">统计</string>
     <!-- Operations -->
     <string name="cancel">取消</string>
-    <string name="apply">设定</string>
+    <string name="apply">应用</string>
     <string name="confirm">确定</string>
     <string name="decline">拒绝</string>
     <string name="copied">内容已复制</string>
@@ -31,7 +31,7 @@
     <string name="ignore_version">忽略该版本</string>
     <string name="switch_and_restart">切换并重启</string>
     <string name="hide_read">仅显示未读</string>
-    <string name="mark_all_read">全部标为已读</string>
+    <string name="mark_as_read">标记为已读…</string>
     <string name="export_to_file">导出至文件</string>
     <string name="export_epub">导出为 Epub</string>
     <string name="export_include_images">包含图片</string>
@@ -68,6 +68,11 @@
     <string name="reader_last_page">已经是最后一页了</string>
     <string name="reader_reached_bottom">已经到底了</string>
     <string name="font_file_error">字体文件错误或已损坏, 请您检查后导入</string>
+    <string name="settings_data_source_pending_title">切换到 %s</string>
+    <string name="settings_data_source_pending_desc">
+        应用将清除缓存并重启。当前数据将在下次切换回「%s」时可用。
+    </string>
+    <string name="settings_data_source_applying">进行中……</string>
 
     <!-- Snackbar Hints -->
     <string name="cache_book_started">开始缓存：%1$s</string>
@@ -179,8 +184,8 @@
     <string name="settings_auto_proxy_desc">自动从网络上获取代理ip, <b>但这将导致您所浏览的书本数据可能会被截获</b></string>
 
     <string name="about_settings">关于</string>
-    <string name="settings_debug_tools">调试工具</string>
-    <string name="settings_debug_tools_desc">Debug 用调试工具</string>
+    <string name="settings_debug_tools">调试选项</string>
+    <string name="settings_debug_tools_desc">供开发使用的调试与诊断功能</string>
     <string name="settings_about_source_code"><![CDATA[在 %1$s 查看源代码<br/>在 %2$s 提交 Bug 或新功能请求]]></string>
     <string name="settings_about_oss">LightNovelReader 是献给世界上所有阅读爱好者的礼物。</string>
     <string name="settings_github_repo">GitHub 仓库</string>
@@ -190,6 +195,7 @@
     <string name="settings_statistics">匿名统计</string>
     <string name="settings_statistics_desc">我们使用 Microsoft AppCenter 匿名收集一些统计数据，以使 LightNovelReader 变得更好</string>
     <string name="experimental_settings">实验性</string>
+    <string name="debug_settings">调试</string>
     <string name="item_view_details">查看详细信息</string>
 
     <string name="settings_auto_cache">自动缓存</string>

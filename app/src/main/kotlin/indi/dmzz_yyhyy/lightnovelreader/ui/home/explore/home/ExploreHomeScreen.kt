@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -69,11 +70,11 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.components.Cover
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Loading
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.explore.ExploreScreen
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.explore.ExploreUiState
+import indi.dmzz_yyhyy.lightnovelreader.utils.bottomBarPadding
 import indi.dmzz_yyhyy.lightnovelreader.utils.bottomBarSpacer
 import indi.dmzz_yyhyy.lightnovelreader.utils.fadingEdge
 import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 import io.nightfish.lightnovelreader.api.explore.ExploreBooksRow
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -137,6 +138,7 @@ fun ExploreHomeScreen(
                     }
 
                     AnimatedVisibility(
+                        modifier = Modifier.navigationBarsPadding().bottomBarPadding(),
                         visible = showEmptyPage,
                         enter = fadeIn(),
                         exit = fadeOut()
@@ -175,7 +177,7 @@ fun TopBar(
         title = {
             Text(
                 text = stringResource(id = R.string.nav_explore),
-                style = AppTypography.titleTopBar,
+                style = MaterialTheme.typography.displayLarge,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -252,7 +254,7 @@ fun ExplorePage(
                         Text(
                             modifier = Modifier.weight(2f),
                             text = exploreBooksRow.title,
-                            style = AppTypography.titleMedium,
+                            style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.W600,
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -334,7 +336,7 @@ fun ExplorePage(
                                                 .height(titleHeight)
                                                 .wrapContentHeight(Alignment.Top),
                                             text = exploreDisplayBook.title,
-                                            style = AppTypography.titleVerySmall.copy(
+                                            style = MaterialTheme.typography.headlineMedium.copy(
                                                 letterSpacing = 0.5.sp
                                             ),
                                             lineHeight = titleLineHeight,
@@ -345,7 +347,7 @@ fun ExplorePage(
                                         if (exploreDisplayBook.author.isNotEmpty()) {
                                             Text(
                                                 text = exploreDisplayBook.author,
-                                                style = AppTypography.titleVerySmall.copy(
+                                                style = MaterialTheme.typography.headlineMedium.copy(
                                                     letterSpacing = 0.5.sp
                                                 ),
                                                 color = MaterialTheme.colorScheme.secondary,

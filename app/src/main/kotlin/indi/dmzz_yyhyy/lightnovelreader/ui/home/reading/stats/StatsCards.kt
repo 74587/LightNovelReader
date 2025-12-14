@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -41,7 +42,6 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.stats.detailed.StatsCard
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.stats.detailed.StatsDetailedUiState
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.stats.detailed.currentDateRange
 import io.nightfish.lightnovelreader.api.book.BookInformation
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
@@ -123,13 +123,13 @@ private fun BookActivitySection(
         ) {
             Text(
                 text = stringResource(titleResId),
-                style = AppTypography.titleMedium
+                style = typography.titleMedium
             )
             val titleList = displayedTitles.take(2)
             titleList.forEach {
                 Text(
                     text = it,
-                    style = AppTypography.labelMedium,
+                    style = typography.labelMedium,
                     maxLines = 1,
                     color = colorScheme.secondary,
                     overflow = TextOverflow.Ellipsis
@@ -138,7 +138,7 @@ private fun BookActivitySection(
             if (displayedTitles.size > titleList.size)
                 Text(
                     text = stringResource(R.string.activity_etc, displayedTitles.size),
-                    style = AppTypography.labelMedium,
+                    style = typography.labelMedium,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -367,7 +367,7 @@ fun ReadingTimeBar(
                     Text(
                         modifier = Modifier.weight(1f, fill = true),
                         text = title,
-                        style = AppTypography.labelMedium,
+                        style = typography.labelMedium,
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -375,7 +375,7 @@ fun ReadingTimeBar(
                     val formattedTime = DateUtils.formatElapsedTime(timeMinutes * 1L)
                     Text(
                         text = formattedTime,
-                        style = AppTypography.labelMedium,
+                        style = typography.labelMedium,
                         color = colorScheme.onSurfaceVariant
                     )
 

@@ -1,11 +1,12 @@
 package indi.dmzz_yyhyy.lightnovelreader.data.content.component
 
+import AppTypography
 import android.content.Context
 import android.net.Uri
 import android.util.DisplayMetrics
 import android.view.View
 import android.widget.Toast
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -31,12 +32,20 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.content.componet.SimpleTe
 import indi.dmzz_yyhyy.lightnovelreader.utils.loadReaderFontFamilySafe
 import io.nightfish.lightnovelreader.api.content.component.AbstractDivisibleContentComponent
 import io.nightfish.lightnovelreader.api.content.component.SimpleTextComponentData
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import io.nightfish.lightnovelreader.api.userdata.UriUserData
 import io.nightfish.lightnovelreader.api.userdata.UserDataPath
 import io.nightfish.lightnovelreader.api.userdata.UserDataRepositoryApi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
+
+data class ReaderStyle(
+    val fontSize: Float,
+    val fontLineHeight: Float,
+    val fontWeight: Float,
+    val textColor: Color,
+    val textDarkColor: Color
+)
 
 class SimpleTextComponent(
     data: SimpleTextComponentData,
@@ -67,19 +76,34 @@ class SimpleTextComponent(
 
     @Composable
     override fun Content(modifier: Modifier) {
-        val fontSize by fontSizeUserData.getFlowWithDefault(15f).collectAsState(15f)
-        val fontLineHeight by fontLineHeightUserData.getFlowWithDefault(7f).collectAsState(7f)
-        val fontWeigh by fontWeightUserData.getFlowWithDefault(500f).collectAsState(500f)
-        val textColor by textColorUserData.getFlowWithDefault(Color.Unspecified).collectAsState(Color.Unspecified)
-        val textDarkColor by textDarkColorUserData.getFlowWithDefault(Color.Unspecified).collectAsState(Color.Unspecified)
+        val combinedStyle by remember {
+            combine(
+                fontSizeUserData.getFlowWithDefault(15f),
+                fontLineHeightUserData.getFlowWithDefault(7f),
+                fontWeightUserData.getFlowWithDefault(500f),
+                textColorUserData.getFlowWithDefault(Color.Unspecified),
+                textDarkColorUserData.getFlowWithDefault(Color.Unspecified)
+            ) { fontSize, lineHeight, weight, textColor, textDarkColor ->
+                ReaderStyle(
+                    fontSize = fontSize,
+                    fontLineHeight = lineHeight,
+                    fontWeight = weight,
+                    textColor = textColor,
+                    textDarkColor = textDarkColor,
+                )
+            }
+        }.collectAsState(initial = null)
+
+        val style = combinedStyle ?: return Box(modifier)
+
         SimpleTextComponentContent(
             modifier = modifier,
             text = data.text,
-            fontSize = fontSize.sp,
-            fontLineHeight = fontLineHeight.sp,
-            fontWeight = FontWeight(fontWeigh.toInt()),
+            fontSize = style.fontSize.sp,
+            fontLineHeight = style.fontLineHeight.sp,
+            fontWeight = FontWeight(style.fontWeight.toInt()),
             fontFamily = rememberReaderFontFamily(fontFamilyUriUserData),
-            color = readerTextColor(textColor, textDarkColor)
+            color = readerTextColor(style.textColor, style.textDarkColor)
         )
     }
 
@@ -122,7 +146,7 @@ class SimpleTextComponent(
             }
         }
 
-        return fontFamily ?: MaterialTheme.typography.bodyMedium.fontFamily as FontFamily
+        return fontFamily ?: FontFamily.Default
     }
 
     override fun split(
