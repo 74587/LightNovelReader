@@ -170,7 +170,7 @@ fun NavDestination?.currentMainRoute(): Any? {
 }
 
 fun LazyListScope.navigationBarSpacer() {
-    item {
+    item(key = "nav_spacer") {
         Spacer(
             modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars)
         )
@@ -178,7 +178,7 @@ fun LazyListScope.navigationBarSpacer() {
 }
 
 fun LazyListScope.bottomBarSpacer() {
-    item {
+    item(key = "bottom_bar_spacer") {
         Spacer(
             modifier = Modifier.height(80.dp)
         )

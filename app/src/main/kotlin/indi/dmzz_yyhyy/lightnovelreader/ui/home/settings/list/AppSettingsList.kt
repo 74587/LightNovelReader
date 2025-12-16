@@ -14,8 +14,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.SettingState
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.data.MenuOptions
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.showSnackbar
-import io.nightfish.lightnovelreader.api.ui.components.SettingsClickableEntry
-
+import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsClickableEntry
 @Composable
 fun AppSettingsList(
     settingState: SettingState,
@@ -29,8 +28,8 @@ fun AppSettingsList(
     SettingsClickableEntry(
         modifier = Modifier.background(colorScheme.surfaceContainer),
         painter = painterResource(R.drawable.extension_24px),
-        title = "扩展插件",
-        description = "安装和管理扩展插件",
+        title = stringResource(id = R.string.settings_plugins),
+        description = stringResource(id = R.string.settings_plugins_desc),
         onClick = onClickPluginManager,
         option = stringResource(R.string.item_view_details)
     )
@@ -41,6 +40,7 @@ fun AppSettingsList(
         description = stringResource(R.string.settings_app_logs_desc),
         onClick = onClickLogcat
     )
+    val restartToApplyText = stringResource(R.string.restart_to_apply_changes)
     SettingsMenuEntry(
         modifier = Modifier.background(colorScheme.surfaceContainer),
         painter = painterResource(R.drawable.bug_report_24px),
@@ -53,7 +53,7 @@ fun AppSettingsList(
             showSnackbar(
                 coroutineScope = coroutineScope,
                 hostState = snackbarHostState,
-                message = context.getString(R.string.restart_to_apply_changes)
+                message = restartToApplyText
             ) { }
         }
     )

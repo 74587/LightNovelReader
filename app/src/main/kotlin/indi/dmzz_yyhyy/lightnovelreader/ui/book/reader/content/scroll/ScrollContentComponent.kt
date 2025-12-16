@@ -5,17 +5,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.SnackbarResult
@@ -29,26 +19,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalResources
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.util.fastForEach
-import androidx.compose.ui.zIndex
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.SettingState
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Loading
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.data.MenuOptions
-import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
-import indi.dmzz_yyhyy.lightnovelreader.utils.readerTextColor
-import indi.dmzz_yyhyy.lightnovelreader.utils.rememberReaderBackgroundPainter
-import indi.dmzz_yyhyy.lightnovelreader.utils.rememberReaderFontFamily
-import indi.dmzz_yyhyy.lightnovelreader.utils.showSnackbar
+import indi.dmzz_yyhyy.lightnovelreader.utils.*
 import kotlinx.coroutines.launch
 
 @Composable
@@ -82,13 +67,20 @@ fun ScrollContentTextComponent(
     onClickPrevChapter: () -> Unit,
     onClickNextChapter: () -> Unit
 ) {
-    val context = LocalContext.current
     val snackbarHostState = LocalSnackbarHost.current
     val density = LocalDensity.current
     val screenHeight = LocalResources.current.displayMetrics.heightPixels
     val textColor = readerTextColor(settingState)
     val fontFamily = rememberReaderFontFamily(settingState.fontFamilyUriUserData)
     val listState = uiState.lazyListState
+
+    val reachedTopMsg = stringResource(R.string.reader_reached_top)
+    val prevChapterLabel = stringResource(R.string.previous_chapter)
+    val reachedBottomMsg = stringResource(R.string.reader_reached_bottom)
+    val nextChapterLabel = stringResource(R.string.next_chapter)
+    val confirmLabel = stringResource(R.string.confirm)
+    val reachedStartMsg = stringResource(R.string.reader_reached_start)
+    val reachedEndMsg = stringResource(R.string.reader_reached_end)
 
     LaunchedEffect(listState) {
         var atTop = false
@@ -116,8 +108,8 @@ fun ScrollContentTextComponent(
                                         showSnackbar(
                                             coroutineScope = this,
                                             hostState = snackbarHostState,
-                                            message = context.getString(R.string.reader_reached_top),
-                                            actionLabel = context.getString(R.string.previous_chapter)
+                                            message = reachedTopMsg,
+                                            actionLabel = prevChapterLabel
                                         ) { if (it == SnackbarResult.ActionPerformed) onClickPrevChapter() }
                                     }
                                 else
@@ -125,8 +117,8 @@ fun ScrollContentTextComponent(
                                         showSnackbar(
                                             coroutineScope = this,
                                             hostState = snackbarHostState,
-                                            message = "文章才刚刚开始",
-                                            actionLabel = context.getString(R.string.confirm)
+                                            message = reachedStartMsg,
+                                            actionLabel = confirmLabel
                                         )
                                     }
                             }
@@ -139,8 +131,8 @@ fun ScrollContentTextComponent(
                                         showSnackbar(
                                             coroutineScope = this,
                                             hostState = snackbarHostState,
-                                            message = context.getString(R.string.reader_reached_bottom),
-                                            actionLabel = context.getString(R.string.next_chapter)
+                                            message = reachedBottomMsg,
+                                            actionLabel = nextChapterLabel
                                         ) { if (it == SnackbarResult.ActionPerformed) onClickNextChapter() }
                                     }
                                 else
@@ -148,8 +140,8 @@ fun ScrollContentTextComponent(
                                         showSnackbar(
                                             coroutineScope = this,
                                             hostState = snackbarHostState,
-                                            message = "已经结束了...",
-                                            actionLabel = context.getString(R.string.confirm)
+                                            message = reachedEndMsg,
+                                            actionLabel = confirmLabel
                                         )
                                     }
                             }

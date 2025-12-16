@@ -36,6 +36,7 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -44,11 +45,14 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import indi.dmzz_yyhyy.lightnovelreader.BuildConfig
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginInfo
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.EmptyPage
+import indi.dmzz_yyhyy.lightnovelreader.utils.LocalClaimSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 import kotlinx.coroutines.delay
 
@@ -69,6 +73,12 @@ fun PluginManagerScreen(
     onClickShowSignatures: (String) -> Unit
 ) {
     val enterAlwaysScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val claim = LocalClaimSnackbarHost.current
+
+    DisposableEffect(Unit) {
+        claim(true)
+        onDispose { claim(false) }
+    }
 
     Scaffold(
         topBar = {
@@ -89,7 +99,7 @@ fun PluginManagerScreen(
                     )
                 },
                 text = {
-                    Text("Install plugin")
+                    Text(text = stringResource(R.string.plugin_install_plugin))
                 }
             )
         },
@@ -111,8 +121,8 @@ fun PluginManagerScreen(
                     EmptyPage(
                         modifier = Modifier.navigationBarsPadding(),
                         icon = painterResource(R.drawable.deployed_code_update_24px),
-                        title = "没有插件",
-                        description = "安装受支持的 .lnrp 格式插件",
+                        title = stringResource(R.string.plugin_empty_title),
+                        description = stringResource(R.string.plugin_empty_desc),
                     )
                 }
             } else {
@@ -142,7 +152,6 @@ fun PluginManagerScreen(
             }
         }
     }
-
 }
 
 @Composable
@@ -166,7 +175,10 @@ private fun ThirdPartyPluginTips() {
             )
             Spacer(Modifier.width(12.dp))
             Column {
-                Text("来自第三方的插件可以提供额外的数据源或功能。安装插件前，请确保其来源可信。\nLightNovelReader 不对插件可用性负责。", style = typography.bodyMedium)
+                Text(
+                    text = stringResource(R.string.plugin_third_party_tips),
+                    style = typography.bodyMedium
+                )
             }
         }
     }
@@ -204,7 +216,11 @@ private fun PluginCard(
                     Column {
                         Text(pluginInfo.name, style = typography.titleMedium)
                         Text(pluginInfo.versionName, style = typography.labelMedium, color = colorScheme.secondary)
-                        Text("by ${pluginInfo.author}", style = typography.labelMedium, color = colorScheme.secondary)
+                        Text(
+                            text = stringResource(R.string.plugin_by_author, pluginInfo.author),
+                            style = typography.labelMedium,
+                            color = colorScheme.secondary
+                        )
                     }
                     Spacer(Modifier.weight(1f))
                     Switch(
@@ -227,24 +243,23 @@ private fun PluginCard(
 
                 Spacer(Modifier.height(12.dp))
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    /*if (!pluginInfo.updateUrl.isNullOrEmpty()) {
-                        Button(onClick = { onClickCheckUpdate(pluginInfo.id) }) {
-                            Icon(painterResource(R.drawable.deployed_code_update_24px), null)
-                            Spacer(Modifier.width(12.dp))
-                            Text("更新")
-                        }
-                    }*/
                     Spacer(Modifier.weight(1f))
                     if (pluginInfo.signatures == null) {
                         FilledTonalIconButton(onClick = { onClickKeyAlert() }) {
-                            Icon(painterResource(R.drawable.key_off_24px), contentDescription = "invalid_signature")
+                            Icon(
+                                painter = painterResource(R.drawable.key_off_24px),
+                                contentDescription = "invalid_signature"
+                            )
                         }
                     }
                     FilledTonalIconButton(onClick = { onClickDelete(pluginInfo.id) }) {
-                        Icon(painterResource(R.drawable.delete_forever_24px), contentDescription = "remove")
+                        Icon(
+                            painter = painterResource(R.drawable.delete_forever_24px),
+                            contentDescription = "remove"
+                        )
                     }
                     FilledTonalButton(onClick = { onClickDetail(pluginInfo.id) }) {
-                        Text("详情")
+                        Text(text = stringResource(R.string.plugin_details))
                     }
                 }
             }
@@ -257,14 +272,14 @@ private fun PluginCard(
         ) {
             DropdownMenuItem(
                 enabled = false,
-                text = { Text("优化") },
+                text = { Text(text = stringResource(R.string.plugin_optimize)) },
                 onClick = {
                     showMenu = false
                     onClickOptimizePlugin(pluginInfo.id)
                 }
             )
             DropdownMenuItem(
-                text = { Text("签名信息") },
+                text = { Text(text = stringResource(R.string.plugin_signature_info_title)) },
                 onClick = {
                     showMenu = false
                     onClickShowSignatures(pluginInfo.id)
@@ -273,7 +288,6 @@ private fun PluginCard(
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -285,7 +299,7 @@ private fun TopBar(
     TopAppBar(
         title = {
             Text(
-                text = "扩展插件",
+                text = stringResource(id = R.string.settings_plugins),
                 style = typography.displayLarge,
                 color = colorScheme.onSurface,
                 maxLines = 1,
@@ -301,11 +315,12 @@ private fun TopBar(
             }
         },
         actions = {
-            TextButton(
-                onClick = onClickPluginRepo
-            ) {
-                Text("插件仓库")
-            }
+            if (BuildConfig.DEBUG)
+                TextButton(
+                    onClick = onClickPluginRepo
+                ) {
+                    Text(text = stringResource(R.string.plugin_repo))
+                }
         },
         scrollBehavior = scrollBehavior
     )

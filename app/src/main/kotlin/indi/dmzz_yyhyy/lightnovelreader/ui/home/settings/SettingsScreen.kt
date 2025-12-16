@@ -34,6 +34,7 @@ import androidx.work.OneTimeWorkRequest
 import indi.dmzz_yyhyy.lightnovelreader.BuildConfig
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SectionHeader
+import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsClickableEntry
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.AboutSettingsList
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.AppSettingsList
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.DataSettingsList
@@ -42,7 +43,6 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.ReadingSettingsLis
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.list.UpdatesSettingsList
 import indi.dmzz_yyhyy.lightnovelreader.utils.bottomBarSpacer
 import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
-import io.nightfish.lightnovelreader.api.ui.components.SettingsClickableEntry
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable

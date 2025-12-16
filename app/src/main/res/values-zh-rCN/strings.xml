@@ -52,6 +52,8 @@
     <string name="download_item_finished">%s完成</string>
     <string name="download_item_failed">%s 失败, 请检查您的网络环境或寻求开发者帮助</string>
     <string name="book_updated_to_title">更新至:</string>
+    <string name="book_word_count_limit">字数限制:</string>
+    <string name="source_available_title">可用数据源</string>
 
     <!-- Hints -->
     <string name="nothing_here">没有内容</string>
@@ -67,12 +69,15 @@
     <string name="reader_reached_top">已经到顶了</string>
     <string name="reader_last_page">已经是最后一页了</string>
     <string name="reader_reached_bottom">已经到底了</string>
+    <string name="reader_reached_start">文章才刚刚开始</string>
+    <string name="reader_reached_end">已经结束了…</string>
     <string name="font_file_error">字体文件错误或已损坏, 请您检查后导入</string>
     <string name="settings_data_source_pending_title">切换到 %s</string>
     <string name="settings_data_source_pending_desc">
         应用将清除缓存并重启。当前数据将在下次切换回「%s」时可用。
     </string>
     <string name="settings_data_source_applying">进行中……</string>
+
 
     <!-- Snackbar Hints -->
     <string name="cache_book_started">开始缓存：%1$s</string>
@@ -147,6 +152,8 @@
     <string name="settings_theme_dynamic_colors">系统动态配色</string>
     <string name="settings_theme_dynamic_colors_desc">从系统主题应用动态配色</string>
     <string name="settings_theme_dynamic_colors_desc_unavailable">从系统主题应用动态配色 (需要 Android 12+)</string>
+    <string name="settings_theme_m3e">Material 3 Expressive</string>
+    <string name="settings_theme_m3e_description">启用 Material 3 Expressive 设计。该功能为实验性内容，仍处于测试阶段</string>
     <string name="settings_app_language">语言</string>
     <string name="settings_app_language_desc">设置应用语言</string>
     <string name="settings_app_language_desc_unavailable">设置应用语言 (需要 Android 13+)</string>
@@ -176,12 +183,14 @@
     <string name="settings_import_data_desc">从选定的 .lnr 文件导入用户数据</string>
     <string name="settings_select_data_source">数据源</string>
     <string name="settings_select_data_source_desc">切换软件数据源</string>
+    <string name="settings_plugins">扩展插件</string>
+    <string name="settings_plugins_desc">安装和管理扩展插件</string>
     <string name="settings_app_logs">应用日志</string>
     <string name="settings_app_logs_desc">查看与分享应用日志（调试用途）</string>
     <string name="settings_app_log_level">日志等级</string>
     <string name="settings_app_log_level_desc">设置日志过滤等级，重启应用后生效</string>
     <string name="settings_auto_proxy">自动代理</string>
-    <string name="settings_auto_proxy_desc">自动从网络上获取代理ip, <b>但这将导致您所浏览的书本数据可能会被截获</b></string>
+    <string name="settings_auto_proxy_desc">自动从网络上获取代理 IP，<b>但这将导致您所浏览的书本数据可能会被截获</b></string>
 
     <string name="about_settings">关于</string>
     <string name="settings_debug_tools">调试选项</string>
@@ -190,6 +199,9 @@
     <string name="settings_about_oss">LightNovelReader 是献给世界上所有阅读爱好者的礼物。</string>
     <string name="settings_github_repo">GitHub 仓库</string>
     <string name="settings_github_repo_desc">给本项目点颗 star, 帮助我们被更多人发现</string>
+    <string name="settings_support_author">请作者喝茶</string>
+    <string name="settings_support_author_desc">夜鱼很可爱, 请给夜鱼💰</string>
+    <string name="settings_open_source_licenses">开放源代码许可</string>
     <string name="settings_communication">加入讨论</string>
     <string name="settings_communication_desc">加入我们的 QQ 群讨论或反馈</string>
     <string name="settings_statistics">匿名统计</string>
@@ -357,5 +369,47 @@
     <string name="dialog_slider_custom_illegal_value">请输入合法的数值</string>
     <string name="dialog_color_picker">调色盘</string>
     <string name="dialog_color_picker_desc">选择一个颜色用于阅读器背景。</string>
+
+    <!-- Plugin -->
+    <string name="plugin_delete_title">删除 %1$s</string>
+    <string name="plugin_install_preparing">正在准备…</string>
+    <string name="plugin_version_prefix">版本 %1$s</string>
+    <string name="plugin_install_failed">安装失败</string>
+    <string name="plugin_install_completed">插件安装完成</string>
+    <string name="plugin_install_anyway">仍要安装</string>
+
+    <string name="plugin_update_check_title">检查更新</string>
+    <string name="plugin_update_checking">正在检查更新…</string>
+    <string name="plugin_update_latest">已是最新版本</string>
+    <string name="plugin_error_generic">错误</string>
+    <string name="plugin_update_downloading_percent">下载中 %1$d%%</string>
+    <string name="plugin_update_extracting_percent">解压中 %1$d%%</string>
+    <string name="plugin_update_download_install">下载并安装</string>
+
+    <string name="plugin_signature_about_title">关于插件签名</string>
+    <string name="plugin_signature_about_body">
+        插件签名可用于确认插件文件的完整性与来源。\n允许安装未签名的插件，但请务必确认文件来自可信渠道。
+    </string>
+    <string name="plugin_signature_dev_advice_title">对插件开发者的建议</string>
+    <string name="plugin_signature_dev_advice_body">
+        建议为插件生成并使用固定的签名证书，以便在版本更新时维持一致性，并确保插件在分发过程中不被篡改。
+    </string>
+
+    <string name="plugin_signature_info_title">签名信息</string>
+    <string name="plugin_signature_info_empty">无签名信息</string>
+    <string name="plugin_signature_index">#%1$d</string>
+    <string name="plugin_signature_owner">所有者：%1$s</string>
+    <string name="plugin_signature_public_key">公钥：%1$s，%2$d-bit</string>
+    <string name="plugin_signature_sha256">SHA256：%1$s</string>
+    <string name="plugin_install_plugin">安装插件</string>
+    <string name="plugin_empty_title">没有插件</string>
+    <string name="plugin_empty_desc">安装受支持的 .lnrp 格式插件</string>
+    <string name="plugin_third_party_tips">
+        来自第三方的插件可以提供额外的数据源或功能。安装插件前，请确保其来源可信。\nLightNovelReader 不对插件可用性负责。
+    </string>
+    <string name="plugin_by_author">作者：%1$s</string>
+    <string name="plugin_details">详情</string>
+    <string name="plugin_optimize">优化</string>
+    <string name="plugin_repo">插件仓库</string>
 
 </resources>

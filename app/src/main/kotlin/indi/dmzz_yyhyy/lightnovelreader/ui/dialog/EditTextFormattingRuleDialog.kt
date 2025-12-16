@@ -104,7 +104,7 @@ fun EditTextFormattingRuleDialog(
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 if (rule.id != -1)
                     TextButton(onClick = onDelete) {
-                        Text(text = "删除规则", color = colorScheme.error)
+                        Text(text = stringResource(R.string.delete_rule), color = colorScheme.error)
                     }
                 TextButton(onClick = onDismissRequest) {
                     Text(text = stringResource(R.string.cancel))
