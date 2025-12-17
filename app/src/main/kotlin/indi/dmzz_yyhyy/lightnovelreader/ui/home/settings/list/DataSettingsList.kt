@@ -19,10 +19,10 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import indi.dmzz_yyhyy.lightnovelreader.R
+import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsClickableEntry
+import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsSwitchEntry
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.SettingState
 import indi.dmzz_yyhyy.lightnovelreader.utils.uriLauncher
-import io.nightfish.lightnovelreader.api.ui.components.SettingsClickableEntry
-import io.nightfish.lightnovelreader.api.ui.components.SettingsSwitchEntry
 import kotlinx.coroutines.launch
 
 @Composable
@@ -32,6 +32,9 @@ fun DataSettingsList(
     settingState: SettingState,
     importData: (Uri) -> OneTimeWorkRequest,
 ) {
+    val dataImportFailedText = stringResource(R.string.data_import_failed)
+    val dataImportSuccessText = stringResource(R.string.data_import_success)
+
     val context = LocalContext.current
     val workManager = WorkManager.getInstance(context)
     val scope = rememberCoroutineScope()
@@ -40,10 +43,10 @@ fun DataSettingsList(
             workManager.getWorkInfoByIdFlow(importData(it).id).collect {
                 when (it?.state) {
                     WorkInfo.State.FAILED -> {
-                        Toast.makeText(context, context.getString(R.string.data_import_failed), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, dataImportFailedText, Toast.LENGTH_SHORT).show()
                     }
                     WorkInfo.State.SUCCEEDED -> {
-                        Toast.makeText(context, context.getString(R.string.data_import_success), Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, dataImportSuccessText, Toast.LENGTH_SHORT).show()
                     }
                     else -> {}
                 }

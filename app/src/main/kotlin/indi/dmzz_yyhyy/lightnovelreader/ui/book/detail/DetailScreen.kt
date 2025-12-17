@@ -31,6 +31,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -156,16 +157,18 @@ fun DetailScreen(
 
     val scrollingUp by lazyListState.isScrollingUp()
     val fabVisible by remember(uiState.bookVolumes.volumes, lazyListState) {
-        derivedStateOf { uiState.bookVolumes.volumes.isNotEmpty() && lazyListState.canScrollForward && scrollingUp }
+        derivedStateOf {
+            val hasVolumes = uiState.bookVolumes.volumes.isNotEmpty()
+            val allowByDirection = !lazyListState.isScrollInProgress || scrollingUp
+            val canGoForward = lazyListState.canScrollForward
+
+            hasVolumes && canGoForward && allowByDirection
+        }
     }
+
 
     val isStartReading = uiState.userReadingData.lastReadChapterId.isBlank()
     val fabTextRes = if (isStartReading) R.string.start_reading else R.string.continue_reading
-
-    val onFabClick = remember(isStartReading, onClickReadFromStart, onClickContinueReading) {
-        { if (isStartReading) onClickReadFromStart() else onClickContinueReading() }
-    }
-    val onFabClickLatest by rememberUpdatedState(onFabClick)
 
     val fabContent = remember {
         movableContentOf<Boolean, Int, () -> Unit> { visible, textRes, onClick ->
@@ -216,7 +219,9 @@ fun DetailScreen(
                 }
 
                 Box(modifier = Modifier.align(Alignment.BottomEnd)) {
-                    fabContent(fabVisible, fabTextRes) { onFabClickLatest() }
+                    fabContent(fabVisible, fabTextRes) {
+                        if (isStartReading) onClickReadFromStart() else onClickContinueReading()
+                    }
                 }
             }
         },
@@ -575,16 +580,20 @@ private fun TopBar(
     Box {
         TopAppBar(
             title = {
-                val offset = 86f
-                Box(Modifier.fillMaxWidth()) {
+                val offset = 16.dp
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .heightIn(min = 56.dp),
+                    contentAlignment = Alignment.CenterStart
+                ) {
                     Text(
                         text = stringResource(R.string.detail_title),
                         maxLines = 1,
                         style = typography.displayLarge,
-                        modifier = Modifier.graphicsLayer {
-                            alpha = 1f - titleProgress
-                            translationY = -offset * titleProgress
-                        }
+                        modifier = Modifier
+                            .offset(y = (-offset * titleProgress))
+                            .graphicsLayer { alpha = 1f - titleProgress }
                     )
                     Text(
                         text = title,
@@ -592,10 +601,8 @@ private fun TopBar(
                         style = typography.displayLarge,
                         modifier = Modifier
                             .horizontalScroll(rememberScrollState())
-                            .graphicsLayer {
-                                alpha = titleProgress
-                                translationY = offset * (1f - titleProgress)
-                            }
+                            .offset(y = (offset * (1f - titleProgress)))
+                            .graphicsLayer { alpha = titleProgress }
                     )
                 }
             },
@@ -1099,7 +1106,8 @@ private fun ChapterItem(
         modifier = Modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(horizontal = 32.dp, vertical = 12.dp)
+            .padding(vertical = 12.dp)
+            .padding(start = 32.dp, end = 27.dp)
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically

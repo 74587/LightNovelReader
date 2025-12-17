@@ -56,6 +56,8 @@
     <string name="download_item_finished">%s completed</string>
     <string name="download_item_failed">%s failed, please check your network or seek developer assistance</string>
     <string name="book_updated_to_title">Updated to:</string>
+    <string name="book_word_count_limit">Word limit: </string>
+    <string name="source_available_title">Available sources</string>
 
     <!-- Hints -->
     <string name="nothing_here">Nothing Here</string>
@@ -71,6 +73,8 @@
     <string name="reader_reached_top">You have reached the top</string>
     <string name="reader_last_page">You are on the last page</string>
     <string name="reader_reached_bottom">You have reached the bottom</string>
+    <string name="reader_reached_start">This is the beginning.</string>
+    <string name="reader_reached_end">You\'ve reached the end…</string>
     <string name="font_file_error">Font file is incorrect or corrupted, please check and import again</string>
     <string name="settings_data_source_pending_title">Switch to %s</string>
     <string name="settings_data_source_pending_desc">
@@ -99,10 +103,10 @@
     <string name="app_updates">Updates</string>
     <string name="settings_auto_check_updates">Auto Check for Updates</string>
     <string name="settings_auto_check_updates_desc">Enable automatic update checks upon app launch</string>
-    <string name="settings_update_channel">Join Beta Program</string>
-    <string name="settings_update_channel_desc">Join the Beta program to experience upcoming features before the stable release and share your feedback.</string>
+    <string name="settings_update_channel">Beta Program</string>
+    <string name="settings_update_channel_desc">Join the Beta program to experience upcoming features before the stable release and share your feedback</string>
     <string name="settings_get_updates">Check for Updates</string>
-    <string name="settings_get_updates_desc">Check and install the latest version.</string>
+    <string name="settings_get_updates_desc">Check and install the latest version</string>
     <string name="settings_distribution_platform">Distribution Platform</string>
     <string name="settings_distribution_platform_settings_desc"><!--reserved--></string>
 
@@ -151,6 +155,10 @@
     <string name="settings_theme_dynamic_colors">Dynamic Colors</string>
     <string name="settings_theme_dynamic_colors_desc_unavailable">Apply system-generated dynamic colors</string>
     <string name="settings_theme_dynamic_colors_desc">Apply system-generated dynamic colors (Android 12+ required)</string>
+    <string name="settings_theme_m3e">Material 3 Expressive</string>
+    <string name="settings_theme_m3e_description">
+        Enables the Material 3 Expressive design. This feature is experimental and still in beta
+    </string>
     <string name="settings_app_language">Language</string>
     <string name="settings_app_language_desc">Set the app language</string>
     <string name="settings_app_language_desc_unavailable">Set the app language (Android 13+ required)</string>
@@ -180,6 +188,8 @@
     <string name="settings_import_data_desc">Import user data from a selected .lnr file</string>
     <string name="settings_select_data_source">Data Source</string>
     <string name="settings_select_data_source_desc">Switch the app\'s data source</string>
+    <string name="settings_plugins">Plugins</string>
+    <string name="settings_plugins_desc">Install and manage Plugins</string>
     <string name="settings_app_logs">App Logs</string>
     <string name="settings_app_logs_desc">View and share application logs for debug purpose</string>
     <string name="settings_app_log_level">Log Level</string>
@@ -193,6 +203,9 @@
     <string name="settings_about_oss">LightNovelReader is the gift for all the light novel lovers in the world.</string>
     <string name="settings_github_repo">GitHub Repository</string>
     <string name="settings_github_repo_desc">Star our repo to help us reach more users</string>
+    <string name="settings_support_author">Buy the Author a Tea</string>
+    <string name="settings_support_author_desc">Consider supporting NightFish with a small tip</string>
+    <string name="settings_open_source_licenses">Open-source licenses</string>
     <string name="settings_communication">Communication</string>
     <string name="settings_communication_desc">Join our QQ group for discussions and feedback</string>
     <string name="settings_statistics">Statistics</string>
@@ -360,5 +373,44 @@
     <string name="dialog_slider_custom_illegal_value">Please enter a valid number.</string>
     <string name="dialog_color_picker">Color Palette</string>
     <string name="dialog_color_picker_desc">Select a color for the reader background.</string>
+
+    <!-- Plugin -->
+    <string name="plugin_delete_title">Delete %1$s</string>
+    <string name="plugin_install_preparing">Preparing…</string>
+    <string name="plugin_version_prefix">Version %1$s</string>
+    <string name="plugin_install_failed">Installation failed</string>
+    <string name="plugin_install_completed">Plugin installed</string>
+    <string name="plugin_install_anyway">Install anyway</string>
+    <string name="plugin_update_check_title">Check for updates</string>
+    <string name="plugin_update_checking">Checking for updates…</string>
+    <string name="plugin_update_latest">You’re up to date</string>
+    <string name="plugin_error_generic">Error</string>
+    <string name="plugin_update_downloading_percent">Downloading %1$d%%</string>
+    <string name="plugin_update_extracting_percent">Extracting %1$d%%</string>
+    <string name="plugin_update_download_install">Download and install</string>
+    <string name="plugin_signature_about_title">About plugin signatures</string>
+    <string name="plugin_signature_about_body">
+        Plugin signatures help verify a plugin’s integrity and origin.\nYou can install unsigned plugins, but only do so if the file comes from a trusted source.
+    </string>
+    <string name="plugin_signature_dev_advice_title">Advice for plugin developers</string>
+    <string name="plugin_signature_dev_advice_body">
+        Use a stable signing certificate for your plugin so updates remain consistent, and to prevent tampering during distribution.
+    </string>
+    <string name="plugin_signature_info_title">Signature details</string>
+    <string name="plugin_signature_info_empty">No signature details</string>
+    <string name="plugin_signature_index">#%1$d</string>
+    <string name="plugin_signature_owner">Owner: %1$s</string>
+    <string name="plugin_signature_public_key">Public key: %1$s, %2$d-bit</string>
+    <string name="plugin_signature_sha256">SHA-256: %1$s</string>
+    <string name="plugin_install_plugin">Install plugin</string>
+    <string name="plugin_empty_title">No plugins</string>
+    <string name="plugin_empty_desc">Install a supported .lnrp plugin</string>
+    <string name="plugin_third_party_tips">
+        Third-party plugins may provide additional sources or features. Before installing, make sure the plugin comes from a trusted source.\nLightNovelReader is not responsible for plugin availability.
+    </string>
+    <string name="plugin_by_author">by %1$s</string>
+    <string name="plugin_details">Details</string>
+    <string name="plugin_optimize">Optimize</string>
+    <string name="plugin_repo">Plugin repo</string>
 
 </resources>

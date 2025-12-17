@@ -252,8 +252,8 @@ fun ThemeSettingsList(
         SettingsSwitchEntry(
             modifier = Modifier.background(colorScheme.surfaceContainer),
             painter = painterResource(R.drawable.experiment_24px),
-            title = "Material 3 Expressive (Beta)",
-            description = "Enables the experimental expressive variant for Material 3. This feature is still in beta",
+            title = stringResource(R.string.settings_theme_m3e),
+            description = stringResource(R.string.settings_theme_m3e_description),
             checked = settingState.enableM3E,
             booleanUserData = settingState.enableM3EUserData
         )

@@ -48,15 +48,21 @@ fun InstallProgressDialog(
         onDismissRequest = { },
         title = {
             Column {
-                val titleText = state.pluginAnnotation?.name?.takeIf { it.isNotEmpty() } ?: "正在准备"
+                val titleText = state.pluginAnnotation?.name?.takeIf { it.isNotEmpty() }
+                    ?: stringResource(R.string.plugin_install_preparing)
+
                 Text(text = titleText, style = typography.displayMedium, color = colorScheme.onSurface)
                 Spacer(Modifier.height(4.dp))
+
                 if (state.packageName.isNotEmpty()) {
                     Text(
                         text = buildString {
                             append(state.packageName)
                             val ver = state.pluginAnnotation?.versionName.orEmpty()
-                            if (ver.isNotEmpty()) append("\n版本 $ver")
+                            if (ver.isNotEmpty()) {
+                                append("\n")
+                                append(stringResource(R.string.plugin_version_prefix, ver))
+                            }
                         },
                         style = typography.bodyMedium
                     )
@@ -68,11 +74,13 @@ fun InstallProgressDialog(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 InstallIndicator(state = state, progress = progress)
                 Spacer(Modifier.width(20.dp))
+
                 val msg = when {
-                    state.error -> state.phase.ifEmpty { "安装失败" }
-                    state.finished -> "插件安装完成"
+                    state.error -> state.phase.ifEmpty { stringResource(R.string.plugin_install_failed) }
+                    state.finished -> stringResource(R.string.plugin_install_completed)
                     else -> state.phase
                 }
+
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = msg,
@@ -85,12 +93,17 @@ fun InstallProgressDialog(
                 state.error || state.finished -> {
                     TextButton(onClick = onClickClose) { Text(text = stringResource(android.R.string.ok)) }
                 }
+
                 state.confirm == InstallDialogState.Confirm.InvalidSig -> {
-                    TextButton(onClick = { onConfirmDecision(true) }) { Text("仍要安装") }
+                    TextButton(onClick = { onConfirmDecision(true) }) {
+                        Text(text = stringResource(R.string.plugin_install_anyway))
+                    }
                 }
+
                 state.confirm == InstallDialogState.Confirm.Upgrade -> {
                     TextButton(onClick = { onConfirmDecision(true) }) { Text(text = stringResource(R.string.next)) }
                 }
+
                 else -> {
                     TextButton(onClick = {}, enabled = false) { Text(text = stringResource(R.string.next)) }
                 }
@@ -100,6 +113,7 @@ fun InstallProgressDialog(
             val canShowCancel = !state.finished &&
                     !state.error &&
                     (state.confirm != InstallDialogState.Confirm.None || progress == null)
+
             if (canShowCancel) {
                 TextButton(
                     onClick = {
@@ -118,6 +132,7 @@ private fun InstallIndicator(
     progress: Float?
 ) {
     val indicatorSize = Modifier.size(36.dp)
+
     when {
         state.confirm != InstallDialogState.Confirm.None -> {
             Box(
@@ -133,9 +148,11 @@ private fun InstallIndicator(
                 )
             }
         }
+
         state.error -> {
             ErrorIndicator()
         }
+
         progress != null -> {
             val anim by animateFloatAsState(
                 targetValue = progress.coerceIn(0f, 1f),
@@ -144,9 +161,11 @@ private fun InstallIndicator(
             )
             CircularProgressIndicator(progress = { anim }, modifier = indicatorSize)
         }
+
         state.finished -> {
             DoneIndicator()
         }
+
         else -> {
             CircularProgressIndicator(modifier = indicatorSize)
         }
@@ -162,10 +181,18 @@ fun DeleteProgressDialog(
 
     AlertDialog(
         onDismissRequest = { },
-        title = { Text(text = "删除 ${state.pluginName}", style = typography.displayMedium, color = colorScheme.onSurface) },
+        title = {
+            Text(
+                text = stringResource(R.string.plugin_delete_title, state.pluginName),
+                style = typography.displayMedium,
+                color = colorScheme.onSurface
+            )
+        },
         text = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                if (state.finished) DoneIndicator() else CircularProgressIndicator(modifier = Modifier.size(36.dp))
+                if (state.finished) DoneIndicator()
+                else CircularProgressIndicator(modifier = Modifier.size(36.dp))
+
                 Spacer(Modifier.width(16.dp))
                 Text(text = state.phase, style = typography.bodyMedium)
             }
@@ -191,7 +218,11 @@ fun UpdateCheckDialog(
         onDismissRequest = { },
         title = {
             Column {
-                Text(text = "检查更新", style = typography.displayMedium, color = colorScheme.onSurface)
+                Text(
+                    text = stringResource(R.string.plugin_update_check_title),
+                    style = typography.displayMedium,
+                    color = colorScheme.onSurface
+                )
                 Spacer(Modifier.height(6.dp))
                 Text(text = state.pluginName, style = typography.bodyLarge)
             }
@@ -210,6 +241,7 @@ fun UpdateCheckDialog(
                         )
                         CircularProgressIndicator(progress = { anim }, modifier = indicatorModifier)
                     }
+
                     state.isLatest -> DoneIndicator()
                     state.hasUpdate -> HasUpdateIndicator()
                     state.isError -> ErrorIndicator()
@@ -219,17 +251,26 @@ fun UpdateCheckDialog(
                 Spacer(Modifier.width(16.dp))
 
                 val msg = state.message ?: when {
-                    state.isChecking -> "正在检查更新…"
-                    state.isLatest -> "已是最新版本"
-                    state.isError -> "错误"
+                    state.isChecking -> stringResource(R.string.plugin_update_checking)
+                    state.isLatest -> stringResource(R.string.plugin_update_latest)
+                    state.isError -> stringResource(R.string.plugin_error_generic)
                     downloadProgress != null -> {
-                        if (downloadProgress < 0.75f)
-                            "下载中 ${(downloadProgress / 0.75f * 100).toInt().coerceAtMost(100)}%"
-                        else
-                            "解压中 ${(((downloadProgress - 0.75f) / 0.25f) * 100).toInt().coerceAtMost(100)}%"
+                        val percent = if (downloadProgress < 0.75f) {
+                            (downloadProgress / 0.75f * 100).toInt().coerceAtMost(100)
+                        } else {
+                            (((downloadProgress - 0.75f) / 0.25f) * 100).toInt().coerceAtMost(100)
+                        }
+
+                        if (downloadProgress < 0.75f) {
+                            stringResource(R.string.plugin_update_downloading_percent, percent)
+                        } else {
+                            stringResource(R.string.plugin_update_extracting_percent, percent)
+                        }
                     }
+
                     else -> ""
                 }
+
                 Text(text = msg, style = typography.labelMedium)
             }
         },
@@ -237,7 +278,9 @@ fun UpdateCheckDialog(
             Row(Modifier.animateContentSize()) {
                 if (state.isError || downloadProgress != null) return@AlertDialog
                 if (state.hasUpdate) {
-                    TextButton(onClick = { onConfirmUpdate(state.pluginId) }) { Text(text = "下载并安装") }
+                    TextButton(onClick = { onConfirmUpdate(state.pluginId) }) {
+                        Text(text = stringResource(R.string.plugin_update_download_install))
+                    }
                 } else {
                     TextButton(onClick = onClose, enabled = (!state.isChecking || state.updateSuccess)) {
                         Text(text = stringResource(android.R.string.ok))
@@ -261,21 +304,25 @@ fun PluginNoSignatureDialog(
     AlertDialog(
         onDismissRequest = { },
         title = {
-            Text(text = "关于插件签名", style = typography.displayMedium, color = colorScheme.onSurface)
+            Text(
+                text = stringResource(R.string.plugin_signature_about_title),
+                style = typography.displayMedium,
+                color = colorScheme.onSurface
+            )
         },
         text = {
             Column {
                 Text(
-                    text = "插件签名可被用于确认插件文件的完整性与来源。\n允许安装未签名的插件，但请务必确认文件来自可信的渠道。",
+                    text = stringResource(R.string.plugin_signature_about_body),
                     style = typography.bodyMedium
                 )
                 Text(
                     modifier = Modifier.padding(top = 20.dp, bottom = 14.dp),
-                    text = "对插件开发者的建议",
+                    text = stringResource(R.string.plugin_signature_dev_advice_title),
                     style = typography.titleSmall,
                     color = colorScheme.onSurface
                 )
-                Text("建议为插件生成并使用固定的签名证书，以便在版本更新时维持一致性，并确保插件在分发过程中不被篡改。")
+                Text(text = stringResource(R.string.plugin_signature_dev_advice_body))
             }
         },
         confirmButton = {
@@ -295,14 +342,14 @@ fun PluginSignatureDialog(
         onDismissRequest = { onClose() },
         title = {
             Text(
-                text = "签名信息",
+                text = stringResource(R.string.plugin_signature_info_title),
                 style = typography.displayMedium,
                 color = colorScheme.onSurface
             )
         },
         text = {
             if (signatureInfo.isNullOrEmpty()) {
-                Text("无签名信息")
+                Text(text = stringResource(R.string.plugin_signature_info_empty))
             } else {
                 Column(
                     modifier = Modifier
@@ -313,13 +360,19 @@ fun PluginSignatureDialog(
                     signatureInfo.forEachIndexed { index, sig ->
                         Column {
                             Text(
-                                text = "#${index + 1}",
+                                text = stringResource(R.string.plugin_signature_index, index + 1),
                                 style = typography.titleMedium
                             )
                             Spacer(modifier = Modifier.height(4.dp))
-                            Text("所有者: ${sig.subject}")
-                            Text("公钥: ${sig.publicKeyAlgorithm}, ${sig.publicKeyLength}-bit")
-                            Text("SHA256: ${sig.sha256}")
+                            Text(text = stringResource(R.string.plugin_signature_owner, sig.subject))
+                            Text(
+                                text = stringResource(
+                                    R.string.plugin_signature_public_key,
+                                    sig.publicKeyAlgorithm,
+                                    sig.publicKeyLength
+                                )
+                            )
+                            Text(text = stringResource(R.string.plugin_signature_sha256, sig.sha256))
                         }
                     }
                 }
@@ -333,7 +386,6 @@ fun PluginSignatureDialog(
     )
 }
 
-
 @Composable
 private fun DoneIndicator() {
     Box(
@@ -342,7 +394,12 @@ private fun DoneIndicator() {
             .background(color = colorScheme.primary, shape = CircleShape),
         contentAlignment = Alignment.Center
     ) {
-        Icon(painterResource(R.drawable.done_outline_24px), contentDescription = "done", tint = colorScheme.surface, modifier = Modifier.size(20.dp))
+        Icon(
+            painter = painterResource(R.drawable.done_outline_24px),
+            contentDescription = "done",
+            tint = colorScheme.surface,
+            modifier = Modifier.size(20.dp)
+        )
     }
 }
 
@@ -354,7 +411,12 @@ private fun HasUpdateIndicator() {
             .background(color = colorScheme.primary, shape = CircleShape),
         contentAlignment = Alignment.Center
     ) {
-        Icon(painterResource(R.drawable.downloading_24px), contentDescription = "downloading", tint = colorScheme.surface, modifier = Modifier.size(20.dp))
+        Icon(
+            painter = painterResource(R.drawable.downloading_24px),
+            contentDescription = "downloading",
+            tint = colorScheme.surface,
+            modifier = Modifier.size(20.dp)
+        )
     }
 }
 
@@ -366,6 +428,11 @@ private fun ErrorIndicator() {
             .background(color = colorScheme.error, shape = CircleShape),
         contentAlignment = Alignment.Center
     ) {
-        Icon(painterResource(R.drawable.close_24px), contentDescription = "close", tint = colorScheme.surface, modifier = Modifier.size(20.dp))
+        Icon(
+            painter = painterResource(R.drawable.close_24px),
+            contentDescription = "close",
+            tint = colorScheme.surface,
+            modifier = Modifier.size(20.dp)
+        )
     }
 }

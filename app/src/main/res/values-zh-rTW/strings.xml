@@ -52,6 +52,8 @@
     <string name="download_item_finished">%s完成</string>
     <string name="download_item_failed">%s失敗, 請檢查您的網絡環境或尋求開發者幫助</string>
     <string name="book_updated_to_title">更新至:</string>
+    <string name="book_word_count_limit">字數限制:</string>
+    <string name="source_available_title">可用資料來源</string>
 
     <!-- Hints -->
     <string name="nothing_here">沒有內容</string>
@@ -67,6 +69,8 @@
     <string name="reader_reached_top">已經到頂了</string>
     <string name="reader_last_page">已經是最後一頁了</string>
     <string name="reader_reached_bottom">已經到底了</string>
+    <string name="reader_reached_start">文章才剛剛開始</string>
+    <string name="reader_reached_end">已經結束了…</string>
     <string name="font_file_error">字體文件錯誤或已損壞, 請您檢查後導入</string>
     <string name="settings_data_source_pending_title">切換到 %s</string>
     <string name="settings_data_source_pending_desc">
@@ -95,7 +99,7 @@
     <string name="app_updates">更新</string>
     <string name="settings_auto_check_updates">自動檢查更新</string>
     <string name="settings_auto_check_updates_desc">應用程式啟動後自動檢查更新</string>
-    <string name="settings_update_channel">加入 Beta 版本測試</string>
+    <string name="settings_update_channel">Beta 版本測試</string>
     <string name="settings_update_channel_desc">搶先體驗即將推出的新功能，並在正式版發布前提供寶貴回饋</string>
     <string name="settings_get_updates">手動檢查更新</string>
     <string name="settings_get_updates_desc">手動取得應用程式更新</string>
@@ -147,6 +151,8 @@
     <string name="settings_theme_dynamic_colors">系統動態配色</string>
     <string name="settings_theme_dynamic_colors_desc">從系統主題套用動態配色</string>
     <string name="settings_theme_dynamic_colors_desc_unavailable">從系統主題套用動態配色 (需要 Android 12+)</string>
+    <string name="settings_theme_m3e">Material 3 Expressive</string>
+    <string name="settings_theme_m3e_description">啟用 Material 3 Expressive 設計。此功能屬於實驗性內容，仍處於測試階段</string>
     <string name="settings_app_language">語言</string>
     <string name="settings_app_language_desc">設定應用程式語言</string>
     <string name="settings_app_language_desc_unavailable">設定應用程式語言 (需要 Android 13+)</string>
@@ -176,12 +182,14 @@
     <string name="settings_import_data_desc">從選定的 .lnr 檔案匯入使用者資料</string>
     <string name="settings_select_data_source">資料來源</string>
     <string name="settings_select_data_source_desc">切換軟體資料來源</string>
+    <string name="settings_plugins">擴充外掛</string>
+    <string name="settings_plugins_desc">安裝與管理擴充外掛</string>
     <string name="settings_app_logs">應用程式日誌</string>
     <string name="settings_app_logs_desc">檢視與分享應用程式日誌（除錯用途）</string>
     <string name="settings_app_log_level">日誌等級</string>
     <string name="settings_app_log_level_desc">設定日誌過濾等級，重新啟動應用程式後生效</string>
     <string name="settings_auto_proxy">自動代理</string>
-    <string name="settings_auto_proxy_desc">自動從網絡上獲取代理ip, <b>但這將導致您所瀏覽的書本數據可能會被截獲</b></string>
+    <string name="settings_auto_proxy_desc">自動從網路上取得代理 IP，<b>但這將導致您所瀏覽的書本資料可能會被攔截</b></string>
 
     <string name="about_settings">關於</string>
     <string name="settings_debug_tools">調試選項</string>
@@ -190,6 +198,9 @@
     <string name="settings_about_oss">LightNovelReader 是獻給全世界所有閱讀愛好者的禮物。</string>
     <string name="settings_github_repo">GitHub 儲存庫</string>
     <string name="settings_github_repo_desc">給本專案點顆 star，幫助我們被更多人發現</string>
+    <string name="settings_support_author">請作者喝茶</string>
+    <string name="settings_support_author_desc">夜魚很可愛, 請給夜魚💰</string>
+    <string name="settings_open_source_licenses">開放原始碼授權</string>
     <string name="settings_communication">加入討論</string>
     <string name="settings_communication_desc">加入我們的 QQ 群討論或回饋</string>
     <string name="settings_statistics">匿名統計</string>
@@ -358,4 +369,36 @@
     <string name="dialog_color_picker">調色盤</string>
     <string name="dialog_color_picker_desc">選擇一個顏色用於閱讀器背景。</string>
 
+    <!-- Plugin -->
+    <string name="plugin_delete_title">刪除 %1$s</string>
+    <string name="plugin_install_preparing">正在準備…</string>
+    <string name="plugin_version_prefix">版本 %1$s</string>
+    <string name="plugin_install_failed">安裝失敗</string>
+    <string name="plugin_install_completed">外掛安裝完成</string>
+    <string name="plugin_install_anyway">仍要安裝</string>
+    <string name="plugin_update_check_title">檢查更新</string>
+    <string name="plugin_update_checking">正在檢查更新…</string>
+    <string name="plugin_update_latest">已是最新版本</string>
+    <string name="plugin_error_generic">錯誤</string>
+    <string name="plugin_update_downloading_percent">下載中 %1$d%%</string>
+    <string name="plugin_update_extracting_percent">解壓中 %1$d%%</string>
+    <string name="plugin_update_download_install">下載並安裝</string>
+    <string name="plugin_signature_about_title">關於外掛簽名</string>
+    <string name="plugin_signature_about_body">外掛簽名可用於確認外掛檔案的完整性與來源。\n允許安裝未簽名的外掛，但請務必確認檔案來自可信管道。</string>
+    <string name="plugin_signature_dev_advice_title">給外掛開發者的建議</string>
+    <string name="plugin_signature_dev_advice_body">建議為外掛產生並使用固定的簽名憑證，以便在版本更新時維持一致性，並確保外掛在散佈過程中不被竄改。</string>
+    <string name="plugin_signature_info_title">簽名資訊</string>
+    <string name="plugin_signature_info_empty">無簽名資訊</string>
+    <string name="plugin_signature_index">#%1$d</string>
+    <string name="plugin_signature_owner">所有者：%1$s</string>
+    <string name="plugin_signature_public_key">公鑰：%1$s，%2$d-bit</string>
+    <string name="plugin_signature_sha256">SHA256：%1$s</string>
+    <string name="plugin_install_plugin">安裝外掛</string>
+    <string name="plugin_empty_title">沒有外掛</string>
+    <string name="plugin_empty_desc">安裝支援的 .lnrp 外掛</string>
+    <string name="plugin_third_party_tips">來自第三方的外掛可提供額外的資料來源或功能。安裝前，請確認外掛來源可信。\nLightNovelReader 不對外掛可用性負責。</string>
+    <string name="plugin_by_author">作者：%1$s</string>
+    <string name="plugin_details">詳細資料</string>
+    <string name="plugin_optimize">最佳化</string>
+    <string name="plugin_repo">外掛倉庫</string>
 </resources>

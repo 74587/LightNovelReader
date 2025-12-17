@@ -13,8 +13,7 @@ import androidx.compose.ui.res.stringResource
 import indi.dmzz_yyhyy.lightnovelreader.BuildConfig
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsAboutInfoDialog
-import io.nightfish.lightnovelreader.api.ui.components.SettingsClickableEntry
-
+import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsClickableEntry
 @Composable
 fun AboutSettingsList(
     onClickLicenses: () -> Unit
@@ -55,8 +54,8 @@ fun AboutSettingsList(
     SettingsClickableEntry(
         modifier = Modifier.background(colorScheme.surfaceContainer),
         painter = painterResource(R.drawable.volunteer_activism_24px),
-        title = "请作者喝茶",
-        description = "夜鱼很可爱, 请给夜鱼💰",
+        title = stringResource(R.string.settings_support_author),
+        description = stringResource(R.string.settings_support_author_desc),
         openUrl = "https://afdian.com/a/lightnovelreader"
     )
     /* SettingsSwitchEntry(
@@ -70,7 +69,7 @@ fun AboutSettingsList(
     SettingsClickableEntry(
         modifier = Modifier.background(colorScheme.surfaceContainer),
         painter = painterResource(R.drawable.code_24px),
-        title = "开放源代码许可",
+        title = stringResource(R.string.settings_open_source_licenses),
         onClick = onClickLicenses
     )
 }

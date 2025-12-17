@@ -187,7 +187,7 @@ private fun SourceChangeContent(
                 modifier = Modifier
                     .padding(horizontal = 20.dp)
                     .padding(vertical = 10.dp),
-                text = "可用数据源"
+                text = stringResource(R.string.source_available_title)
             )
         }
 
