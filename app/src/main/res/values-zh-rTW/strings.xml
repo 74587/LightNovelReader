@@ -99,7 +99,7 @@
     <string name="app_updates">更新</string>
     <string name="settings_auto_check_updates">自動檢查更新</string>
     <string name="settings_auto_check_updates_desc">應用程式啟動後自動檢查更新</string>
-    <string name="settings_update_channel">加入 Beta 版本測試</string>
+    <string name="settings_update_channel">Beta 版本測試</string>
     <string name="settings_update_channel_desc">搶先體驗即將推出的新功能，並在正式版發布前提供寶貴回饋</string>
     <string name="settings_get_updates">手動檢查更新</string>
     <string name="settings_get_updates_desc">手動取得應用程式更新</string>
