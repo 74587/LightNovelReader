@@ -64,6 +64,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
+import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberAsyncImagePainter
 import coil.imageLoader
 import coil.memory.MemoryCache
@@ -286,6 +287,7 @@ fun ThemeSettingsList(
     }
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun ReaderThemeSettingsList(
     settingState: SettingState,
