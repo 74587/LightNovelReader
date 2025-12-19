@@ -43,6 +43,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -84,6 +85,11 @@ fun ExpandedPageScreen(
     }
 
     val listState = rememberLazyListState()
+    val density = LocalDensity.current
+    val lineHeight = MaterialTheme.typography.titleMedium.lineHeight
+    val titleHeight = with(density) {
+        (lineHeight * 2.2f).toDp()
+    }
 
     Scaffold(
         topBar = {
@@ -178,7 +184,8 @@ fun ExpandedPageScreen(
                             collected = expandedPageUiState.allBookshelfBookIds.contains(
                                 bookInformation.id
                             ),
-                            swipeToRightActions = listOf(addToBookshelf)
+                            swipeToRightActions = listOf(addToBookshelf),
+                            titleHeight = titleHeight
                         )
                     }
                 }

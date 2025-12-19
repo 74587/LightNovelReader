@@ -91,7 +91,7 @@
     <string name="export_book_started">开始导出书本 %s</string>
     <string name="export_book_success">成功导出书本 %s</string>
     <string name="export_book_failed">导出书本 %s 失败</string>
-    <string name="removed_item">已移除: %s</string>
+    <string name="removed_item">已移除: </string>
 
     <!-- Settings -->
     <string name="reading_settings">阅读</string>

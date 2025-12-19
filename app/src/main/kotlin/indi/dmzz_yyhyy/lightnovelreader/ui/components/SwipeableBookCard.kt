@@ -4,11 +4,12 @@ import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
 import com.valentinilk.shimmer.Shimmer
 import com.valentinilk.shimmer.shimmer
-import io.nightfish.lightnovelreader.api.book.BookInformation
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.bookshelf.home.BookCardContent
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.bookshelf.home.BookCardContentSkeleton
+import io.nightfish.lightnovelreader.api.book.BookInformation
 import me.saket.swipe.SwipeAction
 import me.saket.swipe.SwipeableActionsBox
 
@@ -25,6 +26,7 @@ fun BookCardItem(
     shimmer: Shimmer? = null,
     swipeToRightActions: List<SwipeAction> = listOf(),
     swipeToLeftActions: List<SwipeAction> = listOf(),
+    titleHeight: Dp?
 ) {
     val isEmpty = bookInformation.isEmpty()
 
@@ -49,10 +51,10 @@ fun BookCardItem(
                     latestChapterTitle = latestChapterTitle,
                     bookInformation = bookInformation,
                     onClick = onClick,
-                    onLongPress = onLongPress
+                    onLongPress = onLongPress,
+                    titleHeight = titleHeight
                 )
             }
         }
     }
-
 }

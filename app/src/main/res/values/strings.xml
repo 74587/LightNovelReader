@@ -94,7 +94,7 @@
     <string name="export_book_started">Start exporting book %s</string>
     <string name="export_book_success">Successfully exported book %s</string>
     <string name="export_book_failed">Failed to export book %s</string>
-    <string name="removed_item">Removed: %s</string>
+    <string name="removed_item">Removed: </string>
 
     <!-- Settings -->
     <string name="reading_settings">Reading</string>

@@ -230,6 +230,10 @@ fun ExplorePage(
         },
         state = pullState
     ) {
+        val titleHeight = with(LocalDensity.current) {
+            (16.sp * 2.2f).toDp()
+        }
+
         LazyColumn(
             modifier = Modifier
                 .fillMaxWidth()
@@ -326,11 +330,6 @@ fun ExplorePage(
                                             .padding(top = 8.dp, bottom = 2.dp),
                                         verticalArrangement = Arrangement.spacedBy(2.dp)
                                     ) {
-                                        val titleLineHeight = 16.sp
-                                        val titleHeight = with(LocalDensity.current) {
-                                            (titleLineHeight * 2.2f).toDp()
-                                        }
-
                                         Text(
                                             modifier = Modifier
                                                 .height(titleHeight)
@@ -339,7 +338,6 @@ fun ExplorePage(
                                             style = MaterialTheme.typography.headlineMedium.copy(
                                                 letterSpacing = 0.5.sp
                                             ),
-                                            lineHeight = titleLineHeight,
                                             fontWeight = FontWeight.W500,
                                             maxLines = 2,
                                             overflow = TextOverflow.Ellipsis
