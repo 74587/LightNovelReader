@@ -13,8 +13,8 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -77,7 +77,7 @@ fun LightNovelReaderTheme(
     }
 
     @Suppress("deprecation")
-    SideEffect {
+    DisposableEffect(view, isDark) {
         val window = (view.context as Activity).window
         val controller = WindowCompat.getInsetsController(window, view)
 
@@ -87,6 +87,7 @@ fun LightNovelReaderTheme(
         }
         window.statusBarColor = Color.TRANSPARENT
         window.navigationBarColor = Color.TRANSPARENT
+        onDispose { }
     }
 
     LaunchedEffect(appLocale) {

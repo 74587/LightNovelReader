@@ -47,6 +47,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -70,6 +71,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import androidx.lifecycle.compose.LifecycleResumeEffect
+import coil.compose.AsyncImagePainter
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.content.ContentComponent
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.AnimatedText
@@ -195,12 +197,17 @@ fun ReaderScreen(
         contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { _ ->
         if (settingState.enableBackgroundImage) {
-            Image(
-                modifier = Modifier.fillMaxSize(),
-                painter = rememberReaderBackgroundPainter(settingState),
-                contentDescription = null,
-                contentScale = ContentScale.Crop
-            )
+            val bgPainter = rememberReaderBackgroundPainter(settingState)
+            val bgState = (bgPainter as? AsyncImagePainter)?.state
+
+            key(bgState) {
+                Image(
+                    modifier = Modifier.fillMaxSize(),
+                    painter = bgPainter,
+                    contentDescription = null,
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
 
         Content(

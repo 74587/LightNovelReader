@@ -5,19 +5,15 @@ import android.content.Context
 import android.net.Uri
 import android.util.DisplayMetrics
 import android.view.View
-import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.isUnspecified
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextMeasurer
 import androidx.compose.ui.text.font.FontFamily
@@ -30,14 +26,13 @@ import androidx.compose.ui.unit.sp
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalAppTheme
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.content.componet.SimpleTextComponentContent
 import indi.dmzz_yyhyy.lightnovelreader.utils.loadReaderFontFamilySafe
+import indi.dmzz_yyhyy.lightnovelreader.utils.rememberReaderFontFamily
 import io.nightfish.lightnovelreader.api.content.component.AbstractDivisibleContentComponent
 import io.nightfish.lightnovelreader.api.content.component.SimpleTextComponentData
 import io.nightfish.lightnovelreader.api.userdata.UriUserData
 import io.nightfish.lightnovelreader.api.userdata.UserDataPath
 import io.nightfish.lightnovelreader.api.userdata.UserDataRepositoryApi
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.launch
 
 data class ReaderStyle(
     val fontSize: Float,
@@ -123,30 +118,6 @@ class SimpleTextComponent(
         }
 
         return color
-    }
-
-    @Composable
-    fun rememberReaderFontFamily(fontFamilyUriUserData: UriUserData): FontFamily {
-        val coroutineScope = rememberCoroutineScope()
-        val uri by fontFamilyUriUserData.getFlowWithDefault(Uri.EMPTY).collectAsState(Uri.EMPTY)
-        val fontFamily = remember(uri) {
-            loadReaderFontFamilySafe(uri)
-        }
-
-        if (fontFamily == null && uri != Uri.EMPTY) {
-            val context = LocalContext.current
-            LaunchedEffect(Unit) {
-                coroutineScope.launch(Dispatchers.IO) {
-                    fontFamilyUriUserData.set(Uri.EMPTY)
-                }
-            }
-            LaunchedEffect(uri) {
-                fontFamilyUriUserData.asynchronousSet(Uri.EMPTY)
-                Toast.makeText(context, "字体加载失败，已恢复为默认字体", Toast.LENGTH_SHORT).show()
-            }
-        }
-
-        return fontFamily ?: FontFamily.Default
     }
 
     override fun split(
