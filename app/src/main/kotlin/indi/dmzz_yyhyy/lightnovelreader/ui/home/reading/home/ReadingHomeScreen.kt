@@ -1,7 +1,6 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.home
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.Crossfade
 import androidx.compose.animation.ExperimentalSharedTransitionApi
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.animateColorAsState
@@ -66,6 +65,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.Velocity
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
@@ -114,44 +114,37 @@ fun ReadingScreen(
     }
 
     with(sharedTransitionScope) {
-        Column {
+        Column(modifier = Modifier.fillMaxSize()) {
             TopBar(
                 onClickDownloadManager = onClickDownloadManager,
                 onClickStats = onClickStats
             )
 
-            var showEmptyPage by remember { mutableStateOf(false) }
-
-            LaunchedEffect(recentReadingBookIds) {
-                showEmptyPage = recentReadingBookIds.isEmpty()
-            }
-
-            AnimatedVisibility(
-                modifier = Modifier.fillMaxSize(),
-                visible = showEmptyPage,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
+            if (recentReadingBookIds.isEmpty()) {
                 EmptyPage(
-                    modifier = Modifier.navigationBarsPadding().bottomBarPadding(),
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .navigationBarsPadding()
+                        .bottomBarPadding(),
                     icon = painterResource(R.drawable.empty_90dp),
                     title = stringResource(R.string.nothing_here),
                     description = stringResource(R.string.nothing_here_desc_reading),
                 )
+            } else {
+                ReadingContent(
+                    modifier = Modifier
+                        .fillMaxSize(),
+                    onClickBook = onClickBook,
+                    onClickContinueReading = onClickContinueReading,
+                    onClickOpenChapters = onClickOpenChapters,
+                    onAddBook = onAddBook,
+                    onRemoveBook = onRemoveBook,
+                    recentReadingBookInformationMap = recentReadingBookInformationMap,
+                    recentReadingUserReadingDataMap = recentReadingUserReadingDataMap,
+                    recentReadingBookIds = recentReadingBookIds,
+                    loadBookInfo = loadBookInfo
+                )
             }
-
-            ReadingContent(
-                modifier = Modifier.fillMaxSize(),
-                onClickBook = onClickBook,
-                onClickContinueReading = onClickContinueReading,
-                onClickOpenChapters = onClickOpenChapters,
-                onAddBook = onAddBook,
-                onRemoveBook = onRemoveBook,
-                recentReadingBookInformationMap = recentReadingBookInformationMap,
-                recentReadingUserReadingDataMap = recentReadingUserReadingDataMap,
-                recentReadingBookIds = recentReadingBookIds,
-                loadBookInfo = loadBookInfo
-            )
         }
     }
 }
@@ -193,6 +186,41 @@ private fun ReadingContent(
             val user = recentReadingUserReadingDataMap[id]
             if (info != null && user != null && !info.isEmpty()) info to user else null
         }
+    val removedItemString = stringResource(R.string.removed_item)
+    val undoString = stringResource(R.string.undo)
+
+    val deleteAction = remember(
+        context,
+        onRemoveBook,
+        onAddBook
+    ) {
+        { bookId: String, bookTitle: String ->
+            removeFromBookshelfAction.toSwipeAction {
+                onRemoveBook(bookId)
+                showSnackbar(
+                    coroutineScope = coroutineScope,
+                    hostState = snackbarHostState,
+                    message = removedItemString + bookTitle,
+                    actionLabel = undoString,
+                ) {
+                    when (it) {
+                        SnackbarResult.Dismissed -> { }
+                        SnackbarResult.ActionPerformed -> onAddBook(bookId)
+                    }
+                }
+            }
+        }
+    }
+
+    val density = LocalDensity.current
+    val lineHeight = typography.titleMedium.lineHeight
+    val headerLineHeight = typography.displayMedium.lineHeight
+
+    val (titleHeight, headerTitleHeight) = remember(density) {
+        with(density) {
+            (lineHeight * 2).toDp() to (headerLineHeight * 2.2f).toDp()
+        }
+    }
 
     LazyColumn(
         modifier = modifier
@@ -208,8 +236,8 @@ private fun ReadingContent(
             && recentReadingUserReadingDataMap[recentReadingBookIds.first()] != null
             && recentReadingBookInformationMap[recentReadingBookIds.first()] != null
         ) {
-            item {
-                if (headerItems.isNotEmpty()) {
+            if (headerItems.isNotEmpty()) {
+                item {
                     SectionHeader(
                         modifier = Modifier
                             .padding(horizontal = 16.dp)
@@ -222,7 +250,8 @@ private fun ReadingContent(
                             .animateItem()
                             .padding(horizontal = 8.dp),
                         onClickContinueReading = onClickContinueReading,
-                        onClickOpenChapters = onClickOpenChapters
+                        onClickOpenChapters = onClickOpenChapters,
+                        titleHeight = headerTitleHeight
                     )
                 }
             }
@@ -238,52 +267,38 @@ private fun ReadingContent(
             }
         }
         items(
-            items = recentReadingBookIds.filter { it.isNotBlank() },
-            key = { it }
+            items = recentReadingBookIds,
+            key = { it },
+            contentType = { "ReadingBookCard" }
         ) { id ->
+            val info = recentReadingBookInformationMap[id]
+            val userData = recentReadingUserReadingDataMap[id]
+
             LaunchedEffect(id) {
                 loadBookInfo(id)
             }
 
-            val info = recentReadingBookInformationMap[id]
-            val userData = recentReadingUserReadingDataMap[id]
-
-            Crossfade(
-                targetState = info != null && userData != null && !info.isEmpty(),
-                label = "ReadingBookCardCrossfade"
-            ) { loaded ->
-                if (loaded && info != null && userData != null) {
+            Box(
+                modifier = Modifier
+                    .animateItem()
+                    .padding(horizontal = 12.dp)
+                    .height(146.dp)
+            ) {
+                if (info != null && userData != null && info.isNotEmpty()) {
                     ReadingBookCard(
-                        modifier = Modifier
-                            .animateItem()
-                            .padding(horizontal = 12.dp),
                         bookInformation = info,
                         userReadingData = userData,
                         onClick = { onClickBook(info.id) },
-                        swipeToLeftActions = listOf(
-                            removeFromBookshelfAction.toSwipeAction {
-                                onRemoveBook(id)
-                                showSnackbar(
-                                    coroutineScope = coroutineScope,
-                                    hostState = snackbarHostState,
-                                    message = context.getString(
-                                        R.string.removed_item,
-                                        recentReadingBookInformationMap[id]?.title
-                                    ),
-                                    actionLabel = context.getString(R.string.undo),
-                                ) {
-                                    when (it) {
-                                        SnackbarResult.Dismissed -> { }
-                                        SnackbarResult.ActionPerformed -> onAddBook(id)
-                                    }
-                                }
-                            }
-                        )
+                        swipeToLeftActions = remember(id) {
+                            listOf(deleteAction(id, info.title))
+                        },
+                        modifier = Modifier.fillMaxSize(),
+                        titleHeight = titleHeight
                     )
                 } else {
                     ReadingBookCardSkeleton(
                         modifier = Modifier
-                            .padding(horizontal = 12.dp)
+                            .fillMaxSize()
                             .then(if (started) Modifier.shimmer(shimmerInstance) else Modifier)
                     )
                 }
@@ -317,7 +332,8 @@ fun ReadingBookCardSkeleton(
         Column(
             modifier = Modifier
                 .fillMaxHeight()
-                .padding(start = 12.dp),
+                .padding(start = 12.dp)
+                .weight(1f),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Box(
@@ -351,7 +367,6 @@ fun ReadingBookCardSkeleton(
         }
     }
 }
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -389,15 +404,13 @@ private fun TopBar(
 @Composable
 private fun ReadingBookCard(
     modifier: Modifier = Modifier,
+    titleHeight: Dp?,
     bookInformation: BookInformation,
     userReadingData: UserReadingData,
     onClick: () -> Unit,
     swipeToRightActions: List<SwipeAction> = emptyList(),
     swipeToLeftActions: List<SwipeAction> = emptyList(),
 ) {
-    val lineHeight = typography.titleMedium.lineHeight
-    val titleHeight = with(LocalDensity.current) { (lineHeight * 2.1f).toDp() }
-
     val lastRead = formTime(userReadingData.lastReadTime)
     val minutes = stringResource(R.string.read_minutes, userReadingData.totalReadTime / 60)
     val progress = "${(userReadingData.readingProgress * 100).toInt()}%"
@@ -430,9 +443,10 @@ private fun ReadingBookCard(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    modifier = Modifier
+                    modifier = if (titleHeight != null) Modifier
                         .height(titleHeight)
-                        .wrapContentHeight(Alignment.CenterVertically),
+                        .wrapContentHeight(Alignment.CenterVertically)
+                    else Modifier,
                     text = bookInformation.title,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,
@@ -487,7 +501,8 @@ fun ReadingHeaderCardPager(
     items: List<Pair<BookInformation, UserReadingData>>,
     modifier: Modifier = Modifier,
     onClickContinueReading: (String, String) -> Unit,
-    onClickOpenChapters: (String) -> Unit
+    onClickOpenChapters: (String) -> Unit,
+    titleHeight: Dp?
 ) {
     val pageCount = items.size.coerceIn(1, 3)
     val pagerState = rememberPagerState(initialPage = 0) { pageCount }
@@ -544,7 +559,8 @@ fun ReadingHeaderCardPager(
                     data = user,
                     onClickContinueReading = onClickContinueReading,
                     onClickOpenDetail = onClickOpenChapters,
-                    modifier = Modifier.matchParentSize()
+                    modifier = Modifier.matchParentSize(),
+                    titleHeight = titleHeight
                 )
             }
         }
@@ -600,12 +616,9 @@ private fun ReadingHeaderCardPage(
     data: UserReadingData,
     onClickContinueReading: (String, String) -> Unit,
     onClickOpenDetail: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    titleHeight: Dp?
 ) {
-    val density = LocalDensity.current
-    val lineHeight = typography.displayMedium.lineHeight
-    val titleHeight = with(density) { (lineHeight * 2.2f).toDp() }
-
     val dateFormatter = remember { DateTimeFormatter.ofPattern("MM/dd") }
     val timeFormatter = remember { DateTimeFormatter.ofPattern("HH:mm") }
 
@@ -645,10 +658,10 @@ private fun ReadingHeaderCardPage(
                 overflow = TextOverflow.Ellipsis,
                 fontWeight = FontWeight.W700,
                 style = typography.displayMedium,
-                lineHeight = lineHeight,
-                modifier = Modifier
+                modifier = if (titleHeight != null) Modifier
                     .height(titleHeight)
                     .wrapContentHeight(Alignment.CenterVertically)
+                else Modifier
             )
 
             Text(

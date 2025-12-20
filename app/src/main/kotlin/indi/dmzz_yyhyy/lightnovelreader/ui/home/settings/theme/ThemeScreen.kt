@@ -38,6 +38,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -63,7 +64,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.net.toUri
+import coil.annotation.ExperimentalCoilApi
 import coil.compose.rememberAsyncImagePainter
+import coil.imageLoader
+import coil.memory.MemoryCache
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.theme.AppTheme
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalAppTheme
@@ -75,6 +81,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsMenuEntry
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsSliderEntry
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.SettingsCategory
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.data.MenuOptions
+import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 import indi.dmzz_yyhyy.lightnovelreader.utils.readerTextColor
 import indi.dmzz_yyhyy.lightnovelreader.utils.rememberReaderBackgroundPainter
@@ -280,6 +287,7 @@ fun ThemeSettingsList(
     }
 }
 
+@OptIn(ExperimentalCoilApi::class)
 @Composable
 fun ReaderThemeSettingsList(
     settingState: SettingState,
@@ -288,6 +296,39 @@ fun ReaderThemeSettingsList(
     SettingsCategory(
         title = stringResource(R.string.paper_settings),
     ) {
+        val context = LocalContext.current
+        val snackbarHostState = LocalSnackbarHost.current
+
+        var lastEnabled by remember { mutableStateOf(settingState.enableBackgroundImage) }
+
+        LaunchedEffect(settingState.enableBackgroundImage) {
+            val now = settingState.enableBackgroundImage
+            if (!lastEnabled && now) {
+                val loader = context.imageLoader
+
+                val key = "default_kraft_paper"
+
+                val memHit = loader.memoryCache?.get(MemoryCache.Key(key)) != null
+                val diskHit = loader.diskCache?.openSnapshot(key)?.use { true } ?: false
+
+                if (!memHit && !diskHit) {
+                    snackbarHostState.showSnackbar("正在下载纸张背景…")
+
+                    loader.enqueue(
+                        ImageRequest.Builder(context)
+                            .data(key)
+                            .memoryCachePolicy(CachePolicy.ENABLED)
+                            .diskCachePolicy(CachePolicy.ENABLED)
+                            .networkCachePolicy(CachePolicy.ENABLED)
+                            .memoryCacheKey(key)
+                            .build()
+                    )
+                }
+            }
+            lastEnabled = now
+        }
+
+
         SettingsSwitchEntry(
             modifier = Modifier.background(colorScheme.surfaceContainer),
             painter = painterResource(R.drawable.imagesearch_roller_24px),

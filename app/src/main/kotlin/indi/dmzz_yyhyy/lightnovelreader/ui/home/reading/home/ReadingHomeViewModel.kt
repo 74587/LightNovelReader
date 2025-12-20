@@ -13,6 +13,7 @@ import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.book.BookVolumes
 import io.nightfish.lightnovelreader.api.book.UserReadingData
 import io.nightfish.lightnovelreader.api.userdata.UserDataPath
+import io.nightfish.lightnovelreader.api.web.WebDataSourcePriority
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
@@ -87,7 +88,7 @@ class ReadingHomeViewModel @Inject constructor(
             val ids = readingBooksUserData
                 .getOrDefault(emptyList())
                 .reversed()
-                .filter { it.isNotEmpty() }
+                .filter(String::isNotBlank)
 
             withContext(Dispatchers.Main) {
                 recentReadingBookIds = ids
@@ -112,7 +113,7 @@ class ReadingHomeViewModel @Inject constructor(
             try {
                 val info: BookInformation? =
                     if (!hasInfo) bookRepository.getStateBookInformation(id, viewModelScope)
-                    else null
+                    else bookRepository.getStateBookInformation(id, viewModelScope, WebDataSourcePriority.Low)
 
                 val userData: UserReadingData =
                     bookRepository.getStateUserReadingData(id, viewModelScope)

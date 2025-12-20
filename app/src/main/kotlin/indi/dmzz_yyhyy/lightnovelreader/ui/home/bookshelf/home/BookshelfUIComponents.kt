@@ -31,11 +31,11 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.book.get
@@ -52,11 +52,9 @@ fun BookCardContent(
     bookInformation: BookInformation,
     latestChapterTitle: String? = null,
     onClick: () -> Unit,
-    onLongPress: () -> Unit
+    onLongPress: () -> Unit,
+    titleHeight: Dp?
 ) {
-    val lineHeight = typography.titleMedium.lineHeight
-    val titleHeight = with(LocalDensity.current) { (lineHeight * 2.1f).toDp() }
-
     Box(
         modifier = modifier
             .fillMaxWidth()
@@ -154,9 +152,10 @@ fun BookCardContent(
                 verticalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    modifier = Modifier
+                    modifier = if (titleHeight != null) Modifier
                         .height(titleHeight)
-                        .wrapContentHeight(Alignment.CenterVertically),
+                        .wrapContentHeight(Alignment.CenterVertically)
+                    else Modifier,
                     text = bookInformation.title,
                     maxLines = 2,
                     overflow = TextOverflow.Ellipsis,

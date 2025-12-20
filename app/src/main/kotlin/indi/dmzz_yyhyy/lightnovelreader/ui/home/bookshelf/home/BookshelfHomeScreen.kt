@@ -321,6 +321,11 @@ fun BookshelfHomeScreen(
                 }
 
                 val shimmerInstance = rememberShimmer(ShimmerBounds.Custom)
+                val density = LocalDensity.current
+                val lineHeight = MaterialTheme.typography.titleMedium.lineHeight
+                val titleHeight = with(density) {
+                    (lineHeight * 2.2f).toDp()
+                }
 
                 LazyColumn(
                     modifier = Modifier
@@ -375,7 +380,8 @@ fun BookshelfHomeScreen(
                                     },
                                     onLongPress = { onLongPress(id) },
                                     latestChapterTitle = lastChapterTitle ?: uiState.bookLastChapterTitleMap[id],
-                                    shimmer = shimmerInstance
+                                    shimmer = shimmerInstance,
+                                    titleHeight = titleHeight
                                 )
                             }
                         }
@@ -411,7 +417,8 @@ fun BookshelfHomeScreen(
                                         else changeBookSelectState(id)
                                     },
                                     onLongPress = { onLongPress(id) },
-                                    shimmer = shimmerInstance
+                                    shimmer = shimmerInstance,
+                                    titleHeight = titleHeight
                                 )
                             }
                         }
@@ -448,7 +455,8 @@ fun BookshelfHomeScreen(
                                         else changeBookSelectState(id)
                                     },
                                     onLongPress = { onLongPress(id) },
-                                    shimmer = shimmerInstance
+                                    shimmer = shimmerInstance,
+                                    titleHeight = titleHeight
                                 )
                             }
 

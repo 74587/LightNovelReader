@@ -38,6 +38,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.isTraversalGroup
@@ -276,6 +277,11 @@ fun ExploreSearchScreen(
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
+                val density = LocalDensity.current
+                val lineHeight = MaterialTheme.typography.titleMedium.lineHeight
+                val titleHeight = with(density) {
+                    (lineHeight * 2.2f).toDp()
+                }
                 LazyColumn {
                     stickyHeader {
                         Box(
@@ -308,7 +314,8 @@ fun ExploreSearchScreen(
                             onClick = { onClickBook(it.id) },
                             onLongPress = withHaptic {},
                             collected = exploreSearchUiState.allBookshelfBookIds.contains(it.id),
-                            swipeToRightActions = listOf(addToBookshelf)
+                            swipeToRightActions = listOf(addToBookshelf),
+                            titleHeight = titleHeight
                         )
                     }
                     item {
