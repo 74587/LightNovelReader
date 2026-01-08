@@ -62,13 +62,13 @@ suspend fun wenku8Api(request: String): Document? = ifCache(request) {
                 delay(1)
                 suspend fun post(): Response {
                     return CxHttp
-                        .post(update("eNpb85aBtYRBMaOkpMBKXz-xoECvPDUvu9RCLzk_Vz8xL6UoPzNFryCjAAAfiA5Q").toString()){
+                        .post(update("eNpb85aBtYRBNqOkpKDYSl-_PDUvu9RCtyg1J7FSLze1vEIvvygdAO0UDQw").toString()){
                             formBody {
                                 append("request", Base64.encode(request.toByteArray()))
                                 append("timetoken", Instant.now().toEpochMilli().toString())
-                                append("appver", "1.21")
+                                append("appver", "1.23-nano-mewx")
                             }
-                            header("user-agent", "wenku8")
+                            header("user-agent", UserAgentGenerator.generate())
                         }
                         .scope(this)
                         .await()

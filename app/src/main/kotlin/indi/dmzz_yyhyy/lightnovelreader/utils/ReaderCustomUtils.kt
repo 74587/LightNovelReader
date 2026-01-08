@@ -138,7 +138,9 @@ fun rememberReaderBackgroundPainter(
         return rememberPaperPainter(snackbarScope)
     }
 
-    return rememberPaperPainter(snackbarScope)
+    return rememberAsyncImagePainter(
+        model = backgroundUri
+    )
 }
 
 @Composable

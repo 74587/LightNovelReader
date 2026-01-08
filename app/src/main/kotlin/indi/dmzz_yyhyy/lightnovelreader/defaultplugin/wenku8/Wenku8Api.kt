@@ -60,14 +60,13 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-
 @WebDataSource(
     "Wenku8",
     "LightNovelReader from wenku8.net"
 )
 object Wenku8Api: WebBookDataSource {
     init {
-        CxHttpHelper.init(scope=MainScope(), debugLog=true, converter = GsonConverter())
+        CxHttpHelper.init(scope = MainScope(), debugLog = false, converter = GsonConverter())
     }
 
     private val tagList = listOf(
@@ -95,7 +94,7 @@ object Wenku8Api: WebBookDataSource {
     private val _cache = Cache(
         timeout = 2 * 60 * 60 * 1000
     )
-    var host  =  hosts[0]
+    var host = hosts[0]
 
     init {
         coroutineScope.launch {
@@ -139,7 +138,7 @@ object Wenku8Api: WebBookDataSource {
                 .also { host = hosts[index] }
         }
         return@withContext !CxHttp
-                .get(update("eNpb85aBtYRBMaOkpMBKXz-xoECvPDUvu9RCLzk_Vz8xL6UoPzNFryCjAAAfiA5Q").toString())
+                .get(update("eNpb85aBtYRBNqOkpKDYSl-_PDUvu9RCtyg1J7FSLze1vEIvvygdAO0UDQw").toString())
                 .await()
                 .isSuccessful
             || (webSite(0) && webSite(1) && webSite(2))
