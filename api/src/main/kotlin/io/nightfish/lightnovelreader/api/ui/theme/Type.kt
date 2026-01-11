@@ -1,3 +1,5 @@
+package io.nightfish.lightnovelreader.api.ui.theme
+
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineBreak

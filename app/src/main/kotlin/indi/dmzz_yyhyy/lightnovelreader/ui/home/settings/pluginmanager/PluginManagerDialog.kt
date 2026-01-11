@@ -5,6 +5,7 @@ import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,55 +16,58 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.utils.ApkSignatureInfo
+import indi.dmzz_yyhyy.lightnovelreader.utils.ApkSignatureScheme
 
 @Composable
 fun InstallProgressDialog(
     state: InstallDialogState,
-    progress: Float?,
     onClickClose: () -> Unit,
     onConfirmDecision: (Boolean) -> Unit
 ) {
-    if (!state.visible) return
-
     AlertDialog(
         onDismissRequest = { },
         title = {
             Column {
-                val titleText = state.pluginAnnotation?.name?.takeIf { it.isNotEmpty() }
+                val titleText = state.info?.name?.takeIf { it.isNotEmpty() }
                     ?: stringResource(R.string.plugin_install_preparing)
 
                 Text(text = titleText, style = typography.displayMedium, color = colorScheme.onSurface)
                 Spacer(Modifier.height(4.dp))
 
-                if (state.packageName.isNotEmpty()) {
+                state.info?.let { info ->
+                    var text = info.packageName
+                    if (info.versionName.isNotEmpty()) {
+                        text += "\n"
+                        text += stringResource(R.string.plugin_version_prefix, info.versionName)
+                    }
                     Text(
-                        text = buildString {
-                            append(state.packageName)
-                            val ver = state.pluginAnnotation?.versionName.orEmpty()
-                            if (ver.isNotEmpty()) {
-                                append("\n")
-                                append(stringResource(R.string.plugin_version_prefix, ver))
-                            }
-                        },
+                        text = text,
                         style = typography.bodyMedium
                     )
                 }
@@ -72,13 +76,19 @@ fun InstallProgressDialog(
         text = {
             Spacer(Modifier.height(12.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                InstallIndicator(state = state, progress = progress)
+                InstallIndicator(state = state)
                 Spacer(Modifier.width(20.dp))
-
-                val msg = when {
-                    state.error -> state.phase.ifEmpty { stringResource(R.string.plugin_install_failed) }
-                    state.finished -> stringResource(R.string.plugin_install_completed)
-                    else -> state.phase
+                val step = state.step
+                val msg = when (step) {
+                    is InstallStep.AwaitingDecision -> step.decision.message
+                    is InstallStep.Completed -> {
+                        if (step.message.isNotEmpty()) step.message
+                        else if (step.success) stringResource(R.string.plugin_install_completed)
+                        else stringResource(R.string.plugin_install_failed)
+                    }
+                    is InstallStep.Working -> step.message.ifEmpty {
+                        stringResource(R.string.plugin_install_preparing)
+                    }
                 }
 
                 Text(
@@ -89,35 +99,35 @@ fun InstallProgressDialog(
             }
         },
         confirmButton = {
-            when {
-                state.error || state.finished -> {
+            when (val step = state.step) {
+                is InstallStep.Completed -> {
                     TextButton(onClick = onClickClose) { Text(text = stringResource(android.R.string.ok)) }
                 }
 
-                state.confirm == InstallDialogState.Confirm.InvalidSig -> {
+                is InstallStep.AwaitingDecision -> {
+                    val label = when (step.decision.type) {
+                        InstallDecisionType.InvalidSignature -> R.string.plugin_install_anyway
+                        InstallDecisionType.Reinstall,
+                        InstallDecisionType.Downgrade -> R.string.next
+                    }
                     TextButton(onClick = { onConfirmDecision(true) }) {
-                        Text(text = stringResource(R.string.plugin_install_anyway))
+                        Text(text = stringResource(label))
                     }
                 }
 
-                state.confirm == InstallDialogState.Confirm.Upgrade -> {
-                    TextButton(onClick = { onConfirmDecision(true) }) { Text(text = stringResource(R.string.next)) }
-                }
-
-                else -> {
+                is InstallStep.Working -> {
                     TextButton(onClick = {}, enabled = false) { Text(text = stringResource(R.string.next)) }
                 }
             }
         },
         dismissButton = {
-            val canShowCancel = !state.finished &&
-                    !state.error &&
-                    (state.confirm != InstallDialogState.Confirm.None || progress == null)
+            val canShowCancel = state.step !is InstallStep.Completed &&
+                    (state.step is InstallStep.AwaitingDecision || state.progress == null)
 
             if (canShowCancel) {
                 TextButton(
                     onClick = {
-                        if (state.confirm != InstallDialogState.Confirm.None) onConfirmDecision(false)
+                        if (state.step is InstallStep.AwaitingDecision) onConfirmDecision(false)
                         else onClickClose()
                     }
                 ) { Text(text = stringResource(R.string.abort)) }
@@ -128,13 +138,12 @@ fun InstallProgressDialog(
 
 @Composable
 private fun InstallIndicator(
-    state: InstallDialogState,
-    progress: Float?
+    state: InstallDialogState
 ) {
     val indicatorSize = Modifier.size(36.dp)
-
-    when {
-        state.confirm != InstallDialogState.Confirm.None -> {
+    val step = state.step
+    when (step) {
+        is InstallStep.AwaitingDecision -> {
             Box(
                 modifier = indicatorSize
                     .background(color = colorScheme.error.copy(alpha = 0.9f), shape = CircleShape),
@@ -149,25 +158,22 @@ private fun InstallIndicator(
             }
         }
 
-        state.error -> {
-            ErrorIndicator()
+        is InstallStep.Completed -> {
+            if (step.success) DoneIndicator() else ErrorIndicator()
         }
 
-        progress != null -> {
-            val anim by animateFloatAsState(
-                targetValue = progress.coerceIn(0f, 1f),
-                animationSpec = tween(220, easing = FastOutSlowInEasing),
-                label = "install_progress"
-            )
-            CircularProgressIndicator(progress = { anim }, modifier = indicatorSize)
-        }
-
-        state.finished -> {
-            DoneIndicator()
-        }
-
-        else -> {
-            CircularProgressIndicator(modifier = indicatorSize)
+        is InstallStep.Working -> {
+            val progress = state.progress
+            if (progress != null) {
+                val anim by animateFloatAsState(
+                    targetValue = progress.coerceIn(0f, 1f),
+                    animationSpec = tween(220, easing = FastOutSlowInEasing),
+                    label = "install_progress"
+                )
+                CircularProgressIndicator(progress = { anim }, modifier = indicatorSize)
+            } else {
+                CircularProgressIndicator(modifier = indicatorSize)
+            }
         }
     }
 }
@@ -177,8 +183,6 @@ fun DeleteProgressDialog(
     state: DeleteDialogState,
     onClose: () -> Unit
 ) {
-    if (!state.visible) return
-
     AlertDialog(
         onDismissRequest = { },
         title = {
@@ -190,15 +194,25 @@ fun DeleteProgressDialog(
         },
         text = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                if (state.finished) DoneIndicator()
-                else CircularProgressIndicator(modifier = Modifier.size(36.dp))
-
+                when (val step = state.step) {
+                    is DeleteStep.Completed -> {
+                        if (step.success) DoneIndicator() else ErrorIndicator()
+                    }
+                    is DeleteStep.Working -> {
+                        CircularProgressIndicator(modifier = Modifier.size(36.dp))
+                    }
+                }
                 Spacer(Modifier.width(16.dp))
-                Text(text = state.phase, style = typography.bodyMedium)
+                val msg = when (val step = state.step) {
+                    is DeleteStep.Completed -> step.message
+                    is DeleteStep.Working -> step.message
+                }
+                Text(text = msg, style = typography.bodyMedium)
             }
         },
         confirmButton = {
-            TextButton(onClick = onClose, enabled = state.finished) {
+            val enabled = state.step is DeleteStep.Completed
+            TextButton(onClick = onClose, enabled = enabled) {
                 Text(text = stringResource(android.R.string.ok))
             }
         }
@@ -208,12 +222,9 @@ fun DeleteProgressDialog(
 @Composable
 fun UpdateCheckDialog(
     state: UpdateDialogState,
-    downloadProgress: Float?,
     onClose: () -> Unit,
     onConfirmUpdate: (String) -> Unit
 ) {
-    if (!state.visible) return
-
     AlertDialog(
         onDismissRequest = { },
         title = {
@@ -229,10 +240,9 @@ fun UpdateCheckDialog(
         },
         text = {
             Row(verticalAlignment = Alignment.CenterVertically) {
+                val downloadProgress = state.downloadProgress
                 val indicatorModifier = Modifier.size(36.dp)
                 when {
-                    state.updateSuccess -> DoneIndicator()
-                    state.isChecking -> CircularProgressIndicator(modifier = indicatorModifier)
                     downloadProgress != null -> {
                         val anim by animateFloatAsState(
                             targetValue = downloadProgress.coerceIn(0f, 1f),
@@ -241,19 +251,19 @@ fun UpdateCheckDialog(
                         )
                         CircularProgressIndicator(progress = { anim }, modifier = indicatorModifier)
                     }
-
-                    state.isLatest -> DoneIndicator()
-                    state.hasUpdate -> HasUpdateIndicator()
-                    state.isError -> ErrorIndicator()
+                    state.step is UpdateStep.Latest -> DoneIndicator()
+                    state.step is UpdateStep.Completed -> DoneIndicator()
+                    state.step is UpdateStep.Available -> HasUpdateIndicator()
+                    state.step is UpdateStep.Error -> ErrorIndicator()
+                    state.step is UpdateStep.Checking -> CircularProgressIndicator(modifier = indicatorModifier)
+                    state.step is UpdateStep.Downloading -> CircularProgressIndicator(modifier = indicatorModifier)
+                    state.step is UpdateStep.Installing -> CircularProgressIndicator(modifier = indicatorModifier)
                     else -> CircularProgressIndicator(modifier = indicatorModifier)
                 }
 
                 Spacer(Modifier.width(16.dp))
 
-                val msg = state.message ?: when {
-                    state.isChecking -> stringResource(R.string.plugin_update_checking)
-                    state.isLatest -> stringResource(R.string.plugin_update_latest)
-                    state.isError -> stringResource(R.string.plugin_error_generic)
+                val msg = when {
                     downloadProgress != null -> {
                         val percent = if (downloadProgress < 0.75f) {
                             (downloadProgress / 0.75f * 100).toInt().coerceAtMost(100)
@@ -268,7 +278,15 @@ fun UpdateCheckDialog(
                         }
                     }
 
-                    else -> ""
+                    else -> when (val step = state.step) {
+                        is UpdateStep.Checking -> step.message.ifEmpty { stringResource(R.string.plugin_update_checking) }
+                        is UpdateStep.Latest -> step.message.ifEmpty { stringResource(R.string.plugin_update_latest) }
+                        is UpdateStep.Available -> step.message
+                        is UpdateStep.Error -> step.message.ifEmpty { stringResource(R.string.plugin_error_generic) }
+                        is UpdateStep.Downloading -> step.message
+                        is UpdateStep.Installing -> step.message
+                        is UpdateStep.Completed -> step.message
+                    }
                 }
 
                 Text(text = msg, style = typography.labelMedium)
@@ -276,22 +294,28 @@ fun UpdateCheckDialog(
         },
         confirmButton = {
             Row(Modifier.animateContentSize()) {
-                if (state.isError || downloadProgress != null) return@AlertDialog
-                if (state.hasUpdate) {
+                val step = state.step
+                if (state.downloadProgress != null) return@AlertDialog
+                if (step is UpdateStep.Available) {
                     TextButton(onClick = { onConfirmUpdate(state.pluginId) }) {
                         Text(text = stringResource(R.string.plugin_update_download_install))
                     }
                 } else {
-                    TextButton(onClick = onClose, enabled = (!state.isChecking || state.updateSuccess)) {
+                    val enabled = step !is UpdateStep.Checking
+                    TextButton(onClick = onClose, enabled = enabled) {
                         Text(text = stringResource(android.R.string.ok))
                     }
                 }
             }
         },
         dismissButton = {
+            val step = state.step
             TextButton(
                 onClick = onClose,
-                enabled = (downloadProgress != null || state.hasUpdate || state.isChecking || state.isError)
+                enabled = (state.downloadProgress != null ||
+                    step is UpdateStep.Available ||
+                    step is UpdateStep.Checking ||
+                    step is UpdateStep.Error)
             ) { Text(text = stringResource(android.R.string.cancel)) }
         }
     )
@@ -334,45 +358,186 @@ fun PluginNoSignatureDialog(
 }
 
 @Composable
-fun PluginSignatureDialog(
-    signatureInfo: List<ApkSignatureInfo>?,
+fun PluginErrorDialog(
     onClose: () -> Unit
 ) {
     AlertDialog(
-        onDismissRequest = { onClose() },
+        onDismissRequest = onClose,
         title = {
             Text(
-                text = stringResource(R.string.plugin_signature_info_title),
-                style = typography.displayMedium,
+                text = "插件已被禁用",
+                style = typography.titleLarge,
                 color = colorScheme.onSurface
             )
         },
         text = {
-            if (signatureInfo.isNullOrEmpty()) {
-                Text(text = stringResource(R.string.plugin_signature_info_empty))
+            Text(
+                text = "在加载该插件过程中发生错误，导致应用异常终止。\n\n出于稳定性考虑，该插件已被自动禁用。您可在插件管理界面手动重新启用。",
+            )
+        },
+        confirmButton = {
+            TextButton(onClick = onClose) {
+                Text(text = stringResource(android.R.string.ok))
+            }
+        }
+    )
+}
+
+@Composable
+fun PluginSignatureDialog(
+    signatureInfo: List<ApkSignatureInfo>?,
+    onClose: () -> Unit
+) {
+    val list = signatureInfo.orEmpty()
+    val dateFormatter = remember { java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.getDefault()) }
+
+    AlertDialog(
+        onDismissRequest = onClose,
+        title = {
+            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                Text(
+                    text = stringResource(R.string.plugin_signature_info_title),
+                    style = typography.titleLarge,
+                    color = colorScheme.onSurface
+                )
+                if (!list.isEmpty()) {
+                    Text(
+                        text = "包含 ${list.size} 个签名",
+                        style = typography.bodyMedium,
+                        color = colorScheme.onSurfaceVariant
+                    )
+                }
+            }
+        },
+        text = {
+            if (list.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.plugin_signature_info_empty),
+                    style = typography.bodyMedium,
+                    color = colorScheme.onSurfaceVariant
+                )
             } else {
-                Column(
+                LazyColumn(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .heightIn(max = 320.dp)
-                        .verticalScroll(rememberScrollState())
+                        .heightIn(max = 360.dp),
+                    verticalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    signatureInfo.forEachIndexed { index, sig ->
-                        Column {
-                            Text(
-                                text = stringResource(R.string.plugin_signature_index, index + 1),
-                                style = typography.titleMedium
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(text = stringResource(R.string.plugin_signature_owner, sig.subject))
-                            Text(
-                                text = stringResource(
-                                    R.string.plugin_signature_public_key,
-                                    sig.publicKeyAlgorithm,
-                                    sig.publicKeyLength
-                                )
-                            )
-                            Text(text = stringResource(R.string.plugin_signature_sha256, sig.sha256))
+                    itemsIndexed(list, key = { index, _ -> index }) { index, sig ->
+                        Surface(
+                            color = colorScheme.surfaceContainerLow,
+                            shape = RoundedCornerShape(16.dp)
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(14.dp),
+                                verticalArrangement = Arrangement.spacedBy(10.dp)
+                            ) {
+                                Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = stringResource(R.string.plugin_signature_index, index + 1),
+                                            style = typography.titleMedium,
+                                            color = colorScheme.onSurface
+                                        )
+                                        Spacer(Modifier.weight(1f))
+                                        val schemesText = sig.schemes
+                                            .map { it.name }
+                                            .sorted()
+                                            .joinToString(" · ")
+                                            .ifEmpty { ApkSignatureScheme.UNKNOWN.name }
+                                        Text(
+                                            text = schemesText,
+                                            style = typography.labelMedium,
+                                            color = colorScheme.onSurfaceVariant
+                                        )
+                                    }
+                                    Text(
+                                        text = "Valid ${dateFormatter.format(sig.notBefore)} → ${dateFormatter.format(sig.notAfter)}",
+                                        style = typography.bodySmall,
+                                        color = colorScheme.onSurfaceVariant
+                                    )
+                                }
+
+                                HorizontalDivider(color = colorScheme.outlineVariant)
+
+                                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                        Text(
+                                            text = "Subject",
+                                            style = typography.labelMedium,
+                                            color = colorScheme.onSurfaceVariant
+                                        )
+                                        SelectionContainer {
+                                            Text(
+                                                text = sig.subject,
+                                                style = typography.bodyMedium,
+                                                color = colorScheme.onSurface,
+                                                maxLines = 3,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                        }
+                                    }
+
+                                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                        Text(
+                                            text = "Issuer",
+                                            style = typography.labelMedium,
+                                            color = colorScheme.onSurfaceVariant
+                                        )
+                                        SelectionContainer {
+                                            Text(
+                                                text = sig.issuer,
+                                                style = typography.bodyMedium,
+                                                color = colorScheme.onSurface,
+                                                maxLines = 3,
+                                                overflow = TextOverflow.Ellipsis
+                                            )
+                                        }
+                                    }
+
+                                    Row(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                                    ) {
+                                        Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                            Text(
+                                                text = "Public key",
+                                                style = typography.labelMedium,
+                                                color = colorScheme.onSurfaceVariant
+                                            )
+                                            Text(
+                                                text = "${sig.publicKeyAlgorithm} · ${sig.publicKeyLength} bit",
+                                                style = typography.bodyMedium,
+                                                color = colorScheme.onSurface
+                                            )
+                                        }
+                                    }
+                                }
+
+                                HorizontalDivider(color = colorScheme.outlineVariant)
+
+                                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                                    Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                                        Text(
+                                            text = "SHA-1",
+                                            style = typography.labelMedium,
+                                            color = colorScheme.onSurfaceVariant
+                                        )
+                                        SelectionContainer {
+                                            Text(
+                                                text = sig.sha1,
+                                                style = typography.bodySmall.copy(fontFamily = FontFamily.Monospace),
+                                                color = colorScheme.onSurface
+                                            )
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }

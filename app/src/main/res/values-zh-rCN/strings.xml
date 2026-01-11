@@ -398,16 +398,16 @@
     <string name="plugin_signature_info_title">签名信息</string>
     <string name="plugin_signature_info_empty">无签名信息</string>
     <string name="plugin_signature_index">#%1$d</string>
-    <string name="plugin_signature_owner">所有者：%1$s</string>
-    <string name="plugin_signature_public_key">公钥：%1$s，%2$d-bit</string>
-    <string name="plugin_signature_sha256">SHA256：%1$s</string>
+    <string name="plugin_signature_owner">所有者: %1$s</string>
+    <string name="plugin_signature_public_key">公钥: %1$s，%2$d-bit</string>
+    <string name="plugin_signature_sha256">SHA256: %1$s</string>
     <string name="plugin_install_plugin">安装插件</string>
     <string name="plugin_empty_title">没有插件</string>
     <string name="plugin_empty_desc">安装受支持的 .lnrp 格式插件</string>
     <string name="plugin_third_party_tips">
         来自第三方的插件可以提供额外的数据源或功能。安装插件前，请确保其来源可信。\nLightNovelReader 不对插件可用性负责。
     </string>
-    <string name="plugin_by_author">作者：%1$s</string>
+    <string name="plugin_by_author">作者: %1$s</string>
     <string name="plugin_details">详情</string>
     <string name="plugin_optimize">优化</string>
     <string name="plugin_repo">插件仓库</string>

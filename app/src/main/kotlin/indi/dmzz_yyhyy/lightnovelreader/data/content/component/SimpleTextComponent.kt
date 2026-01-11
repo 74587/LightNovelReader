@@ -1,6 +1,6 @@
 package indi.dmzz_yyhyy.lightnovelreader.data.content.component
 
-import AppTypography
+import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import android.content.Context
 import android.net.Uri
 import android.util.DisplayMetrics

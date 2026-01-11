@@ -8,9 +8,9 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.dialog
 import androidx.navigation.toRoute
-import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginInstallerOperation
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.DeleteProgressDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.InstallProgressDialog
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.PluginDialogState
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.UpdateCheckDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
@@ -39,32 +39,30 @@ fun NavGraphBuilder.pluginInstallerDialog() {
             }
         }
 
-        val progress by viewModel.installProgress.collectAsState(initial = null)
+        val uiState by viewModel.uiState.collectAsState()
 
-        when (viewModel.dialogType) {
-            PluginInstallerOperation.INSTALL -> {
+        when (val state = uiState) {
+            is PluginDialogState.Install -> {
                 InstallProgressDialog(
-                    state = viewModel.installState,
-                    progress = progress,
+                    state = state.state,
                     onClickClose = { viewModel.onCancelOperation() },
                     onConfirmDecision = { confirm -> viewModel.respondUserDecision(confirm) }
                 )
             }
-            PluginInstallerOperation.UNINSTALL -> {
+            is PluginDialogState.Uninstall -> {
                 DeleteProgressDialog(
-                    state = viewModel.deleteState,
+                    state = state.state,
                     onClose = { viewModel.onCloseDialog() }
                 )
             }
-            PluginInstallerOperation.UPGRADE -> {
+            is PluginDialogState.UpdateCheck -> {
                 UpdateCheckDialog(
-                    state = viewModel.updateState,
-                    downloadProgress = null,
+                    state = state.state,
                     onClose = { viewModel.onCloseDialog() },
                     onConfirmUpdate = { _ -> viewModel.respondUserDecision(true) }
                 )
             }
-            else -> Unit
+            PluginDialogState.Hidden -> Unit
         }
     }
 }

@@ -46,7 +46,9 @@ fun NavGraphBuilder.settingsPluginManagerHomeDestination() {
             navController.navigateToPluginInstallerDialog(uri.toString())
         }
         val enabledPluginList by viewModel.enabledPluginFlow.collectAsState(emptyList())
+        val errorPluginIds by viewModel.errorPluginIdsFlow.collectAsState(emptySet())
         var showPluginNoSignatureDialog by remember { mutableStateOf(false) }
+        var showPluginErrorDialog by remember { mutableStateOf(false) }
         var showPluginSignatureDialog: String? by remember { mutableStateOf(null) }
         val snackbarHostState = LocalSnackbarHost.current
         val coroutineScope = rememberCoroutineScope()
@@ -59,6 +61,7 @@ fun NavGraphBuilder.settingsPluginManagerHomeDestination() {
 
         PluginManagerScreen(
             enabledPluginList = enabledPluginList,
+            errorPluginIds = errorPluginIds,
             onClickBack = navController::popBackStackIfResumed,
             onClickDetail = navController::navigateToSettingsPluginManagerDetailDestination,
             onClickSwitch = viewModel::onClickEnabledSwitch,
@@ -77,6 +80,19 @@ fun NavGraphBuilder.settingsPluginManagerHomeDestination() {
                     when (it) {
                         SnackbarResult.Dismissed -> { }
                         SnackbarResult.ActionPerformed -> { showPluginNoSignatureDialog = true }
+                    }
+                }
+            },
+            onClickErrorAlert = {
+                showSnackbar(
+                    coroutineScope = coroutineScope,
+                    hostState = snackbarHostState,
+                    message = "已禁用该插件，因为其出现加载错误。",
+                    actionLabel = "了解更多"
+                ) {
+                    when (it) {
+                        SnackbarResult.Dismissed -> { }
+                        SnackbarResult.ActionPerformed -> { showPluginErrorDialog = true }
                     }
                 }
             },
@@ -102,6 +118,10 @@ fun NavGraphBuilder.settingsPluginManagerHomeDestination() {
 
         if (showPluginNoSignatureDialog) {
             PluginNoSignatureDialog(onClose = { showPluginNoSignatureDialog = false })
+        }
+
+        if (showPluginErrorDialog) {
+            PluginErrorDialog(onClose = { showPluginErrorDialog = false })
         }
 
         showPluginSignatureDialog?.let { pluginIdToShow ->
