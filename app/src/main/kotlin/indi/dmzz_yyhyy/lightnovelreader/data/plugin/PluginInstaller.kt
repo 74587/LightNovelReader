@@ -92,10 +92,9 @@ class PluginInstaller @Inject constructor(
                 callbacks.onEvent(PluginInstallEvent.Failure("插件版本不兼容"))
                 return false
             }
-            pluginManager.updatePluginInfoFromAnnotation(pluginId, annotation)
             callbacks.onEvent(PluginInstallEvent.Verifying)
 
-            when (val check = performInstallChecks(pluginId, annotation, installFile)) {
+            when (val check = performInstallChecks(pluginId, installFile)) {
                 is InstallCheckResult.Failed -> {
                     callbacks.onEvent(PluginInstallEvent.Failure(check.reason))
                     return false
@@ -110,11 +109,13 @@ class PluginInstaller @Inject constructor(
             }
 
             callbacks.onEvent(PluginInstallEvent.Installing)
-            val success = performFinalInstallStep(
-                tempFile = installFile,
-                pluginId = pluginId,
-                annotation = annotation
-            )
+            val success = withContext(Dispatchers.IO) {
+                performFinalInstallStep(
+                    tempFile = installFile,
+                    pluginId = pluginId,
+                    annotation = annotation
+                )
+            }
 
             if (success) {
                 callbacks.onEvent(PluginInstallEvent.Success("安装完成"))
@@ -142,12 +143,10 @@ class PluginInstaller @Inject constructor(
 
     private suspend fun performInstallChecks(
         pluginId: String,
-        annotation: Plugin,
         tempFile: File
     ): InstallCheckResult = withContext(Dispatchers.IO) {
         val tempSignatures = getApkSignatures(tempFile)
-
-        val pluginDir = context.dataDir.resolve("plugin").resolve(pluginId).apply { mkdirs() }
+        val pluginDir = pluginManager.pluginsDir.resolve(pluginId).apply { mkdirs() }
         val pluginFile = pluginManager.getPluginFile(pluginDir)
         val isInstalled = pluginFile.exists()
 
@@ -161,20 +160,12 @@ class PluginInstaller @Inject constructor(
         if (!isSignatureMatch(existingSignatures, tempSignatures)) {
             return@withContext InstallCheckResult.Failed("安装失败：检测到不同签名，请先卸载已安装版本后再安装此插件。")
         }
-        val existingInfo = pluginManager.getPluginInfo(pluginId)
-        val ev = existingInfo?.version
-        val evName = existingInfo?.versionName.orEmpty()
-        if (ev != null && annotation.version <= ev) {
-            val (promptType, msg) = if (annotation.version == ev)
-                PluginInstallPromptType.Reinstall to "已安装相同版本（$evName），是否重新安装？"
-            else
-                PluginInstallPromptType.Downgrade to "当前已安装更高版本（$evName），是否降级安装？"
-            return@withContext InstallCheckResult.NeedsUserConfirm(
-                PluginInstallPrompt(type = promptType, message = msg)
+        return@withContext InstallCheckResult.NeedsUserConfirm(
+            PluginInstallPrompt(
+                type = PluginInstallPromptType.Reinstall,
+                message = "检测到已安装插件，是否覆盖安装？"
             )
-        }
-
-        InstallCheckResult.Ok
+        )
     }
 
     private fun performFinalInstallStep(
