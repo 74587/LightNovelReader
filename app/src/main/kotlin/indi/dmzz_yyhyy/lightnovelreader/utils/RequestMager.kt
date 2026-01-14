@@ -1,7 +1,9 @@
 package indi.dmzz_yyhyy.lightnovelreader.utils
 
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withTimeoutOrNull
 import kotlin.coroutines.cancellation.CancellationException
+import kotlin.time.Duration.Companion.seconds
 
 class RequestMarge {
     data class Result(
@@ -22,9 +24,10 @@ class RequestMarge {
                 return block.invoke()
             }
         }
-        while (resultMap.contains(key) && resultMap[key] == null) {
-            println("wait for marge")
-            delay(16) // FIXME: ?
+        withTimeoutOrNull(30.seconds) {
+            while (resultMap.contains(key) && resultMap[key] == null) {
+                delay(16)
+            }
         }
         val value = resultMap[key]?.let { it.value as T} ?: block.invoke()
         resultMap.remove(key)

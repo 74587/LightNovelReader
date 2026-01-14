@@ -77,17 +77,16 @@ class ExploreSearchViewModel @Inject constructor(
         exploreRepository.stopAllSearch()
         _uiState.isLoading = true
         _uiState.isLoadingComplete = false
-        _uiState.searchResult = mutableListOf()
+        _uiState.searchResult.clear()
         searchJob?.cancel()
         searchJob = viewModelScope.launch(Dispatchers.IO) {
-            exploreRepository.search(_uiState.searchType, keyword).collect {
-                _uiState.isLoading = false
-                if (it.isNotEmpty() && it.last().isEmpty()) {
+            val flow = exploreRepository.search(_uiState.searchType, keyword)
+            _uiState.isLoading = false
+            flow.collect {
+                _uiState.searchResult.add(it)
+                if (it.isEmpty()) {
                     _uiState.isLoadingComplete = true
-                    _uiState.searchResult = it.dropLast(1).toMutableList()
-                    return@collect
                 }
-                _uiState.searchResult = it.toMutableList()
             }
         }
         viewModelScope.launch(Dispatchers.IO) {

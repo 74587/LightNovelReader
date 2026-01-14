@@ -19,7 +19,7 @@ class MargeWebBookDataSource(
     override val searchTypeMap = webBookDataSource.searchTypeMap
     override val searchTipMap = webBookDataSource.searchTipMap
     override val searchTypeIdList = webBookDataSource.searchTypeIdList
-    override fun search(searchType: String, keyword: String): Flow<List<BookInformation>> = webBookDataSource.search(searchType, keyword)
+    override fun search(searchType: String, keyword: String): Flow<BookInformation> = webBookDataSource.search(searchType, keyword)
     override fun stopAllSearch() = webBookDataSource.stopAllSearch()
 
     override suspend fun getBookInformation(id: String) = requestMarge.margeRequest(id.hashCode()) {

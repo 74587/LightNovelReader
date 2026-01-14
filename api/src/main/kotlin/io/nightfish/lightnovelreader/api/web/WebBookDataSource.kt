@@ -11,11 +11,12 @@ import io.nightfish.lightnovelreader.api.util.Cache
 import io.nightfish.lightnovelreader.api.web.explore.ExploreExpandedPageDataSource
 import io.nightfish.lightnovelreader.api.web.explore.ExplorePageDataSource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * LightNovelReader 的网络数据提供源接口，可以通过实现此接口使软件支持新的数据源
  * 软件加载WebBookDataSource时会对构造器进行接依赖注入
- * 版本: 0.5.0
+ * 版本: 0.6.0
  */
 interface WebBookDataSource {
     /**
@@ -50,7 +51,7 @@ interface WebBookDataSource {
      * 获取当前软件整体是否处于离线状态的数据流
      * 此数据流应当为热数据流, 并且不断对状态进行更新
      */
-    val isOffLineFlow: Flow<Boolean>
+    val isOffLineFlow: StateFlow<Boolean>
 
     /**
      * 所有探索页页面数据源的id
@@ -122,14 +123,14 @@ interface WebBookDataSource {
      * 执行搜索任务
      *
      * 应当返回搜索结果的数据流
-     * 并且以空书本元数据[BookInformation.Companion.empty]作为列表结尾时表示搜索结束
+     * 并且以空书本元数据[BookInformation.Companion.empty]作为流结尾时表示搜索结束
      * 此函数本身应当保证主线程安全
      *
      * @param searchType 搜索类别
      * @param keyword 搜索关键词
      * @return 搜索结果的数据流
      */
-    fun search(searchType: String, keyword: String): Flow<List<BookInformation>>
+    fun search(searchType: String, keyword: String): Flow<BookInformation>
 
     /**
      * 停止当前所执行的所有搜索任务

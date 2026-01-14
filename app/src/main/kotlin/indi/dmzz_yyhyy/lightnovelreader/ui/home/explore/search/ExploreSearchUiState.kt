@@ -1,8 +1,10 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.home.explore.search
 
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import com.google.android.material.bottomsheet.BottomSheetBehavior.State
 import io.nightfish.lightnovelreader.api.book.BookInformation
 
@@ -29,6 +31,6 @@ class MutableExploreSearchUiState : ExploreSearchUiState {
     override var searchTypeNameMap: Map<String, String> by mutableStateOf(mutableMapOf())
     override var searchType: String by mutableStateOf("")
     override var searchTip: String by mutableStateOf("")
-    override var searchResult: List<BookInformation> by mutableStateOf(mutableListOf())
+    override var searchResult: SnapshotStateList<BookInformation> = mutableStateListOf()
     override var allBookshelfBookIds: List<String> by mutableStateOf(mutableListOf())
 }

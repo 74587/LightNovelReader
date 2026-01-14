@@ -75,3 +75,6 @@ private suspend fun retry(reconnectTimes: Int, reconnectDelay: Long, block: susp
     delay(reconnectDelay)
     return block.invoke()
 }
+
+fun Document.selectFirstXpath(path: String) =
+    this.selectXpath(path).firstOrNull()
