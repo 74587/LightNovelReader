@@ -8,6 +8,7 @@ import io.nightfish.lightnovelreader.api.web.WebBookDataSource
 import io.nightfish.lightnovelreader.api.web.explore.ExploreExpandedPageDataSource
 import io.nightfish.lightnovelreader.api.web.explore.ExplorePageDataSource
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 class JsWebBookDataSource(
     override val id: Int,
@@ -19,7 +20,7 @@ class JsWebBookDataSource(
 
     override val offLine: Boolean
         get() = TODO("Not yet implemented")
-    override val isOffLineFlow: Flow<Boolean>
+    override val isOffLineFlow: StateFlow<Boolean>
         get() = TODO("Not yet implemented")
     override val explorePageIdList: List<String>
         get() = TODO("Not yet implemented")
@@ -52,7 +53,7 @@ class JsWebBookDataSource(
     override fun search(
         searchType: String,
         keyword: String
-    ): Flow<List<BookInformation>> {
+    ): Flow<BookInformation> {
         TODO("Not yet implemented")
     }
 
