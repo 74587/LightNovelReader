@@ -20,6 +20,7 @@ import io.nightfish.lightnovelreader.api.content.builder.ContentBuilder
 import io.nightfish.lightnovelreader.api.content.builder.image
 import io.nightfish.lightnovelreader.api.content.builder.simpleText
 import io.nightfish.lightnovelreader.api.util.Cache
+import io.nightfish.lightnovelreader.api.web.SearchResult
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
@@ -236,10 +237,10 @@ class Wenku8AppDataSource(
                 }
         }
 
-    override fun search(searchType: String, keyword: String): Flow<BookInformation> = flow {
+    override fun search(searchType: String, keyword: String): Flow<SearchResult> = flow {
         val encodedKeyword = URLEncoder.encode(keyword, "gb2312")
         delay(1)
-        wenku8Api(
+        val result = wenku8Api(
             "action=search&searchtype=$searchType&searchkey=${
                 URLEncoder.encode(
                     encodedKeyword,
@@ -249,10 +250,13 @@ class Wenku8AppDataSource(
         )
             ?.select("item")
             ?.forEach { element ->
-                emit(Wenku8Api.getBookInformation(element.attr("aid")))
+                emit(SearchResult.MultipleBook(Wenku8Api.getBookInformation(element.attr("aid"))))
             }
             ?.let {
-                emit(BookInformation.empty())
+                emit(SearchResult.End())
             }
+        if (result == null) {
+            emit(SearchResult.Error(Error("Failed to request the result")))
+        }
     }
 }

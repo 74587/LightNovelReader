@@ -3,6 +3,7 @@ package indi.dmzz_yyhyy.lightnovelreader.data.web
 import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.book.BookVolumes
 import io.nightfish.lightnovelreader.api.book.ChapterContent
+import io.nightfish.lightnovelreader.api.web.SearchResult
 import io.nightfish.lightnovelreader.api.web.WebBookDataSource
 import io.nightfish.lightnovelreader.api.web.explore.ExploreExpandedPageDataSource
 import io.nightfish.lightnovelreader.api.web.explore.ExplorePageDataSource
@@ -29,9 +30,7 @@ object EmptyWebDataSource: WebBookDataSource {
 
     override suspend fun getChapterContent(chapterId: String, bookId: String): ChapterContent = ChapterContent.empty()
 
-    override fun search(searchType: String, keyword: String): Flow<BookInformation> = flow {
-        emit(BookInformation.empty())
+    override fun search(searchType: String, keyword: String): Flow<SearchResult> = flow {
+        emit(SearchResult.Error(Error("Empty data source")))
     }
-
-    override fun stopAllSearch() {}
 }

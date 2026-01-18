@@ -25,6 +25,7 @@ import io.nightfish.lightnovelreader.api.book.Volume
 import io.nightfish.lightnovelreader.api.book.WorldCount
 import io.nightfish.lightnovelreader.api.content.component.ImageComponentData
 import io.nightfish.lightnovelreader.api.util.Cache
+import io.nightfish.lightnovelreader.api.web.SearchResult
 import io.nightfish.lightnovelreader.api.web.WebBookDataSource
 import io.nightfish.lightnovelreader.api.web.WebDataSource
 import io.nightfish.lightnovelreader.api.web.explore.ExploreExpandedPageDataSource
@@ -150,11 +151,9 @@ object Wenku8Api: WebBookDataSource {
 
     override val explorePageIdList: List<String> = listOf("首页", "全部", "分类")
 
-    override fun search(searchType: String, keyword: String): Flow<BookInformation> {
+    override fun search(searchType: String, keyword: String): Flow<SearchResult> {
         return bookRequestDispatcher.search(searchType, keyword)
     }
-
-    override fun stopAllSearch() {}
 
     override val searchTypeIdList =
         listOf("articlename", "author")

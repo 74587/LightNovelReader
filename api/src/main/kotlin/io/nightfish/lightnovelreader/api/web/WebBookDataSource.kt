@@ -16,7 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 /**
  * LightNovelReader 的网络数据提供源接口，可以通过实现此接口使软件支持新的数据源
  * 软件加载WebBookDataSource时会对构造器进行接依赖注入
- * 版本: 0.6.0
+ * 版本: 0.7.0
  */
 interface WebBookDataSource {
     /**
@@ -124,20 +124,12 @@ interface WebBookDataSource {
      *
      * 应当返回搜索结果的数据流
      * 并且以空书本元数据[BookInformation.Companion.empty]作为流结尾时表示搜索结束
-     * 此函数本身应当保证主线程安全
      *
      * @param searchType 搜索类别
      * @param keyword 搜索关键词
      * @return 搜索结果的数据流
      */
-    fun search(searchType: String, keyword: String): Flow<BookInformation>
-
-    /**
-     * 停止当前所执行的所有搜索任务
-     * 此函数应当保证主线程安全
-     *
-     */
-    fun stopAllSearch()
+    fun search(searchType: String, keyword: String): Flow<SearchResult>
 
     /**
      * 用于处理书本tag的点击跳转事件

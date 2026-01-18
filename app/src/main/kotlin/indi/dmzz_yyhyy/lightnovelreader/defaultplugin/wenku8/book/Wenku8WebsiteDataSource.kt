@@ -18,6 +18,7 @@ import io.nightfish.lightnovelreader.api.content.builder.ContentBuilder
 import io.nightfish.lightnovelreader.api.content.builder.image
 import io.nightfish.lightnovelreader.api.content.builder.simpleText
 import io.nightfish.lightnovelreader.api.util.Cache
+import io.nightfish.lightnovelreader.api.web.SearchResult
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -198,7 +199,7 @@ class Wenku8WebsiteDataSource: Wenku8BookDataSource {
         )
     }
 
-    override fun search(searchType: String, keyword: String): Flow<BookInformation> = flow {
+    override fun search(searchType: String, keyword: String): Flow<SearchResult> = flow {
         val encodedKeyword = URLEncoder.encode(keyword, "gb2312")
 
         var targetPage = 1
@@ -206,17 +207,28 @@ class Wenku8WebsiteDataSource: Wenku8BookDataSource {
         while(presentPage <= targetPage) {
             val soup = autoReconnectionGetWithWenku8Cookie(url("modules/article/search.php?searchtype=$searchType&searchkey=$encodedKeyword&page=$presentPage"))
             if (soup == null) {
-                emit(BookInformation.empty())
+                emit(SearchResult.Error("Failed to request the web page"))
                 return@flow
             }
             if (soup.text().contains("错误原因：对不起，两次搜索的间隔时间不得少于 5 秒")) {
                 delay(5.seconds)
                 continue
             }
+            val menu = soup.selectFirstXpath("//*[@id=\"content\"]/div[1]/div[4]/div/span[1]/fieldset/div/a")
+            if (menu != null && menu.text().contains("小说目录")) {
+                val id = menu.attr("href").split("/").getOrNull(3)
+                if (id == null) {
+                    emit(SearchResult.Error("Failed to prase single book id"))
+                    return@flow
+                }
+                emit(SearchResult.SingleBook(id))
+                return@flow
+            }
+            soup.baseUri()
             if (targetPage == 1) {
                 val page = soup.selectFirstXpath("//*[@id=\"pagelink\"]/em")?.text()?.split("/")?.getOrNull(1)?.toIntOrNull()
                 if (page == null) {
-                    emit(BookInformation.empty())
+                    emit(SearchResult.Error("Failed to request the web page"))
                     return@flow
                 }
                 targetPage = page
@@ -224,7 +236,7 @@ class Wenku8WebsiteDataSource: Wenku8BookDataSource {
 
             val books = Wenku8Api.getBookInformationListFromBookCards(soup.selectXpath("//*[@id=\"content\"]/table/tbody/tr/td/div"))
             for (information in books) {
-                emit(information)
+                emit(SearchResult.MultipleBook(information))
             }
 
             presentPage++

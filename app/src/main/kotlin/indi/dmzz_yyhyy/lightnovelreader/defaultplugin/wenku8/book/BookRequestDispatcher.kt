@@ -6,6 +6,7 @@ import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.book.BookVolumes
 import io.nightfish.lightnovelreader.api.book.CanBeEmpty
 import io.nightfish.lightnovelreader.api.book.ChapterContent
+import io.nightfish.lightnovelreader.api.web.SearchResult
 import kotlinx.coroutines.flow.Flow
 
 class BookRequestDispatcher: Wenku8BookDataSource {
@@ -39,7 +40,7 @@ class BookRequestDispatcher: Wenku8BookDataSource {
         getChapterContent(chapterId, bookId)
     }
 
-    override fun search(searchType: String, keyword: String): Flow<BookInformation> {
+    override fun search(searchType: String, keyword: String): Flow<SearchResult> {
         return source.first().search(searchType, keyword)
     }
 }

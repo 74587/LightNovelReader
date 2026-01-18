@@ -76,8 +76,6 @@ fun ExploreSearchScreen(
     onClickBook: (String) -> Unit
 ) {
     var searchKeyword by rememberSaveable { mutableStateOf("") }
-    var searchBarExpanded by rememberSaveable { mutableStateOf(true) }
-    var dropdownMenuExpanded by rememberSaveable { mutableStateOf(false) }
     LifecycleEventEffect(Lifecycle.Event.ON_START) {
         init.invoke()
     }
@@ -93,8 +91,8 @@ fun ExploreSearchScreen(
                         .height(56.dp)) {
                     DropdownMenu(
                         offset = DpOffset((-12).dp, 0.dp),
-                        expanded = dropdownMenuExpanded,
-                        onDismissRequest = { dropdownMenuExpanded = false }) {
+                        expanded = exploreSearchUiState.dropdownMenuExpanded,
+                        onDismissRequest = { exploreSearchUiState.setDropdownMenuExpandedState(false) }) {
                         exploreSearchUiState.searchTypeIdList.forEach {
                             DropdownMenuItem(
                                 text = {
@@ -106,7 +104,7 @@ fun ExploreSearchScreen(
                                     }
                                 },
                                 onClick = {
-                                    dropdownMenuExpanded = false
+                                    exploreSearchUiState.setDropdownMenuExpandedState(false)
                                     onChangeSearchType(it)
                                 }
                             )
@@ -117,18 +115,18 @@ fun ExploreSearchScreen(
                     modifier = Modifier
                         .align(Alignment.TopCenter)
                         .fillMaxWidth()
-                        .padding(horizontal = if (!searchBarExpanded) 12.dp else 0.dp)
+                        .padding(horizontal = if (!exploreSearchUiState.searchBarExpanded) 12.dp else 0.dp)
                         .semantics { traversalIndex = 0f },
                     inputField = {
                         SearchBarDefaults.InputField(
                             query = searchKeyword,
                             onQueryChange = { searchKeyword = it },
                             onSearch = {
-                                searchBarExpanded = false
+                                exploreSearchUiState.setSearchBarExpandedState(false)
                                 onSearch(it)
                             },
-                            expanded = searchBarExpanded,
-                            onExpandedChange = { searchBarExpanded = it },
+                            expanded = exploreSearchUiState.searchBarExpanded,
+                            onExpandedChange = exploreSearchUiState::setSearchBarExpandedState,
                             placeholder = { AnimatedText(
                                 text = exploreSearchUiState.searchTip,
                                 style = MaterialTheme.typography.bodyLarge,
@@ -143,20 +141,20 @@ fun ExploreSearchScreen(
                                 Row {
                                     if (searchKeyword.isNotBlank())
                                         IconButton(onClick = {
-                                            searchBarExpanded = true
+                                            exploreSearchUiState.setSearchBarExpandedState(true)
                                             searchKeyword = ""
                                         }) {
                                             Icon(painter = painterResource(R.drawable.close_24px), contentDescription = "clear")
                                         }
-                                    if (searchBarExpanded)
-                                        IconButton(onClick = { dropdownMenuExpanded = true }) {
+                                    if (exploreSearchUiState.searchBarExpanded)
+                                        IconButton(onClick = { exploreSearchUiState.setDropdownMenuExpandedState(true) }) {
                                             Icon(painter = painterResource(R.drawable.filter_alt_24px), contentDescription = "filter")
                                         }
                                 }
                             },
                         )
                     },
-                    expanded = searchBarExpanded,
+                    expanded = exploreSearchUiState.searchBarExpanded,
                     onExpandedChange = { if (!it) onClickBack.invoke() }
                 ) {
                     AnimatedVisibility(
@@ -225,7 +223,7 @@ fun ExploreSearchScreen(
                                             .padding(horizontal = 16.dp)
                                             .clickable {
                                                 searchKeyword = it
-                                                searchBarExpanded = false
+                                                exploreSearchUiState.setSearchBarExpandedState(false)
                                                 onSearch.invoke(history)
                                             },
                                         verticalAlignment = Alignment.CenterVertically
@@ -262,7 +260,18 @@ fun ExploreSearchScreen(
             refresh = refresh
         ) {
             AnimatedVisibility(
-                visible = exploreSearchUiState.isLoadingComplete && exploreSearchUiState.searchResult.isEmpty(),
+                visible = exploreSearchUiState.errorMessage.isNotEmpty(),
+                enter = fadeIn(),
+                exit = fadeOut()
+            ) {
+                EmptyPage(
+                    icon = painterResource(R.drawable.error_24px),
+                    title = "搜索出现了错误",
+                    description = exploreSearchUiState.errorMessage
+                )
+            }
+            AnimatedVisibility(
+                visible = exploreSearchUiState.isLoadingComplete && exploreSearchUiState.searchResult.isEmpty() && exploreSearchUiState.errorMessage.isEmpty(),
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
@@ -273,7 +282,7 @@ fun ExploreSearchScreen(
                 )
             }
             AnimatedVisibility(
-                visible = !exploreSearchUiState.isLoading,
+                visible = !exploreSearchUiState.isLoading && exploreSearchUiState.errorMessage.isNotEmpty(),
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
