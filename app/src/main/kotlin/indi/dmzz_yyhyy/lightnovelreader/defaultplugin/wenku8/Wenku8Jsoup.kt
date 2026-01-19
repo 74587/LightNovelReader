@@ -38,7 +38,7 @@ suspend fun autoReconnectionGetWithWenku8Cookie(url: String): Document? = withCo
         response = get()
         retryTime--
         delay(retryDelay)
-        retryDelay = retryDelay * 2
+        retryDelay *= 2
     }
     val doc = response.body
         ?.bytes()

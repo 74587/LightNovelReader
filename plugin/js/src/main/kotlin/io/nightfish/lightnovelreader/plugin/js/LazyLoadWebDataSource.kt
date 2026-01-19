@@ -21,7 +21,6 @@ class LazyLoadWebDataSource(
     override suspend fun getBookVolumes(id: String) = bookDataSource.getBookVolumes(id)
     override suspend fun getChapterContent(chapterId: String, bookId: String) = bookDataSource.getChapterContent(chapterId, bookId)
     override fun search(searchType: String, keyword: String) = bookDataSource.search(searchType, keyword)
-    override fun stopAllSearch() = bookDataSource.stopAllSearch()
 
     override fun onLoad() {
         bookDataSource = webBookDataSourceProvider.invoke()

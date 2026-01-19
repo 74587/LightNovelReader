@@ -42,6 +42,7 @@ private val titleRegex = Regex("(.*) ?[(（](.*)[)）] ?$")
 
 class Wenku8AppDataSource(
     val host: String,
+    val ver: String,
     val ua: () -> String
 ) : Wenku8BookDataSource {
     init {
@@ -86,7 +87,7 @@ class Wenku8AppDataSource(
                                     formBody {
                                         append("request", Base64.encode(request.toByteArray()))
                                         append("timetoken", Instant.now().toEpochMilli().toString())
-                                        append("appver", "1.21")
+                                        append("appver", ver)
                                     }
                                     header("user-agent", ua.invoke())
                                 }

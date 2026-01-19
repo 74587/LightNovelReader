@@ -282,7 +282,7 @@ fun ExploreSearchScreen(
                 )
             }
             AnimatedVisibility(
-                visible = !exploreSearchUiState.isLoading && exploreSearchUiState.errorMessage.isNotEmpty(),
+                visible = !exploreSearchUiState.isLoading && exploreSearchUiState.errorMessage.isEmpty(),
                 enter = fadeIn(),
                 exit = fadeOut()
             ) {
