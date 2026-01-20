@@ -2,8 +2,9 @@ package indi.dmzz_yyhyy.lightnovelreader.data.web
 
 import io.nightfish.lightnovelreader.api.book.CanBeEmpty
 import io.nightfish.lightnovelreader.api.util.Cache
-import io.nightfish.lightnovelreader.api.web.SearchResult
+import io.nightfish.lightnovelreader.api.web.search.SearchResult
 import io.nightfish.lightnovelreader.api.web.WebBookDataSource
+import io.nightfish.lightnovelreader.api.web.search.SearchProvider
 import kotlinx.coroutines.flow.Flow
 
 class CacheWebBookDataSource(
@@ -29,10 +30,7 @@ class CacheWebBookDataSource(
     override val explorePageIdList = webBookDataSource.explorePageIdList
     override val explorePageDataSourceMap = webBookDataSource.explorePageDataSourceMap
     override val exploreExpandedPageDataSourceMap = webBookDataSource.exploreExpandedPageDataSourceMap
-    override val searchTypeMap = webBookDataSource.searchTypeMap
-    override val searchTipMap = webBookDataSource.searchTipMap
-    override val searchTypeIdList = webBookDataSource.searchTypeIdList
-    override fun search(searchType: String, keyword: String): Flow<SearchResult> = webBookDataSource.search(searchType, keyword)
+    override val searchProvider: SearchProvider = webBookDataSource.searchProvider
 
     override suspend fun getBookInformation(id: String) = ifCache(id) {
         webBookDataSource.getBookInformation(id)

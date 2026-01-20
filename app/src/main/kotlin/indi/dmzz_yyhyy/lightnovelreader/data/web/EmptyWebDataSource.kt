@@ -3,10 +3,12 @@ package indi.dmzz_yyhyy.lightnovelreader.data.web
 import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.book.BookVolumes
 import io.nightfish.lightnovelreader.api.book.ChapterContent
-import io.nightfish.lightnovelreader.api.web.SearchResult
+import io.nightfish.lightnovelreader.api.web.search.SearchResult
 import io.nightfish.lightnovelreader.api.web.WebBookDataSource
 import io.nightfish.lightnovelreader.api.web.explore.ExploreExpandedPageDataSource
 import io.nightfish.lightnovelreader.api.web.explore.ExplorePageDataSource
+import io.nightfish.lightnovelreader.api.web.search.SearchProvider
+import io.nightfish.lightnovelreader.api.web.search.SearchType
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -21,16 +23,19 @@ object EmptyWebDataSource: WebBookDataSource {
     override val explorePageIdList: List<String> = emptyList()
     override val explorePageDataSourceMap: Map<String, ExplorePageDataSource> = emptyMap()
     override val exploreExpandedPageDataSourceMap: Map<String, ExploreExpandedPageDataSource> = emptyMap()
-    override val searchTypeMap: Map<String, String> = emptyMap()
-    override val searchTipMap: Map<String, String> = emptyMap()
-    override val searchTypeIdList: List<String> = emptyList()
+    override val searchProvider: SearchProvider = object: SearchProvider {
+        override val searchTypes: List<SearchType> = emptyList()
+
+        override fun search(
+            searchType: SearchType,
+            keyword: String
+        ): Flow<SearchResult> = flow {
+        }
+
+    }
     override suspend fun getBookInformation(id: String): BookInformation = BookInformation.empty()
 
     override suspend fun getBookVolumes(id: String): BookVolumes = BookVolumes.empty("")
 
     override suspend fun getChapterContent(chapterId: String, bookId: String): ChapterContent = ChapterContent.empty()
-
-    override fun search(searchType: String, keyword: String): Flow<SearchResult> = flow {
-        emit(SearchResult.Error(Error("Empty data source")))
-    }
 }

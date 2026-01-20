@@ -30,6 +30,7 @@ import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -73,7 +74,8 @@ fun ExploreSearchScreen(
     onSearch: (String) -> Unit,
     onClickDeleteHistory: (String) -> Unit,
     onClickClearAllHistory: () -> Unit,
-    onClickBook: (String) -> Unit
+    onClickBook: (String) -> Unit,
+    updateSuggestions: (keyword: String) -> Unit
 ) {
     var searchKeyword by rememberSaveable { mutableStateOf("") }
     LifecycleEventEffect(Lifecycle.Event.ON_START) {
@@ -98,7 +100,7 @@ fun ExploreSearchScreen(
                                 text = {
                                     exploreSearchUiState.searchTypeNameMap[it]?.let { it1 ->
                                         Text(
-                                            text = it1,
+                                            text = it1.resolve(),
                                             style = MaterialTheme.typography.bodyLarge
                                         )
                                     }
@@ -120,7 +122,10 @@ fun ExploreSearchScreen(
                     inputField = {
                         SearchBarDefaults.InputField(
                             query = searchKeyword,
-                            onQueryChange = { searchKeyword = it },
+                            onQueryChange = {
+                                searchKeyword = it
+                                updateSuggestions(it)
+                            },
                             onSearch = {
                                 exploreSearchUiState.setSearchBarExpandedState(false)
                                 onSearch(it)
@@ -128,7 +133,7 @@ fun ExploreSearchScreen(
                             expanded = exploreSearchUiState.searchBarExpanded,
                             onExpandedChange = exploreSearchUiState::setSearchBarExpandedState,
                             placeholder = { AnimatedText(
-                                text = exploreSearchUiState.searchTip,
+                                text = exploreSearchUiState.searchTip.resolve(),
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                             ) },
@@ -157,8 +162,10 @@ fun ExploreSearchScreen(
                     expanded = exploreSearchUiState.searchBarExpanded,
                     onExpandedChange = { if (!it) onClickBack.invoke() }
                 ) {
+                    val hasHistory = exploreSearchUiState.historyList.isNotEmpty()
+                    val showHistory = exploreSearchUiState.suggestions.isEmpty() || searchKeyword.isEmpty()
                     AnimatedVisibility(
-                        visible = exploreSearchUiState.historyList.isEmpty() || exploreSearchUiState.historyList.all { it.isEmpty() },
+                        visible = !hasHistory && showHistory,
                         enter = fadeIn(),
                         exit = fadeOut()
                     ) {
@@ -169,7 +176,7 @@ fun ExploreSearchScreen(
                         )
                     }
                     AnimatedVisibility(
-                        visible = exploreSearchUiState.historyList.isNotEmpty() || !exploreSearchUiState.historyList.any { it.isEmpty() },
+                        visible = hasHistory && showHistory,
                         enter = fadeIn(),
                         exit = fadeOut()
                     ) {
@@ -192,7 +199,7 @@ fun ExploreSearchScreen(
 
                                 Box(Modifier.weight(2f))
 
-                                Button(
+                                TextButton (
                                     onClick = onClickClearAllHistory,
                                     colors = ButtonDefaults.buttonColors(
                                         containerColor = Color.Transparent,
@@ -242,6 +249,45 @@ fun ExploreSearchScreen(
                                                 tint = MaterialTheme.colorScheme.onSurfaceVariant
                                             )
                                         }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    AnimatedVisibility(
+                        visible = !showHistory,
+                        enter = fadeIn(),
+                        exit = fadeOut()
+                    ) {
+                        Column(
+                            Modifier
+                                .padding(vertical = 8.dp)
+                                .verticalScroll(rememberScrollState())
+                        ) {
+                            exploreSearchUiState.suggestions.forEach { history ->
+                                if (history.isEmpty()) return@forEach
+                                AnimatedContent(
+                                    targetState = history,
+                                    label = "SuggestionsItemAnimation"
+                                ) {
+                                    Row (
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(46.dp)
+                                            .padding(horizontal = 16.dp)
+                                            .clickable {
+                                                searchKeyword = it
+                                                exploreSearchUiState.setSearchBarExpandedState(false)
+                                                onSearch.invoke(history)
+                                            },
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            modifier = Modifier.padding(start = 8.dp),
+                                            text = it,
+                                            style = MaterialTheme.typography.bodyLarge,
+                                            color = MaterialTheme.colorScheme.onSurface
+                                        )
                                     }
                                 }
                             }

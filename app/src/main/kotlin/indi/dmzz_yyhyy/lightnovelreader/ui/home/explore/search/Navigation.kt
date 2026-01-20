@@ -34,7 +34,8 @@ fun NavGraphBuilder.exploreSearchDestination() {
             onClickClearAllHistory = exploreSearchViewModel::clearAllHistory,
             onClickBook = {
                 navController.navigateToBookDetailDestination(it)
-            }
+            },
+            updateSuggestions = exploreSearchViewModel::updateSuggestions
         )
     }
 }

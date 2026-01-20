@@ -1,8 +1,9 @@
 package indi.dmzz_yyhyy.lightnovelreader.data.web
 
 import indi.dmzz_yyhyy.lightnovelreader.utils.RequestMarge
-import io.nightfish.lightnovelreader.api.web.SearchResult
+import io.nightfish.lightnovelreader.api.web.search.SearchResult
 import io.nightfish.lightnovelreader.api.web.WebBookDataSource
+import io.nightfish.lightnovelreader.api.web.search.SearchProvider
 import kotlinx.coroutines.flow.Flow
 
 class MargeWebBookDataSource(
@@ -16,10 +17,7 @@ class MargeWebBookDataSource(
     override val explorePageIdList = webBookDataSource.explorePageIdList
     override val explorePageDataSourceMap = webBookDataSource.explorePageDataSourceMap
     override val exploreExpandedPageDataSourceMap = webBookDataSource.exploreExpandedPageDataSourceMap
-    override val searchTypeMap = webBookDataSource.searchTypeMap
-    override val searchTipMap = webBookDataSource.searchTipMap
-    override val searchTypeIdList = webBookDataSource.searchTypeIdList
-    override fun search(searchType: String, keyword: String): Flow<SearchResult> = webBookDataSource.search(searchType, keyword)
+    override val searchProvider: SearchProvider = webBookDataSource.searchProvider
 
     override suspend fun getBookInformation(id: String) = requestMarge.margeRequest(id.hashCode()) {
         webBookDataSource.getBookInformation(id)

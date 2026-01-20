@@ -1,4 +1,4 @@
-package io.nightfish.lightnovelreader.api.web
+package io.nightfish.lightnovelreader.api.web.search
 
 import io.nightfish.lightnovelreader.api.book.BookInformation
 

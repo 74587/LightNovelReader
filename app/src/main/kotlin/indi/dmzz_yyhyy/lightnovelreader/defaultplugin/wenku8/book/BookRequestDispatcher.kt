@@ -6,7 +6,7 @@ import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.book.BookVolumes
 import io.nightfish.lightnovelreader.api.book.CanBeEmpty
 import io.nightfish.lightnovelreader.api.book.ChapterContent
-import io.nightfish.lightnovelreader.api.web.SearchResult
+import io.nightfish.lightnovelreader.api.web.search.SearchResult
 import kotlinx.coroutines.flow.Flow
 
 class BookRequestDispatcher: Wenku8BookDataSource {

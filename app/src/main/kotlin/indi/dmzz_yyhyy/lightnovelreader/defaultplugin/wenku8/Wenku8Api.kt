@@ -25,7 +25,7 @@ import io.nightfish.lightnovelreader.api.book.WorldCount
 import io.nightfish.lightnovelreader.api.content.component.ImageComponentData
 import io.nightfish.lightnovelreader.api.util.Cache
 import io.nightfish.lightnovelreader.api.util.local
-import io.nightfish.lightnovelreader.api.web.SearchResult
+import io.nightfish.lightnovelreader.api.web.search.SearchResult
 import io.nightfish.lightnovelreader.api.web.WebBookDataSource
 import io.nightfish.lightnovelreader.api.web.WebDataSource
 import io.nightfish.lightnovelreader.api.web.explore.ExploreExpandedPageDataSource
@@ -33,6 +33,7 @@ import io.nightfish.lightnovelreader.api.web.explore.ExplorePageDataSource
 import io.nightfish.lightnovelreader.api.web.explore.filter.IsCompletedSwitchFilter
 import io.nightfish.lightnovelreader.api.web.explore.filter.SingleChoiceFilter
 import io.nightfish.lightnovelreader.api.web.explore.filter.WordCountFilter
+import io.nightfish.lightnovelreader.api.web.search.SearchProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
@@ -142,6 +143,8 @@ object Wenku8Api: WebBookDataSource {
         bookRequestDispatcher.getChapterContent(chapterId, bookId)
     }
 
+    override val searchProvider: SearchProvider = Wenku8SearchProvider(bookRequestDispatcher)
+
     override val explorePageDataSourceMap: Map<String, ExplorePageDataSource> =
         mapOf(
             Pair("首页", Wenku8HomeExplorePage),
@@ -150,25 +153,6 @@ object Wenku8Api: WebBookDataSource {
         )
 
     override val explorePageIdList: List<String> = listOf("首页", "全部", "分类")
-
-    override fun search(searchType: String, keyword: String): Flow<SearchResult> {
-        return bookRequestDispatcher.search(searchType, keyword)
-    }
-
-    override val searchTypeIdList =
-        listOf("articlename", "author")
-
-    override val searchTypeMap: Map<String, String> =
-        mapOf(
-            Pair("articlename", "按书名搜索"),
-            Pair("author", "按作者名搜索"),
-        )
-
-    override val searchTipMap: Map<String, String> =
-        mapOf(
-            Pair("articlename", "请输入书本名称"),
-            Pair("author", "请输入作者名称"),
-        )
 
     fun getBookInformationListFromBookCards(elements: Elements): List<BookInformation> =
         elements

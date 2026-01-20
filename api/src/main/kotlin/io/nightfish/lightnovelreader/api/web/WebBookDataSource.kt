@@ -10,6 +10,8 @@ import io.nightfish.lightnovelreader.api.book.Volume
 import io.nightfish.lightnovelreader.api.util.Cache
 import io.nightfish.lightnovelreader.api.web.explore.ExploreExpandedPageDataSource
 import io.nightfish.lightnovelreader.api.web.explore.ExplorePageDataSource
+import io.nightfish.lightnovelreader.api.web.search.SearchProvider
+import io.nightfish.lightnovelreader.api.web.search.SearchResult
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -54,6 +56,11 @@ interface WebBookDataSource {
     val isOffLineFlow: StateFlow<Boolean>
 
     /**
+     * 搜索提供器
+     */
+    val searchProvider: SearchProvider
+
+    /**
      * 所有探索页页面数据源的id
      */
     val explorePageIdList: List<String>
@@ -70,23 +77,9 @@ interface WebBookDataSource {
      */
     val exploreExpandedPageDataSourceMap: Map<String, ExploreExpandedPageDataSource>
 
-    /**
-     * 搜索类型id和名称的对应表
-     */
-    val searchTypeMap: Map<String, String>
-
-    /**
-     * 搜索类型id和搜索栏提示的对应表
-     */
-    val searchTipMap: Map<String, String>
-
-    /**
-     * 搜索类型id的有序列表
-     */
-    val searchTypeIdList: List<String>
 
     /***
-     * 请求插图时的Header
+     * 请求图片时的Header
      */
     val imageHeader: Map<String, String>
         get() = emptyMap()
@@ -118,17 +111,6 @@ interface WebBookDataSource {
      * @return 经过格式化后的书本章节类容录数据, 如未找到改书则返回ChapterContent.empty()
      */
     suspend fun getChapterContent(chapterId: String, bookId: String): ChapterContent
-
-    /**
-     * 执行搜索任务
-     *
-     * 应当返回搜索结果的数据流
-     *
-     * @param searchType 搜索类别
-     * @param keyword 搜索关键词
-     * @return 搜索结果的数据流
-     */
-    fun search(searchType: String, keyword: String): Flow<SearchResult>
 
     /**
      * 用于处理书本tag的点击跳转事件

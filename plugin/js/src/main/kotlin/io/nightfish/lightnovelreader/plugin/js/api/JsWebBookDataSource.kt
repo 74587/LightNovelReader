@@ -4,10 +4,11 @@ import com.caoccao.javet.interop.NodeRuntime
 import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.book.BookVolumes
 import io.nightfish.lightnovelreader.api.book.ChapterContent
-import io.nightfish.lightnovelreader.api.web.SearchResult
+import io.nightfish.lightnovelreader.api.web.search.SearchResult
 import io.nightfish.lightnovelreader.api.web.WebBookDataSource
 import io.nightfish.lightnovelreader.api.web.explore.ExploreExpandedPageDataSource
 import io.nightfish.lightnovelreader.api.web.explore.ExplorePageDataSource
+import io.nightfish.lightnovelreader.api.web.search.SearchProvider
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
@@ -23,17 +24,13 @@ class JsWebBookDataSource(
         get() = TODO("Not yet implemented")
     override val isOffLineFlow: StateFlow<Boolean>
         get() = TODO("Not yet implemented")
+    override val searchProvider: SearchProvider
+        get() = TODO("Not yet implemented")
     override val explorePageIdList: List<String>
         get() = TODO("Not yet implemented")
     override val explorePageDataSourceMap: Map<String, ExplorePageDataSource>
         get() = TODO("Not yet implemented")
     override val exploreExpandedPageDataSourceMap: Map<String, ExploreExpandedPageDataSource>
-        get() = TODO("Not yet implemented")
-    override val searchTypeMap: Map<String, String>
-        get() = TODO("Not yet implemented")
-    override val searchTipMap: Map<String, String>
-        get() = TODO("Not yet implemented")
-    override val searchTypeIdList: List<String>
         get() = TODO("Not yet implemented")
 
     override suspend fun getBookInformation(id: String): BookInformation {
@@ -50,12 +47,4 @@ class JsWebBookDataSource(
     ): ChapterContent {
         TODO("Not yet implemented")
     }
-
-    override fun search(
-        searchType: String,
-        keyword: String
-    ): Flow<SearchResult> {
-        TODO("Not yet implemented")
-    }
-
 }

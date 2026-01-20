@@ -1,6 +1,6 @@
 package io.nightfish.lightnovelreader.api.web.explore
 
-import io.nightfish.lightnovelreader.api.web.SearchResult
+import io.nightfish.lightnovelreader.api.web.search.SearchResult
 import io.nightfish.lightnovelreader.api.web.explore.filter.Filter
 import kotlinx.coroutines.flow.Flow
 

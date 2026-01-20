@@ -3,7 +3,7 @@ package indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.book
 import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.book.BookVolumes
 import io.nightfish.lightnovelreader.api.book.ChapterContent
-import io.nightfish.lightnovelreader.api.web.SearchResult
+import io.nightfish.lightnovelreader.api.web.search.SearchResult
 import kotlinx.coroutines.flow.Flow
 
 interface Wenku8BookDataSource {

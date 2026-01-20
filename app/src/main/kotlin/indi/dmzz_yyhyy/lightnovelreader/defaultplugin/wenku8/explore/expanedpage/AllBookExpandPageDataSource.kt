@@ -3,7 +3,7 @@ package indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore.expanedpag
 import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.Wenku8Api
 import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.autoReconnectionGetWithWenku8Cookie
 import indi.dmzz_yyhyy.lightnovelreader.utils.selectFirstXpath
-import io.nightfish.lightnovelreader.api.web.SearchResult
+import io.nightfish.lightnovelreader.api.web.search.SearchResult
 import io.nightfish.lightnovelreader.api.web.explore.ExploreExpandedPageDataSource
 import io.nightfish.lightnovelreader.api.web.explore.filter.Filter
 import io.nightfish.lightnovelreader.api.web.explore.filter.LocalFilter

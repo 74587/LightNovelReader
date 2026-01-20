@@ -7,7 +7,7 @@ import indi.dmzz_yyhyy.lightnovelreader.data.book.BookRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.bookshelf.BookshelfRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.explore.ExploreRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.text.TextProcessingRepository
-import io.nightfish.lightnovelreader.api.web.SearchResult
+import io.nightfish.lightnovelreader.api.web.search.SearchResult
 import io.nightfish.lightnovelreader.api.web.explore.ExploreExpandedPageDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
