@@ -4,6 +4,7 @@ import com.caoccao.javet.interop.NodeRuntime
 import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.book.BookVolumes
 import io.nightfish.lightnovelreader.api.book.ChapterContent
+import io.nightfish.lightnovelreader.api.web.SearchResult
 import io.nightfish.lightnovelreader.api.web.WebBookDataSource
 import io.nightfish.lightnovelreader.api.web.explore.ExploreExpandedPageDataSource
 import io.nightfish.lightnovelreader.api.web.explore.ExplorePageDataSource
@@ -53,11 +54,7 @@ class JsWebBookDataSource(
     override fun search(
         searchType: String,
         keyword: String
-    ): Flow<BookInformation> {
-        TODO("Not yet implemented")
-    }
-
-    override fun stopAllSearch() {
+    ): Flow<SearchResult> {
         TODO("Not yet implemented")
     }
 

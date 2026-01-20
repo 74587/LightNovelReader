@@ -37,6 +37,7 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.io.encoding.Base64
 import kotlin.random.Random
+import kotlin.time.Duration.Companion.seconds
 
 private val titleRegex = Regex("(.*) ?[(（](.*)[)）] ?$")
 
@@ -57,7 +58,7 @@ class Wenku8AppDataSource(
     private var allBookChapterListCacheId: String = ""
 
 
-    private val requestLimiter = Semaphore(4)
+    private val requestLimiter = Semaphore(1)
     private val pendingJobs = Channel<Unit>(capacity = 25, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
     private inline fun <reified T> ifCache(id: String, block: () -> T): T {
@@ -95,16 +96,16 @@ class Wenku8AppDataSource(
                                 .await()
                         }
 
-                        var retryTime = 5
-                        var retryDelay = 1500L
+                        var retryTime = 2
+                        var retryDelay = 2500L
                         var response = post()
-                        while (!response.isSuccessful && retryTime >= 1 && response.code % 100 < 4) {
+                        while (!response.isSuccessful && retryTime >= 1) {
                             response = post()
                             retryTime--
                             delay(retryDelay)
                             retryDelay *= 2
                         }
-                        delay(Random.nextLong(300, 450))
+                        delay(Random.nextLong(1500, 2000))
                         val doc = response.bodyOrNull<String>()?.let(Jsoup::parse)
                             ?.outputSettings(
                                 Document.OutputSettings()

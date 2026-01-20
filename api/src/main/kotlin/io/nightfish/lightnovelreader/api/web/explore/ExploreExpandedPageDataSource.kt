@@ -1,14 +1,16 @@
 package io.nightfish.lightnovelreader.api.web.explore
 
-import io.nightfish.lightnovelreader.api.book.BookInformation
+import io.nightfish.lightnovelreader.api.web.SearchResult
 import io.nightfish.lightnovelreader.api.web.explore.filter.Filter
 import kotlinx.coroutines.flow.Flow
 
 interface ExploreExpandedPageDataSource {
-    fun getTitle(): String
-    fun getFilters(): List<Filter>
-    fun getResultFlow(): Flow<List<BookInformation>>
-    fun refresh()
-    suspend fun loadMore()
-    fun hasMore(): Boolean
+    val title: String
+    val filters: List<Filter<*>>
+    fun loadMore()
+
+    /**
+     * 探索扩展页的数据流, 需要提供SearchResult
+     */
+    fun getResultFlow(): Flow<SearchResult>
 }

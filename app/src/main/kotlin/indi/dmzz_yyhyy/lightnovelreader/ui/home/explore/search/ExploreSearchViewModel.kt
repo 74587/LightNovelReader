@@ -97,6 +97,9 @@ class ExploreSearchViewModel @Inject constructor(
                         _uiState.errorMessage = it.error.message.toString()
                     }
                     is SearchResult.End -> _uiState.isLoadingComplete = true
+                    is SearchResult.Empty -> {
+                        _uiState.isLoadingComplete = true
+                    }
                 }
             }
         }

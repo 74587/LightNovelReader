@@ -3,9 +3,11 @@ package indi.dmzz_yyhyy.lightnovelreader.ui.home.explore.expanded
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import indi.dmzz_yyhyy.lightnovelreader.data.book.BookRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.bookshelf.BookshelfRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.explore.ExploreRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.text.TextProcessingRepository
+import io.nightfish.lightnovelreader.api.web.SearchResult
 import io.nightfish.lightnovelreader.api.web.explore.ExploreExpandedPageDataSource
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -17,11 +19,11 @@ import javax.inject.Inject
 class ExpandedPageViewModel @Inject constructor(
     private val exploreRepository: ExploreRepository,
     private val bookshelfRepository: BookshelfRepository,
-    private val textProcessingRepository: TextProcessingRepository
+    private val textProcessingRepository: TextProcessingRepository,
+    private val bookRepository: BookRepository
 ) : ViewModel() {
     private var expandedPageDataSource: ExploreExpandedPageDataSource? = null
     private var exploreExpandedPageBookListCollectJob: Job? = null
-    private var loadMoreJob: Job? = null
     private var lastExpandedPageDataSourceId: String = ""
     private val _uiState = MutableExpandedPageUiState()
     val uiState: ExpandedPageUiState = _uiState
@@ -29,52 +31,48 @@ class ExpandedPageViewModel @Inject constructor(
     fun init(expandedPageDataSourceId: String) {
         if (expandedPageDataSourceId == lastExpandedPageDataSourceId) return
         lastExpandedPageDataSourceId = expandedPageDataSourceId
-        loadMoreJob?.cancel()
-        exploreExpandedPageBookListCollectJob?.cancel()
 
         expandedPageDataSource = exploreRepository.exploreExpandedPageDataSourceMap[expandedPageDataSourceId]
 
-        exploreExpandedPageBookListCollectJob = viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             expandedPageDataSource?.let { dataSource ->
-                withContext(Dispatchers.IO) { dataSource.refresh() }
                 val processedTitle = withContext(Dispatchers.IO) {
-                    textProcessingRepository.processText { dataSource.getTitle() }
+                    textProcessingRepository.processText { dataSource.title }
                 }
-                val filters = withContext(Dispatchers.IO) { dataSource.getFilters() }
+                val filters = withContext(Dispatchers.IO) {
+                    dataSource.filters
+                }
                 _uiState.pageTitle = processedTitle
                 _uiState.filters.clear()
                 _uiState.filters.addAll(filters)
-
-                dataSource.getResultFlow().collect { rawResult ->
-                    val processedList = withContext(Dispatchers.IO) {
-                        rawResult.map { book ->
-                            textProcessingRepository.processBookInformation { book }
-                        }
-                    }
-                    _uiState.bookList = processedList
-
-                    if (processedList.isEmpty()) {
-                        withContext(Dispatchers.IO) {
-                            dataSource.loadMore()
-                        }
-                    }
-                }
             }
         }
-
         viewModelScope.launch {
             bookshelfRepository.getAllBookshelfBookIdsFlow().collect { ids ->
                 _uiState.allBookshelfBookIds = ids.toList()
             }
         }
+        loadBookResult()
+    }
+
+    fun loadBookResult() {
+        _uiState.bookList.clear()
+        exploreExpandedPageBookListCollectJob?.cancel()
+        exploreExpandedPageBookListCollectJob = viewModelScope.launch(Dispatchers.IO) {
+            expandedPageDataSource?.let { dataSource ->
+                dataSource.getResultFlow().collect { rawResult ->
+                    when(rawResult) {
+                        is SearchResult.SingleBook -> _uiState.bookList.add(bookRepository.getStateBookInformation(rawResult.bookId, viewModelScope))
+                        is SearchResult.MultipleBook -> _uiState.bookList.add(textProcessingRepository.processBookInformation { rawResult.bookInformation })
+                        else -> {}
+                    }
+                }
+            }
+        }
     }
 
     fun loadMore() {
-        loadMoreJob?.cancel()
-        loadMoreJob = viewModelScope.launch(Dispatchers.IO) {
-            if (expandedPageDataSource?.hasMore() == false) return@launch
-            expandedPageDataSource?.loadMore()
-        }
+        expandedPageDataSource?.loadMore()
     }
 
     fun clear() {

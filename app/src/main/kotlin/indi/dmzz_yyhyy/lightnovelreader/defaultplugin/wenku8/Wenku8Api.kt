@@ -11,7 +11,6 @@ import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore.Wenku8AllEx
 import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore.Wenku8HomeExplorePage
 import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore.Wenku8TagsExplorePage
 import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore.expanedpage.HomeBookExpandPageDataSource
-import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore.expanedpage.filter.FirstLetterSingleChoiceFilter
 import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore.expanedpage.filter.PublishingHouseSingleChoiceFilter
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.explore.expanded.navigateToExploreExpandDestination
 import indi.dmzz_yyhyy.lightnovelreader.utils.CxHttpInit
@@ -25,6 +24,7 @@ import io.nightfish.lightnovelreader.api.book.Volume
 import io.nightfish.lightnovelreader.api.book.WorldCount
 import io.nightfish.lightnovelreader.api.content.component.ImageComponentData
 import io.nightfish.lightnovelreader.api.util.Cache
+import io.nightfish.lightnovelreader.api.util.local
 import io.nightfish.lightnovelreader.api.web.SearchResult
 import io.nightfish.lightnovelreader.api.web.WebBookDataSource
 import io.nightfish.lightnovelreader.api.web.WebDataSource
@@ -170,16 +170,31 @@ object Wenku8Api: WebBookDataSource {
             Pair("author", "请输入作者名称"),
         )
 
-    suspend fun getBookInformationListFromBookCards(elements: Elements): List<BookInformation> =
+    fun getBookInformationListFromBookCards(elements: Elements): List<BookInformation> =
         elements
             .map { element ->
-                if (element.text().contains("因版权问题"))
-                    getBookInformation(element
+                if (element.text().contains("因版权问题")) {
+                    val id = element
                         .selectFirst("div > div:nth-child(1) > a")
                         ?.attr("href")
                         ?.replace("/book/", "")
                         ?.replace(".htm", "") ?: ""
-                    )
+                    val bookInformation = MutableBookInformation.empty()
+                    bookInformation.id = id
+                    coroutineScope.launch(Dispatchers.IO) {
+                        val new = getBookInformation(
+                            element
+                                .selectFirst("div > div:nth-child(1) > a")
+                                ?.attr("href")
+                                ?.replace("/book/", "")
+                                ?.replace(".htm", "") ?: ""
+                        )
+                        if (new.isNotEmpty()) {
+                            bookInformation.update(new)
+                        }
+                    }
+                    bookInformation
+                }
                 else {
                     val titleGroup = element.selectFirst("div > div:nth-child(1) > a")
                         ?.attr("title")
@@ -231,20 +246,11 @@ object Wenku8Api: WebBookDataSource {
                 title = "轻小说列表",
                 filtersBuilder = {
                     listOf(
-                        IsCompletedSwitchFilter { this.refresh() },
-                        FirstLetterSingleChoiceFilter { choice ->
-                            val arg = when (choice) {
-                                "任意" -> ""
-                                "0~9" -> "&initial=1"
-                                else -> "&initial=${choice}"
-                            }
-                            this.arg = arg
-                            this.refresh()
-                        },
-                        PublishingHouseSingleChoiceFilter { this.refresh() },
-                        WordCountFilter { this.refresh() }
+                        IsCompletedSwitchFilter(),
+                        PublishingHouseSingleChoiceFilter(),
+                        WordCountFilter()
                     )
-                }
+                },
             )
         )
         registerExploreExpandedPageDataSource(
@@ -253,18 +259,9 @@ object Wenku8Api: WebBookDataSource {
                 title = "完结全本",
                 filtersBuilder = {
                     listOf(
-                        IsCompletedSwitchFilter { this.refresh() },
-                        FirstLetterSingleChoiceFilter { choice ->
-                            val arg = when (choice) {
-                                "任意" -> ""
-                                "0~9" -> "&initial=1"
-                                else -> "&initial=${choice}"
-                            }
-                            this.arg = arg
-                            this.refresh()
-                        },
-                        PublishingHouseSingleChoiceFilter { this.refresh() },
-                        WordCountFilter { this.refresh() }
+                        IsCompletedSwitchFilter(),
+                        PublishingHouseSingleChoiceFilter(),
+                        WordCountFilter()
                     )
                 },
                 extendedParameters = "&fullflag=1"
@@ -284,18 +281,9 @@ object Wenku8Api: WebBookDataSource {
                     title = nameMap[id] ?: "",
                     filtersBuilder = {
                         listOf(
-                            IsCompletedSwitchFilter { this.refresh() },
-                            FirstLetterSingleChoiceFilter { choice ->
-                                val arg = when (choice) {
-                                    "任意" -> ""
-                                    "0~9" -> "&initial=1"
-                                    else -> "&initial=${choice}"
-                                }
-                                this.arg = arg
-                                this.refresh()
-                            },
-                            PublishingHouseSingleChoiceFilter { this.refresh() },
-                            WordCountFilter { this.refresh() }
+                            IsCompletedSwitchFilter(),
+                            PublishingHouseSingleChoiceFilter(),
+                            WordCountFilter()
                         )
                     },
                     extendedParameters = "&sort=$id",
@@ -317,11 +305,11 @@ object Wenku8Api: WebBookDataSource {
                             Pair("仅动画化", "&v=3")
                         )
                         listOf(
-                            IsCompletedSwitchFilter { this.refresh() },
+                            IsCompletedSwitchFilter(),
                             SingleChoiceFilter(
-                                title = "排序",
-                                dialogTitle = "文库筛选",
-                                description = "根据小说的文库筛选",
+                                title = "排序".local(),
+                                dialogTitle = "文库筛选".local(),
+                                description = "根据小说的文库筛选".local(),
                                 choices = listOf(
                                     "默认",
                                     "按更新时间排序",
@@ -329,12 +317,13 @@ object Wenku8Api: WebBookDataSource {
                                     "仅动画化"
                                 ),
                                 defaultChoice = "默认"
-                            ) {
-                                this.arg = choicesMap[it.trim()] ?: ""
-                                this.refresh()
+                            ).apply {
+                                addOnChangeListener {
+                                    this@HomeBookExpandPageDataSource.arg = choicesMap[it.trim()] ?: ""
+                                }
                             },
-                            PublishingHouseSingleChoiceFilter { this.refresh() },
-                            WordCountFilter { this.refresh() }
+                            PublishingHouseSingleChoiceFilter(),
+                            WordCountFilter()
                         )
                     },
                     extendedParameters = "&t=${URLEncoder.encode(tag, "gb2312")}",

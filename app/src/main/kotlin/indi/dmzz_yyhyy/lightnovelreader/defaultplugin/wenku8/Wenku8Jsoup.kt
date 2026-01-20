@@ -5,6 +5,8 @@ import cxhttp.response.Response
 import indi.dmzz_yyhyy.lightnovelreader.utils.UserAgentGenerator
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.sync.Semaphore
+import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -21,33 +23,38 @@ fun wenku8Cookies(): Map<String, String> = mapOf(
     "Hm_lpvt_d72896ddbf8d27c750e3b365ea2fc902" to "1739294503"
 )
 
+
+private val requestLimiter = Semaphore(3)
+
 suspend fun autoReconnectionGetWithWenku8Cookie(url: String): Document? = withContext(Dispatchers.IO) {
-    suspend fun get(): Response {
-        return CxHttp
-            .get(url){
-                header("user-agent", UserAgentGenerator.generate())
-                header("cookie",wenku8Cookies().map { "${it.key}=${it.value}" }.joinToString(separator = ";"))
-            }
-            .scope(this)
-            .await()
+    requestLimiter.withPermit {
+        suspend fun get(): Response {
+            return CxHttp
+                .get(url){
+                    header("user-agent", UserAgentGenerator.generate())
+                    header("cookie",wenku8Cookies().map { "${it.key}=${it.value}" }.joinToString(separator = ";"))
+                }
+                .scope(this)
+                .await()
+        }
+        var retryTime = 3
+        var retryDelay = 2500L
+        var response = get()
+        while (!response.isSuccessful && retryTime >= 1) {
+            response = get()
+            retryTime--
+            delay(retryDelay)
+            retryDelay *= 2
+        }
+        val doc = response.body
+            ?.bytes()
+            ?.toString(charset = Charset.forName("GBK"))
+            ?.let(Jsoup::parse)
+            ?.outputSettings(
+                Document.OutputSettings()
+                    .prettyPrint(false)
+                    .syntax(Document.OutputSettings.Syntax.xml)
+            )
+        return@withContext doc
     }
-    var retryTime = 5
-    var retryDelay = 1500L
-    var response = get()
-    while (!response.isSuccessful && retryTime >= 1) {
-        response = get()
-        retryTime--
-        delay(retryDelay)
-        retryDelay *= 2
-    }
-    val doc = response.body
-        ?.bytes()
-        ?.toString(charset = Charset.forName("GBK"))
-        ?.let(Jsoup::parse)
-        ?.outputSettings(
-            Document.OutputSettings()
-                .prettyPrint(false)
-                .syntax(Document.OutputSettings.Syntax.xml)
-        )
-    return@withContext doc
 }

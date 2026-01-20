@@ -1,21 +1,15 @@
 package io.nightfish.lightnovelreader.api.web.explore.filter
 
-open class SingleChoiceFilter(
-    private val title: String,
-    val dialogTitle: String,
-    val description: String,
-    private val choices: List<String>,
-    private val defaultChoice: String,
-    private var onChange: (String) -> Unit
-): Filter() {
-    var choice: String = defaultChoice
-        set(choice) {
-            field = choice
-            onChange.invoke(choice)
-        }
+import io.nightfish.lightnovelreader.api.util.LocalString
 
-    override fun getType(): FilterTypes = FilterTypes.SINGLE_CHOICE
-    override fun getTitle(): String = title
+open class SingleChoiceFilter(
+    private val title: LocalString,
+    val dialogTitle: LocalString,
+    val description: LocalString,
+    private val choices: List<String>,
+    private val defaultChoice: String
+): Filter<String>(defaultChoice) {
+    override fun getTitle(): LocalString = title
     fun getAllChoices(): List<String> = choices
     fun getDefaultChoice(): String = defaultChoice
 }

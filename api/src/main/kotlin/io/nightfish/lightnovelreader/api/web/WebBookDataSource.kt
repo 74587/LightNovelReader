@@ -123,7 +123,6 @@ interface WebBookDataSource {
      * 执行搜索任务
      *
      * 应当返回搜索结果的数据流
-     * 并且以空书本元数据[BookInformation.Companion.empty]作为流结尾时表示搜索结束
      *
      * @param searchType 搜索类别
      * @param keyword 搜索关键词
