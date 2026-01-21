@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
@@ -75,8 +74,31 @@ import indi.dmzz_yyhyy.lightnovelreader.utils.bottomBarSpacer
 import indi.dmzz_yyhyy.lightnovelreader.utils.fadingEdge
 import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 import io.nightfish.lightnovelreader.api.explore.ExploreBooksRow
+import io.nightfish.lightnovelreader.api.web.explore.ExplorePageProvider
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CustomExploreHomeScreen(
+    init: () -> Unit,
+    onClickSearch: () -> Unit,
+    customExplorePageProvider: ExplorePageProvider.CustomExplorePageProvider<*>
+) {
+    val enterAlwaysScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    LifecycleEventEffect(Lifecycle.Event.ON_CREATE) {
+        init()
+    }
+
+    Column {
+        TopBar(
+            scrollBehavior = enterAlwaysScrollBehavior,
+            onClickSearch = onClickSearch
+        )
+        customExplorePageProvider.Content(enterAlwaysScrollBehavior.nestedScrollConnection)
+    }
+}
 
 @SuppressLint("UnusedTargetStateInContentKeyLambda")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
@@ -89,78 +111,75 @@ fun ExploreHomeScreen(
     init: () -> Unit,
     changePage: (Int) -> Unit,
     onClickSearch: () -> Unit,
-    refresh: () -> Unit,
-    sharedTransitionScope: SharedTransitionScope
+    refresh: () -> Unit
 ) {
     val enterAlwaysScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     LifecycleEventEffect(Lifecycle.Event.ON_CREATE) {
         init()
     }
 
-    with(sharedTransitionScope) {
-        Column {
-            TopBar(
-                scrollBehavior = enterAlwaysScrollBehavior,
-                onClickSearch = onClickSearch
-            )
-            ExploreScreen(
-                refresh = refresh,
-                uiState = exploreUiState
-            ) {
-                Column {
-                    PrimaryTabRow(selectedTabIndex = exploreHomeUiState.selectedPage) {
-                        exploreHomeUiState.pageTitles.forEachIndexed { index, title ->
-                            Tab(
-                                selected = exploreHomeUiState.selectedPage == index,
-                                onClick = {
-                                    changePage(index)
-                                },
-                                text = {
-                                    Text(
-                                        text = title,
-                                        maxLines = 1,
-                                        overflow = TextOverflow.Ellipsis
-                                    )
-                                }
-                            )
-                        }
-                    }
-
-                    var showEmptyPage by remember { mutableStateOf(false) }
-
-                    LaunchedEffect(exploreHomeUiState.explorePageBooksRawList) {
-                        if (exploreHomeUiState.explorePageBooksRawList.isEmpty()) {
-                            delay(140)
-                            showEmptyPage = true
-                        } else {
-                            showEmptyPage = false
-                        }
-                    }
-
-                    AnimatedVisibility(
-                        modifier = Modifier.navigationBarsPadding().bottomBarPadding(),
-                        visible = showEmptyPage,
-                        enter = fadeIn(),
-                        exit = fadeOut()
-                    ) {
-                        Loading()
-                    }
-                    AnimatedContent(
-                        targetState = exploreHomeUiState.explorePageBooksRawList,
-                        contentKey = { exploreHomeUiState.selectedPage },
-                        transitionSpec = {
-                            (fadeIn(initialAlpha = 0.7f)).togetherWith(fadeOut(targetAlpha = 0.7f))
-                        },
-                        label = "ExplorePageBooksRawAnime"
-                    ) {
-                        ExplorePage(
-                            explorePageBooksRawList = it,
-                            onClickExpand = onClickExpand,
-                            onClickBook = onClickBook,
-                            nestedScrollConnection = enterAlwaysScrollBehavior.nestedScrollConnection,
-                            refresh = refresh
+    Column {
+        TopBar(
+            scrollBehavior = enterAlwaysScrollBehavior,
+            onClickSearch = onClickSearch
+        )
+        ExploreScreen(
+            refresh = refresh,
+            uiState = exploreUiState
+        ) {
+            Column {
+                PrimaryTabRow(selectedTabIndex = exploreHomeUiState.selectedPage) {
+                    exploreHomeUiState.pageTitles.forEachIndexed { index, title ->
+                        Tab(
+                            selected = exploreHomeUiState.selectedPage == index,
+                            onClick = {
+                                changePage(index)
+                            },
+                            text = {
+                                Text(
+                                    text = title,
+                                    maxLines = 1,
+                                    overflow = TextOverflow.Ellipsis
+                                )
+                            }
                         )
                     }
+                }
+
+                var showEmptyPage by remember { mutableStateOf(false) }
+
+                LaunchedEffect(exploreHomeUiState.explorePageBooksRawList) {
+                    if (exploreHomeUiState.explorePageBooksRawList.isEmpty()) {
+                        delay(140)
+                        showEmptyPage = true
+                    } else {
+                        showEmptyPage = false
+                    }
+                }
+
+                AnimatedVisibility(
+                    modifier = Modifier.navigationBarsPadding().bottomBarPadding(),
+                    visible = showEmptyPage,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    Loading()
+                }
+                AnimatedContent(
+                    targetState = exploreHomeUiState.explorePageBooksRawList,
+                    contentKey = { exploreHomeUiState.selectedPage },
+                    transitionSpec = {
+                        (fadeIn(initialAlpha = 0.7f)).togetherWith(fadeOut(targetAlpha = 0.7f))
+                    },
+                    label = "ExplorePageBooksRawAnime"
+                ) {
+                    ExplorePage(
+                        explorePageBooksRawList = it,
+                        onClickExpand = onClickExpand,
+                        onClickBook = onClickBook,
+                        nestedScrollConnection = enterAlwaysScrollBehavior.nestedScrollConnection,
+                        refresh = refresh
+                    )
                 }
             }
         }
@@ -204,6 +223,7 @@ fun TopBar(
     )
 }
 
+@Suppress("AssignedValueIsNeverRead")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ExplorePage(

@@ -33,6 +33,7 @@ fun NavGraphBuilder.exploreExpandDestination() {
             expandedPageDataSourceId = entry.toRoute<Route.Main.Explore.Expanded>().expandedPageDataSourceId,
             init = exploreExpandedPageHomeViewModel::init,
             loadMore = exploreExpandedPageHomeViewModel::loadMore,
+            refreshResult = exploreExpandedPageHomeViewModel::loadBookResult,
             requestAddBookToBookshelf = {
                 navController.navigateToAddBookToBookshelfDialog(it)
             },

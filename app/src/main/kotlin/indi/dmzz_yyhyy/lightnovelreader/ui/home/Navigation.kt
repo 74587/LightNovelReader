@@ -33,7 +33,7 @@ fun NavGraphBuilder.homeNavigation(sharedTransitionScope: SharedTransitionScope)
         startDestination = Route.Main.Reading
     ) {
         readingNavigation(sharedTransitionScope)
-        exploreNavigation(sharedTransitionScope)
+        exploreNavigation()
         bookshelfNavigation(sharedTransitionScope)
         settingsNavigation(sharedTransitionScope)
     }
