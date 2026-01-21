@@ -1,6 +1,5 @@
 package io.nightfish.lightnovelreader.api.web.search
 
-import io.nightfish.lightnovelreader.api.web.search.SearchResult
 import kotlinx.coroutines.flow.Flow
 
 interface SearchProvider {

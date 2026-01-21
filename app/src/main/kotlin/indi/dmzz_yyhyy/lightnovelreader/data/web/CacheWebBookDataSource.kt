@@ -2,10 +2,9 @@ package indi.dmzz_yyhyy.lightnovelreader.data.web
 
 import io.nightfish.lightnovelreader.api.book.CanBeEmpty
 import io.nightfish.lightnovelreader.api.util.Cache
-import io.nightfish.lightnovelreader.api.web.search.SearchResult
 import io.nightfish.lightnovelreader.api.web.WebBookDataSource
+import io.nightfish.lightnovelreader.api.web.explore.ExplorePageProvider
 import io.nightfish.lightnovelreader.api.web.search.SearchProvider
-import kotlinx.coroutines.flow.Flow
 
 class CacheWebBookDataSource(
     override val cache: Cache,
@@ -27,9 +26,7 @@ class CacheWebBookDataSource(
 
     override val offLine = webBookDataSource.offLine
     override val isOffLineFlow = webBookDataSource.isOffLineFlow
-    override val explorePageIdList = webBookDataSource.explorePageIdList
-    override val explorePageDataSourceMap = webBookDataSource.explorePageDataSourceMap
-    override val exploreExpandedPageDataSourceMap = webBookDataSource.exploreExpandedPageDataSourceMap
+    override val explorePageProvider: ExplorePageProvider = webBookDataSource.explorePageProvider
     override val searchProvider: SearchProvider = webBookDataSource.searchProvider
 
     override suspend fun getBookInformation(id: String) = ifCache(id) {

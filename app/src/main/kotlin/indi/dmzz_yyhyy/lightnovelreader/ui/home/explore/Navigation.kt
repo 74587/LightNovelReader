@@ -1,7 +1,6 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.home.explore
 
 import androidx.compose.animation.ExperimentalSharedTransitionApi
-import androidx.compose.animation.SharedTransitionScope
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.navigation
@@ -11,11 +10,11 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.home.explore.search.exploreSearchDest
 import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
 
 @OptIn(ExperimentalSharedTransitionApi::class)
-fun NavGraphBuilder.exploreNavigation(sharedTransitionScope: SharedTransitionScope) {
+fun NavGraphBuilder.exploreNavigation() {
     navigation<Route.Main.Explore>(
         startDestination = Route.Main.Explore.Home,
     ) {
-        exploreHomeDestination(sharedTransitionScope)
+        exploreHomeDestination()
         exploreExpandDestination()
         exploreSearchDestination()
     }

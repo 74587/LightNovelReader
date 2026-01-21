@@ -6,7 +6,8 @@ import io.nightfish.lightnovelreader.api.book.ChapterContent
 import io.nightfish.lightnovelreader.api.web.search.SearchResult
 import io.nightfish.lightnovelreader.api.web.WebBookDataSource
 import io.nightfish.lightnovelreader.api.web.explore.ExploreExpandedPageDataSource
-import io.nightfish.lightnovelreader.api.web.explore.ExplorePageDataSource
+import io.nightfish.lightnovelreader.api.web.explore.ExplorePageProvider
+import io.nightfish.lightnovelreader.api.web.explore.ExploreTapPageDataSource
 import io.nightfish.lightnovelreader.api.web.search.SearchProvider
 import io.nightfish.lightnovelreader.api.web.search.SearchType
 import kotlinx.coroutines.flow.Flow
@@ -20,9 +21,11 @@ object EmptyWebDataSource: WebBookDataSource {
 
     override val offLine: Boolean = true
     override val isOffLineFlow: StateFlow<Boolean> = MutableStateFlow(true)
-    override val explorePageIdList: List<String> = emptyList()
-    override val explorePageDataSourceMap: Map<String, ExplorePageDataSource> = emptyMap()
-    override val exploreExpandedPageDataSourceMap: Map<String, ExploreExpandedPageDataSource> = emptyMap()
+    override val explorePageProvider: ExplorePageProvider = object: ExplorePageProvider.DefaultExplorePageProvider {
+        override val explorePageIdList: List<String> = emptyList()
+        override val exploreTapPageDataSourceMap: Map<String, ExploreTapPageDataSource> = emptyMap()
+        override val exploreExpandedPageDataSourceMap: Map<String, ExploreExpandedPageDataSource> = emptyMap()
+    }
     override val searchProvider: SearchProvider = object: SearchProvider {
         override val searchTypes: List<SearchType> = emptyList()
 

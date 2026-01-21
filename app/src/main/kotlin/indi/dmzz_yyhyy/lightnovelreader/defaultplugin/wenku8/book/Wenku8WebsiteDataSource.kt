@@ -1,11 +1,9 @@
 package indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.book
 
 import androidx.core.net.toUri
-import cxhttp.CxHttp
 import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.Wenku8Api
 import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.autoReconnectionGetWithWenku8Cookie
 import indi.dmzz_yyhyy.lightnovelreader.utils.CxHttpInit
-import indi.dmzz_yyhyy.lightnovelreader.utils.autoReconnectionGet
 import indi.dmzz_yyhyy.lightnovelreader.utils.selectFirstXpath
 import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.book.BookVolumes

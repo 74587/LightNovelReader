@@ -1,7 +1,6 @@
 package io.nightfish.lightnovelreader.api.web.explore.filter
 
 import io.nightfish.lightnovelreader.api.util.LocalString
-import java.util.TreeSet
 
 abstract class Filter<T>(default: T) {
     private data class Listener<T> (

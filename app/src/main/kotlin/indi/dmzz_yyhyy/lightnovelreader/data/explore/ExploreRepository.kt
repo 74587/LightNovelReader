@@ -1,6 +1,5 @@
 package indi.dmzz_yyhyy.lightnovelreader.data.explore
 
-import indi.dmzz_yyhyy.lightnovelreader.data.text.TextProcessingRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.web.WebBookDataSourceProvider
 import io.nightfish.lightnovelreader.api.web.search.SearchResult
 import io.nightfish.lightnovelreader.api.web.search.SearchType
@@ -13,9 +12,7 @@ class ExploreRepository @Inject constructor(
     private val webBookDataSourceProvider: WebBookDataSourceProvider,
 ) {
     val searchTypes get() = webBookDataSourceProvider.default.searchProvider.searchTypes
-    val explorePageIdList get() = webBookDataSourceProvider.default.explorePageIdList
-    val explorePageDataSourceMap get() = webBookDataSourceProvider.default.explorePageDataSourceMap
-    val exploreExpandedPageDataSourceMap get() = webBookDataSourceProvider.default.exploreExpandedPageDataSourceMap
+    val explorePageProvider get() = webBookDataSourceProvider.default.explorePageProvider
 
     fun search(searchType: SearchType, keyword: String): Flow<SearchResult> =
         webBookDataSourceProvider.default.searchProvider.search(searchType, keyword)

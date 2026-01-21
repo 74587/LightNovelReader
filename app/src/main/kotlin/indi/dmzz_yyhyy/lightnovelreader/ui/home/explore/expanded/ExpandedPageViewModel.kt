@@ -9,6 +9,7 @@ import indi.dmzz_yyhyy.lightnovelreader.data.explore.ExploreRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.text.TextProcessingRepository
 import io.nightfish.lightnovelreader.api.web.search.SearchResult
 import io.nightfish.lightnovelreader.api.web.explore.ExploreExpandedPageDataSource
+import io.nightfish.lightnovelreader.api.web.explore.ExplorePageProvider
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -29,10 +30,12 @@ class ExpandedPageViewModel @Inject constructor(
     val uiState: ExpandedPageUiState = _uiState
 
     fun init(expandedPageDataSourceId: String) {
+        if (exploreRepository.explorePageProvider !is ExplorePageProvider.DefaultExplorePageProvider) return
+        val explorePageProvider = exploreRepository.explorePageProvider as ExplorePageProvider.DefaultExplorePageProvider
         if (expandedPageDataSourceId == lastExpandedPageDataSourceId) return
         lastExpandedPageDataSourceId = expandedPageDataSourceId
 
-        expandedPageDataSource = exploreRepository.exploreExpandedPageDataSourceMap[expandedPageDataSourceId]
+        expandedPageDataSource = explorePageProvider.exploreExpandedPageDataSourceMap[expandedPageDataSourceId]
 
         viewModelScope.launch(Dispatchers.IO) {
             expandedPageDataSource?.let { dataSource ->

@@ -7,11 +7,7 @@ import androidx.core.net.toUri
 import androidx.navigation.NavController
 import cxhttp.CxHttp
 import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.book.BookRequestDispatcher
-import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore.Wenku8AllExplorePage
-import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore.Wenku8HomeExplorePage
-import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore.Wenku8TagsExplorePage
-import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore.expanedpage.HomeBookExpandPageDataSource
-import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore.expanedpage.filter.PublishingHouseSingleChoiceFilter
+import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.explore.Wenku8ExplorePageProvider
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.explore.expanded.navigateToExploreExpandDestination
 import indi.dmzz_yyhyy.lightnovelreader.utils.CxHttpInit
 import indi.dmzz_yyhyy.lightnovelreader.utils.UserAgentGenerator
@@ -24,21 +20,14 @@ import io.nightfish.lightnovelreader.api.book.Volume
 import io.nightfish.lightnovelreader.api.book.WorldCount
 import io.nightfish.lightnovelreader.api.content.component.ImageComponentData
 import io.nightfish.lightnovelreader.api.util.Cache
-import io.nightfish.lightnovelreader.api.util.local
-import io.nightfish.lightnovelreader.api.web.search.SearchResult
 import io.nightfish.lightnovelreader.api.web.WebBookDataSource
 import io.nightfish.lightnovelreader.api.web.WebDataSource
-import io.nightfish.lightnovelreader.api.web.explore.ExploreExpandedPageDataSource
-import io.nightfish.lightnovelreader.api.web.explore.ExplorePageDataSource
-import io.nightfish.lightnovelreader.api.web.explore.filter.IsCompletedSwitchFilter
-import io.nightfish.lightnovelreader.api.web.explore.filter.SingleChoiceFilter
-import io.nightfish.lightnovelreader.api.web.explore.filter.WordCountFilter
+import io.nightfish.lightnovelreader.api.web.explore.ExplorePageProvider
 import io.nightfish.lightnovelreader.api.web.search.SearchProvider
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -47,7 +36,6 @@ import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.jsoup.select.Elements
-import java.net.URLEncoder
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -57,7 +45,7 @@ import java.time.format.DateTimeFormatter
     "Wenku8",
     "LightNovelReader from wenku8.net"
 )
-object Wenku8Api: WebBookDataSource {
+object Wenku8Api : WebBookDataSource {
     init {
         CxHttpInit.init()
     }
@@ -77,18 +65,18 @@ object Wenku8Api: WebBookDataSource {
     private val bookRequestDispatcher = BookRequestDispatcher()
     private val isOffLineStateFlow = MutableStateFlow(false)
     private val DATA_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd")
-    override val exploreExpandedPageDataSourceMap = mutableMapOf<String, ExploreExpandedPageDataSource>()
 
     private var coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     private val titleRegex = Regex("(.*) ?[(（](.*)[)）] ?$")
-    private val hosts = listOf("https://www.wenku8.cc", "https://www.wenku8.net", "https://www.wenku8.com")
+    private val hosts =
+        listOf("https://www.wenku8.cc", "https://www.wenku8.net", "https://www.wenku8.com")
     override val cache = Cache(
         timeout = 2 * 60 * 60 * 1000
     )
     private val _cache = Cache(
         timeout = 2 * 60 * 60 * 1000
     )
-    var host  =  hosts[0]
+    var host = hosts[0]
 
     init {
         coroutineScope.launch {
@@ -100,7 +88,7 @@ object Wenku8Api: WebBookDataSource {
         }
     }
 
-    private inline fun <reified T: CanBeEmpty> ifCache(id: String, block: () -> T): T {
+    private inline fun <reified T : CanBeEmpty> ifCache(id: String, block: () -> T): T {
         val cacheData = _cache.getCache<T>(id.hashCode())
         if (cacheData == null) {
             val data = block.invoke()
@@ -120,7 +108,11 @@ object Wenku8Api: WebBookDataSource {
             return !CxHttp
                 .get(hosts[index]) {
                     header("user-agent", UserAgentGenerator.generate())
-                    header("cookie",wenku8Cookies().map { "${it.key}=${it.value}" }.joinToString(separator = ";"))
+                    header(
+                        "cookie",
+                        wenku8Cookies().map { "${it.key}=${it.value}" }
+                            .joinToString(separator = ";")
+                    )
                 }
                 .await()
                 .isSuccessful
@@ -139,20 +131,48 @@ object Wenku8Api: WebBookDataSource {
         bookRequestDispatcher.getBookVolumes(id)
     }
 
-    override suspend fun getChapterContent(chapterId: String, bookId: String): ChapterContent = ifCache(chapterId + bookId)  {
-        bookRequestDispatcher.getChapterContent(chapterId, bookId)
-    }
+    override suspend fun getChapterContent(chapterId: String, bookId: String): ChapterContent =
+        ifCache(chapterId + bookId) {
+            bookRequestDispatcher.getChapterContent(chapterId, bookId)
+        }
 
     override val searchProvider: SearchProvider = Wenku8SearchProvider(bookRequestDispatcher)
+    override val explorePageProvider: ExplorePageProvider = Wenku8ExplorePageProvider()
 
-    override val explorePageDataSourceMap: Map<String, ExplorePageDataSource> =
-        mapOf(
-            Pair("首页", Wenku8HomeExplorePage),
-            Pair("全部", Wenku8AllExplorePage),
-            Pair("分类", Wenku8TagsExplorePage)
-        )
 
-    override val explorePageIdList: List<String> = listOf("首页", "全部", "分类")
+    override fun progressBookTagClick(tag: String, navController: NavController) {
+        if (tagList.contains(tag))
+            navController.navigateToExploreExpandDestination(tag)
+    }
+
+    override fun getCoverUriInVolume(
+        bookId: String,
+        volume: Volume,
+        volumeChapterContentMap: MutableMap<String, ChapterContent>,
+        context: Context
+    ): Uri? {
+        return volume.chapters
+            .find { it.title.endsWith("插图") }
+            ?.let { chapterInformation ->
+                val chapterContent = volumeChapterContentMap[chapterInformation.id] ?: return null
+                if (chapterContent.isEmpty()) return null
+                chapterContent.content["components"]?.jsonArray
+                    ?.mapNotNull { it.jsonObject }
+                    ?.filter {
+                        it["id"]?.jsonPrimitive?.content == ImageComponentData.ID
+                    }
+                    ?.forEach {
+                        val uri = it["data"]?.jsonObject["uri"]?.jsonPrimitive?.content?.toUri()
+                            ?: return null
+                        val options = BitmapFactory.Options()
+                        options.inJustDecodeBounds = true
+                        val inputStream = context.contentResolver.openInputStream(uri)
+                        BitmapFactory.decodeStream(inputStream, null, options)
+                        if (options.outHeight > options.outWidth) return uri
+                    }
+                return null
+            }
+    }
 
     fun getBookInformationListFromBookCards(elements: Elements): List<BookInformation> =
         elements
@@ -178,8 +198,7 @@ object Wenku8Api: WebBookDataSource {
                         }
                     }
                     bookInformation
-                }
-                else {
+                } else {
                     val titleGroup = element.selectFirst("div > div:nth-child(1) > a")
                         ?.attr("title")
                         ?.let { it1 -> titleRegex.find(it1)?.groups }
@@ -188,8 +207,9 @@ object Wenku8Api: WebBookDataSource {
                             ?.attr("href")
                             ?.replace("/book/", "")
                             ?.replace(".htm", "") ?: "",
-                        title = titleGroup?.get(1)?.value ?: element.selectFirst("div > div:nth-child(1) > a")
-                            ?.attr("title") ?: "",
+                        title = titleGroup?.get(1)?.value
+                            ?: element.selectFirst("div > div:nth-child(1) > a")
+                                ?.attr("title") ?: "",
                         subtitle = titleGroup?.get(2)?.value ?: "",
                         coverUrl = element.selectFirst("div > div:nth-child(1) > a > img")
                             ?.attr("src")?.toUri() ?: Uri.EMPTY,
@@ -203,10 +223,12 @@ object Wenku8Api: WebBookDataSource {
                         publishingHouse = element.selectFirst("div > div:nth-child(2) > p:nth-child(2)")
                             ?.text()?.split("/")?.getOrNull(1)
                             ?.split(":")?.getOrNull(1) ?: "",
-                        wordCount = WorldCount(element.selectFirst("div > div:nth-child(2) > p:nth-child(3)")
-                            ?.text()?.split("/")?.getOrNull(1)
-                            ?.split(":")?.getOrNull(1)
-                            ?.replace("K", "")?.toInt()?.times(1000) ?: -1),
+                        wordCount = WorldCount(
+                            element.selectFirst("div > div:nth-child(2) > p:nth-child(3)")
+                                ?.text()?.split("/")?.getOrNull(1)
+                                ?.split(":")?.getOrNull(1)
+                                ?.replace("K", "")?.toInt()?.times(1000) ?: -1
+                        ),
                         lastUpdated = element.selectFirst("div > div:nth-child(2) > p:nth-child(3)")
                             ?.text()?.split("/")?.getOrNull(0)
                             ?.split(":")?.getOrNull(1)
@@ -219,129 +241,4 @@ object Wenku8Api: WebBookDataSource {
                     )
                 }
             }
-
-    private fun registerExploreExpandedPageDataSource(id: String, expandedPageDataSource: ExploreExpandedPageDataSource) =
-        exploreExpandedPageDataSourceMap.put(id, expandedPageDataSource)
-
-    init {
-        registerExploreExpandedPageDataSource(
-            id = "allBook",
-            expandedPageDataSource = HomeBookExpandPageDataSource(
-                title = "轻小说列表",
-                filtersBuilder = {
-                    listOf(
-                        IsCompletedSwitchFilter(),
-                        PublishingHouseSingleChoiceFilter(),
-                        WordCountFilter()
-                    )
-                },
-            )
-        )
-        registerExploreExpandedPageDataSource(
-            id = "allCompletedBook",
-            expandedPageDataSource = HomeBookExpandPageDataSource(
-                title = "完结全本",
-                filtersBuilder = {
-                    listOf(
-                        IsCompletedSwitchFilter(),
-                        PublishingHouseSingleChoiceFilter(),
-                        WordCountFilter()
-                    )
-                },
-                extendedParameters = "&fullflag=1"
-            )
-        )
-        listOf("allvisit", "anime", "lastupdate", "postdate").forEach { id ->
-            val nameMap = mapOf(
-                Pair("allvisit", "热门轻小说"),
-                Pair("anime", "动画化作品"),
-                Pair("lastupdate", "今日更新"),
-                Pair("postdate", "新书一览"),
-            )
-            registerExploreExpandedPageDataSource(
-                id = "${id}Book",
-                expandedPageDataSource = HomeBookExpandPageDataSource(
-                    baseUrl = "$host/modules/article/toplist.php",
-                    title = nameMap[id] ?: "",
-                    filtersBuilder = {
-                        listOf(
-                            IsCompletedSwitchFilter(),
-                            PublishingHouseSingleChoiceFilter(),
-                            WordCountFilter()
-                        )
-                    },
-                    extendedParameters = "&sort=$id",
-                    contentSelector = "#content > table > tbody > tr > td > div"
-                )
-            )
-        }
-        tagList.forEach { tag ->
-            registerExploreExpandedPageDataSource(
-                id = tag,
-                expandedPageDataSource = HomeBookExpandPageDataSource(
-                    baseUrl = "$host/modules/article/tags.php",
-                    title = tag,
-                    filtersBuilder = {
-                        val choicesMap = mapOf(
-                            Pair("默认", ""),
-                            Pair("按更新时间排序", ""),
-                            Pair("按热度排序", "&v=1"),
-                            Pair("仅动画化", "&v=3")
-                        )
-                        listOf(
-                            IsCompletedSwitchFilter(),
-                            SingleChoiceFilter(
-                                title = "排序".local(),
-                                dialogTitle = "文库筛选".local(),
-                                description = "根据小说的文库筛选".local(),
-                                choices = listOf(
-                                    "默认",
-                                    "按更新时间排序",
-                                    "按热度排序",
-                                    "仅动画化"
-                                ),
-                                defaultChoice = "默认"
-                            ).apply {
-                                addOnChangeListener {
-                                    this@HomeBookExpandPageDataSource.arg = choicesMap[it.trim()] ?: ""
-                                }
-                            },
-                            PublishingHouseSingleChoiceFilter(),
-                            WordCountFilter()
-                        )
-                    },
-                    extendedParameters = "&t=${URLEncoder.encode(tag, "gb2312")}",
-                    contentSelector = "#content > table > tbody > tr:nth-child(2) > td > div"
-                )
-            )
-        }
-    }
-
-    override fun progressBookTagClick(tag: String, navController: NavController) {
-        if (tagList.contains(tag))
-            navController.navigateToExploreExpandDestination(tag)
-    }
-
-    override fun getCoverUriInVolume(bookId: String, volume: Volume, volumeChapterContentMap: MutableMap<String, ChapterContent>, context: Context): Uri? {
-        return volume.chapters
-            .find { it.title.endsWith("插图") }
-            ?.let { chapterInformation ->
-                val chapterContent = volumeChapterContentMap[chapterInformation.id] ?: return null
-                if (chapterContent.isEmpty()) return null
-                chapterContent.content["components"]?.jsonArray
-                    ?.mapNotNull { it.jsonObject }
-                    ?.filter {
-                        it["id"]?.jsonPrimitive?.content == ImageComponentData.ID
-                    }
-                    ?.forEach {
-                        val uri = it["data"]?.jsonObject["uri"]?.jsonPrimitive?.content?.toUri() ?: return null
-                        val options = BitmapFactory.Options()
-                        options.inJustDecodeBounds = true
-                        val inputStream = context.contentResolver.openInputStream(uri)
-                        BitmapFactory.decodeStream(inputStream, null, options)
-                        if (options.outHeight > options.outWidth) return uri
-                    }
-                return null
-            }
-    }
 }

@@ -8,11 +8,8 @@ import io.nightfish.lightnovelreader.api.book.BookVolumes
 import io.nightfish.lightnovelreader.api.book.ChapterContent
 import io.nightfish.lightnovelreader.api.book.Volume
 import io.nightfish.lightnovelreader.api.util.Cache
-import io.nightfish.lightnovelreader.api.web.explore.ExploreExpandedPageDataSource
-import io.nightfish.lightnovelreader.api.web.explore.ExplorePageDataSource
+import io.nightfish.lightnovelreader.api.web.explore.ExplorePageProvider
 import io.nightfish.lightnovelreader.api.web.search.SearchProvider
-import io.nightfish.lightnovelreader.api.web.search.SearchResult
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -61,22 +58,9 @@ interface WebBookDataSource {
     val searchProvider: SearchProvider
 
     /**
-     * 所有探索页页面数据源的id
+     * 探索页面内容提供器
      */
-    val explorePageIdList: List<String>
-
-    /**
-     * 获取探索页面数据源的id和页面数据源的对应表
-     * 此函数应当保证主线程安全
-     */
-    val explorePageDataSourceMap: Map<String, ExplorePageDataSource>
-
-    /**
-     * 获取各个探索页横栏的展开页的id与展开页数据源的对应表
-     * 此函数应当保证主线程安全
-     */
-    val exploreExpandedPageDataSourceMap: Map<String, ExploreExpandedPageDataSource>
-
+    val explorePageProvider: ExplorePageProvider
 
     /***
      * 请求图片时的Header

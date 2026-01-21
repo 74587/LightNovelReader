@@ -1,6 +1,5 @@
 package indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.book
 
-import indi.dmzz_yyhyy.lightnovelreader.utils.UserAgentGenerator
 import indi.dmzz_yyhyy.lightnovelreader.utils.update
 import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.book.BookVolumes

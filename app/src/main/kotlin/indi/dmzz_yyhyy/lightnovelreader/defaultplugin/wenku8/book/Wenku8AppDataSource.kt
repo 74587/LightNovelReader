@@ -37,7 +37,6 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.io.encoding.Base64
 import kotlin.random.Random
-import kotlin.time.Duration.Companion.seconds
 
 private val titleRegex = Regex("(.*) ?[(（](.*)[)）] ?$")
 
