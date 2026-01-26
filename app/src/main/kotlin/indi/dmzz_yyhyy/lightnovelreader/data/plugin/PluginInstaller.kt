@@ -8,6 +8,7 @@ import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.fold
 import dagger.hilt.android.qualifiers.ApplicationContext
 import indi.dmzz_yyhyy.lightnovelreader.R
+import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataRepository
 import indi.dmzz_yyhyy.lightnovelreader.utils.PluginAnnotationParser
 import indi.dmzz_yyhyy.lightnovelreader.utils.getApkSignatures
 import indi.dmzz_yyhyy.lightnovelreader.utils.isSignatureMatch
@@ -28,7 +29,7 @@ import kotlin.coroutines.cancellation.CancellationException
 class PluginInstaller @Inject constructor(
     @param:ApplicationContext private val context: Context,
     private val pluginManager: PluginManager,
-    userDataRepository: indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataRepository
+    userDataRepository: UserDataRepository
 ) {
     private val enabledPluginUserData =
         userDataRepository.stringListUserData(UserDataPath.Plugin.EnabledPlugins.path)
