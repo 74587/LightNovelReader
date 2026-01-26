@@ -7,6 +7,8 @@ import indi.dmzz_yyhyy.lightnovelreader.data.bookshelf.BookshelfRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.explore.ExploreRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataRepository
 import io.nightfish.lightnovelreader.api.userdata.UserDataPath
+import io.nightfish.lightnovelreader.api.util.LocalString
+import io.nightfish.lightnovelreader.api.web.search.SearchResult
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
@@ -20,26 +22,30 @@ class ExploreSearchViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState = MutableExploreSearchUiState()
     private val searchHistoryUserData = userDataRepository.stringListUserData(UserDataPath.Search.History.path)
-    private var searchTypeTipMap = emptyMap<String, String>()
+    private var searchTypeTipMap = mutableMapOf<String, LocalString>()
     private var searchJob: Job? = null
     val uiState: ExploreSearchUiState = _uiState
 
     override fun onCleared() {
         super.onCleared()
-        exploreRepository.stopAllSearch()
         searchJob?.cancel()
     }
 
     fun init() {
         viewModelScope.launch(Dispatchers.IO) {
-            searchTypeTipMap = exploreRepository.searchTipMap
-            _uiState.searchTypeNameMap = exploreRepository.searchTypeMap
-            _uiState.searchTypeIdList = exploreRepository.searchTypeIdList.toMutableList()
-            _uiState.searchType = exploreRepository.searchTypeIdList.getOrNull(0) ?: return@launch
-            _uiState.searchTip = searchTypeTipMap.getOrDefault(_uiState.searchType, "")
+            searchTypeTipMap.clear()
+            _uiState.searchTypeNameMap.clear()
+            _uiState.searchTypeIdList.clear()
+            for (type in exploreRepository.searchTypes) {
+                searchTypeTipMap[type.type] = type.tip
+                _uiState.searchTypeNameMap[type.type] = type.name
+                _uiState.searchTypeIdList.add(type.type)
+            }
+            _uiState.searchType = _uiState.searchTypeIdList.getOrNull(0) ?: return@launch
+            _uiState.searchTip = searchTypeTipMap.getOrDefault(_uiState.searchType, LocalString(""))
             searchHistoryUserData.getFlow().collect {
                 it?.let {
-                    _uiState.historyList = it.reversed().toMutableList()
+                    _uiState.historyList = it.reversed()
                 }
             }
         }
@@ -53,7 +59,7 @@ class ExploreSearchViewModel @Inject constructor(
     fun changeSearchType(searchTypeId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             _uiState.searchType = searchTypeId
-            _uiState.searchTip = searchTypeTipMap.getOrDefault(_uiState.searchType, "")
+            _uiState.searchTip = searchTypeTipMap.getOrDefault(_uiState.searchType, LocalString(""))
         }
     }
 
@@ -73,21 +79,35 @@ class ExploreSearchViewModel @Inject constructor(
         }
     }
 
-    fun search(keyword: String) {
-        exploreRepository.stopAllSearch()
+    fun search(
+        keyword: String,
+        navigateToSingleBook: (bookId: String) -> Unit
+    ) {
         _uiState.isLoading = true
         _uiState.isLoadingComplete = false
-        _uiState.searchResult = mutableListOf()
+        _uiState.errorMessage = ""
+        _uiState.searchResult.clear()
         searchJob?.cancel()
+        val searchType = exploreRepository.searchTypes.firstOrNull { it.type == _uiState.searchType } ?: return
         searchJob = viewModelScope.launch(Dispatchers.IO) {
-            exploreRepository.search(_uiState.searchType, keyword).collect {
-                _uiState.isLoading = false
-                if (it.isNotEmpty() && it.last().isEmpty()) {
-                    _uiState.isLoadingComplete = true
-                    _uiState.searchResult = it.dropLast(1).toMutableList()
-                    return@collect
+            val flow = exploreRepository.search(searchType, keyword)
+            _uiState.isLoading = false
+            flow.collect {
+                when(it) {
+                    is SearchResult.SingleBook -> launch(Dispatchers.Main) {
+                        _uiState.searchBarExpanded = true
+                        navigateToSingleBook(it.bookId)
+                    }
+                    is SearchResult.MultipleBook -> _uiState.searchResult.add(it.bookInformation)
+                    is SearchResult.Error -> {
+                        _uiState.isLoadingComplete = true
+                        _uiState.errorMessage = it.error.message.toString()
+                    }
+                    is SearchResult.End -> _uiState.isLoadingComplete = true
+                    is SearchResult.Empty -> {
+                        _uiState.isLoadingComplete = true
+                    }
                 }
-                _uiState.searchResult = it.toMutableList()
             }
         }
         viewModelScope.launch(Dispatchers.IO) {
@@ -98,6 +118,12 @@ class ExploreSearchViewModel @Inject constructor(
                 newList.add(keyword)
                 return@update newList
             }
+        }
+    }
+
+    fun updateSuggestions(keyword: String) {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.suggestions = exploreRepository.getSuggestions(_uiState.historyList, keyword)
         }
     }
 }

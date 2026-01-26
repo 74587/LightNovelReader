@@ -12,14 +12,14 @@ import io.nightfish.lightnovelreader.api.web.explore.filter.Filter
 @State
 interface ExpandedPageUiState {
     val pageTitle: String
-    val filters: List<Filter>
+    val filters: List<Filter<*>>
     val bookList: List<BookInformation>
     val allBookshelfBookIds: List<String>
 }
 
 class MutableExpandedPageUiState : ExpandedPageUiState {
     override var pageTitle: String by mutableStateOf("")
-    override var filters: SnapshotStateList<Filter> = mutableStateListOf()
-    override var bookList: List<BookInformation> by mutableStateOf(emptyList())
+    override var filters: SnapshotStateList<Filter<*>> = mutableStateListOf()
+    override var bookList = mutableStateListOf<BookInformation>()
     override var allBookshelfBookIds: List<String> by mutableStateOf(emptyList())
 }

@@ -4,7 +4,7 @@ object ApiMetadata {
     /** 宿主当前支持的 API 版本
      *
      * 开发需要时手动递增 */
-    const val API_VERSION: Int = 1
+    const val API_VERSION: Int = 3
 }
 
 object ApiCompat {
@@ -15,6 +15,8 @@ object ApiCompat {
      */
     private val groups: List<Set<Int>> = listOf(
         setOf(1),
+        setOf(2),
+        setOf(3)
     )
 
     private fun groupOf(v: Int): Int? =

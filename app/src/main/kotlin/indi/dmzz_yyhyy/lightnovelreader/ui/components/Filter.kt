@@ -31,31 +31,38 @@ import io.nightfish.lightnovelreader.api.web.explore.filter.SingleChoiceFilter
 import io.nightfish.lightnovelreader.api.web.explore.filter.SliderFilter
 import io.nightfish.lightnovelreader.api.web.explore.filter.SwitchFilter
 
+@Suppress("AssignedValueIsNeverRead")
 @Composable
-fun Filter.Component(dialog: (@Composable () -> Unit) -> Unit) {
+fun Filter<*>.Component(
+    dialog: (@Composable () -> Unit) -> Unit,
+    onChange: () -> Unit
+) {
+    this.addOnChangeListener(Int.MIN_VALUE) {
+        onChange.invoke()
+    }
     when (this) {
         is SwitchFilter -> {
-            var enabled by remember { mutableStateOf(this.enabled) }
-            LaunchedEffect(this.enabled) {
-                enabled = this@Component.enabled
+            var enabled by remember { mutableStateOf(this.value) }
+            LaunchedEffect(this.value) {
+                enabled = this@Component.value
             }
             BaseFilter(
-                title = this.getTitle(),
+                title = this.getTitle().resolve(),
                 selected = enabled,
                 onClick = {
                     enabled = !enabled
-                    this.enabled = enabled
+                    this.value = enabled
                 }
             )
         }
         is SingleChoiceFilter -> {
-            var enabled by remember { mutableStateOf(this.choice != this.getDefaultChoice()) }
+            var enabled by remember { mutableStateOf(this.value != this.getDefaultChoice()) }
             var displayDialog by remember { mutableStateOf(false) }
-            var selected by remember { mutableStateOf(this.choice) }
-            LaunchedEffect(this.choice) {
-                enabled = this@Component.choice != this@Component.getDefaultChoice()
+            var selected by remember { mutableStateOf(this.value) }
+            LaunchedEffect(this.value) {
+                enabled = this@Component.value != this@Component.getDefaultChoice()
                 displayDialog = false
-                selected = this@Component.choice
+                selected = this@Component.value
             }
             LaunchedEffect(displayDialog) {
                 if (displayDialog)
@@ -63,8 +70,8 @@ fun Filter.Component(dialog: (@Composable () -> Unit) -> Unit) {
                         FilterChipsDialog(
                             enable = displayDialog,
                             selected = selected,
-                            title = this@Component.dialogTitle,
-                            description = this@Component.description,
+                            title = this@Component.dialogTitle.resolve(),
+                            description = this@Component.description.resolve(),
                             onSelectedChange = {
                                 selected = it
                                 enabled = it != this@Component.getDefaultChoice()
@@ -72,11 +79,11 @@ fun Filter.Component(dialog: (@Composable () -> Unit) -> Unit) {
                             choices = this@Component.getAllChoices(),
                             onConfirmation = {
                                 displayDialog = false
-                                this@Component.choice = selected
+                                this@Component.value = selected
                             },
                             onDismissRequest = {
                                 displayDialog = false
-                                selected = this@Component.choice
+                                selected = this@Component.value
                             },
                         )
                     }
@@ -84,7 +91,7 @@ fun Filter.Component(dialog: (@Composable () -> Unit) -> Unit) {
                     dialog {}
             }
             BaseFilter(
-                title = "${this.getTitle()}: $selected",
+                title = "${this.getTitle().resolve()}: $selected",
                 selected = enabled,
                 onClick = {
                     displayDialog = true
@@ -115,13 +122,13 @@ fun Filter.Component(dialog: (@Composable () -> Unit) -> Unit) {
                             steps = this@Component.steps,
                             onSlideChange = { value = it },
                             onSliderChangeFinished = {  },
-                            title = this@Component.getTitle(),
+                            title = this@Component.getTitle().resolve(),
                             description = this@Component.description
                         )
                 }
             }
             BaseFilter(
-                title = "${this.displayTitle}: ${this.displayValue}",
+                title = "${this.displayTitle.resolve()}: ${this.displayValue}",
                 selected = enabled,
                 onClick = {
                     displayDialog = true

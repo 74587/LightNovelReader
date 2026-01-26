@@ -1,29 +1,16 @@
 package indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8
 
-import android.util.Log
 import cxhttp.CxHttp
 import cxhttp.response.Response
-import cxhttp.response.bodyOrNull
 import indi.dmzz_yyhyy.lightnovelreader.utils.UserAgentGenerator
-import indi.dmzz_yyhyy.lightnovelreader.utils.update
-import io.nightfish.lightnovelreader.api.util.Cache
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.sync.Semaphore
 import kotlinx.coroutines.sync.withPermit
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeoutOrNull
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import java.nio.charset.Charset
-import java.time.Instant
-import kotlin.io.encoding.Base64
-import kotlin.random.Random
-
-private val requestLimiter = Semaphore(4)
-private val pendingJobs = Channel<Unit>(capacity = 25, onBufferOverflow = BufferOverflow.DROP_OLDEST)
 
 fun wenku8Cookies(): Map<String, String> = mapOf(
     "Hm_lvt_acfbfe93830e0272a88e1cc73d4d6d0f" to "1737964211",
@@ -36,96 +23,38 @@ fun wenku8Cookies(): Map<String, String> = mapOf(
     "Hm_lpvt_d72896ddbf8d27c750e3b365ea2fc902" to "1739294503"
 )
 
-private val cache = Cache(
-    timeout = 5 * 60 * 1000
-)
 
-private inline fun ifCache(id: String, block: () -> Document?): Document? {
-    val cacheData = cache.getCache<Document?>(id.hashCode())
-    if (cacheData == null) {
-        val data = block.invoke()
-        if (data == null) return data
-        cache.cache(id.hashCode(), data)
-        return data
-    }
-    return cacheData
-}
-
-suspend fun wenku8Api(request: String): Document? = ifCache(request) {
-    if (!pendingJobs.trySend(Unit).isSuccess) {
-        Log.w("Wenku8API", "request dropped: $request")
-    }
-    return try {
-        requestLimiter.withPermit {
-            Log.i("Wenku8API", "request to wenku8 with $request")
-            withTimeoutOrNull(15_000L) {
-                delay(1)
-                suspend fun post(): Response {
-                    return CxHttp
-                        .post(update("eNpb85aBtYRBNqOkpKDYSl-_PDUvu9RCtyg1J7FSLze1vEIvvygdAO0UDQw").toString()){
-                            formBody {
-                                append("request", Base64.encode(request.toByteArray()))
-                                append("timetoken", Instant.now().toEpochMilli().toString())
-                                append("appver", "1.23-nano-mewx")
-                            }
-                            header("user-agent", UserAgentGenerator.generate())
-                        }
-                        .scope(this)
-                        .await()
-                }
-                var retryTime = 5
-                var retryDelay = 1500L
-                var response = post()
-                while (!response.isSuccessful && retryTime >= 1) {
-                    response = post()
-                    retryTime--
-                    delay(retryDelay)
-                    retryDelay = retryDelay * 2
-                }
-                delay(Random.Default.nextLong(300, 450))
-                val doc = response.bodyOrNull<String>()?.let(Jsoup::parse)
-                    ?.outputSettings(
-                        Document.OutputSettings()
-                            .prettyPrint(false)
-                            .syntax(Document.OutputSettings.Syntax.xml)
-                    )
-                return@withTimeoutOrNull doc
-            }.also {
-                if (it == null) Log.w("Wenku8API", "request timeout: $request")
-            }
-        }
-    } finally {
-        pendingJobs.tryReceive().getOrNull()
-    }
-}
+private val requestLimiter = Semaphore(3)
 
 suspend fun autoReconnectionGetWithWenku8Cookie(url: String): Document? = withContext(Dispatchers.IO) {
-    suspend fun get(): Response {
-        return CxHttp
-            .get(url){
-                header("user-agent", UserAgentGenerator.generate())
-                header("cookie",wenku8Cookies().map { "${it.key}=${it.value}" }.joinToString(separator = ";"))
-            }
-            .scope(this)
-            .await()
+    requestLimiter.withPermit {
+        suspend fun get(): Response {
+            return CxHttp
+                .get(url){
+                    header("user-agent", UserAgentGenerator.generate())
+                    header("cookie",wenku8Cookies().map { "${it.key}=${it.value}" }.joinToString(separator = ";"))
+                }
+                .scope(this)
+                .await()
+        }
+        var retryTime = 3
+        var retryDelay = 2500L
+        var response = get()
+        while (!response.isSuccessful && retryTime >= 1) {
+            response = get()
+            retryTime--
+            delay(retryDelay)
+            retryDelay *= 2
+        }
+        val doc = response.body
+            ?.bytes()
+            ?.toString(charset = Charset.forName("GBK"))
+            ?.let(Jsoup::parse)
+            ?.outputSettings(
+                Document.OutputSettings()
+                    .prettyPrint(false)
+                    .syntax(Document.OutputSettings.Syntax.xml)
+            )
+        return@withContext doc
     }
-    var retryTime = 5
-    var retryDelay = 1500L
-    var response = get()
-    while (!response.isSuccessful && retryTime >= 1) {
-        response = get()
-        retryTime--
-        delay(retryDelay)
-        retryDelay = retryDelay * 2
-    }
-    val doc = response.body
-        ?.bytes()
-        ?.toString(charset = Charset.forName("GBK"))
-        ?.let(Jsoup::parse)
-        ?.outputSettings(
-            Document.OutputSettings()
-                .prettyPrint(false)
-                .syntax(Document.OutputSettings.Syntax.xml)
-        )
-    return@withContext doc
 }

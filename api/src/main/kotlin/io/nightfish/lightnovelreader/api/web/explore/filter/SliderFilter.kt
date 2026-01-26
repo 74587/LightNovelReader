@@ -1,24 +1,17 @@
 package io.nightfish.lightnovelreader.api.web.explore.filter
 
 import androidx.annotation.IntRange
+import io.nightfish.lightnovelreader.api.util.LocalString
 
 abstract class SliderFilter(
-    private val title: String,
+    private val title: LocalString,
     val description: String,
     defaultValue: Float,
     val valueRange: ClosedFloatingPointRange<Float>,
     @field:IntRange(from = 0) val steps: Int = 0,
-    private val onChange: () -> Unit
-) : Filter() {
+) : Filter<Float>(defaultValue) {
     abstract var enabled: Boolean
     abstract val displayValue: String
     open val displayTitle = title
-
-    var value: Float = defaultValue
-        set(value) {
-            onChange()
-            field = value
-        }
-    override fun getType(): FilterTypes = FilterTypes.SLIDER
-    override fun getTitle(): String = title
+    override fun getTitle(): LocalString = title
 }

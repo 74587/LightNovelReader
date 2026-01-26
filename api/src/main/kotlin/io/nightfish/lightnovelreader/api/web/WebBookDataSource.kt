@@ -8,14 +8,14 @@ import io.nightfish.lightnovelreader.api.book.BookVolumes
 import io.nightfish.lightnovelreader.api.book.ChapterContent
 import io.nightfish.lightnovelreader.api.book.Volume
 import io.nightfish.lightnovelreader.api.util.Cache
-import io.nightfish.lightnovelreader.api.web.explore.ExploreExpandedPageDataSource
-import io.nightfish.lightnovelreader.api.web.explore.ExplorePageDataSource
-import kotlinx.coroutines.flow.Flow
+import io.nightfish.lightnovelreader.api.web.explore.ExplorePageProvider
+import io.nightfish.lightnovelreader.api.web.search.SearchProvider
+import kotlinx.coroutines.flow.StateFlow
 
 /**
  * LightNovelReader 的网络数据提供源接口，可以通过实现此接口使软件支持新的数据源
  * 软件加载WebBookDataSource时会对构造器进行接依赖注入
- * 版本: 0.5.0
+ * 版本: 0.7.0
  */
 interface WebBookDataSource {
     /**
@@ -50,42 +50,20 @@ interface WebBookDataSource {
      * 获取当前软件整体是否处于离线状态的数据流
      * 此数据流应当为热数据流, 并且不断对状态进行更新
      */
-    val isOffLineFlow: Flow<Boolean>
+    val isOffLineFlow: StateFlow<Boolean>
 
     /**
-     * 所有探索页页面数据源的id
+     * 搜索提供器
      */
-    val explorePageIdList: List<String>
+    val searchProvider: SearchProvider
 
     /**
-     * 获取探索页面数据源的id和页面数据源的对应表
-     * 此函数应当保证主线程安全
+     * 探索页面内容提供器
      */
-    val explorePageDataSourceMap: Map<String, ExplorePageDataSource>
-
-    /**
-     * 获取各个探索页横栏的展开页的id与展开页数据源的对应表
-     * 此函数应当保证主线程安全
-     */
-    val exploreExpandedPageDataSourceMap: Map<String, ExploreExpandedPageDataSource>
-
-    /**
-     * 搜索类型id和名称的对应表
-     */
-    val searchTypeMap: Map<String, String>
-
-    /**
-     * 搜索类型id和搜索栏提示的对应表
-     */
-    val searchTipMap: Map<String, String>
-
-    /**
-     * 搜索类型id的有序列表
-     */
-    val searchTypeIdList: List<String>
+    val explorePageProvider: ExplorePageProvider
 
     /***
-     * 请求插图时的Header
+     * 请求图片时的Header
      */
     val imageHeader: Map<String, String>
         get() = emptyMap()
@@ -117,26 +95,6 @@ interface WebBookDataSource {
      * @return 经过格式化后的书本章节类容录数据, 如未找到改书则返回ChapterContent.empty()
      */
     suspend fun getChapterContent(chapterId: String, bookId: String): ChapterContent
-
-    /**
-     * 执行搜索任务
-     *
-     * 应当返回搜索结果的数据流
-     * 并且以空书本元数据[BookInformation.Companion.empty]作为列表结尾时表示搜索结束
-     * 此函数本身应当保证主线程安全
-     *
-     * @param searchType 搜索类别
-     * @param keyword 搜索关键词
-     * @return 搜索结果的数据流
-     */
-    fun search(searchType: String, keyword: String): Flow<List<BookInformation>>
-
-    /**
-     * 停止当前所执行的所有搜索任务
-     * 此函数应当保证主线程安全
-     *
-     */
-    fun stopAllSearch()
 
     /**
      * 用于处理书本tag的点击跳转事件

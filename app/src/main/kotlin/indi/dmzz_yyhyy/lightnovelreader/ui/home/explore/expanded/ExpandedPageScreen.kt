@@ -62,6 +62,7 @@ import indi.dmzz_yyhyy.lightnovelreader.utils.fadingEdge
 import indi.dmzz_yyhyy.lightnovelreader.utils.withHaptic
 import kotlinx.coroutines.launch
 
+@Suppress("AssignedValueIsNeverRead")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ExpandedPageScreen(
@@ -70,6 +71,7 @@ fun ExpandedPageScreen(
     dialog: (@Composable () -> Unit) -> Unit,
     expandedPageDataSourceId: String,
     init: (String) -> Unit,
+    refreshResult: () -> Unit,
     loadMore: () -> Unit,
     requestAddBookToBookshelf: (String) -> Unit,
     onClickBack: () -> Unit,
@@ -149,7 +151,7 @@ fun ExpandedPageScreen(
                                 Spacer(Modifier.width(8.dp))
                             }
                             items(expandedPageUiState.filters) {
-                                it.Component(dialog)
+                                it.Component(dialog, refreshResult)
                             }
                             item {
                                 Spacer(Modifier.width(8.dp))

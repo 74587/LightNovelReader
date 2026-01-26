@@ -5,13 +5,13 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import io.nightfish.lightnovelreader.api.ui.LocalNavController
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.detail.navigateToBookDetailDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.navigateToAddBookToBookshelfDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.explore.ExploreViewModel
 import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
 import indi.dmzz_yyhyy.lightnovelreader.utils.isResumed
 import indi.dmzz_yyhyy.lightnovelreader.utils.popBackStackIfResumed
+import io.nightfish.lightnovelreader.api.ui.LocalNavController
 
 fun NavGraphBuilder.exploreSearchDestination() {
     composable<Route.Main.Explore.Search> { entry ->
@@ -29,12 +29,13 @@ fun NavGraphBuilder.exploreSearchDestination() {
             onClickBack = { navController.popBackStackIfResumed() },
             init = exploreSearchViewModel::init,
             onChangeSearchType = { exploreSearchViewModel.changeSearchType(it) },
-            onSearch = { exploreSearchViewModel.search(it) },
+            onSearch = { exploreSearchViewModel.search(it, navController::navigateToBookDetailDestination) },
             onClickDeleteHistory = { exploreSearchViewModel.deleteHistory(it) },
             onClickClearAllHistory = exploreSearchViewModel::clearAllHistory,
             onClickBook = {
                 navController.navigateToBookDetailDestination(it)
-            }
+            },
+            updateSuggestions = exploreSearchViewModel::updateSuggestions
         )
     }
 }
