@@ -17,6 +17,8 @@ data class PluginInfo(
     val description: String,
     val updateUrl: String?,
     val signatures: List<ApkSignatureInfo>?,
+    val apiVersion: Int? = null,
+    val isApiCompatible: Boolean = true,
     val packageName: String? = null,
     val source: PluginSource = PluginSource.LocalPackage
 ) {

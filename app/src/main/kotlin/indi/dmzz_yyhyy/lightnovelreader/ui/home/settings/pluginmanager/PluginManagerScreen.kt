@@ -58,6 +58,7 @@ fun PluginManagerScreen(
     onClickSwitch: (PluginInfo) -> Unit,
     onClickKeyAlert: () -> Unit,
     onClickErrorAlert: () -> Unit,
+    onClickIncompatibleAlert: () -> Unit,
     onClickPluginRepo: () -> Unit,
     onClickCheckUpdate: (String) -> Unit,
     pluginInfoList: List<PluginInfo>,
@@ -136,6 +137,7 @@ fun PluginManagerScreen(
                             onClickCheckUpdate = onClickCheckUpdate,
                             onClickKeyAlert = onClickKeyAlert,
                             onClickErrorAlert = onClickErrorAlert,
+                            onClickIncompatibleAlert = onClickIncompatibleAlert,
                             onClickShowSignatures = onClickShowSignatures
                         )
                     }

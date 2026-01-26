@@ -84,6 +84,7 @@ fun NavGraphBuilder.settingsPluginManagerHomeDestination() {
         val notSignedString = stringResource(R.string.plugin_snackbar_not_signed)
         val learnMoreString = stringResource(R.string.plugin_snackbar_learn_more)
         val selectPluginString = stringResource(R.string.plugin_picker_title)
+        val incompatibleString = stringResource(R.string.plugin_api_incompatible)
 
         PluginManagerScreen(
             enabledPluginList = enabledPluginList,
@@ -123,6 +124,13 @@ fun NavGraphBuilder.settingsPluginManagerHomeDestination() {
                         SnackbarResult.ActionPerformed -> { showPluginErrorDialog = true }
                     }
                 }
+            },
+            onClickIncompatibleAlert = {
+                showSnackbar(
+                    coroutineScope = coroutineScope,
+                    hostState = snackbarHostState,
+                    message = incompatibleString
+                )
             },
             onClickPluginRepo = navController::navigateToSettingsPluginRepositoryDestination,
             onClickInstall = {

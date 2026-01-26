@@ -419,6 +419,7 @@
     <string name="plugin_install_invalid_missing_annotation">Invalid plugin: missing a valid @Plugin annotation.\nPlease select a .lnrp plugin install file again.</string>
     <string name="plugin_install_invalid_missing_api_version">Invalid plugin: missing apiVersion</string>
     <string name="plugin_install_version_incompatible">Plugin version incompatible</string>
+    <string name="plugin_api_incompatible">This plugin was built for an older version of LightNovelReader and is not compatible with the current version.\nUpdating the plugin may resolve this issue.</string>
     <string name="plugin_install_cancelled">Installation cancelled</string>
     <string name="plugin_install_failed_with_reason">Installation failed: %1$s</string>
     <string name="plugin_install_conflict_app_plugin">Installation failed: a plugin app with the same ID is installed. Please uninstall the app plugin first.</string>

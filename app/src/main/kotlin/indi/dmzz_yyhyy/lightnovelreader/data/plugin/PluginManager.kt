@@ -160,6 +160,7 @@ class PluginManager @Inject constructor(
         dirPluginId: String
     ): Pair<String, Int?>? {
         readPluginMetadataCache(dir)?.let { cache ->
+            val isCompatible = ApiCompat.isSupported(cache.apiVersion, ApiMetadata.API_VERSION)
             val info = PluginInfo(
                 isUpdatable = false,
                 id = cache.id,
@@ -170,6 +171,8 @@ class PluginManager @Inject constructor(
                 description = cache.description,
                 updateUrl = cache.updateUrl,
                 signatures = null,
+                apiVersion = cache.apiVersion,
+                isApiCompatible = isCompatible,
                 source = PluginSource.LocalPackage
             )
             upsertPluginInfo(info)
@@ -192,6 +195,8 @@ class PluginManager @Inject constructor(
                 description = "",
                 updateUrl = "",
                 signatures = null,
+                apiVersion = null,
+                isApiCompatible = false,
                 source = PluginSource.LocalPackage
             )
             upsertPluginInfo(fallback)
@@ -207,10 +212,7 @@ class PluginManager @Inject constructor(
     }
 
     private fun isPluginApiCompatible(pluginId: String, apiVersion: Int?): Boolean {
-        if (apiVersion == null) {
-            markPluginError(pluginId)
-            return false
-        }
+        if (apiVersion == null) return false
         if (!ApiCompat.isSupported(apiVersion, ApiMetadata.API_VERSION)) {
             enabledPluginsUserData.update { it.toMutableList().apply { remove(pluginId) } }
             return false
@@ -273,20 +275,19 @@ class PluginManager @Inject constructor(
             ) ?: return@forEach
 
             val (pluginId, annotation) = parsed
+            updatePluginInfo(
+                pluginId,
+                annotation,
+                signatures = runCatching { getApkSignatures(apkFile) }.getOrNull(),
+                source = PluginSource.InstalledApp,
+                packageName = packageName
+            )
 
             if (!ApiCompat.isSupported(annotation.apiVersion, ApiMetadata.API_VERSION)) {
                 enabledPackages.remove(packageName)
                 return@forEach
             }
 
-            val signatures = runCatching { getApkSignatures(apkFile) }.getOrNull()
-            updatePluginInfo(
-                pluginId,
-                annotation,
-                signatures = signatures,
-                source = PluginSource.InstalledApp,
-                packageName = packageName
-            )
             installedPluginIds.add(pluginId)
 
             if (!enabledPackages.contains(packageName)) return@forEach
@@ -327,6 +328,8 @@ class PluginManager @Inject constructor(
         source: PluginSource = PluginSource.LocalPackage,
         packageName: String? = null
     ) {
+        val apiVersion = runCatching { annotation.apiVersion }.getOrNull()
+        val isApiCompatible = apiVersion?.let { ApiCompat.isSupported(it, ApiMetadata.API_VERSION) } ?: false
         val existingSignatures =
             signatures ?: _allPluginInfo.firstOrNull { it.id == pluginId }?.signatures
         val existingInfo = _allPluginInfo.firstOrNull { it.id == pluginId }
@@ -348,6 +351,8 @@ class PluginManager @Inject constructor(
             description = annotation.description,
             updateUrl = annotation.updateUrl,
             signatures = existingSignatures,
+            apiVersion = apiVersion,
+            isApiCompatible = isApiCompatible,
             packageName = resolvedPackageName,
             source = resolvedSource
         )

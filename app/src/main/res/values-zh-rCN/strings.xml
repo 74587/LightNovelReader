@@ -415,6 +415,7 @@
     <string name="plugin_install_invalid_missing_annotation">无效的插件：未包含有效 @Plugin 注解\n请重新选择一个 .lnrp 插件安装文件。</string>
     <string name="plugin_install_invalid_missing_api_version">无效的插件：缺少 apiVersion</string>
     <string name="plugin_install_version_incompatible">插件版本不兼容</string>
+    <string name="plugin_api_incompatible">该插件基于旧版本的 LightNovelReader 构建，与当前版本不兼容。更新插件可能可以解决此问题。</string>
     <string name="plugin_install_cancelled">安装已取消</string>
     <string name="plugin_install_failed_with_reason">安装失败：%1$s</string>
     <string name="plugin_install_conflict_app_plugin">安装失败：已存在同 ID 的插件应用，请先卸载该应用插件。</string>

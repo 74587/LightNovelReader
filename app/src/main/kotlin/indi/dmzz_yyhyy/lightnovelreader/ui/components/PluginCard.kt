@@ -2,6 +2,7 @@ package indi.dmzz_yyhyy.lightnovelreader.ui.components
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,8 +13,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.AssistChip
+import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
@@ -21,7 +24,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
@@ -56,6 +58,7 @@ fun PluginCard(
     onClickDelete: (String) -> Unit,
     onClickKeyAlert: () -> Unit,
     onClickErrorAlert: () -> Unit,
+    onClickIncompatibleAlert: () -> Unit,
     onClickCheckUpdate: (String) -> Unit,
     onClickShowSignatures: (String) -> Unit
 ) {
@@ -65,6 +68,7 @@ fun PluginCard(
         else -> pluginInfo.id in enabledPluginList
     }
     val disabledByError = isErrorDisabled && !enabled
+    val disabledByCompatibility = !pluginInfo.isApiCompatible
 
     var switchEnabled by remember { mutableStateOf(true) }
     var menuExpanded by remember { mutableStateOf(false) }
@@ -90,7 +94,7 @@ fun PluginCard(
         colors = CardDefaults.cardColors(containerColor = containerColor),
         shape = RoundedCornerShape(18.dp)
     ) {
-        Column(Modifier.padding(horizontal = 16.dp).padding(vertical = 16.dp)) {
+        Column(Modifier.padding(horizontal = 16.dp).padding(top = 16.dp, bottom = 10.dp)) {
             Row(verticalAlignment = Alignment.Top) {
                 Surface(
                     color = if (enabled) colorScheme.primaryContainer else colorScheme.surfaceContainerHighest,
@@ -159,9 +163,9 @@ fun PluginCard(
 
                 Switch(
                     checked = enabled,
-                    enabled = !disabledByError && switchEnabled,
+                    enabled = !disabledByError && !disabledByCompatibility && switchEnabled,
                     onCheckedChange = {
-                        if (!disabledByError && switchEnabled) {
+                        if (!disabledByError && !disabledByCompatibility && switchEnabled) {
                             onClickSwitch(pluginInfo)
                             switchEnabled = false
                         }
@@ -177,38 +181,69 @@ fun PluginCard(
             }
 
             Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .horizontalScroll(rememberScrollState())
+                    .padding(top = 8.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
+
                 if (pluginInfo.signatures == null) {
-                    Spacer(Modifier.height(10.dp))
-                    OutlinedButton(onClick = onClickKeyAlert) {
-                        Icon(
-                            painter = painterResource(R.drawable.key_off_24px),
-                            contentDescription = "invalid_signature",
-                            modifier = Modifier.size(18.dp)
+                    AssistChip(
+                        onClick = onClickKeyAlert,
+                        label = { Text("签名无效") },
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(R.drawable.key_off_24px),
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        },
+                        colors = AssistChipDefaults.assistChipColors(
+                            containerColor = colorScheme.surfaceContainerHighest,
+                            labelColor = colorScheme.onSurfaceVariant,
+                            leadingIconContentColor = colorScheme.onSurfaceVariant
                         )
-                        Spacer(Modifier.width(8.dp))
-                        Text(text = "签名无效")
-                    }
+                    )
                 }
+
                 if (disabledByError) {
-                    OutlinedButton(
+                    AssistChip(
                         onClick = onClickErrorAlert,
-                        colors = ButtonDefaults.outlinedButtonColors().copy(
-                            containerColor = colorScheme.errorContainer.copy(alpha = 0.35f),
-                            contentColor = colorScheme.onErrorContainer
+                        label = { Text("运行错误") },
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(R.drawable.release_alert_24px),
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        },
+                        colors = AssistChipDefaults.assistChipColors(
+                            containerColor = colorScheme.errorContainer.copy(alpha = 0.25f),
+                            labelColor = colorScheme.onErrorContainer,
+                            leadingIconContentColor = colorScheme.onErrorContainer
                         )
-                    ) {
-                        Icon(
-                            painter = painterResource(R.drawable.release_alert_24px),
-                            contentDescription = "error",
-                            modifier = Modifier.size(18.dp)
+                    )
+                }
+
+                if (disabledByCompatibility) {
+                    AssistChip(
+                        onClick = onClickIncompatibleAlert,
+                        label = { Text("不兼容") },
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(R.drawable.release_alert_24px),
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        },
+                        colors = AssistChipDefaults.assistChipColors(
+                            containerColor = colorScheme.errorContainer.copy(alpha = 0.25f),
+                            labelColor = colorScheme.onErrorContainer,
+                            leadingIconContentColor = colorScheme.onErrorContainer
                         )
-                        Spacer(Modifier.width(8.dp))
-                        Text(text = "错误")
-                    }
+                    )
                 }
             }
             DropdownMenu(
