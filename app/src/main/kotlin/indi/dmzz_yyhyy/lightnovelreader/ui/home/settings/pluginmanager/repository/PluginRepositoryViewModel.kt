@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginManager
+import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.PluginMetadata
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
@@ -92,7 +93,13 @@ class PluginRepositoryViewModel @Inject constructor(
                         throw e
                     } catch (t: Throwable) {
                         t.printStackTrace()
-                        showSnackbar("安装 ${meta.name} 失败：${t.message}")
+                        showSnackbar(
+                            context.getString(
+                                R.string.plugin_repo_install_failed,
+                                meta.name,
+                                t.message ?: context.getString(R.string.unspecified)
+                            )
+                        )
                         taskStateMap[id] = RepoTaskState.Done
                     } finally {
                         repositoryUiState.progressMap.remove(id)
@@ -128,7 +135,7 @@ class PluginRepositoryViewModel @Inject constructor(
                 repositoryUiState.currentInstalling = null
                 repositoryUiState.progressMap.remove(id)
                 taskStateMap[id] = RepoTaskState.Cancelled
-                showSnackbar("已取消安装 $id")
+                showSnackbar(context.getString(R.string.plugin_repo_install_cancelled, id))
             }
             else -> Unit
         }
@@ -276,12 +283,18 @@ class PluginRepositoryViewModel @Inject constructor(
         val completed = partFiles.count { it != null }
         if (completed != partsCount) {
             val missing = (0 until partsCount).filter { partFiles[it] == null }.joinToString(",") { "${it + 1}" }
-            throw Exception("分卷下载不完整: 已完成 $completed/$partsCount，缺失 $missing")
+            throw Exception(
+                context.getString(
+                    R.string.plugin_repo_parts_incomplete,
+                    completed,
+                    partsCount,
+                    missing
+                )
+            )
         }
 
         return@withContext partFiles.map { it!! }
     }
-
 
     private suspend fun downloadFileDirect(
         url: String,

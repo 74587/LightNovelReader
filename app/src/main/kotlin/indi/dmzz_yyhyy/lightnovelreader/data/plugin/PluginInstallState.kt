@@ -9,15 +9,18 @@ sealed interface PluginInstallSource {
     data class FileSource(val file: File) : PluginInstallSource
 }
 
+enum class PluginInstallStage {
+    Preparing,
+    Copying,
+    Parsing,
+    Verifying,
+    Installing
+}
+
 sealed interface PluginInstallEvent {
-    data object Preparing : PluginInstallEvent
-    data class Copying(val progress: Float?) : PluginInstallEvent
-    data object Parsing : PluginInstallEvent
-    data object Verifying : PluginInstallEvent
+    data class StageChanged(val stage: PluginInstallStage) : PluginInstallEvent
+    data class Progress(val progress: Float?) : PluginInstallEvent
     data class Metadata(val pluginId: String, val annotation: Plugin) : PluginInstallEvent
-    data object Installing : PluginInstallEvent
-    data class Success(val message: String) : PluginInstallEvent
-    data class Failure(val message: String) : PluginInstallEvent
 }
 
 data class PluginInstallPrompt(
@@ -26,6 +29,5 @@ data class PluginInstallPrompt(
 )
 
 enum class PluginInstallPromptType {
-    Reinstall,
-    Downgrade
+    Reinstall
 }

@@ -48,18 +48,19 @@ import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 @Composable
 fun PluginManagerScreen(
     enabledPluginList: List<String>,
+    enabledPluginPackageList: List<String>,
     errorPluginIds: Set<String>,
     onClickInstall: () -> Unit,
     onClickBack: () -> Unit,
+    onClickPluginApps: () -> Unit,
     onClickDetail: (String) -> Unit,
     onClickDelete: (String) -> Unit,
-    onClickSwitch: (String) -> Unit,
+    onClickSwitch: (PluginInfo) -> Unit,
     onClickKeyAlert: () -> Unit,
     onClickErrorAlert: () -> Unit,
     onClickPluginRepo: () -> Unit,
     onClickCheckUpdate: (String) -> Unit,
     pluginInfoList: List<PluginInfo>,
-    onClickOptimize: (String) -> Unit,
     onClickShowSignatures: (String) -> Unit
 ) {
     val enterAlwaysScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -75,6 +76,7 @@ fun PluginManagerScreen(
             TopBar(
                 onClickBack = onClickBack,
                 scrollBehavior = enterAlwaysScrollBehavior,
+                onClickPluginApps = onClickPluginApps,
                 onClickPluginRepo = onClickPluginRepo
             )
         },
@@ -127,13 +129,13 @@ fun PluginManagerScreen(
                             pluginInfo = plugin,
                             onClickDetail = onClickDetail,
                             enabledPluginList = enabledPluginList,
+                            enabledPluginPackageList = enabledPluginPackageList,
                             isErrorDisabled = errorPluginIds.contains(plugin.id),
                             onClickSwitch = onClickSwitch,
                             onClickDelete = onClickDelete,
                             onClickCheckUpdate = onClickCheckUpdate,
                             onClickKeyAlert = onClickKeyAlert,
                             onClickErrorAlert = onClickErrorAlert,
-                            onClickOptimizePlugin = onClickOptimize,
                             onClickShowSignatures = onClickShowSignatures
                         )
                     }
@@ -165,7 +167,7 @@ private fun ThirdPartyPluginTips() {
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.info_24px),
-                contentDescription = "warning"
+                contentDescription = stringResource(R.string.plugin_cd_warning)
             )
             Spacer(Modifier.width(12.dp))
             Column {
@@ -183,6 +185,7 @@ private fun ThirdPartyPluginTips() {
 private fun TopBar(
     scrollBehavior: TopAppBarScrollBehavior,
     onClickBack: () -> Unit,
+    onClickPluginApps: () -> Unit,
     onClickPluginRepo: () -> Unit
 ) {
     TopAppBar(
@@ -204,6 +207,13 @@ private fun TopBar(
             }
         },
         actions = {
+            IconButton(
+                onClick = onClickPluginApps
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.deployed_code_24px), null
+                )
+            }
             if (BuildConfig.DEBUG)
                 TextButton(
                     onClick = onClickPluginRepo

@@ -46,7 +46,7 @@ import indi.dmzz_yyhyy.lightnovelreader.utils.ApkSignatureScheme
 
 @Composable
 fun InstallProgressDialog(
-    state: InstallDialogState,
+    uiState: PluginInstallerDialogUiState,
     onClickClose: () -> Unit,
     onConfirmDecision: (Boolean) -> Unit
 ) {
@@ -54,41 +54,41 @@ fun InstallProgressDialog(
         onDismissRequest = { },
         title = {
             Column {
-                val titleText = state.info?.name?.takeIf { it.isNotEmpty() }
+                val titleText = uiState.installInfo?.name?.takeIf { it.isNotEmpty() }
                     ?: stringResource(R.string.plugin_install_preparing)
 
                 Text(text = titleText, style = typography.displayMedium, color = colorScheme.onSurface)
                 Spacer(Modifier.height(4.dp))
 
-                state.info?.let { info ->
+                uiState.installInfo?.let { info ->
                     var text = info.packageName
                     if (info.versionName.isNotEmpty()) {
                         text += "\n"
                         text += stringResource(R.string.plugin_version_prefix, info.versionName)
                     }
-                    Text(
-                        text = text,
-                        style = typography.bodyMedium
-                    )
+                    Text(text = text, style = typography.bodyMedium)
                 }
             }
         },
         text = {
             Spacer(Modifier.height(12.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {
-                InstallIndicator(state = state)
+                InstallIndicator(uiState = uiState)
                 Spacer(Modifier.width(20.dp))
-                val step = state.step
-                val msg = when (step) {
-                    is InstallStep.AwaitingDecision -> step.decision.message
-                    is InstallStep.Completed -> {
-                        if (step.message.isNotEmpty()) step.message
-                        else if (step.success) stringResource(R.string.plugin_install_completed)
+
+                val msg = when (uiState.installStep) {
+                    InstallStepState.AwaitingDecision ->
+                        uiState.installDecision?.message.orEmpty()
+
+                    InstallStepState.Completed -> {
+                        val m = uiState.installCompletedMessage
+                        if (m.isNotEmpty()) m
+                        else if (uiState.installCompletedSuccess) stringResource(R.string.plugin_install_completed)
                         else stringResource(R.string.plugin_install_failed)
                     }
-                    is InstallStep.Working -> step.message.ifEmpty {
-                        stringResource(R.string.plugin_install_preparing)
-                    }
+
+                    InstallStepState.Working ->
+                        uiState.installMessage.ifEmpty { stringResource(R.string.plugin_install_preparing) }
                 }
 
                 Text(
@@ -99,35 +99,37 @@ fun InstallProgressDialog(
             }
         },
         confirmButton = {
-            when (val step = state.step) {
-                is InstallStep.Completed -> {
+            when (uiState.installStep) {
+                InstallStepState.Completed -> {
                     TextButton(onClick = onClickClose) { Text(text = stringResource(android.R.string.ok)) }
                 }
 
-                is InstallStep.AwaitingDecision -> {
-                    val label = when (step.decision.type) {
+                InstallStepState.AwaitingDecision -> {
+                    val type = uiState.installDecision?.type
+                    val label = when (type) {
                         InstallDecisionType.InvalidSignature -> R.string.plugin_install_anyway
                         InstallDecisionType.Reinstall,
-                        InstallDecisionType.Downgrade -> R.string.next
+                        InstallDecisionType.Downgrade,
+                        null -> R.string.next
                     }
                     TextButton(onClick = { onConfirmDecision(true) }) {
                         Text(text = stringResource(label))
                     }
                 }
 
-                is InstallStep.Working -> {
+                InstallStepState.Working -> {
                     TextButton(onClick = {}, enabled = false) { Text(text = stringResource(R.string.next)) }
                 }
             }
         },
         dismissButton = {
-            val canShowCancel = state.step !is InstallStep.Completed &&
-                    (state.step is InstallStep.AwaitingDecision || state.progress == null)
+            val canShowCancel = uiState.installStep != InstallStepState.Completed &&
+                    (uiState.installStep == InstallStepState.AwaitingDecision || uiState.installProgress == null)
 
             if (canShowCancel) {
                 TextButton(
                     onClick = {
-                        if (state.step is InstallStep.AwaitingDecision) onConfirmDecision(false)
+                        if (uiState.installStep == InstallStepState.AwaitingDecision) onConfirmDecision(false)
                         else onClickClose()
                     }
                 ) { Text(text = stringResource(R.string.abort)) }
@@ -138,12 +140,11 @@ fun InstallProgressDialog(
 
 @Composable
 private fun InstallIndicator(
-    state: InstallDialogState
+    uiState: PluginInstallerDialogUiState
 ) {
     val indicatorSize = Modifier.size(36.dp)
-    val step = state.step
-    when (step) {
-        is InstallStep.AwaitingDecision -> {
+    when (uiState.installStep) {
+        InstallStepState.AwaitingDecision -> {
             Box(
                 modifier = indicatorSize
                     .background(color = colorScheme.error.copy(alpha = 0.9f), shape = CircleShape),
@@ -151,19 +152,19 @@ private fun InstallIndicator(
             ) {
                 Icon(
                     painter = painterResource(R.drawable.info_24px),
-                    contentDescription = "confirm",
+                    contentDescription = stringResource(R.string.confirm),
                     tint = colorScheme.surface,
                     modifier = Modifier.size(20.dp)
                 )
             }
         }
 
-        is InstallStep.Completed -> {
-            if (step.success) DoneIndicator() else ErrorIndicator()
+        InstallStepState.Completed -> {
+            if (uiState.installCompletedSuccess) DoneIndicator() else ErrorIndicator()
         }
 
-        is InstallStep.Working -> {
-            val progress = state.progress
+        InstallStepState.Working -> {
+            val progress = uiState.installProgress
             if (progress != null) {
                 val anim by animateFloatAsState(
                     targetValue = progress.coerceIn(0f, 1f),
@@ -180,38 +181,41 @@ private fun InstallIndicator(
 
 @Composable
 fun DeleteProgressDialog(
-    state: DeleteDialogState,
+    uiState: PluginInstallerDialogUiState,
     onClose: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = { },
         title = {
             Text(
-                text = stringResource(R.string.plugin_delete_title, state.pluginName),
+                text = stringResource(R.string.plugin_delete_title, uiState.uninstallPluginName),
                 style = typography.displayMedium,
                 color = colorScheme.onSurface
             )
         },
         text = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                when (val step = state.step) {
-                    is DeleteStep.Completed -> {
-                        if (step.success) DoneIndicator() else ErrorIndicator()
+                when (uiState.uninstallStep) {
+                    DeleteStepState.Completed -> {
+                        if (uiState.uninstallCompletedSuccess) DoneIndicator() else ErrorIndicator()
                     }
-                    is DeleteStep.Working -> {
+
+                    DeleteStepState.Working -> {
                         CircularProgressIndicator(modifier = Modifier.size(36.dp))
                     }
                 }
                 Spacer(Modifier.width(16.dp))
-                val msg = when (val step = state.step) {
-                    is DeleteStep.Completed -> step.message
-                    is DeleteStep.Working -> step.message
+
+                val msg = when (uiState.uninstallStep) {
+                    DeleteStepState.Completed -> uiState.uninstallCompletedMessage
+                    DeleteStepState.Working -> uiState.uninstallMessage
                 }
+
                 Text(text = msg, style = typography.bodyMedium)
             }
         },
         confirmButton = {
-            val enabled = state.step is DeleteStep.Completed
+            val enabled = uiState.uninstallStep == DeleteStepState.Completed
             TextButton(onClick = onClose, enabled = enabled) {
                 Text(text = stringResource(android.R.string.ok))
             }
@@ -221,7 +225,7 @@ fun DeleteProgressDialog(
 
 @Composable
 fun UpdateCheckDialog(
-    state: UpdateDialogState,
+    uiState: PluginInstallerDialogUiState,
     onClose: () -> Unit,
     onConfirmUpdate: (String) -> Unit
 ) {
@@ -235,13 +239,14 @@ fun UpdateCheckDialog(
                     color = colorScheme.onSurface
                 )
                 Spacer(Modifier.height(6.dp))
-                Text(text = state.pluginName, style = typography.bodyLarge)
+                Text(text = uiState.updatePluginName, style = typography.bodyLarge)
             }
         },
         text = {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                val downloadProgress = state.downloadProgress
+                val downloadProgress = uiState.updateDownloadProgress
                 val indicatorModifier = Modifier.size(36.dp)
+
                 when {
                     downloadProgress != null -> {
                         val anim by animateFloatAsState(
@@ -251,13 +256,14 @@ fun UpdateCheckDialog(
                         )
                         CircularProgressIndicator(progress = { anim }, modifier = indicatorModifier)
                     }
-                    state.step is UpdateStep.Latest -> DoneIndicator()
-                    state.step is UpdateStep.Completed -> DoneIndicator()
-                    state.step is UpdateStep.Available -> HasUpdateIndicator()
-                    state.step is UpdateStep.Error -> ErrorIndicator()
-                    state.step is UpdateStep.Checking -> CircularProgressIndicator(modifier = indicatorModifier)
-                    state.step is UpdateStep.Downloading -> CircularProgressIndicator(modifier = indicatorModifier)
-                    state.step is UpdateStep.Installing -> CircularProgressIndicator(modifier = indicatorModifier)
+
+                    uiState.updateStep == UpdateStepState.Latest -> DoneIndicator()
+                    uiState.updateStep == UpdateStepState.Completed -> DoneIndicator()
+                    uiState.updateStep == UpdateStepState.Available -> HasUpdateIndicator()
+                    uiState.updateStep == UpdateStepState.Error -> ErrorIndicator()
+                    uiState.updateStep == UpdateStepState.Checking -> CircularProgressIndicator(modifier = indicatorModifier)
+                    uiState.updateStep == UpdateStepState.Downloading -> CircularProgressIndicator(modifier = indicatorModifier)
+                    uiState.updateStep == UpdateStepState.Installing -> CircularProgressIndicator(modifier = indicatorModifier)
                     else -> CircularProgressIndicator(modifier = indicatorModifier)
                 }
 
@@ -278,14 +284,13 @@ fun UpdateCheckDialog(
                         }
                     }
 
-                    else -> when (val step = state.step) {
-                        is UpdateStep.Checking -> step.message.ifEmpty { stringResource(R.string.plugin_update_checking) }
-                        is UpdateStep.Latest -> step.message.ifEmpty { stringResource(R.string.plugin_update_latest) }
-                        is UpdateStep.Available -> step.message
-                        is UpdateStep.Error -> step.message.ifEmpty { stringResource(R.string.plugin_error_generic) }
-                        is UpdateStep.Downloading -> step.message
-                        is UpdateStep.Installing -> step.message
-                        is UpdateStep.Completed -> step.message
+                    else -> uiState.updateMessage.ifEmpty {
+                        when (uiState.updateStep) {
+                            UpdateStepState.Checking -> stringResource(R.string.plugin_update_checking)
+                            UpdateStepState.Latest -> stringResource(R.string.plugin_update_latest)
+                            UpdateStepState.Error -> stringResource(R.string.plugin_error_generic)
+                            else -> ""
+                        }
                     }
                 }
 
@@ -294,14 +299,15 @@ fun UpdateCheckDialog(
         },
         confirmButton = {
             Row(Modifier.animateContentSize()) {
-                val step = state.step
-                if (state.downloadProgress != null) return@AlertDialog
-                if (step is UpdateStep.Available) {
-                    TextButton(onClick = { onConfirmUpdate(state.pluginId) }) {
+                val step = uiState.updateStep
+                if (uiState.updateDownloadProgress != null) return@AlertDialog
+
+                if (step == UpdateStepState.Available) {
+                    TextButton(onClick = { onConfirmUpdate(uiState.updatePluginId) }) {
                         Text(text = stringResource(R.string.plugin_update_download_install))
                     }
                 } else {
-                    val enabled = step !is UpdateStep.Checking
+                    val enabled = step != UpdateStepState.Checking
                     TextButton(onClick = onClose, enabled = enabled) {
                         Text(text = stringResource(android.R.string.ok))
                     }
@@ -309,17 +315,18 @@ fun UpdateCheckDialog(
             }
         },
         dismissButton = {
-            val step = state.step
+            val step = uiState.updateStep
             TextButton(
                 onClick = onClose,
-                enabled = (state.downloadProgress != null ||
-                    step is UpdateStep.Available ||
-                    step is UpdateStep.Checking ||
-                    step is UpdateStep.Error)
+                enabled = (uiState.updateDownloadProgress != null ||
+                        step == UpdateStepState.Available ||
+                        step == UpdateStepState.Checking ||
+                        step == UpdateStepState.Error)
             ) { Text(text = stringResource(android.R.string.cancel)) }
         }
     )
 }
+
 
 @Composable
 fun PluginNoSignatureDialog(
@@ -365,14 +372,14 @@ fun PluginErrorDialog(
         onDismissRequest = onClose,
         title = {
             Text(
-                text = "插件已被禁用",
+                text = stringResource(R.string.plugin_disabled_title),
                 style = typography.titleLarge,
                 color = colorScheme.onSurface
             )
         },
         text = {
             Text(
-                text = "在加载该插件过程中发生错误，导致应用异常终止。\n\n出于稳定性考虑，该插件已被自动禁用。您可在插件管理界面手动重新启用。",
+                text = stringResource(R.string.plugin_disabled_body),
             )
         },
         confirmButton = {
@@ -402,7 +409,7 @@ fun PluginSignatureDialog(
                 )
                 if (!list.isEmpty()) {
                     Text(
-                        text = "包含 ${list.size} 个签名",
+                        text = stringResource(R.string.plugin_signature_count, list.size),
                         style = typography.bodyMedium,
                         color = colorScheme.onSurfaceVariant
                     )
@@ -440,7 +447,7 @@ fun PluginSignatureDialog(
                                         verticalAlignment = Alignment.CenterVertically
                                     ) {
                                         Text(
-                                            text = stringResource(R.string.plugin_signature_index, index + 1),
+                                            text = "#${index + 1}",
                                             style = typography.titleMedium,
                                             color = colorScheme.onSurface
                                         )
@@ -457,7 +464,11 @@ fun PluginSignatureDialog(
                                         )
                                     }
                                     Text(
-                                        text = "Valid ${dateFormatter.format(sig.notBefore)} → ${dateFormatter.format(sig.notAfter)}",
+                                        text = stringResource(
+                                            R.string.plugin_signature_validity,
+                                            dateFormatter.format(sig.notBefore),
+                                            dateFormatter.format(sig.notAfter)
+                                        ),
                                         style = typography.bodySmall,
                                         color = colorScheme.onSurfaceVariant
                                     )
@@ -468,7 +479,7 @@ fun PluginSignatureDialog(
                                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                                         Text(
-                                            text = "Subject",
+                                            text = stringResource(R.string.plugin_signature_subject),
                                             style = typography.labelMedium,
                                             color = colorScheme.onSurfaceVariant
                                         )
@@ -485,7 +496,7 @@ fun PluginSignatureDialog(
 
                                     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                                         Text(
-                                            text = "Issuer",
+                                            text = stringResource(R.string.plugin_signature_issuer),
                                             style = typography.labelMedium,
                                             color = colorScheme.onSurfaceVariant
                                         )
@@ -506,12 +517,16 @@ fun PluginSignatureDialog(
                                     ) {
                                         Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
                                             Text(
-                                                text = "Public key",
+                                                text = stringResource(R.string.plugin_signature_public_key_label),
                                                 style = typography.labelMedium,
                                                 color = colorScheme.onSurfaceVariant
                                             )
                                             Text(
-                                                text = "${sig.publicKeyAlgorithm} · ${sig.publicKeyLength} bit",
+                                                text = stringResource(
+                                                    R.string.plugin_signature_public_key_value,
+                                                    sig.publicKeyAlgorithm,
+                                                    sig.publicKeyLength
+                                                ),
                                                 style = typography.bodyMedium,
                                                 color = colorScheme.onSurface
                                             )
@@ -524,7 +539,7 @@ fun PluginSignatureDialog(
                                 Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                                     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                                         Text(
-                                            text = "SHA-1",
+                                            text = stringResource(R.string.plugin_signature_sha1_label),
                                             style = typography.labelMedium,
                                             color = colorScheme.onSurfaceVariant
                                         )
@@ -595,7 +610,7 @@ private fun ErrorIndicator() {
     ) {
         Icon(
             painter = painterResource(R.drawable.close_24px),
-            contentDescription = "close",
+            contentDescription = "error",
             tint = colorScheme.surface,
             modifier = Modifier.size(20.dp)
         )

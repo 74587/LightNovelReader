@@ -1,7 +1,7 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.components
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -19,7 +19,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.OutlinedButton
@@ -34,12 +33,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginInfo
+import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginSource
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.horizontalPadding
 import kotlinx.coroutines.delay
 
@@ -47,18 +48,22 @@ import kotlinx.coroutines.delay
 fun PluginCard(
     modifier: Modifier = Modifier,
     enabledPluginList: List<String>,
+    enabledPluginPackageList: List<String>,
     isErrorDisabled: Boolean,
     pluginInfo: PluginInfo,
     onClickDetail: (String) -> Unit,
-    onClickSwitch: (String) -> Unit,
+    onClickSwitch: (PluginInfo) -> Unit,
     onClickDelete: (String) -> Unit,
     onClickKeyAlert: () -> Unit,
     onClickErrorAlert: () -> Unit,
     onClickCheckUpdate: (String) -> Unit,
-    onClickOptimizePlugin: (String) -> Unit,
     onClickShowSignatures: (String) -> Unit
 ) {
-    val enabled = enabledPluginList.contains(pluginInfo.id)
+    val identifier = pluginInfo.id
+    val enabled = when (pluginInfo.source) {
+        PluginSource.InstalledApp -> identifier in enabledPluginPackageList
+        else -> pluginInfo.id in enabledPluginList
+    }
     val disabledByError = isErrorDisabled && !enabled
 
     var switchEnabled by remember { mutableStateOf(true) }
@@ -77,11 +82,15 @@ fun PluginCard(
         modifier = modifier
             .fillMaxWidth()
             .padding(vertical = 10.dp, horizontal = horizontalPadding)
-            .clickable { onClickDetail(pluginInfo.id) },
+            .clip(RoundedCornerShape(18.dp))
+            .combinedClickable(
+                onClick = { onClickDetail(pluginInfo.id) },
+                onLongClick = { menuExpanded = true }
+            ),
         colors = CardDefaults.cardColors(containerColor = containerColor),
         shape = RoundedCornerShape(18.dp)
     ) {
-        Column(Modifier.padding(horizontal = 20.dp).padding(top = 16.dp, bottom = 12.dp)) {
+        Column(Modifier.padding(horizontal = 16.dp).padding(vertical = 16.dp)) {
             Row(verticalAlignment = Alignment.Top) {
                 Surface(
                     color = if (enabled) colorScheme.primaryContainer else colorScheme.surfaceContainerHighest,
@@ -109,35 +118,20 @@ fun PluginCard(
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
-                        if (!pluginInfo.signatures.isNullOrEmpty()) {
+                        if (pluginInfo.source == PluginSource.InstalledApp) {
                             Spacer(Modifier.width(8.dp))
                             Surface(
                                 color = colorScheme.primaryContainer,
                                 contentColor = colorScheme.onPrimaryContainer,
-                                shape = RoundedCornerShape(50.dp),
+                                shape = RoundedCornerShape(5.dp)
                             ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.key_24px),
-                                    contentDescription = "signed",
-                                    modifier = Modifier.padding(2.dp).size(16.dp)
+                                Text(
+                                    text = "APP",
+                                    style = typography.labelSmall,
+                                    modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp)
                                 )
                             }
                         }
-                        /* TODO: has datasource indicator */
-                       /* if (false) {
-                            Spacer(Modifier.width(8.dp))
-                            Surface(
-                                color = colorScheme.primaryContainer,
-                                contentColor = colorScheme.onPrimaryContainer,
-                                shape = RoundedCornerShape(50.dp)
-                            ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.electrical_services_24px),
-                                    contentDescription = "provides data source",
-                                    modifier = Modifier.padding(2.dp).size(16.dp)
-                                )
-                            }
-                        }*/
                     }
 
                     Spacer(Modifier.height(2.dp))
@@ -150,7 +144,7 @@ fun PluginCard(
                         overflow = TextOverflow.Ellipsis
                     )
 
-                    Spacer(Modifier.height(10.dp))
+                    Spacer(Modifier.height(4.dp))
 
                     Text(
                         text = pluginInfo.description,
@@ -161,72 +155,23 @@ fun PluginCard(
                     )
                 }
 
-                Column(horizontalAlignment = Alignment.End) {
-                    IconButton(onClick = { menuExpanded = true }) {
-                        Icon(
-                            painter = painterResource(R.drawable.more_vert_24px),
-                            contentDescription = "menu"
-                        )
-                    }
+                Spacer(Modifier.width(4.dp))
 
-                    DropdownMenu(
-                        expanded = menuExpanded,
-                        onDismissRequest = { menuExpanded = false }
-                    ) {
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = stringResource(R.string.plugin_optimize),
-                                    style = typography.bodyLarge
-                                )
-                            },
-                            onClick = {
-                                menuExpanded = false
-                                onClickOptimizePlugin(pluginInfo.id)
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = stringResource(R.string.plugin_signature_info_title),
-                                    style = typography.bodyLarge
-                                )
-                            },
-                            onClick = {
-                                menuExpanded = false
-                                onClickShowSignatures(pluginInfo.id)
-                            }
-                        )
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = "删除插件",
-                                    style = typography.bodyLarge
-                                )
-                            },
-                            onClick = {
-                                menuExpanded = false
-                                onClickDelete(pluginInfo.id)
-                            }
-                        )
-                    }
-
-                    Switch(
-                        checked = enabled,
-                        enabled = !disabledByError && switchEnabled,
-                        onCheckedChange = {
-                            if (!disabledByError && switchEnabled) {
-                                onClickSwitch(pluginInfo.id)
-                                switchEnabled = false
-                            }
+                Switch(
+                    checked = enabled,
+                    enabled = !disabledByError && switchEnabled,
+                    onCheckedChange = {
+                        if (!disabledByError && switchEnabled) {
+                            onClickSwitch(pluginInfo)
+                            switchEnabled = false
                         }
-                    )
+                    }
+                )
 
-                    LaunchedEffect(switchEnabled) {
-                        if (!switchEnabled) {
-                            delay(900)
-                            switchEnabled = true
-                        }
+                LaunchedEffect(switchEnabled) {
+                    if (!switchEnabled) {
+                        delay(900)
+                        switchEnabled = true
                     }
                 }
             }
@@ -264,6 +209,37 @@ fun PluginCard(
                         Spacer(Modifier.width(8.dp))
                         Text(text = "错误")
                     }
+                }
+            }
+            DropdownMenu(
+                expanded = menuExpanded,
+                onDismissRequest = { menuExpanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = {
+                        Text(
+                            text = stringResource(R.string.plugin_signature_info_title),
+                            style = typography.bodyLarge
+                        )
+                    },
+                    onClick = {
+                        menuExpanded = false
+                        onClickShowSignatures(pluginInfo.id)
+                    }
+                )
+                if (pluginInfo.source == PluginSource.LocalPackage) {
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = "删除插件",
+                                style = typography.bodyLarge
+                            )
+                        },
+                        onClick = {
+                            menuExpanded = false
+                            onClickDelete(pluginInfo.id)
+                        }
+                    )
                 }
             }
         }

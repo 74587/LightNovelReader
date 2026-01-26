@@ -1,6 +1,9 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.detail
 
 import android.content.ClipData
+import android.content.Intent
+import android.net.Uri
+import android.provider.Settings
 import android.widget.Toast
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -38,12 +41,14 @@ import androidx.compose.ui.platform.ClipEntry
 import androidx.compose.ui.platform.LocalClipboard
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginInfo
+import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginSource
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.EmptyPage
 import kotlinx.coroutines.launch
 
@@ -59,6 +64,7 @@ fun InfoItem(
     val context = LocalContext.current
     val clipboard = LocalClipboard.current
     val coroutineScope = rememberCoroutineScope()
+    val copiedText = stringResource(R.string.plugin_content_copied)
 
     Row(
         modifier = Modifier
@@ -89,7 +95,6 @@ fun InfoItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
 
-
             Text(
                 text = content,
                 style = contentStyle,
@@ -102,7 +107,7 @@ fun InfoItem(
                                 val clipData = ClipData.newPlainText("content", content)
                                 val clipEntry = ClipEntry(clipData = clipData)
                                 clipboard.setClipEntry(clipEntry = clipEntry)
-                                Toast.makeText(context, "内容已复制", Toast.LENGTH_SHORT)
+                                Toast.makeText(context, copiedText, Toast.LENGTH_SHORT)
                                     .show()
                             }
                         },
@@ -118,7 +123,7 @@ fun PluginDetailScreen(
     enabled: Boolean,
     pluginInfo: PluginInfo?,
     onClickBack: () -> Unit,
-    onClickSwitch: (String) -> Unit,
+    onClickSwitch: (PluginInfo) -> Unit,
     pluginContent: @Composable (PaddingValues) -> Unit
 ) {
     val enterAlwaysScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -126,7 +131,7 @@ fun PluginDetailScreen(
     Scaffold(
         topBar = {
             TopBar(
-                title = pluginInfo?.name ?: "Plugin",
+                pluginInfo = pluginInfo!!,
                 onClickBack = onClickBack,
                 scrollBehavior = enterAlwaysScrollBehavior
             )
@@ -136,8 +141,8 @@ fun PluginDetailScreen(
             EmptyPage(
                 modifier = Modifier.padding(paddingValues),
                 icon = painterResource(id = R.drawable.help_center_24px),
-                title = "无效插件",
-                description = "无法获取插件信息，插件可能无效或损坏",
+                title = stringResource(R.string.plugin_invalid_title),
+                description = stringResource(R.string.plugin_invalid_desc),
             )
             return@Scaffold
         }
@@ -168,7 +173,7 @@ fun PluginDetailScreen(
 private fun PluginSwitchBlock(
     enabled: Boolean,
     pluginInfo: PluginInfo,
-    onClickSwitch: (String) -> Unit
+    onClickSwitch: (PluginInfo) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -184,7 +189,7 @@ private fun PluginSwitchBlock(
             verticalAlignment = Alignment.CenterVertically
         ){
             Text(
-                text = "启用插件",
+                text = stringResource(R.string.plugin_enable_label),
                 style = typography.displayMedium,
                 fontWeight = FontWeight.Normal
             )
@@ -194,7 +199,7 @@ private fun PluginSwitchBlock(
             Switch(
                 checked = enabled,
                 onCheckedChange = {
-                    onClickSwitch(pluginInfo.id)
+                    onClickSwitch(pluginInfo)
                 }
             )
         }
@@ -214,13 +219,13 @@ private fun PluginSwitchBlock(
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.info_24px),
-                contentDescription = "warning"
+                contentDescription = stringResource(R.string.plugin_cd_warning)
             )
             Spacer(Modifier.width(12.dp))
             Column {
-                Text("第三方插件", style = typography.titleSmall)
+                Text(stringResource(R.string.plugin_third_party_title), style = typography.titleSmall)
                 Spacer(Modifier.height(4.dp))
-                Text("该插件由第三方提供", style = typography.bodyMedium)
+                Text(stringResource(R.string.plugin_third_party_desc), style = typography.bodyMedium)
             }
         }
     }
@@ -239,7 +244,8 @@ private fun PluginInfoBlock(
     )
 
     Column(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .padding(vertical = 10.dp)
     ) {
@@ -248,23 +254,25 @@ private fun PluginInfoBlock(
             text = pluginInfo.description,
             style = typography.labelLarge
         )
-        HorizontalDivider(modifier = Modifier.fillMaxWidth().padding(vertical = 16.dp))
+        HorizontalDivider(modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp))
 
         Column {
             InfoItem(
-                title = "ID",
+                title = stringResource(R.string.plugin_info_id_label),
                 content = pluginInfo.id,
                 titleStyle = titleStyle,
                 contentStyle = contentStyle,
             )
             InfoItem(
-                title = "版本",
+                title = stringResource(R.string.plugin_info_version_label),
                 content = pluginInfo.versionName + " [${pluginInfo.version}]",
                 titleStyle = titleStyle,
                 contentStyle = contentStyle,
             )
             InfoItem(
-                title = "作者",
+                title = stringResource(R.string.plugin_info_author_label),
                 content = pluginInfo.author,
                 titleStyle = titleStyle,
                 contentStyle = contentStyle,
@@ -276,19 +284,27 @@ private fun PluginInfoBlock(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopBar(
-    title: String,
+    pluginInfo: PluginInfo,
     scrollBehavior: TopAppBarScrollBehavior,
     onClickBack: () -> Unit
 ) {
+    val context = LocalContext.current
     MediumTopAppBar(
         title = {
-            Text(
-                text = title,
-                style = typography.displayLarge,
-                color = colorScheme.onSurface,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Column {
+                Text(
+                    text = pluginInfo.name,
+                    style = typography.displayLarge,
+                    color = colorScheme.onSurface,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Text(
+                    text = pluginInfo.id,
+                    style = typography.labelLarge,
+                    color = colorScheme.onSurfaceVariant
+                )
+            }
         },
         navigationIcon = {
             IconButton(onClick = onClickBack) {
@@ -298,6 +314,23 @@ private fun TopBar(
                 )
             }
         },
-        scrollBehavior = scrollBehavior
+        scrollBehavior = scrollBehavior,
+        actions = {
+            if (pluginInfo.source == PluginSource.InstalledApp) {
+                IconButton(
+                    onClick = {
+                        val intent = Intent(
+                            Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                            Uri.fromParts("package", pluginInfo.packageName, null)
+                        )
+                        context.startActivity(intent)
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.open_in_new_24px), null
+                    )
+                }
+            }
+        }
     )
 }

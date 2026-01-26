@@ -1,6 +1,7 @@
 package indi.dmzz_yyhyy.lightnovelreader.data.plugin
 
 import android.content.Context
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
 import android.util.Log
@@ -23,6 +24,7 @@ import io.nightfish.lightnovelreader.api.ApiMetadata
 import io.nightfish.lightnovelreader.api.PluginContext
 import io.nightfish.lightnovelreader.api.plugin.LightNovelReaderPlugin
 import io.nightfish.lightnovelreader.api.plugin.Plugin
+import io.nightfish.lightnovelreader.api.plugin.PluginConstants
 import io.nightfish.lightnovelreader.api.userdata.UserDataPath
 import java.io.File
 import java.util.zip.ZipFile
@@ -50,13 +52,17 @@ class PluginManager @Inject constructor(
 
     private val enabledPluginsUserData =
         userDataRepository.stringListUserData(UserDataPath.Plugin.EnabledPlugins.path)
+    private val enabledPluginPackagesUserData =
+        userDataRepository.stringListUserData(UserDataPath.Plugin.EnabledPluginPackages.path)
     private val errorPluginsUserData =
         userDataRepository.stringListUserData(UserDataPath.Plugin.ErrorPlugins.path)
 
     private val defaultWebDataSources = listOf(Wenku8Api)
-    private val defaultPlugins = listOf<Class<*>>()
     private val computeScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val json = Json { ignoreUnknownKeys = true }
+    private val installedPluginIds = mutableSetOf<String>()
+    private val _scannedPluginApps = mutableStateListOf<PluginAppInfo>()
+    val scannedPluginApps: SnapshotStateList<PluginAppInfo> = _scannedPluginApps
 
     val pluginsDir: File = appContext.dataDir.resolve("plugins")
     val pluginsTempDir: File = appContext.cacheDir.resolve("plugins_tmp")
@@ -68,58 +74,64 @@ class PluginManager @Inject constructor(
     private fun getPluginMetadataFile(pluginDir: File): File = pluginDir.resolve("metadata.json")
 
     fun loadAllPlugins() {
-        clearTempDir()
-        normalizeErrorEntries()
+        if (pluginsTempDir.exists()) pluginsTempDir.deleteRecursively()
+
+        normalizeErrorRecords()
+
         defaultWebDataSources.forEach(webBookDataSourceManager::loadWebDataSourceClass)
+        installedPluginIds.clear()
+        _scannedPluginApps.clear()
+
         val enabledPlugins = enabledPluginsUserData.getOrDefault(emptyList()).toSet()
+
+        loadInstalledPlugins()
+
         pluginsDir.also(File::mkdir)
             .listFiles()
             ?.filter { it.isDirectory }
-            ?.forEach { dir -> processPluginDir(dir, enabledPlugins) }
+            ?.forEach { dir -> loadLocalPluginDir(dir, enabledPlugins) }
     }
 
-    private fun clearTempDir() {
-        if (pluginsTempDir.exists()) pluginsTempDir.deleteRecursively()
+    private fun normalizeErrorRecords() {
+        val errorIds = errorPluginsUserData.get().orEmpty().toSet()
+        if (errorIds.isEmpty()) return
+
+        enabledPluginsUserData.update { it.toMutableList().apply { removeAll(errorIds) } }
+        errorPluginsUserData.update { errorIds.toList() }
     }
 
-    private fun normalizeErrorEntries() {
-        val parsedErrors = parseErrorEntries(errorPluginsUserData.get().orEmpty())
-        if (parsedErrors.paths.isNotEmpty()) {
-            parsedErrors.paths.forEach { path ->
-                File(path).also {
-                    it.delete()
-                    if (it.parentFile?.parentFile == pluginsDir) {
-                        it.parentFile!!.deleteRecursively()
-                    }
-                }
-            }
-        }
-        if (parsedErrors.pluginIds.isNotEmpty()) {
-            enabledPluginsUserData.update { it.toMutableList().apply { removeAll(parsedErrors.pluginIds) } }
-        }
-        errorPluginsUserData.update { parsedErrors.pluginIds.map { id -> "id:$id" } }
-    }
-
-    private fun processPluginDir(dir: File, enabledPlugins: Set<String>) {
+    private fun loadLocalPluginDir(dir: File, enabledPlugins: Set<String>) {
         val dirPluginId = dir.name
         val pluginFile = getPluginFile(dir)
-        if (enabledPlugins.contains(dirPluginId)) markPluginLoading(dirPluginId)
+        if (!pluginFile.exists()) return
 
         val meta = resolvePluginMetadata(dir, pluginFile, dirPluginId) ?: return
         val (pluginId, apiVersion) = meta
-        updateLoadingMarker(dirPluginId, pluginId, enabledPlugins)
-        pluginPathMap[pluginId] = pluginFile
 
-        if (!isApiSupported(pluginId, apiVersion)) return
-        if (!enabledPlugins.contains(pluginId)) {
-            clearPluginLoading(pluginId)
+        if (installedPluginIds.contains(pluginId)) {
+            enabledPluginsUserData.update { it.toMutableList().apply { remove(pluginId) } }
+            markPluginError(pluginId)
             return
         }
-        loadEnabledPlugin(pluginId, pluginFile)
+
+        pluginPathMap[pluginId] = pluginFile
+
+        if (!isPluginApiCompatible(pluginId, apiVersion)) return
+        if (!enabledPlugins.contains(pluginId)) return
+
+        val loadedId = runCatching { loadPlugin(pluginFile) }.getOrNull()
+        if (loadedId != pluginId) {
+            enabledPluginsUserData.update { it.toMutableList().apply { remove(pluginId) } }
+            markPluginError(pluginId)
+        }
     }
 
-    private fun resolvePluginMetadata(dir: File, pluginFile: File, dirPluginId: String): Pair<String, Int?>? {
-        readPluginMetadata(dir)?.let { cache ->
+    private fun resolvePluginMetadata(
+        dir: File,
+        pluginFile: File,
+        dirPluginId: String
+    ): Pair<String, Int?>? {
+        readPluginMetadataCache(dir)?.let { cache ->
             val info = PluginInfo(
                 isUpdatable = false,
                 id = cache.id,
@@ -129,7 +141,8 @@ class PluginManager @Inject constructor(
                 author = cache.author,
                 description = cache.description,
                 updateUrl = cache.updateUrl,
-                signatures = null
+                signatures = null,
+                source = PluginSource.LocalPackage
             )
             upsertPluginInfo(info)
             return cache.id to cache.apiVersion
@@ -150,11 +163,11 @@ class PluginManager @Inject constructor(
                 author = "",
                 description = "",
                 updateUrl = "",
-                signatures = null
+                signatures = null,
+                source = PluginSource.LocalPackage
             )
             upsertPluginInfo(fallback)
             pluginPathMap[dirPluginId] = pluginFile
-            clearPluginLoading(dirPluginId)
             markPluginError(dirPluginId)
             return null
         }
@@ -165,44 +178,135 @@ class PluginManager @Inject constructor(
         return pluginId to getApiVersion(annotation)
     }
 
-    private fun updateLoadingMarker(dirPluginId: String, pluginId: String, enabledPlugins: Set<String>) {
-        if (pluginId == dirPluginId) return
-        clearPluginLoading(dirPluginId)
-        if (enabledPlugins.contains(pluginId)) markPluginLoading(pluginId)
-    }
-
-    private fun isApiSupported(pluginId: String, apiVersion: Int?): Boolean {
+    private fun isPluginApiCompatible(pluginId: String, apiVersion: Int?): Boolean {
         if (apiVersion == null) {
-            clearPluginLoading(pluginId)
             markPluginError(pluginId)
             return false
         }
         if (!ApiCompat.isSupported(apiVersion, ApiMetadata.API_VERSION)) {
             enabledPluginsUserData.update { it.toMutableList().apply { remove(pluginId) } }
-            clearPluginLoading(pluginId)
             return false
         }
         return true
     }
 
-    private fun loadEnabledPlugin(pluginId: String, pluginFile: File) {
-        val loadedId = runCatching { loadPlugin(pluginFile) }.getOrNull()
-        if (loadedId == pluginId) {
-            clearPluginLoading(pluginId)
+    private fun loadInstalledPlugins() {
+        val intent = Intent(PluginConstants.DISCOVERY_ACTION)
+        val receivers = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            appContext.packageManager.queryBroadcastReceivers(
+                intent,
+                PackageManager.ResolveInfoFlags.of(PackageManager.MATCH_ALL.toLong())
+            )
         } else {
-            enabledPluginsUserData.update { it.toMutableList().apply { remove(pluginId) } }
+            appContext.packageManager.queryBroadcastReceivers(intent, PackageManager.MATCH_ALL)
         }
+
+        val enabledPackages = enabledPluginPackagesUserData.getOrDefault(emptyList()).toMutableSet()
+
+        receivers.forEach { resolveInfo ->
+            val appInfo = resolveInfo.activityInfo?.applicationInfo ?: return@forEach
+            if (appInfo.packageName == appContext.packageName) return@forEach
+
+            val packageName = appInfo.packageName
+            val apkPath = appInfo.sourceDir ?: return@forEach
+            val apkFile = File(apkPath)
+
+            val appLabel = runCatching { appInfo.loadLabel(appContext.packageManager).toString() }
+                .getOrDefault(packageName)
+
+            val versionName = runCatching {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    appContext.packageManager.getPackageInfo(
+                        packageName,
+                        PackageManager.PackageInfoFlags.of(0L)
+                    ).versionName
+                } else {
+                    @Suppress("DEPRECATION")
+                    appContext.packageManager.getPackageInfo(packageName, 0).versionName
+                }
+            }.getOrNull().orEmpty()
+
+            _scannedPluginApps.removeAll { it.packageName == packageName }
+            _scannedPluginApps.add(
+                PluginAppInfo(
+                    packageName = packageName,
+                    name = appLabel,
+                    versionName = versionName
+                )
+            )
+
+            val parsed = PluginAnnotationParser.parsePluginAnnotationFromFile(
+                apkFile = apkFile,
+                workDir = pluginsTempDir,
+                parentClassLoader = this::class.java.classLoader,
+                pm = appContext.packageManager
+            ) ?: return@forEach
+
+            val (pluginId, annotation) = parsed
+
+            if (!ApiCompat.isSupported(annotation.apiVersion, ApiMetadata.API_VERSION)) {
+                enabledPackages.remove(packageName)
+                return@forEach
+            }
+
+            val signatures = runCatching { getApkSignatures(apkFile) }.getOrNull()
+            updatePluginInfo(
+                pluginId,
+                annotation,
+                signatures = signatures,
+                source = PluginSource.InstalledApp,
+                packageName = packageName
+            )
+            installedPluginIds.add(pluginId)
+
+            if (!enabledPackages.contains(packageName)) return@forEach
+
+            val pluginDir = getPluginDir(pluginId).apply { mkdirs() }
+            val loadedId = loadPluginFromApk(
+                path = apkFile,
+                pluginDir = pluginDir,
+                forceLoad = false,
+                source = PluginSource.InstalledApp,
+                packageName = packageName
+            )
+            if (loadedId == null) {
+                enabledPackages.remove(packageName)
+                markPluginError(pluginId)
+            }
+        }
+
+        enabledPluginPackagesUserData.update { enabledPackages.toList() }
     }
 
-    private fun getPluginId(clazz: Class<*>): String? {
+    private fun getPluginId(
+        clazz: Class<*>,
+        source: PluginSource = PluginSource.LocalPackage,
+        packageName: String? = null
+    ): String? {
         val annotation = clazz.getAnnotation(Plugin::class.java) ?: return null
         val id = clazz.`package`?.name ?: return null
-        updatePluginInfo(id, annotation)
+        updatePluginInfo(id, annotation, source = source, packageName = packageName)
         return id
     }
 
-    private fun updatePluginInfo(pluginId: String, annotation: Plugin, signatures: List<ApkSignatureInfo>? = null) {
-        val existingSignatures = signatures ?: _allPluginInfo.firstOrNull { it.id == pluginId }?.signatures
+    private fun updatePluginInfo(
+        pluginId: String,
+        annotation: Plugin,
+        signatures: List<ApkSignatureInfo>? = null,
+        source: PluginSource = PluginSource.LocalPackage,
+        packageName: String? = null
+    ) {
+        val existingSignatures =
+            signatures ?: _allPluginInfo.firstOrNull { it.id == pluginId }?.signatures
+        val existingInfo = _allPluginInfo.firstOrNull { it.id == pluginId }
+
+        val resolvedSource = existingInfo?.source ?: source
+        val resolvedPackageName = if (resolvedSource == PluginSource.InstalledApp) {
+            packageName ?: existingInfo?.packageName
+        } else {
+            existingInfo?.packageName
+        }
+
         val info = PluginInfo(
             isUpdatable = false,
             id = pluginId,
@@ -212,13 +316,15 @@ class PluginManager @Inject constructor(
             author = annotation.author,
             description = annotation.description,
             updateUrl = annotation.updateUrl,
-            signatures = existingSignatures
+            signatures = existingSignatures,
+            packageName = resolvedPackageName,
+            source = resolvedSource
         )
         upsertPluginInfo(info)
     }
 
     fun updatePluginInfoFromAnnotation(pluginId: String, annotation: Plugin) {
-        updatePluginInfo(pluginId, annotation)
+        updatePluginInfo(pluginId, annotation, source = PluginSource.LocalPackage)
     }
 
     private fun getApiVersion(annotation: Plugin): Int? =
@@ -232,6 +338,8 @@ class PluginManager @Inject constructor(
     fun writePluginMetadata(pluginId: String, annotation: Plugin) {
         val pluginDir = pluginPathMap[pluginId]?.parentFile ?: pluginsDir.resolve(pluginId)
         pluginDir.mkdirs()
+
+        val apiVersion = getApiVersion(annotation) ?: return
         val cache = PluginInfoCache(
             id = pluginId,
             name = annotation.name,
@@ -240,14 +348,14 @@ class PluginManager @Inject constructor(
             author = annotation.author,
             description = annotation.description,
             updateUrl = annotation.updateUrl,
-            apiVersion = getApiVersion(annotation) ?: return
+            apiVersion = apiVersion
         )
         getPluginMetadataFile(pluginDir).writeText(
             json.encodeToString(PluginInfoCache.serializer(), cache)
         )
     }
 
-    private fun readPluginMetadata(pluginDir: File): PluginInfoCache? {
+    private fun readPluginMetadataCache(pluginDir: File): PluginInfoCache? {
         val file = getPluginMetadataFile(pluginDir)
         if (!file.exists()) return null
         return runCatching {
@@ -255,38 +363,8 @@ class PluginManager @Inject constructor(
         }.getOrNull()
     }
 
-    private fun markPluginLoading(pluginId: String) {
-        errorPluginsUserData.update { current ->
-            val list = current.toMutableList()
-            val key = "id:$pluginId"
-            if (!list.contains(key)) list.add(key)
-            list
-        }
-    }
-
-    private fun clearPluginLoading(pluginId: String) {
-        errorPluginsUserData.update { current ->
-            current.filterNot { it == "id:$pluginId" }
-        }
-    }
-
-    private data class ErrorEntries(
-        val pluginIds: Set<String>,
-        val paths: List<String>
-    )
-
-    private fun parseErrorEntries(entries: List<String>): ErrorEntries {
-        val pluginIds = mutableSetOf<String>()
-        val paths = mutableListOf<String>()
-        entries.forEach { entry ->
-            when {
-                entry.startsWith("id:") -> pluginIds.add(entry.removePrefix("id:"))
-                entry.startsWith("path:") -> paths.add(entry.removePrefix("path:"))
-                entry.contains(File.separatorChar) -> paths.add(entry)
-                entry.isNotBlank() -> pluginIds.add(entry)
-            }
-        }
-        return ErrorEntries(pluginIds, paths)
+    fun clearPluginError(pluginId: String) {
+        errorPluginsUserData.update { it.filterNot { id -> id == pluginId } }
     }
 
     @Serializable
@@ -297,7 +375,7 @@ class PluginManager @Inject constructor(
         val versionName: String,
         val author: String,
         val description: String,
-        val updateUrl: String,
+        val updateUrl: String?,
         val apiVersion: Int
     )
 
@@ -308,7 +386,21 @@ class PluginManager @Inject constructor(
 
     fun loadPlugin(plugin: LightNovelReaderPlugin, forceLoad: Boolean = false): Boolean {
         val id = getPluginId(plugin.javaClass) ?: return false
-        if (!enabledPluginsUserData.getOrDefault(emptyList()).contains(id) && !forceLoad) return false
+
+        if (!forceLoad) {
+            val info = _allPluginInfo.firstOrNull { it.id == id }
+            val enabled = when (info?.source) {
+                PluginSource.InstalledApp -> {
+                    val pkg = info.packageName
+                    pkg != null && enabledPluginPackagesUserData.getOrDefault(emptyList()).contains(pkg)
+                }
+
+                PluginSource.LocalPackage, null ->
+                    enabledPluginsUserData.getOrDefault(emptyList()).contains(id)
+            }
+            if (!enabled) return false
+        }
+
         return try {
             plugin.onLoad()
             pluginMap[id] = plugin
@@ -320,8 +412,24 @@ class PluginManager @Inject constructor(
     }
 
     fun loadPlugin(path: File, forceLoad: Boolean = false): String? {
-        path.setReadOnly()
         val pluginDir = path.parentFile ?: return null
+        return loadPluginFromApk(
+            path = path,
+            pluginDir = pluginDir,
+            forceLoad = forceLoad,
+            source = PluginSource.LocalPackage,
+            packageName = null
+        )
+    }
+
+    private fun loadPluginFromApk(
+        path: File,
+        pluginDir: File,
+        forceLoad: Boolean,
+        source: PluginSource,
+        packageName: String?
+    ): String? {
+        runCatching { path.setReadOnly() }
 
         val packageInfo = appContext.packageManager
             .getPackageArchiveInfo(path.path, PackageManager.GET_PERMISSIONS)
@@ -353,22 +461,32 @@ class PluginManager @Inject constructor(
             this.javaClass.classLoader
         )
         val scanPackage = packageInfo?.packageName ?: ""
+        val pluginFile = if (source == PluginSource.InstalledApp) path else getPluginFile(pluginDir)
 
         val id = loadPlugin(
             classLoader = classLoader,
             pluginContext = PluginContext(
                 dataDir = getPluginDataDir(pluginDir),
-                pluginFile = getPluginFile(pluginDir),
+                pluginFile = pluginFile,
                 assetDir = getPluginAssetDir(pluginDir)
             ),
             scanPackage = scanPackage,
-            forceLoad = forceLoad
+            forceLoad = forceLoad,
+            source = source,
+            packageName = packageName ?: scanPackage
         )
+
         if (id != null) {
-            clearPluginLoading(id)
-            pluginPathMap[id] = path
+            clearPluginError(id)
+            if (source == PluginSource.LocalPackage) {
+                pluginPathMap[id] = path
+            }
             computeScope.launch {
-                val sig = try { getApkSignatures(path) } catch (_: Throwable) { null }
+                val sig = try {
+                    getApkSignatures(path)
+                } catch (_: Throwable) {
+                    null
+                }
                 val info = _allPluginInfo.firstOrNull { it.id == id }
                 if (info != null) {
                     _allPluginInfo.removeAll { it.id == id }
@@ -379,48 +497,82 @@ class PluginManager @Inject constructor(
         return id
     }
 
-    fun loadPlugin(classLoader: DexClassLoader, pluginContext: PluginContext, scanPackage: String = "", forceLoad: Boolean = false): String? {
+    fun loadPlugin(
+        classLoader: DexClassLoader,
+        pluginContext: PluginContext,
+        scanPackage: String = "",
+        forceLoad: Boolean = false,
+        source: PluginSource = PluginSource.LocalPackage,
+        packageName: String? = null
+    ): String? {
         var id: String? = null
         try {
             AnnotationScanner.findAnnotatedClasses(classLoader, Plugin::class.java, scanPackage)
+                .asSequence()
                 .filter {
-                    id = getPluginId(it)
+                    id = getPluginId(it, source = source, packageName = packageName)
                     id != null
                 }
                 .map { getPluginInstance(it, pluginContext) }
-                .filter { it is LightNovelReaderPlugin }
-                .map { it as LightNovelReaderPlugin }
+                .filterIsInstance<LightNovelReaderPlugin>()
                 .firstOrNull()
                 ?.let {
                     val ok = loadPlugin(it, forceLoad = forceLoad)
                     if (!ok) id = null
                 }
         } catch (e: Throwable) {
-            if (id != null) {
-                Log.e("PluginManager", "Error loading $id:\n$e")
-                markPluginError(id)
+            val targetId = id
+            if (targetId != null) {
+                Log.e("PluginManager", "Error loading $targetId:\n$e")
+                markPluginError(targetId)
             }
             return null
         }
         webBookDataSourceManager.loadWebDataSourcesFromClassLoader(classLoader, pluginInjector, scanPackage)
         if (id != null) {
-            pluginClassLoaderMap[id] = classLoader
+            pluginClassLoaderMap[id!!] = classLoader
         }
         return id
     }
 
     fun markPluginError(pluginId: String) {
-        enabledPluginsUserData.update { it.toMutableList().apply { remove(pluginId) } }
+        val info = _allPluginInfo.firstOrNull { it.id == pluginId }
+
+        if (info?.source == PluginSource.InstalledApp) {
+            info.packageName?.let { pkg ->
+                enabledPluginPackagesUserData.update { it.toMutableList().apply { remove(pkg) } }
+            }
+        } else {
+            enabledPluginsUserData.update { it.toMutableList().apply { remove(pluginId) } }
+        }
         errorPluginsUserData.update { current ->
             val list = current.toMutableList()
-            val key = "id:$pluginId"
-            if (!list.contains(key)) list.add(key)
+            if (!list.contains(pluginId)) list.add(pluginId)
             list
         }
         unloadPlugin(pluginId)
     }
 
     fun loadPlugin(id: String): Boolean {
+        val info = _allPluginInfo.firstOrNull { it.id == id }
+        if (info?.source == PluginSource.InstalledApp) {
+            val packageName = info.packageName ?: return false
+            val appInfo = runCatching {
+                appContext.packageManager.getApplicationInfo(packageName, 0)
+            }.getOrNull() ?: return false
+
+            val apkPath = appInfo.sourceDir ?: return false
+            val pluginDir = getPluginDir(id).apply { mkdirs() }
+
+            return loadPluginFromApk(
+                path = File(apkPath),
+                pluginDir = pluginDir,
+                forceLoad = false,
+                source = PluginSource.InstalledApp,
+                packageName = packageName
+            ) == id
+        }
+
         val path = pluginPathMap[id] ?: return false
         return loadPlugin(path) == id
     }
@@ -488,6 +640,15 @@ class PluginManager @Inject constructor(
     }
 
     fun deletePlugin(id: String) {
+        val info = _allPluginInfo.firstOrNull { it.id == id }
+        if (info?.source == PluginSource.InstalledApp) {
+            unloadPlugin(id)
+            info.packageName?.let { packageName ->
+                enabledPluginPackagesUserData.update { it.toMutableList().apply { remove(packageName) } }
+            }
+            return
+        }
+
         val path = pluginPathMap[id] ?: return
         unloadPlugin(id)
         path.delete()
@@ -495,6 +656,8 @@ class PluginManager @Inject constructor(
             path.parentFile!!.deleteRecursively()
         }
         enabledPluginsUserData.update { it.toMutableList().apply { remove(id) } }
+        errorPluginsUserData.update { it.toMutableList().apply { remove(id) } }
+
         _allPluginInfo.removeAll { it.id == id }
         pluginPathMap.remove(id)
         pluginMap.remove(id)
@@ -538,8 +701,7 @@ class PluginManager @Inject constructor(
                 }
             }
             tempDir.deleteRecursively()
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (_: Exception) {
         }
     }
 

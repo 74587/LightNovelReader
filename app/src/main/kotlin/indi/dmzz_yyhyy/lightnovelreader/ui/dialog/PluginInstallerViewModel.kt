@@ -1,28 +1,30 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.dialog
 
+import android.content.Context
 import androidx.core.net.toUri
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.github.michaelbull.result.fold
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.android.lifecycle.HiltViewModel
+import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginInstallEvent
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginInstallPrompt
-import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginInstallPromptType
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginInstallSource
+import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginInstallStage
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginInstaller
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginInfo
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginManager
-import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.DeleteDialogState
-import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.DeleteStep
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.DeleteStepState
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.InstallDecision
-import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.InstallDecisionType
-import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.InstallDialogState
-import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.InstallStage
-import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.InstallStep
-import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.PluginDialogState
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.InstallStepState
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.MutablePluginInstallerDialogUiState
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.PluginDialogMode
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.PluginInstallInfo
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.PluginInstallerDialogUiState
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.UpdateStepState
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.toDecisionType
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.PluginMetadata
-import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.UpdateDialogState
-import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.UpdateStep
 import jakarta.inject.Inject
 import java.io.File
 import kotlin.coroutines.cancellation.CancellationException
@@ -31,10 +33,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.flow.MutableSharedFlow
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
@@ -42,16 +41,14 @@ import org.jsoup.Jsoup
 
 @HiltViewModel
 class PluginInstallerDialogViewModel @Inject constructor(
+    @param:ApplicationContext private val context: Context,
     private val pluginManager: PluginManager,
     private val pluginInstaller: PluginInstaller
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow<PluginDialogState>(PluginDialogState.Hidden)
-    val uiState = _uiState.asStateFlow()
+    val uiState: PluginInstallerDialogUiState = MutablePluginInstallerDialogUiState()
 
     private val _snackbarFlow = MutableSharedFlow<String>()
     val snackbarFlow = _snackbarFlow.asSharedFlow()
-    private val _closeDialogFlow = MutableSharedFlow<Unit>()
-    val closeDialogFlow = _closeDialogFlow.asSharedFlow()
 
     private val json = Json { ignoreUnknownKeys = true }
     private var currentOperation: Job? = null
@@ -91,93 +88,87 @@ class PluginInstallerDialogViewModel @Inject constructor(
     }
 
     private fun startInstallation(source: PluginInstallSource) {
-        _uiState.value = PluginDialogState.Install(
-            InstallDialogState(step = InstallStep.Working(InstallStage.Preparing, "正在准备安装..."))
-        )
+        uiState.mode = PluginDialogMode.Install
+        uiState.installStage = PluginInstallStage.Preparing
+        uiState.installMessage = context.getString(R.string.plugin_install_preparing)
+        uiState.installProgress = null
+        uiState.installInfo = null
+        uiState.installDecision = null
+        uiState.installStep = InstallStepState.Working
+        uiState.installCompletedSuccess = false
+        uiState.installCompletedMessage = ""
+
         currentOperation = viewModelScope.launch {
             try {
-                pluginInstaller.installFromSource(
+                val result = pluginInstaller.installFromSource(
                     source = source,
-                    callbacks = PluginInstaller.InstallCallbacks(
-                        onEvent = ::handleInstallEvent,
-                        onConfirm = ::awaitUserConfirm
-                    )
+                    onEvent = ::handleInstallEvent,
+                    onConfirm = ::awaitUserConfirm
+                )
+                result.fold(
+                    success = {
+                        uiState.installStep = InstallStepState.Completed
+                        uiState.installProgress = null
+                        uiState.installCompletedSuccess = true
+                        uiState.installCompletedMessage = context.getString(R.string.plugin_install_completed)
+                    },
+                    failure = { message ->
+                        uiState.installStep = InstallStepState.Completed
+                        uiState.installProgress = null
+                        uiState.installCompletedSuccess = false
+                        uiState.installCompletedMessage = message
+                    }
                 )
             } catch (_: CancellationException) {
             } catch (t: Throwable) {
-                updateInstallState {
-                    it.copy(step = InstallStep.Completed(false, "安装失败：${t.message ?: "未知错误"}"))
-                }
+                val reason = t.message ?: context.getString(R.string.unspecified)
+                uiState.installStep = InstallStepState.Completed
+                uiState.installProgress = null
+                uiState.installCompletedSuccess = false
+                uiState.installCompletedMessage =
+                    context.getString(R.string.plugin_install_failed_with_reason, reason)
             }
         }
     }
 
     private fun handleInstallEvent(event: PluginInstallEvent) {
         when (event) {
-            PluginInstallEvent.Preparing -> {
-                updateInstallState {
-                    it.copy(step = InstallStep.Working(InstallStage.Preparing, "正在准备安装..."), progress = null)
+            is PluginInstallEvent.StageChanged -> {
+                uiState.installStep = InstallStepState.Working
+                uiState.installDecision = null
+                uiState.installStage = event.stage
+                uiState.installProgress = null
+                uiState.installMessage = when (event.stage) {
+                    PluginInstallStage.Preparing -> context.getString(R.string.plugin_install_preparing)
+                    PluginInstallStage.Copying -> context.getString(R.string.plugin_install_reading)
+                    PluginInstallStage.Parsing -> context.getString(R.string.plugin_install_parsing)
+                    PluginInstallStage.Verifying -> context.getString(R.string.plugin_install_verifying)
+                    PluginInstallStage.Installing -> context.getString(R.string.plugin_install_installing)
                 }
             }
-            is PluginInstallEvent.Copying -> {
-                updateInstallState {
-                    it.copy(step = InstallStep.Working(InstallStage.Copying, "正在读取插件..."), progress = event.progress)
-                }
+            is PluginInstallEvent.Progress -> {
+                uiState.installProgress = event.progress
             }
-            PluginInstallEvent.Parsing -> {
-                updateInstallState {
-                    it.copy(step = InstallStep.Working(InstallStage.Parsing, "解析插件信息中"), progress = null)
-                }
-            }
-            PluginInstallEvent.Verifying -> {
-                updateInstallState {
-                    it.copy(step = InstallStep.Working(InstallStage.Verifying, "正在校验插件..."), progress = null)
-                }
-            }
+
             is PluginInstallEvent.Metadata -> {
                 val name = event.annotation.name.takeIf { it.isNotBlank() } ?: event.pluginId
-                updateInstallState {
-                    it.copy(
-                        info = PluginInstallInfo(
-                            packageName = event.pluginId,
-                            name = name,
-                            versionName = event.annotation.versionName
-                        ),
-                        progress = null
-                    )
-                }
-            }
-            PluginInstallEvent.Installing -> {
-                updateInstallState {
-                    it.copy(step = InstallStep.Working(InstallStage.Installing, "正在安装插件..."), progress = null)
-                }
-            }
-            is PluginInstallEvent.Success -> {
-                updateInstallState {
-                    it.copy(step = InstallStep.Completed(true, event.message), progress = null)
-                }
-            }
-            is PluginInstallEvent.Failure -> {
-                updateInstallState {
-                    it.copy(step = InstallStep.Completed(false, event.message), progress = null)
-                }
+                uiState.installInfo = PluginInstallInfo(
+                    packageName = event.pluginId,
+                    name = name,
+                    versionName = event.annotation.versionName
+                )
             }
         }
     }
 
     private suspend fun awaitUserConfirm(prompt: PluginInstallPrompt): Boolean {
         pendingUserDecision = CompletableDeferred()
-        updateInstallState {
-            it.copy(
-                step = InstallStep.AwaitingDecision(
-                    InstallDecision(
-                        type = prompt.type.toDecisionType(),
-                        message = prompt.message
-                    )
-                ),
-                progress = null
-            )
-        }
+        uiState.installStep = InstallStepState.AwaitingDecision
+        uiState.installDecision = InstallDecision(
+            type = prompt.type.toDecisionType(),
+            message = prompt.message
+        )
+        uiState.installProgress = null
         return pendingUserDecision?.await() ?: false
     }
 
@@ -188,34 +179,39 @@ class PluginInstallerDialogViewModel @Inject constructor(
             closeDialog()
             return
         }
-        when (_uiState.value) {
-            is PluginDialogState.Install -> {
-                updateInstallState {
-                    it.copy(step = InstallStep.Working(InstallStage.Verifying, "继续安装..."), progress = null)
-                }
+
+        when (uiState.mode) {
+            PluginDialogMode.Install -> {
+                uiState.installStep = InstallStepState.Working
+                uiState.installDecision = null
+                uiState.installStage = PluginInstallStage.Verifying
+                uiState.installMessage = context.getString(R.string.plugin_install_continue)
+                uiState.installProgress = null
             }
-            is PluginDialogState.UpdateCheck -> {
-                updateUpdateState {
-                    it.copy(step = UpdateStep.Checking("准备更新..."))
-                }
+
+            PluginDialogMode.UpdateCheck -> {
+                uiState.updateStep = UpdateStepState.Checking
+                uiState.updateMessage = context.getString(R.string.plugin_update_preparing)
+                uiState.updateDownloadProgress = null
             }
             else -> Unit
         }
     }
 
     private fun startUninstallation(pluginId: String) {
-        val info = pluginManager.getPluginInfo(pluginId)
-        if (info == null) {
+        val info = pluginManager.getPluginInfo(pluginId) ?: run {
             closeDialog()
             return
         }
-        _uiState.value = PluginDialogState.Uninstall(
-            DeleteDialogState(
-                pluginId = pluginId,
-                pluginName = info.name,
-                step = DeleteStep.Working("正在删除...")
-            )
-        )
+
+        uiState.mode = PluginDialogMode.Uninstall
+        uiState.uninstallPluginId = pluginId
+        uiState.uninstallPluginName = info.name
+        uiState.uninstallStep = DeleteStepState.Working
+        uiState.uninstallMessage = context.getString(R.string.plugin_delete_deleting)
+        uiState.uninstallCompletedSuccess = false
+        uiState.uninstallCompletedMessage = ""
+
         currentOperation = viewModelScope.launch(Dispatchers.IO) {
             performUninstallation(pluginId)
         }
@@ -224,35 +220,40 @@ class PluginInstallerDialogViewModel @Inject constructor(
     private fun performUninstallation(pluginId: String) {
         try {
             pluginManager.deletePlugin(pluginId)
-            updateDeleteState {
-                it.copy(step = DeleteStep.Completed(true, "删除完成"))
-            }
+            uiState.uninstallStep = DeleteStepState.Completed
+            uiState.uninstallCompletedSuccess = true
+            uiState.uninstallCompletedMessage = context.getString(R.string.plugin_delete_completed)
         } catch (t: Throwable) {
-            updateDeleteState {
-                it.copy(step = DeleteStep.Completed(false, "删除失败：${t.message ?: "未知错误"}"))
-            }
+            val reason = t.message ?: context.getString(R.string.unspecified)
+            uiState.uninstallStep = DeleteStepState.Completed
+            uiState.uninstallCompletedSuccess = false
+            uiState.uninstallCompletedMessage =
+                context.getString(R.string.plugin_delete_failed_with_reason, reason)
         }
     }
 
     private fun startUpdateCheck(pluginId: String) {
-        val info = pluginManager.getPluginInfo(pluginId)
-        if (info == null) {
+        val info = pluginManager.getPluginInfo(pluginId) ?: run {
             closeDialog()
             return
         }
-        _uiState.value = PluginDialogState.UpdateCheck(
-            UpdateDialogState(
-                pluginId = pluginId,
-                pluginName = info.name,
-                step = UpdateStep.Checking("正在检查更新...")
-            )
-        )
-        currentOperation = viewModelScope.launch { checkUpdateInfo(info) }
+
+        uiState.mode = PluginDialogMode.UpdateCheck
+        uiState.updatePluginId = pluginId
+        uiState.updatePluginName = info.name
+        uiState.updateStep = UpdateStepState.Checking
+        uiState.updateMessage = context.getString(R.string.plugin_update_checking)
+        uiState.updateDownloadProgress = null
+
+        currentOperation = viewModelScope.launch {
+            checkUpdateInfo(info)
+        }
     }
 
     private suspend fun checkUpdateInfo(pluginInfo: PluginInfo) {
         val updateUrlDir = pluginInfo.updateUrl?.trimEnd('/') ?: run {
-            updateUpdateState { it.copy(step = UpdateStep.Error("未配置更新地址")) }
+            uiState.updateStep = UpdateStepState.Error
+            uiState.updateMessage = context.getString(R.string.plugin_update_url_missing)
             return
         }
         val metadataUrl = "$updateUrlDir/metadata.json"
@@ -262,18 +263,25 @@ class PluginInstallerDialogViewModel @Inject constructor(
             }
             json.decodeFromString(PluginMetadata.serializer(), body)
         } catch (t: Throwable) {
-            updateUpdateState { it.copy(step = UpdateStep.Error("检查失败：${t.message}")) }
+            val reason = t.message ?: context.getString(R.string.unspecified)
+            uiState.updateStep = UpdateStepState.Error
+            uiState.updateMessage =
+                context.getString(R.string.plugin_update_check_failed_with_reason, reason)
             return
         }
 
         if (remoteMeta.version <= pluginInfo.version) {
-            updateUpdateState { it.copy(step = UpdateStep.Latest("已是最新版本")) }
+            uiState.updateStep = UpdateStepState.Latest
+            uiState.updateMessage = context.getString(R.string.plugin_update_latest)
             return
         }
 
-        updateUpdateState {
-            it.copy(step = UpdateStep.Available("检测到新版本：${remoteMeta.versionName}（${remoteMeta.version}）"))
-        }
+        uiState.updateStep = UpdateStepState.Available
+        uiState.updateMessage = context.getString(
+            R.string.plugin_update_available_with_version,
+            remoteMeta.versionName,
+            remoteMeta.version
+        )
 
         pendingUserDecision = CompletableDeferred()
         val ok = try {
@@ -309,43 +317,11 @@ class PluginInstallerDialogViewModel @Inject constructor(
     }
 
     private fun closeDialog() {
-        _uiState.value = PluginDialogState.Hidden
-        viewModelScope.launch(Dispatchers.Main) { _closeDialogFlow.emit(Unit) }
-    }
-
-    private fun updateInstallState(block: (InstallDialogState) -> InstallDialogState) {
-        _uiState.update { state ->
-            if (state is PluginDialogState.Install) {
-                PluginDialogState.Install(block(state.state))
-            } else {
-                state
-            }
-        }
-    }
-
-    private fun updateDeleteState(block: (DeleteDialogState) -> DeleteDialogState) {
-        _uiState.update { state ->
-            if (state is PluginDialogState.Uninstall) {
-                PluginDialogState.Uninstall(block(state.state))
-            } else {
-                state
-            }
-        }
-    }
-
-    private fun updateUpdateState(block: (UpdateDialogState) -> UpdateDialogState) {
-        _uiState.update { state ->
-            if (state is PluginDialogState.UpdateCheck) {
-                PluginDialogState.UpdateCheck(block(state.state))
-            } else {
-                state
-            }
-        }
-    }
-
-    private fun PluginInstallPromptType.toDecisionType(): InstallDecisionType = when (this) {
-        PluginInstallPromptType.Reinstall -> InstallDecisionType.Reinstall
-        PluginInstallPromptType.Downgrade -> InstallDecisionType.Downgrade
+        uiState.mode = PluginDialogMode.Hidden
+        uiState.installDecision = null
+        uiState.installProgress = null
+        uiState.updateDownloadProgress = null
+        uiState.closeSignal += 1
     }
 
     private sealed interface PluginInstallerRequest {

@@ -70,6 +70,8 @@ object Route {
                     val id: String
                 )
                 @Serializable
+                object AppList
+                @Serializable
                 object Repository
             }
             @Serializable

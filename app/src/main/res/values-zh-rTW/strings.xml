@@ -15,6 +15,7 @@
     <string name="cancel">取消</string>
     <string name="apply">套用</string>
     <string name="confirm">確認</string>
+    <string name="done">完成</string>
     <string name="decline">拒絕</string>
     <string name="export">導出</string>
     <string name="undo">撤銷</string>
@@ -389,7 +390,6 @@
     <string name="plugin_signature_dev_advice_body">建議為外掛產生並使用固定的簽名憑證，以便在版本更新時維持一致性，並確保外掛在散佈過程中不被竄改。</string>
     <string name="plugin_signature_info_title">簽名資訊</string>
     <string name="plugin_signature_info_empty">無簽名資訊</string>
-    <string name="plugin_signature_index">#%1$d</string>
     <string name="plugin_signature_owner">所有者：%1$s</string>
     <string name="plugin_signature_public_key">公鑰：%1$s，%2$d-bit</string>
     <string name="plugin_signature_sha256">SHA256：%1$s</string>
@@ -399,6 +399,5 @@
     <string name="plugin_third_party_tips">來自第三方的外掛可提供額外的資料來源或功能。安裝前，請確認外掛來源可信。\nLightNovelReader 不對外掛可用性負責。</string>
     <string name="plugin_by_author">作者：%1$s</string>
     <string name="plugin_details">詳細資料</string>
-    <string name="plugin_optimize">最佳化</string>
     <string name="plugin_repo">外掛倉庫</string>
 </resources>
