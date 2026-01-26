@@ -139,7 +139,7 @@ private fun TopBar(
     TopAppBar(
         title = {
             Column {
-                Text(stringResource(R.string.settings_theme))
+                Text(stringResource(R.string.debug_settings))
             }
         },
         navigationIcon = {

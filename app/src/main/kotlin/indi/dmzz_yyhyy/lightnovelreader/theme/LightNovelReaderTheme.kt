@@ -1,6 +1,6 @@
 package indi.dmzz_yyhyy.lightnovelreader.theme
 
-import AppTypography
+import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import android.app.Activity
 import android.graphics.Color
 import android.os.Build

@@ -44,7 +44,7 @@ fun CheckBoxListItem(
     modifier: Modifier = Modifier,
     title: String,
     supportingText: String,
-    colors: ListItemColors = ListItemDefaults.colors().copy(
+    colors: ListItemColors = ListItemDefaults.colors(
         containerColor = Color.Transparent
     ),
     checked: Boolean,

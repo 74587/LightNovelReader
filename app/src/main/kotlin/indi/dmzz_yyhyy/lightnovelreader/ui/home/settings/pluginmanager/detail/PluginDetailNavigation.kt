@@ -20,8 +20,16 @@ fun NavGraphBuilder.settingsPluginManagerDetailDestination() {
         val pluginId = navBackStackEntry.toRoute<Route.Main.Settings.PluginManager.Detail>().id
         val plugin = viewModel.pluginList.find { it.id == pluginId }
         val enabledPluginList by viewModel.enabledPluginFlow.collectAsState(emptyList())
+        val enabledPluginPackageList by viewModel.enabledPluginPackagesFlow.collectAsState(emptyList())
+        val enabled = when (plugin?.source) {
+            indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginSource.InstalledApp -> {
+                val pkg = plugin.packageName
+                pkg != null && enabledPluginPackageList.contains(pkg)
+            }
+            else -> enabledPluginList.contains(pluginId)
+        }
         PluginDetailScreen(
-            enabled = enabledPluginList.contains(pluginId),
+            enabled = enabled,
             pluginInfo = plugin,
             onClickBack = navController::popBackStackIfResumed,
             onClickSwitch = viewModel::onClickEnabledSwitch,

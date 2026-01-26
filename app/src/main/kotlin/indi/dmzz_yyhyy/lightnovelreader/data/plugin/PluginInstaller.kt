@@ -2,12 +2,18 @@ package indi.dmzz_yyhyy.lightnovelreader.data.plugin
 
 import android.content.Context
 import android.net.Uri
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.Result
+import com.github.michaelbull.result.fold
 import dagger.hilt.android.qualifiers.ApplicationContext
+import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataRepository
-import indi.dmzz_yyhyy.lightnovelreader.utils.ApkSignatureInfo
 import indi.dmzz_yyhyy.lightnovelreader.utils.PluginAnnotationParser
 import indi.dmzz_yyhyy.lightnovelreader.utils.getApkSignatures
 import indi.dmzz_yyhyy.lightnovelreader.utils.isSignatureMatch
+import io.nightfish.lightnovelreader.api.ApiCompat
+import io.nightfish.lightnovelreader.api.ApiMetadata
 import io.nightfish.lightnovelreader.api.plugin.Plugin
 import io.nightfish.lightnovelreader.api.userdata.UserDataPath
 import jakarta.inject.Inject
@@ -15,6 +21,9 @@ import jakarta.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.io.IOException
+import java.io.InputStream
+import kotlin.coroutines.cancellation.CancellationException
 
 @Singleton
 class PluginInstaller @Inject constructor(
@@ -22,87 +31,110 @@ class PluginInstaller @Inject constructor(
     private val pluginManager: PluginManager,
     userDataRepository: UserDataRepository
 ) {
-    data class InstallCallbacks(
-        val onPhase: (String) -> Unit = {},
-        val onProgress: (Float?) -> Unit = {},
-        val onConfirm: suspend (String) -> Boolean = { _ -> true },
-        val onError: (String) -> Unit = {}
-    )
-
     private val enabledPluginUserData =
         userDataRepository.stringListUserData(UserDataPath.Plugin.EnabledPlugins.path)
 
-    suspend fun installFromTempFile(
-        tempFile: File,
-        callbacks: InstallCallbacks = InstallCallbacks(),
-        preParsed: Pair<String, Plugin>? = null,
-        preSignatures: List<ApkSignatureInfo>? = null
-    ): Boolean {
-        callbacks.onPhase("解析插件信息中")
-        callbacks.onProgress(null)
-        tempFile.setReadOnly()
+    suspend fun installFromSource(
+        source: PluginInstallSource,
+        onEvent: (PluginInstallEvent) -> Unit = {},
+        onConfirm: suspend (PluginInstallPrompt) -> Boolean = { true }
+    ): Result<Unit, String> {
+        onEvent(PluginInstallEvent.StageChanged(PluginInstallStage.Preparing))
+        var tempFile: File? = null
+        var shouldDeleteTemp = false
+        try {
+            val installFile = when (source) {
+                is PluginInstallSource.UriSource -> {
+                    onEvent(PluginInstallEvent.StageChanged(PluginInstallStage.Copying))
+                    val copied = copyUriToTempFile(source.uri) { progress ->
+                        onEvent(PluginInstallEvent.Progress(progress))
+                    }
+                    tempFile = copied
+                    shouldDeleteTemp = true
+                    copied
+                }
 
-        val parsed = preParsed ?: PluginAnnotationParser.parsePluginAnnotationFromFile(
-            apkFile = tempFile,
-            workDir = pluginManager.pluginsTempDir,
-            parentClassLoader = this::class.java.classLoader,
-            pm = context.packageManager
-        )
-        if (parsed == null) {
-            val msg = "无效的插件：未包含有效 @Plugin 注解\n请重新选择一个 .lnrp 插件安装文件。"
-            callbacks.onError(msg)
-            tempFile.delete()
-            return false
-        }
-
-        val (pluginId, annotation) = parsed
-        when (val check = performInstallChecks(pluginId, annotation, preSignatures, tempFile)) {
-            is InstallCheckResult.Failed -> {
-                callbacks.onError(check.reason)
-                tempFile.delete()
-                return false
-            }
-            is InstallCheckResult.NeedsUserConfirm -> {
-                val goOn = callbacks.onConfirm(check.message)
-                if (!goOn) {
-                    tempFile.delete()
-                    return false
+                is PluginInstallSource.FileSource -> {
+                    onEvent(PluginInstallEvent.StageChanged(PluginInstallStage.Copying))
+                    val copied = copyFileToTempFile(source.file) { progress ->
+                        onEvent(PluginInstallEvent.Progress(progress))
+                    }
+                    tempFile = copied
+                    shouldDeleteTemp = true
+                    copied
                 }
             }
-            InstallCheckResult.Ok -> Unit
+
+            if (!installFile.exists()) {
+                return Err(context.getString(R.string.plugin_install_read_failed))
+            }
+
+            onEvent(PluginInstallEvent.StageChanged(PluginInstallStage.Parsing))
+            val parsed = PluginAnnotationParser.parsePluginAnnotationFromFile(
+                apkFile = installFile,
+                workDir = pluginManager.pluginsTempDir,
+                parentClassLoader = this::class.java.classLoader,
+                pm = context.packageManager
+            )
+            if (parsed == null) {
+                return Err(context.getString(R.string.plugin_install_invalid_missing_annotation))
+            }
+
+            val (pluginId, annotation) = parsed
+            onEvent(PluginInstallEvent.Metadata(pluginId, annotation))
+
+            val apiVersion = runCatching { annotation.apiVersion }.getOrNull()
+                ?: return Err(context.getString(R.string.plugin_install_invalid_missing_api_version))
+
+            if (!ApiCompat.isSupported(apiVersion, ApiMetadata.API_VERSION)) {
+                return Err(context.getString(R.string.plugin_install_version_incompatible))
+            }
+
+            onEvent(PluginInstallEvent.StageChanged(PluginInstallStage.Verifying))
+            val prompt = performInstallChecks(pluginId, installFile).fold(
+                success = { it },
+                failure = { reason -> return Err(reason) }
+            )
+            if (prompt != null && !onConfirm(prompt)) {
+                return Err(context.getString(R.string.plugin_install_cancelled))
+            }
+
+            onEvent(PluginInstallEvent.StageChanged(PluginInstallStage.Installing))
+            val success = withContext(Dispatchers.IO) {
+                performFinalInstallStep(
+                    tempFile = installFile,
+                    pluginId = pluginId,
+                    annotation = annotation
+                )
+            }
+
+            return if (success) Ok(Unit) else Err(context.getString(R.string.plugin_install_failed))
+        } catch (e: CancellationException) {
+            throw e
+        } catch (t: Throwable) {
+            val reason = t.message ?: context.getString(R.string.unspecified)
+            return Err(context.getString(R.string.plugin_install_failed_with_reason, reason))
+        } finally {
+            if (shouldDeleteTemp) {
+                runCatching { tempFile?.delete() }
+            }
         }
-
-        callbacks.onPhase("安装中")
-        callbacks.onProgress(null)
-
-        val success = performFinalInstallStep(
-            tempFile = tempFile,
-            pluginId = pluginId,
-        )
-
-        if (!success) callbacks.onError("安装失败")
-        return success
-    }
-
-    private sealed class InstallCheckResult {
-        data object Ok : InstallCheckResult()
-        data class Failed(val reason: String) : InstallCheckResult()
-        data class NeedsUserConfirm(val message: String) : InstallCheckResult()
     }
 
     private suspend fun performInstallChecks(
         pluginId: String,
-        annotation: Plugin,
-        preSignaturesNewApk: List<ApkSignatureInfo>?,
         tempFile: File
-    ): InstallCheckResult = withContext(Dispatchers.IO) {
-        val tempSignatures = preSignaturesNewApk ?: getApkSignatures(tempFile)
+    ): Result<PluginInstallPrompt?, String> = withContext(Dispatchers.IO) {
+        val tempSignatures = getApkSignatures(tempFile)
+        val existingInfo = pluginManager.getPluginInfo(pluginId)
+        if (existingInfo?.source == PluginSource.InstalledApp) {
+            return@withContext Err(context.getString(R.string.plugin_install_conflict_app_plugin))
+        }
 
-        val pluginDir = context.dataDir.resolve("plugin").resolve(pluginId).apply { mkdirs() }
+        val pluginDir = pluginManager.pluginsDir.resolve(pluginId).apply { mkdirs() }
         val pluginFile = pluginManager.getPluginFile(pluginDir)
         val isInstalled = pluginFile.exists()
-
-        if (!isInstalled) return@withContext InstallCheckResult.Ok
+        if (!isInstalled) return@withContext Ok(null)
 
         val existingPath = pluginManager.getPluginFile(pluginId)
         val existingSignatures =
@@ -110,25 +142,21 @@ class PluginInstaller @Inject constructor(
                 ?: pluginManager.getPluginInfo(pluginId)?.signatures
 
         if (!isSignatureMatch(existingSignatures, tempSignatures)) {
-            return@withContext InstallCheckResult.Failed("安装失败：检测到不同签名，请先卸载已安装版本后再安装此插件。")
-        }
-        val existingInfo = pluginManager.getPluginInfo(pluginId)
-        val ev = existingInfo?.version
-        val evName = existingInfo?.versionName.orEmpty()
-        if (ev != null && annotation.version <= ev) {
-            val msg = if (annotation.version == ev)
-                "已安装相同版本（$evName），是否重新安装？"
-            else
-                "当前已安装更高版本（$evName），是否降级安装？"
-            return@withContext InstallCheckResult.NeedsUserConfirm(msg)
+            return@withContext Err(context.getString(R.string.plugin_install_signature_mismatch))
         }
 
-        InstallCheckResult.Ok
+        return@withContext Ok(
+            PluginInstallPrompt(
+                type = PluginInstallPromptType.Reinstall,
+                message = context.getString(R.string.plugin_install_overwrite_prompt)
+            )
+        )
     }
 
     private fun performFinalInstallStep(
         tempFile: File,
         pluginId: String,
+        annotation: Plugin
     ): Boolean {
         val pluginsRoot = pluginManager.pluginsDir
         val pluginDir = pluginsRoot.resolve(pluginId).apply { mkdirs() }
@@ -139,7 +167,25 @@ class PluginInstaller @Inject constructor(
 
         val isInstalled = pluginFile.exists()
         if (isInstalled) {
-            return pluginManager.upgradePlugin(pluginId, tempFile)
+            val wasEnabled = enabledPluginUserData.getOrDefault(emptyList()).contains(pluginId)
+            if (wasEnabled) {
+                enabledPluginUserData.update { it.toMutableList().apply { remove(pluginId) } }
+                runCatching { pluginManager.unloadPlugin(pluginId) }
+            }
+
+            val upgraded = pluginManager.upgradePlugin(pluginId, tempFile, forceLoad = wasEnabled)
+
+            if (wasEnabled) {
+                enabledPluginUserData.update {
+                    it.toMutableList().apply { if (!contains(pluginId)) add(pluginId) }
+                }
+            }
+
+            if (upgraded) {
+                pluginManager.updatePluginInfoFromAnnotation(pluginId, annotation)
+                pluginManager.writePluginMetadata(pluginId, annotation)
+            }
+            return upgraded
         }
 
         val replaced = try {
@@ -147,14 +193,14 @@ class PluginInstaller @Inject constructor(
             tempFile.delete()
             pluginFile.setReadOnly()
             true
-        } catch (e: Throwable) {
-            e.printStackTrace()
+        } catch (_: Throwable) {
             false
         }
-
         if (!replaced) return false
 
         try {
+            pluginManager.writePluginMetadata(pluginId, annotation)
+
             val zipFile = java.util.zip.ZipFile(pluginFile)
             val entries = zipFile.entries()
             while (entries.hasMoreElements()) {
@@ -170,8 +216,7 @@ class PluginInstaller @Inject constructor(
             zipFile.close()
 
             pluginManager.extractLibFromApk(pluginFile, libsDir)
-        } catch (e: Exception) {
-            e.printStackTrace()
+        } catch (_: Exception) {
         }
 
         val loaded = pluginManager.loadPlugin(pluginFile, forceLoad = true) != null
@@ -179,56 +224,69 @@ class PluginInstaller @Inject constructor(
             enabledPluginUserData.update {
                 it.toMutableList().apply { if (!contains(pluginId)) add(pluginId) }
             }
+        } else {
+            pluginManager.markPluginError(pluginId)
         }
         return loaded
     }
 
-
-
-    suspend fun copyUriToFileWithProgress(
-        context: Context,
+    private suspend fun copyUriToTempFile(
         uri: Uri,
-        destFile: File,
         progressCb: (Float?) -> Unit
-    ): Boolean = withContext(Dispatchers.IO) {
-        return@withContext try {
-            val cr = context.contentResolver
-            val total = cr.openAssetFileDescriptor(uri, "r")?.use { it.length } ?: -1L
+    ): File {
+        val cr = context.contentResolver
+        val total = cr.openAssetFileDescriptor(uri, "r")?.use { it.length } ?: -1L
+        return copySourceToTempFile(total, { cr.openInputStream(uri) }, progressCb)
+    }
 
-            cr.openInputStream(uri)?.use { input ->
-                destFile.outputStream().use { output ->
+    private suspend fun copyFileToTempFile(
+        file: File,
+        progressCb: (Float?) -> Unit
+    ): File {
+        val total = file.length()
+        return copySourceToTempFile(total, { file.inputStream() }, progressCb)
+    }
+
+    private suspend fun copySourceToTempFile(
+        total: Long,
+        openInput: () -> InputStream?,
+        progressCb: (Float?) -> Unit
+    ): File = withContext(Dispatchers.IO) {
+        val cacheDir = context.cacheDir.resolve("plugin_install").apply {
+            mkdirs()
+            listFiles()?.forEach { it.delete() }
+        }
+        val out = cacheDir.resolve(System.currentTimeMillis().toString())
+
+        try {
+            openInput()?.use { input ->
+                out.outputStream().use { output ->
                     val buffer = ByteArray(64 * 1024)
                     var copied = 0L
-                    var read: Int
 
-                    val minIntervalMs = 150L
-                    var lastEmit = 0L
-                    val step = if (total > 0) maxOf(total / 200, 128 * 1024) else 256 * 1024
-                    var nextStep = step
+                    while (true) {
+                        val read = input.read(buffer)
+                        if (read <= 0) break
 
-                    while (input.read(buffer).also { read = it } != -1) {
                         output.write(buffer, 0, read)
                         copied += read
 
-                        val now = System.currentTimeMillis()
-                        if (copied >= nextStep || now - lastEmit >= minIntervalMs) {
-                            lastEmit = now
-                            if (total > 0) {
-                                progressCb((copied.toDouble() / total).coerceIn(0.0, 1.0).toFloat())
-                                nextStep = ((copied / step) + 1) * step
-                            } else {
-                                progressCb(null)
-                            }
+                        if (total > 0) {
+                            progressCb((copied.toFloat() / total).coerceIn(0f, 1f))
+                        } else {
+                            progressCb(null)
                         }
                     }
                     output.fd.sync()
                 }
-            } ?: return@withContext false
+            } ?: throw IOException(context.getString(R.string.plugin_install_read_failed))
 
-            if (total > 0) progressCb(1f) else progressCb(null)
-            true
-        } catch (_: Throwable) {
-            false
+            if (total > 0) progressCb(1f)
+            out.setReadOnly()
+            out
+        } catch (t: Throwable) {
+            runCatching { out.delete() }
+            throw t
         }
     }
 }

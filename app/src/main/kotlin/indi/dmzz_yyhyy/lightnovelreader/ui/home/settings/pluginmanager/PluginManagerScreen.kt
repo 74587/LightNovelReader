@@ -1,7 +1,5 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager
 
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -17,19 +15,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
-import androidx.compose.material3.FilledTonalButton
-import androidx.compose.material3.FilledTonalIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -37,11 +30,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -52,24 +40,28 @@ import indi.dmzz_yyhyy.lightnovelreader.BuildConfig
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginInfo
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.EmptyPage
+import indi.dmzz_yyhyy.lightnovelreader.ui.components.PluginCard
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalClaimSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
-import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PluginManagerScreen(
     enabledPluginList: List<String>,
+    enabledPluginPackageList: List<String>,
+    errorPluginIds: Set<String>,
     onClickInstall: () -> Unit,
     onClickBack: () -> Unit,
+    onClickPluginApps: () -> Unit,
     onClickDetail: (String) -> Unit,
     onClickDelete: (String) -> Unit,
-    onClickSwitch: (String) -> Unit,
+    onClickSwitch: (PluginInfo) -> Unit,
     onClickKeyAlert: () -> Unit,
+    onClickErrorAlert: () -> Unit,
+    onClickIncompatibleAlert: () -> Unit,
     onClickPluginRepo: () -> Unit,
     onClickCheckUpdate: (String) -> Unit,
     pluginInfoList: List<PluginInfo>,
-    onClickOptimize: (String) -> Unit,
     onClickShowSignatures: (String) -> Unit
 ) {
     val enterAlwaysScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -85,6 +77,7 @@ fun PluginManagerScreen(
             TopBar(
                 onClickBack = onClickBack,
                 scrollBehavior = enterAlwaysScrollBehavior,
+                onClickPluginApps = onClickPluginApps,
                 onClickPluginRepo = onClickPluginRepo
             )
         },
@@ -137,11 +130,14 @@ fun PluginManagerScreen(
                             pluginInfo = plugin,
                             onClickDetail = onClickDetail,
                             enabledPluginList = enabledPluginList,
+                            enabledPluginPackageList = enabledPluginPackageList,
+                            isErrorDisabled = errorPluginIds.contains(plugin.id),
                             onClickSwitch = onClickSwitch,
                             onClickDelete = onClickDelete,
                             onClickCheckUpdate = onClickCheckUpdate,
                             onClickKeyAlert = onClickKeyAlert,
-                            onClickOptimizePlugin = onClickOptimize,
+                            onClickErrorAlert = onClickErrorAlert,
+                            onClickIncompatibleAlert = onClickIncompatibleAlert,
                             onClickShowSignatures = onClickShowSignatures
                         )
                     }
@@ -154,12 +150,14 @@ fun PluginManagerScreen(
     }
 }
 
+val horizontalPadding = 16.dp
+
 @Composable
 private fun ThirdPartyPluginTips() {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 16.dp),
+            .padding(vertical = 8.dp, horizontal = horizontalPadding),
         colors = CardDefaults.cardColors(
             containerColor = colorScheme.errorContainer
         ),
@@ -171,7 +169,7 @@ private fun ThirdPartyPluginTips() {
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.info_24px),
-                contentDescription = "warning"
+                contentDescription = stringResource(R.string.plugin_cd_warning)
             )
             Spacer(Modifier.width(12.dp))
             Column {
@@ -184,116 +182,12 @@ private fun ThirdPartyPluginTips() {
     }
 }
 
-@Composable
-private fun PluginCard(
-    modifier: Modifier = Modifier,
-    enabledPluginList: List<String>,
-    pluginInfo: PluginInfo,
-    onClickDetail: (String) -> Unit,
-    onClickSwitch: (String) -> Unit,
-    onClickDelete: (String) -> Unit,
-    onClickKeyAlert: () -> Unit,
-    onClickCheckUpdate: (String) -> Unit,
-    onClickOptimizePlugin: (String) -> Unit,
-    onClickShowSignatures: (String) -> Unit
-) {
-    var switchEnabled by remember { mutableStateOf(true) }
-    var showMenu by remember { mutableStateOf(false) }
-
-    Box(
-        modifier = modifier.fillMaxWidth()
-    ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 8.dp, horizontal = 8.dp)
-                .clickable { showMenu = true },
-            colors = CardDefaults.cardColors(containerColor = colorScheme.surfaceContainerLow),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Column(Modifier.padding(20.dp)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Column {
-                        Text(pluginInfo.name, style = typography.titleMedium)
-                        Text(pluginInfo.versionName, style = typography.labelMedium, color = colorScheme.secondary)
-                        Text(
-                            text = stringResource(R.string.plugin_by_author, pluginInfo.author),
-                            style = typography.labelMedium,
-                            color = colorScheme.secondary
-                        )
-                    }
-                    Spacer(Modifier.weight(1f))
-                    Switch(
-                        checked = enabledPluginList.contains(pluginInfo.id),
-                        enabled = switchEnabled,
-                        onCheckedChange = { checked ->
-                            if (switchEnabled) {
-                                onClickSwitch(pluginInfo.id)
-                                switchEnabled = false
-                            }
-                        }
-                    )
-                    LaunchedEffect(switchEnabled) {
-                        if (!switchEnabled) {
-                            delay(1000)
-                            switchEnabled = true
-                        }
-                    }
-                }
-
-                Spacer(Modifier.height(12.dp))
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Spacer(Modifier.weight(1f))
-                    if (pluginInfo.signatures == null) {
-                        FilledTonalIconButton(onClick = { onClickKeyAlert() }) {
-                            Icon(
-                                painter = painterResource(R.drawable.key_off_24px),
-                                contentDescription = "invalid_signature"
-                            )
-                        }
-                    }
-                    FilledTonalIconButton(onClick = { onClickDelete(pluginInfo.id) }) {
-                        Icon(
-                            painter = painterResource(R.drawable.delete_forever_24px),
-                            contentDescription = "remove"
-                        )
-                    }
-                    FilledTonalButton(onClick = { onClickDetail(pluginInfo.id) }) {
-                        Text(text = stringResource(R.string.plugin_details))
-                    }
-                }
-            }
-        }
-
-        DropdownMenu(
-            modifier = Modifier.padding(horizontal = 12.dp),
-            expanded = showMenu,
-            onDismissRequest = { showMenu = false }
-        ) {
-            DropdownMenuItem(
-                enabled = false,
-                text = { Text(text = stringResource(R.string.plugin_optimize)) },
-                onClick = {
-                    showMenu = false
-                    onClickOptimizePlugin(pluginInfo.id)
-                }
-            )
-            DropdownMenuItem(
-                text = { Text(text = stringResource(R.string.plugin_signature_info_title)) },
-                onClick = {
-                    showMenu = false
-                    onClickShowSignatures(pluginInfo.id)
-                }
-            )
-        }
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun TopBar(
     scrollBehavior: TopAppBarScrollBehavior,
     onClickBack: () -> Unit,
+    onClickPluginApps: () -> Unit,
     onClickPluginRepo: () -> Unit
 ) {
     TopAppBar(
@@ -315,6 +209,13 @@ private fun TopBar(
             }
         },
         actions = {
+            IconButton(
+                onClick = onClickPluginApps
+            ) {
+                Icon(
+                    painter = painterResource(R.drawable.deployed_code_24px), null
+                )
+            }
             if (BuildConfig.DEBUG)
                 TextButton(
                     onClick = onClickPluginRepo

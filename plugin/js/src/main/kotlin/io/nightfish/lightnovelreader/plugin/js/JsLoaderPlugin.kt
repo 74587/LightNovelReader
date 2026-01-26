@@ -1,6 +1,7 @@
 package io.nightfish.lightnovelreader.plugin.js
 
 import android.app.Activity
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
@@ -231,4 +232,8 @@ class JsLoaderPlugin(
             )
         }
     }
+}
+
+class PluginDiscoveryReceiver : BroadcastReceiver() {
+    override fun onReceive(context: Context, intent: Intent) {}
 }

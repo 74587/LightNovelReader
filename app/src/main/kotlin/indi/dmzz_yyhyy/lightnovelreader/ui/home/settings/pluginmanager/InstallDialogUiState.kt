@@ -1,44 +1,120 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager
 
-import androidx.compose.runtime.Immutable
-import io.nightfish.lightnovelreader.api.plugin.Plugin
+import androidx.compose.runtime.Stable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginInstallPromptType
+import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginInstallStage
 
-@Immutable
-data class InstallDialogState(
-    val visible: Boolean = false,
-    val packageName: String = "",
-    val phase: String = "",
-    val finished: Boolean = false,
-    val error: Boolean = false,
-    val pluginAnnotation: Plugin? = null,
-    val confirm: Confirm = Confirm.None
-) {
-    @Immutable
-    sealed interface Confirm {
-        data object None : Confirm
-        data object InvalidSig : Confirm
-        data object Upgrade : Confirm
-    }
+@Stable
+interface PluginInstallerDialogUiState {
+    var mode: PluginDialogMode
+
+    var installStage: PluginInstallStage
+    var installMessage: String
+    var installProgress: Float?
+    var installInfo: PluginInstallInfo?
+    var installStep: InstallStepState
+    var installCompletedSuccess: Boolean
+    var installCompletedMessage: String
+    var installDecision: InstallDecision?
+
+    var uninstallPluginId: String
+    var uninstallPluginName: String
+    var uninstallStep: DeleteStepState
+    var uninstallMessage: String
+    var uninstallCompletedSuccess: Boolean
+    var uninstallCompletedMessage: String
+
+    var updatePluginId: String
+    var updatePluginName: String
+    var updateStep: UpdateStepState
+    var updateMessage: String
+    var updateDownloadProgress: Float?
+
+    var toast: String
+    var closeSignal: Int
 }
 
-@Immutable
-data class DeleteDialogState(
-    val visible: Boolean = false,
-    val pluginId: String = "",
-    val pluginName: String = "",
-    val phase: String = "",
-    val finished: Boolean = false
+enum class PluginDialogMode {
+    Hidden,
+    Install,
+    Uninstall,
+    UpdateCheck
+}
+
+enum class InstallStepState {
+    Working,
+    AwaitingDecision,
+    Completed
+}
+
+enum class DeleteStepState {
+    Working,
+    Completed
+}
+
+enum class UpdateStepState {
+    Checking,
+    Latest,
+    Available,
+    Error,
+    Downloading,
+    Installing,
+    Completed
+}
+
+@Stable
+class MutablePluginInstallerDialogUiState : PluginInstallerDialogUiState {
+    override var mode by mutableStateOf(PluginDialogMode.Hidden)
+
+    override var installStage by mutableStateOf(PluginInstallStage.Preparing)
+    override var installMessage by mutableStateOf("")
+    override var installProgress: Float? by mutableStateOf(null)
+    override var installInfo: PluginInstallInfo? by mutableStateOf(null)
+    override var installStep by mutableStateOf(InstallStepState.Working)
+    override var installCompletedSuccess by mutableStateOf(false)
+    override var installCompletedMessage by mutableStateOf("")
+    override var installDecision: InstallDecision? by mutableStateOf(null)
+
+    override var uninstallPluginId by mutableStateOf("")
+    override var uninstallPluginName by mutableStateOf("")
+    override var uninstallStep by mutableStateOf(DeleteStepState.Working)
+    override var uninstallMessage by mutableStateOf("")
+    override var uninstallCompletedSuccess by mutableStateOf(false)
+    override var uninstallCompletedMessage by mutableStateOf("")
+
+    override var updatePluginId by mutableStateOf("")
+    override var updatePluginName by mutableStateOf("")
+    override var updateStep by mutableStateOf(UpdateStepState.Checking)
+    override var updateMessage by mutableStateOf("")
+    override var updateDownloadProgress: Float? by mutableStateOf(null)
+
+    override var toast by mutableStateOf("")
+    override var closeSignal by mutableIntStateOf(0)
+}
+
+@Stable
+data class PluginInstallInfo(
+    val packageName: String,
+    val name: String,
+    val versionName: String
 )
 
-@Immutable
-data class UpdateDialogState(
-    val visible: Boolean = false,
-    val pluginId: String = "",
-    val pluginName: String = "",
-    val isChecking: Boolean = false,
-    val isLatest: Boolean = false,
-    val hasUpdate: Boolean = false,
-    val isError: Boolean = false,
-    val updateSuccess: Boolean = false,
-    val message: String? = null
+@Stable
+data class InstallDecision(
+    val type: InstallDecisionType,
+    val message: String
 )
+
+enum class InstallDecisionType {
+    Reinstall,
+    Downgrade,
+    InvalidSignature
+}
+
+fun PluginInstallPromptType.toDecisionType(): InstallDecisionType = when (this) {
+    PluginInstallPromptType.Reinstall -> InstallDecisionType.Reinstall
+}

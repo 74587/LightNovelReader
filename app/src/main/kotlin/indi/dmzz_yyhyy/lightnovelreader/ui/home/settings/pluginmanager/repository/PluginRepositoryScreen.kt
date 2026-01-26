@@ -53,6 +53,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -129,14 +130,14 @@ fun PluginRepositoryScreen(
                     verticalArrangement = Arrangement.Center
                 ) {
                     if (!uiState.isLoading) {
-                        Text("仓库加载失败")
+                        Text(stringResource(R.string.plugin_repo_load_failed))
                         uiState.errorMessage?.let {
                             showSnackbar(
                                 coroutineScope = coroutineScope,
                                 message = it,
                                 hostState = snackbarHostState,
                                 duration = SnackbarDuration.Long,
-                                actionLabel = "确定"
+                                actionLabel = stringResource(R.string.confirm)
                             ) { }
                         }
                     }
@@ -254,7 +255,14 @@ private fun SkeletonMetadataDisplay() {
 @Composable
 private fun LoadedMetadataDisplay(metadata: PluginMetadata) {
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(text = "版本 ${metadata.versionName} (${metadata.version})", style = typography.bodySmall)
+        Text(
+            text = stringResource(
+                R.string.plugin_repo_item_version,
+                metadata.versionName,
+                metadata.version
+            ),
+            style = typography.bodySmall
+        )
         Spacer(Modifier.width(8.dp))
         Text(text = metadata.author, style = typography.labelMedium)
     }
@@ -334,7 +342,7 @@ fun DownloadActionButton(
                             modifier = Modifier.size(20.dp)
                         )
                         Spacer(Modifier.width(10.dp))
-                        Text("重新安装")
+                        Text(stringResource(R.string.plugin_repo_reinstall))
                     }
                 }
 
@@ -342,7 +350,7 @@ fun DownloadActionButton(
                     TextButton(onClick = onClickCancel) {
                         CircularProgressIndicator(modifier = Modifier.size(28.dp))
                         Spacer(Modifier.width(10.dp))
-                        Text("取消")
+                        Text(stringResource(R.string.cancel))
                     }
                 }
 
@@ -350,7 +358,7 @@ fun DownloadActionButton(
                     TextButton(onClick = onClickCancel) {
                         CircularProgressIndicator(modifier = Modifier.size(28.dp))
                         Spacer(Modifier.width(10.dp))
-                        Text("安装中")
+                        Text(stringResource(R.string.plugin_repo_installing))
                     }
                 }
 
@@ -364,7 +372,7 @@ fun DownloadActionButton(
                     TextButton(onClick = onClickCancel) {
                         CircularProgressIndicator(progress = { animProgress }, modifier = Modifier.size(28.dp), strokeWidth = 2.dp)
                         Spacer(Modifier.width(10.dp))
-                        Text("取消")
+                        Text(stringResource(R.string.cancel))
                     }
                 }
             }
@@ -386,7 +394,7 @@ private fun TopBar(
         TopAppBar(
             title = {
                 Text(
-                    text = "插件仓库",
+                    text = stringResource(R.string.plugin_repo_title),
                     style = typography.displayLarge,
                     color = colorScheme.onSurface
                 )
