@@ -84,12 +84,40 @@ class PluginManager @Inject constructor(
 
         val enabledPlugins = enabledPluginsUserData.getOrDefault(emptyList()).toSet()
 
-        loadInstalledPlugins()
+        loadAppPlugins()
 
         pluginsDir.also(File::mkdir)
             .listFiles()
             ?.filter { it.isDirectory }
             ?.forEach { dir -> loadLocalPluginDir(dir, enabledPlugins) }
+    }
+
+    fun refreshAppPlugins() {
+        if (pluginsTempDir.exists()) pluginsTempDir.deleteRecursively()
+
+        val previousInstalled = _allPluginInfo.filter { it.source == PluginSource.InstalledApp }
+
+        installedPluginIds.clear()
+        _scannedPluginApps.clear()
+        loadAppPlugins()
+
+        val activePackages = _scannedPluginApps.map { it.packageName }.toSet()
+        val removed = previousInstalled.filter { info ->
+            val pkg = info.packageName
+            pkg == null || !activePackages.contains(pkg)
+        }
+
+        if (removed.isEmpty()) return
+
+        removed.forEach { info ->
+            unloadPlugin(info.id)
+            pluginMap.remove(info.id)
+            pluginClassLoaderMap.remove(info.id)
+        }
+        _allPluginInfo.removeAll { info ->
+            info.source == PluginSource.InstalledApp && removed.any { it.id == info.id }
+        }
+        errorPluginsUserData.update { current -> current.filterNot { id -> removed.any { it.id == id } } }
     }
 
     private fun normalizeErrorRecords() {
@@ -190,7 +218,7 @@ class PluginManager @Inject constructor(
         return true
     }
 
-    private fun loadInstalledPlugins() {
+    private fun loadAppPlugins() {
         val intent = Intent(PluginConstants.DISCOVERY_ACTION)
         val receivers = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             appContext.packageManager.queryBroadcastReceivers(
@@ -202,6 +230,7 @@ class PluginManager @Inject constructor(
         }
 
         val enabledPackages = enabledPluginPackagesUserData.getOrDefault(emptyList()).toMutableSet()
+        val discoveredPackages = mutableSetOf<String>()
 
         receivers.forEach { resolveInfo ->
             val appInfo = resolveInfo.activityInfo?.applicationInfo ?: return@forEach
@@ -210,6 +239,7 @@ class PluginManager @Inject constructor(
             val packageName = appInfo.packageName
             val apkPath = appInfo.sourceDir ?: return@forEach
             val apkFile = File(apkPath)
+            discoveredPackages.add(packageName)
 
             val appLabel = runCatching { appInfo.loadLabel(appContext.packageManager).toString() }
                 .getOrDefault(packageName)
@@ -275,6 +305,7 @@ class PluginManager @Inject constructor(
             }
         }
 
+        enabledPackages.retainAll(discoveredPackages)
         enabledPluginPackagesUserData.update { enabledPackages.toList() }
     }
 

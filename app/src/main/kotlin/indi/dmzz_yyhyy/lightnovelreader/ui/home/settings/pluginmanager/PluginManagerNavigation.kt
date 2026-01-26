@@ -76,6 +76,9 @@ fun NavGraphBuilder.settingsPluginManagerHomeDestination() {
                 snackbarHostState.showSnackbar(message, withDismissAction = true)
             }
         }
+        LaunchedEffect(Unit) {
+            viewModel.refreshAppPlugins()
+        }
 
         val errorString = stringResource(R.string.plugin_snackbar_disabled_load_error)
         val notSignedString = stringResource(R.string.plugin_snackbar_not_signed)

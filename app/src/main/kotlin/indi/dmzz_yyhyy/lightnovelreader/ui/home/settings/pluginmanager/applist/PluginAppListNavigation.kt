@@ -16,6 +16,7 @@ fun NavGraphBuilder.settingsPluginAppListDestination() {
 
         PluginAppListScreen(
             appPluginList = viewModel.scannedPluginApps,
+            onRefresh = viewModel::refreshAppPlugins,
             onClickBack = navController::popBackStackIfResumed
         )
     }

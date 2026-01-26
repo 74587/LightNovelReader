@@ -15,6 +15,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 @HiltViewModel
@@ -91,6 +92,10 @@ class PluginManagerViewModel @Inject constructor(
 
     fun showSnackbar(message: String) {
         viewModelScope.launch(Dispatchers.Main) { _snackbarFlow.emit(message) }
+    }
+
+    suspend fun refreshAppPlugins() = withContext(Dispatchers.IO) {
+        pluginManager.refreshAppPlugins()
     }
 
     @Composable

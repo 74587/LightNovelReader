@@ -28,10 +28,15 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ImageBitmap
@@ -46,15 +51,30 @@ import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginAppInfo
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.EmptyPage
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PluginAppListScreen(
     appPluginList: List<PluginAppInfo>,
+    onRefresh: suspend () -> Unit,
     onClickBack: () -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+    val coroutineScope = rememberCoroutineScope()
+    val pullToRefreshState = rememberPullToRefreshState()
+    var isRefreshing by remember { mutableStateOf(false) }
+
+    val triggerRefresh: () -> Unit = refresh@{
+        if (isRefreshing) return@refresh
+        isRefreshing = true
+        coroutineScope.launch {
+            onRefresh()
+            isRefreshing = false
+            pullToRefreshState.animateToHidden()
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -64,32 +84,37 @@ fun PluginAppListScreen(
             )
         }
     ) { paddingValues ->
-        Column(
+        PullToRefreshBox(
             modifier = Modifier
                 .padding(paddingValues)
-                .fillMaxSize()
+                .fillMaxSize(),
+            isRefreshing = isRefreshing,
+            onRefresh = triggerRefresh,
+            state = pullToRefreshState
         ) {
-            if (appPluginList.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    EmptyPage(
-                        modifier = Modifier.navigationBarsPadding(),
-                        icon = painterResource(R.drawable.extension_24px),
-                        title = stringResource(R.string.plugin_app_empty_title),
-                        description = stringResource(R.string.plugin_app_empty_desc)
-                    )
-                }
-            } else {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(appPluginList) { plugin ->
-                        AppCard(plugin)
+            Column(modifier = Modifier.fillMaxSize()) {
+                if (appPluginList.isEmpty()) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        EmptyPage(
+                            modifier = Modifier.navigationBarsPadding(),
+                            icon = painterResource(R.drawable.extension_24px),
+                            title = stringResource(R.string.plugin_app_empty_title),
+                            description = stringResource(R.string.plugin_app_empty_desc)
+                        )
                     }
-                    item {
-                        Spacer(Modifier.height(12.dp))
+                } else {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        items(appPluginList) { plugin ->
+                            AppCard(plugin)
+                        }
+                        item {
+                            Spacer(Modifier.height(12.dp))
+                        }
                     }
                 }
             }
