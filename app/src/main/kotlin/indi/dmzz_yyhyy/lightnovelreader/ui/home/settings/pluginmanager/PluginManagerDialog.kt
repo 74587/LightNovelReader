@@ -152,7 +152,7 @@ private fun InstallIndicator(
             ) {
                 Icon(
                     painter = painterResource(R.drawable.info_24px),
-                    contentDescription = stringResource(R.string.confirm),
+                    contentDescription = "confirm",
                     tint = colorScheme.surface,
                     modifier = Modifier.size(20.dp)
                 )
