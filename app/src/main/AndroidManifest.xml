@@ -62,13 +62,6 @@
         android:value="androidx.startup"
         tools:node="remove" />
     </provider>
-    <receiver
-        android:name=".data.plugin.DebugReceiver"
-        android:exported="true">
-      <intent-filter>
-        <action android:name="indi.dmzz_yyhyy.lightnovelreader.ACTION_PLUGIN_INSTALLED" />
-      </intent-filter>
-    </receiver>
 
   </application>
 

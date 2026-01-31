@@ -173,7 +173,7 @@ private fun AppCard(
                 modifier = Modifier.padding(horizontal = 12.dp).size(24.dp),
                 painter = painterResource(R.drawable.open_in_new_24px),
                 tint = colorScheme.onSurfaceVariant,
-                contentDescription = stringResource(R.string.plugin_cd_open_detail),
+                contentDescription = "detail",
             )
         }
     }

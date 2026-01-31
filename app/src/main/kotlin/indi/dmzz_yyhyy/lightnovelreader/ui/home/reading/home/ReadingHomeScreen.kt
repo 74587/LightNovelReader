@@ -394,7 +394,7 @@ private fun TopBar(
             ) {
                 Icon(
                     painter = painterResource(R.drawable.analytics_24px),
-                    contentDescription = stringResource(R.string.nav_statistics)
+                    contentDescription = "statistics"
                 )
             }
         }
