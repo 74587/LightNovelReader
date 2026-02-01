@@ -95,8 +95,6 @@ class FlipPageContentViewModel(
             snapshotFlow { uiState.readingChapterContent.title }.collect { title ->
                 bookRepository.updateUserReadingData(uiState.bookId) {
                     it.apply {
-                        lastReadChapterProgress =
-                            if (it.lastReadChapterId == id) it.lastReadChapterProgress else 0f
                         lastReadTime = LocalDateTime.now()
                         lastReadChapterId = id
                         lastReadChapterTitle = title
@@ -116,8 +114,7 @@ class FlipPageContentViewModel(
         }
         coroutineScope.launch(Dispatchers.IO) {
             bookRepository.getUserReadingData(uiState.bookId).let {
-                if (it.lastReadChapterId == uiState.readingChapterContent.id)
-                    notRecoveredProgress = it.lastReadChapterProgress
+                notRecoveredProgress = it.chapterReadingProgressMap[id] ?: 0f
             }
         }
     }

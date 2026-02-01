@@ -130,8 +130,6 @@ class ScrollContentViewModel(
                         )
                     bookRepository.updateUserReadingData(uiState.bookId) {
                         it.apply {
-                            lastReadChapterProgress =
-                                if (it.lastReadChapterId == uiState.readingChapterContent.id) it.lastReadChapterProgress else 0f
                             lastReadTime = LocalDateTime.now()
                             lastReadChapterId = uiState.readingChapterContent.id
                             lastReadChapterTitle = uiState.readingChapterContent.title
@@ -157,8 +155,6 @@ class ScrollContentViewModel(
                         )
                     bookRepository.updateUserReadingData(uiState.bookId) {
                         it.apply {
-                            lastReadChapterProgress =
-                                if (it.lastReadChapterId == uiState.readingChapterContent.id) it.lastReadChapterProgress else 0f
                             lastReadTime = LocalDateTime.now()
                             lastReadChapterId = uiState.readingChapterContent.id
                             lastReadChapterTitle = uiState.readingChapterContent.title
@@ -201,8 +197,6 @@ class ScrollContentViewModel(
             val chapterContent = bookRepository.getChapterContent(id, uiState.bookId, WebDataSourcePriority.High)
             bookRepository.updateUserReadingData(uiState.bookId) {
                 it.apply {
-                    lastReadChapterProgress =
-                        if (it.lastReadChapterId == id) it.lastReadChapterProgress else 0f
                     lastReadTime = LocalDateTime.now()
                     lastReadChapterId = id
                     lastReadChapterTitle = chapterContent.title
@@ -243,8 +237,7 @@ class ScrollContentViewModel(
                     bookRepository.getChapterContent(chapterContent.nextChapter, uiState.bookId)
                 }
                 val userReadingData = bookRepository.getUserReadingData(uiState.bookId)
-                if (userReadingData.lastReadChapterId == id)
-                    uiState.readingProgress = userReadingData.lastReadChapterProgress
+                uiState.readingProgress = userReadingData.chapterReadingProgressMap[id] ?: 0f
                 coroutineScope.launch {
                     val itemIndex = uiState.contentList.indexOfFirst { it.id == id }
                     if (itemIndex >= 0) {
@@ -253,12 +246,7 @@ class ScrollContentViewModel(
                             itemIndex,
                             uiState.lazyListState.layoutInfo.visibleItemsInfo.firstOrNull { it.key == id }
                                 ?.let {
-                                    if (userReadingData.lastReadChapterId == uiState.readingChapterContent.id)
-                                        ((it.size * userReadingData.lastReadChapterProgress).toInt() - lazyColumnSize.height).coerceAtLeast(
-                                            0
-                                        )
-                                    else
-                                        0
+                                    ((it.size * (userReadingData.chapterReadingProgressMap[id] ?: 0f)).toInt() - lazyColumnSize.height).coerceAtLeast(0)
                                 } ?: 0
                         )
                     }

@@ -4,7 +4,7 @@ import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import java.time.LocalDateTime
@@ -17,8 +17,7 @@ interface UserReadingData: CanBeEmpty {
     val readingProgress: Float
     val lastReadChapterId: String
     val lastReadChapterTitle: String
-    val lastReadChapterProgress: Float
-    val readCompletedChapterIds: List<String>
+    val chapterReadingProgressMap: Map<String, Float>
 
     override fun isEmpty(): Boolean = id.isEmpty()
 
@@ -30,15 +29,14 @@ interface UserReadingData: CanBeEmpty {
             0.0f,
             "",
             "",
-            0.0f,
-            readCompletedChapterIds = emptyList()
+            emptyMap()
         )
     }
 
     fun toMutable(): MutableUserReadingData {
         if (this is MutableUserReadingData)
             return this
-        return MutableUserReadingData(id, lastReadTime, totalReadTime, readingProgress, lastReadChapterId, lastReadChapterTitle, lastReadChapterProgress, readCompletedChapterIds)
+        return MutableUserReadingData(id, lastReadTime, totalReadTime, readingProgress, lastReadChapterId, lastReadChapterTitle, chapterReadingProgressMap)
     }
 }
 
@@ -49,8 +47,7 @@ class MutableUserReadingData(
     readingProgress: Float,
     lastReadChapterId: String,
     lastReadChapterTitle: String,
-    lastReadChapterProgress: Float,
-    readCompletedChapterIds: List<String>
+    chapterReadingProgressMap: Map<String, Float>
 ): UserReadingData {
     override var id by mutableStateOf(id)
     override var lastReadTime by mutableStateOf(lastReadTime)
@@ -58,8 +55,7 @@ class MutableUserReadingData(
     override var readingProgress by mutableFloatStateOf(readingProgress)
     override var lastReadChapterId by mutableStateOf(lastReadChapterId)
     override var lastReadChapterTitle by mutableStateOf(lastReadChapterTitle)
-    override var lastReadChapterProgress by mutableFloatStateOf(lastReadChapterProgress)
-    override var readCompletedChapterIds = mutableStateListOf<String>().apply { addAll(readCompletedChapterIds) }
+    override val chapterReadingProgressMap = mutableStateMapOf(*chapterReadingProgressMap.map { Pair(it.key, it.value) }.toTypedArray())
     
     companion object {
         fun empty(): MutableUserReadingData = MutableUserReadingData(
@@ -69,8 +65,7 @@ class MutableUserReadingData(
             0.0f,
             "",
             "",
-            0.0f,
-            readCompletedChapterIds = emptyList()
+            emptyMap()
         )
     }
     
@@ -81,8 +76,12 @@ class MutableUserReadingData(
         this.readingProgress = userReadingData.readingProgress
         this.lastReadChapterId = userReadingData.lastReadChapterId
         this.lastReadChapterTitle = userReadingData.lastReadChapterTitle
-        this.lastReadChapterProgress = userReadingData.lastReadChapterProgress
-        this.readCompletedChapterIds.clear()
-        this.readCompletedChapterIds.addAll(userReadingData.readCompletedChapterIds)
+        this.chapterReadingProgressMap.clear()
+        this.chapterReadingProgressMap.putAll(userReadingData.chapterReadingProgressMap)
+    }
+
+    fun updateChapterReadingProgress(chapterId: String, progress: Float) {
+        val progress = progress.coerceAtLeast(this.chapterReadingProgressMap[chapterId] ?: 0f)
+        this.chapterReadingProgressMap[chapterId] = progress
     }
 }

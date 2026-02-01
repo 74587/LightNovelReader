@@ -253,8 +253,12 @@ class BookRepository @Inject constructor(
                     readingProgress = if (bookUserData.readingProgress > it.readingProgress) bookUserData.readingProgress else it.readingProgress,
                     lastReadChapterId = bookUserData.lastReadChapterId,
                     lastReadChapterTitle = bookUserData.lastReadChapterTitle,
-                    lastReadChapterProgress = bookUserData.lastReadChapterProgress,
-                    readCompletedChapterIds = (bookUserData.readCompletedChapterIds + it.readCompletedChapterIds).distinct()
+                    chapterReadingProgressMap = bookUserData.chapterReadingProgressMap.toMutableMap().apply {
+                        it.chapterReadingProgressMap.forEach { (key, value) ->
+                            val maxProgress = value.coerceAtLeast(this[key] ?: 0f)
+                            this[key] = maxProgress
+                        }
+                    }
                 )
             }
         }

@@ -128,7 +128,9 @@ dependencies {
     implementation(libs.work.runtime.ktx)
     // Potato EPUB
     implementation(project(":epub"))
+    // Kotlin Serialization
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.serialization.cbor)
     // Swipe
     implementation(libs.swipe)
     // Chart

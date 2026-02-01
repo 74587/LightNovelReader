@@ -109,18 +109,15 @@ class ReaderViewModel @Inject constructor(
 
             bookRepository.updateUserReadingData(bookId) { userReadingData ->
                 Log.v("ReaderViewModel", "$bookId/$chapterId Saving progress $progress. (${_uiState.contentUiState.readingChapterContent.title})")
-                val completed = progress >= 0.95f && !userReadingData.readCompletedChapterIds.contains(chapterId)
                 userReadingData.apply {
                     lastReadTime = currentTime
                     lastReadChapterId = chapterId
                     lastReadChapterTitle = title
-                    lastReadChapterProgress = progress.coerceIn(0f, 1f)
+                    userReadingData.updateChapterReadingProgress(chapterId, progress)
                     val total = _uiState.bookVolumes.volumes.sumOf { it.chapters.size }
                     if (total > 0) {
-                        val base = userReadingData.readCompletedChapterIds.size + if (completed) 1 else 0
-                        readingProgress = base / total.toFloat()
+                        readingProgress = userReadingData.chapterReadingProgressMap.values.sum() / total
                     }
-                    if (completed) readCompletedChapterIds.add(chapterId)
                 }
             }
         }

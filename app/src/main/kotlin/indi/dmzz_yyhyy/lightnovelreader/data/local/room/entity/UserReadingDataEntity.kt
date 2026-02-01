@@ -4,11 +4,12 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
+import indi.dmzz_yyhyy.lightnovelreader.data.local.room.converter.ChapterReadingProgressMapConverter
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.converter.ListConverter
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.converter.LocalDateTimeConverter
 import java.time.LocalDateTime
 
-@TypeConverters(ListConverter::class, LocalDateTimeConverter::class)
+@TypeConverters(ListConverter::class, LocalDateTimeConverter::class, ChapterReadingProgressMapConverter::class)
 @Entity(tableName = "user_reading_data")
 data class UserReadingDataEntity(
     @PrimaryKey
@@ -23,8 +24,6 @@ data class UserReadingDataEntity(
     val lastReadChapterId: String,
     @ColumnInfo(name = "last_read_chapter_title")
     val lastReadChapterTitle: String,
-    @ColumnInfo(name = "last_read_chapter_progress")
-    val lastReadChapterProgress: Float,
-    @ColumnInfo(name = "read_completed_chapter_ids", defaultValue = "")
-    val readCompletedChapterIds: List<String>,
+    @ColumnInfo(name = "chapter_reading_progress_map")
+    val chapterReadingProgress: Map<String, Float>
 )

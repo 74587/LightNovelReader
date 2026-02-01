@@ -3,7 +3,8 @@ package indi.dmzz_yyhyy.lightnovelreader.data.local.room.dao
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
-import indi.dmzz_yyhyy.lightnovelreader.data.local.room.converter.ListConverter.stringListToString
+import androidx.room.TypeConverters
+import indi.dmzz_yyhyy.lightnovelreader.data.local.room.converter.ChapterReadingProgressMapConverter
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.converter.LocalDateTimeConverter.dateToString
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.entity.UserReadingDataEntity
 import io.nightfish.lightnovelreader.api.book.UserReadingData
@@ -11,8 +12,9 @@ import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserReadingDataDao {
-    @Query("replace into user_reading_data (id, last_read_time, total_read_time, reading_progress, last_read_chapter_id, last_read_chapter_title, last_read_chapter_progress, read_completed_chapter_ids) " +
-            "values (:id, :lastReadTime, :totalReadTime, :readingProgress, :lastReadChapterId, :lastReadChapterTitle, :lastReadChapterProgress, :readCompletedChapterIds)")
+    @TypeConverters(ChapterReadingProgressMapConverter::class)
+    @Query("replace into user_reading_data (id, last_read_time, total_read_time, reading_progress, last_read_chapter_id, last_read_chapter_title, chapter_reading_progress_map) " +
+            "values (:id, :lastReadTime, :totalReadTime, :readingProgress, :lastReadChapterId, :lastReadChapterTitle, :chapterReadingProgress)")
     fun update(
         id: String,
         lastReadTime: String,
@@ -20,8 +22,7 @@ interface UserReadingDataDao {
         readingProgress: Float,
         lastReadChapterId: String,
         lastReadChapterTitle: String,
-        lastReadChapterProgress: Float,
-        readCompletedChapterIds: String
+        chapterReadingProgress: Map<String, Float>
     )
 
     @Transaction
@@ -34,8 +35,7 @@ interface UserReadingDataDao {
                 userReading.readingProgress,
                 userReading.lastReadChapterId,
                 userReading.lastReadChapterTitle,
-                userReading.lastReadChapterProgress,
-                stringListToString(userReading.readCompletedChapterIds)
+                userReading.chapterReadingProgressMap
             )
         }
     }

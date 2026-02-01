@@ -49,8 +49,7 @@ class LocalBookDataSource @Inject constructor(
             it.readingProgress,
             it.lastReadChapterId,
             it.lastReadChapterTitle,
-            it.lastReadChapterProgress,
-            it.readCompletedChapterIds
+            it.chapterReadingProgress
         )
     }
 
@@ -63,8 +62,7 @@ class LocalBookDataSource @Inject constructor(
             it.readingProgress,
             it.lastReadChapterId,
             it.lastReadChapterTitle,
-            it.lastReadChapterProgress,
-            it.readCompletedChapterIds
+            it.chapterReadingProgress
         )
     }
 
@@ -77,15 +75,14 @@ class LocalBookDataSource @Inject constructor(
                 it.readingProgress,
                 it.lastReadChapterId,
                 it.lastReadChapterTitle,
-                it.lastReadChapterProgress,
-                it.readCompletedChapterIds
+                it.chapterReadingProgress
             )
         } ?: MutableUserReadingData.empty().apply { this.id = id }
         userReadingDataDao.update(update(userReadingData.apply { this.id = id }).let {
             var data = it.toMutable()
             if (it.readingProgress.isNaN()) data = data.apply { this.readingProgress = 0.0f }
-            if (it.lastReadChapterProgress.isNaN()) data =
-                data.apply { this.lastReadChapterProgress = 0.0f }
+            data.chapterReadingProgressMap.clear()
+            data.chapterReadingProgressMap.putAll(it.chapterReadingProgressMap)
             return@let data
         })
     }
@@ -99,8 +96,7 @@ class LocalBookDataSource @Inject constructor(
                 it.readingProgress,
                 it.lastReadChapterId,
                 it.lastReadChapterTitle,
-                it.lastReadChapterProgress,
-                it.readCompletedChapterIds
+                it.chapterReadingProgress
             )
         }
 
