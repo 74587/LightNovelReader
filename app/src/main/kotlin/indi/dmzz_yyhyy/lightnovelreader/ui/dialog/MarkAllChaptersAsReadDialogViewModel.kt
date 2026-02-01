@@ -70,7 +70,7 @@ class MarkAllChaptersAsReadDialogViewModel @Inject constructor(
                         userReadingData.updateChapterReadingProgress(id, 1f)
                     }
                     readingProgress = if (allChapterIds.isEmpty()) 0f
-                    else userReadingData.chapterReadingProgressMap.values.sum() / allChapterIds.size
+                    else userReadingData.currentChapterReadingProgressMap.values.sum() / allChapterIds.size
                 }
             }
         }

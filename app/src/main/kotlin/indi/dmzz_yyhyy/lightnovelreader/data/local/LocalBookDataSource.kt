@@ -49,7 +49,9 @@ class LocalBookDataSource @Inject constructor(
             it.readingProgress,
             it.lastReadChapterId,
             it.lastReadChapterTitle,
-            it.chapterReadingProgress
+            it.currentChapterReadingProgress,
+            it.maxChapterReadingProgress
+
         )
     }
 
@@ -62,7 +64,8 @@ class LocalBookDataSource @Inject constructor(
             it.readingProgress,
             it.lastReadChapterId,
             it.lastReadChapterTitle,
-            it.chapterReadingProgress
+            it.currentChapterReadingProgress,
+            it.maxChapterReadingProgress
         )
     }
 
@@ -75,16 +78,11 @@ class LocalBookDataSource @Inject constructor(
                 it.readingProgress,
                 it.lastReadChapterId,
                 it.lastReadChapterTitle,
-                it.chapterReadingProgress
+                it.currentChapterReadingProgress,
+                it.maxChapterReadingProgress
             )
         } ?: MutableUserReadingData.empty().apply { this.id = id }
-        userReadingDataDao.update(update(userReadingData.apply { this.id = id }).let {
-            var data = it.toMutable()
-            if (it.readingProgress.isNaN()) data = data.apply { this.readingProgress = 0.0f }
-            data.chapterReadingProgressMap.clear()
-            data.chapterReadingProgressMap.putAll(it.chapterReadingProgressMap)
-            return@let data
-        })
+        userReadingDataDao.update(update(userReadingData.apply { this.id = id }))
     }
 
     override fun getAllUserReadingData(): List<UserReadingData> =
@@ -96,7 +94,8 @@ class LocalBookDataSource @Inject constructor(
                 it.readingProgress,
                 it.lastReadChapterId,
                 it.lastReadChapterTitle,
-                it.chapterReadingProgress
+                it.currentChapterReadingProgress,
+                it.maxChapterReadingProgress
             )
         }
 

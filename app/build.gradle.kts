@@ -1,9 +1,9 @@
+import com.android.build.api.dsl.ApplicationExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.dagger.hilt)
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.kotlin.serialization)
@@ -11,7 +11,7 @@ plugins {
     id("com.mikepenz.aboutlibraries.plugin.android")
 }
 
-android {
+extensions.configure(ApplicationExtension::class.java) {
     namespace = "indi.dmzz_yyhyy.lightnovelreader"
     compileSdk = 36
 
@@ -40,14 +40,18 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            setProperty("archivesBaseName", "LightNovelReader-${defaultConfig.versionName}")
         }
+
         debug {
             applicationIdSuffix = ".debug"
             isDebuggable = true
             isJniDebuggable = true
             vcsInfo.include = false
-            setProperty("archivesBaseName", "LightNovelReader-${defaultConfig.versionCode}")
+            versionNameSuffix = "-defaultConfig.versionCode.toString()"
+        }
+
+        base {
+            archivesName = "LightNovelReader-${defaultConfig.versionName}"
         }
     }
     compileOptions {
@@ -64,9 +68,10 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-    composeCompiler {
-        includeSourceInformation = true
-    }
+}
+
+composeCompiler {
+    includeSourceInformation = true
 }
 
 tasks.withType<KotlinJvmCompile>().configureEach {
@@ -163,12 +168,12 @@ configurations.implementation {
 
 tasks.register("printVersion") {
     doFirst {
-        println(android.defaultConfig.versionName)
+        println(extensions.getByType(ApplicationExtension::class.java).defaultConfig.versionName)
     }
 }
 
 tasks.register("printVersionCode") {
     doFirst {
-        println(android.defaultConfig.versionCode)
+        println(extensions.getByType(ApplicationExtension::class.java).defaultConfig.versionCode)
     }
 }

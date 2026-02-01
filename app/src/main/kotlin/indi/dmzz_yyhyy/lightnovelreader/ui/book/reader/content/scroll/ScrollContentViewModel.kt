@@ -1,11 +1,13 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.content.scroll
 
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.unit.IntSize
 import indi.dmzz_yyhyy.lightnovelreader.data.book.BookRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.content.ContentComponentRepository
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.SettingState
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.content.ContentViewModel
+import indi.dmzz_yyhyy.lightnovelreader.utils.debugPrint
 import indi.dmzz_yyhyy.lightnovelreader.utils.throttleLatest
 import io.nightfish.lightnovelreader.api.web.WebDataSourcePriority
 import kotlinx.coroutines.CoroutineScope
@@ -42,7 +44,7 @@ class ScrollContentViewModel(
 
     init {
         coroutineScope.launch {
-            settingState.isUsingContinuousScrollingUserData.getFlowWithDefault(false).collect {
+            settingState.isUsingContinuousScrollingUserData.getFlowWithDefault(true).collect {
                 if (it) {
                     progressScrollLoad()
                     if (uiState.contentList.size == 1) {
@@ -188,11 +190,13 @@ class ScrollContentViewModel(
         }
     }
 
+    @Suppress("AssignedValueIsNeverRead")
     override fun changeChapter(id: String) {
         loadChapterJobs.forEach(Job::cancel)
         uiState.contentList.clear()
         uiState.readingContentId = id
         uiState.readingProgress = 0f
+        uiState.lazyListState = LazyListState()
         coroutineScope.launch(Dispatchers.IO) {
             val chapterContent = bookRepository.getChapterContent(id, uiState.bookId, WebDataSourcePriority.High)
             bookRepository.updateUserReadingData(uiState.bookId) {
@@ -204,7 +208,7 @@ class ScrollContentViewModel(
             }
         }.let(loadChapterJobs::add)
         coroutineScope.launch(Dispatchers.IO) {
-            val isCont = settingState.isUsingContinuousScrollingUserData.getOrDefault(false)
+            val isCont = settingState.isUsingContinuousScrollingUserData.getOrDefault(true)
             bookRepository.getChapterContentFlow(id, uiState.bookId, coroutineScope).collect { chapterContent ->
                 if (chapterContent.isEmpty() || chapterContent.id != uiState.readingContentId) return@collect
                 if (chapterContent.content == uiState.readingChapterContent.content &&
@@ -219,38 +223,42 @@ class ScrollContentViewModel(
                         bookRepository.getStateChapterContent(
                             chapterContent.lastChapter,
                             uiState.bookId,
-                            coroutineScope,
-                            WebDataSourcePriority.High
+                            coroutineScope
                         )
                     )
+                } else if (chapterContent.hasPrevChapter()) {
+                    bookRepository.getChapterContent(chapterContent.lastChapter, uiState.bookId)
                 }
                 uiState.contentList.add(chapterContent)
+                val userReadingData = bookRepository.getUserReadingData(uiState.bookId)
+                coroutineScope.launch {
+                    var flag = false
+                    val itemIndex = uiState.contentList.indexOfFirst { it.id == id }
+                    snapshotFlow { uiState.contentList[itemIndex] }.collect { content ->
+                        if (flag) return@collect
+                        if (content.isEmpty()) return@collect
+                        if (itemIndex >= 0) {
+                            uiState.lazyListState.requestScrollToItem(itemIndex)
+                            val item = uiState.lazyListState.layoutInfo.visibleItemsInfo.firstOrNull { it.key == id } ?: return@collect
+                            val offset = -((item.size * (userReadingData.currentChapterReadingProgressMap[id] ?: 0f)).toInt() - lazyColumnSize.height)
+                            uiState.lazyListState.requestScrollToItem(itemIndex, offset.debugPrint("ciallo"))
+                        }
+                        flag = true
+                    }
+                }.let(loadChapterJobs::add)
                 if (chapterContent.hasNextChapter() && isCont) {
                     uiState.contentList.add(
                         bookRepository.getStateChapterContent(
                             chapterContent.nextChapter,
                             uiState.bookId,
-                            coroutineScope
+                            coroutineScope,
+                            WebDataSourcePriority.High
                         )
                     )
                 } else if (chapterContent.hasNextChapter()) {
                     bookRepository.getChapterContent(chapterContent.nextChapter, uiState.bookId)
                 }
-                val userReadingData = bookRepository.getUserReadingData(uiState.bookId)
-                uiState.readingProgress = userReadingData.chapterReadingProgressMap[id] ?: 0f
-                coroutineScope.launch {
-                    val itemIndex = uiState.contentList.indexOfFirst { it.id == id }
-                    if (itemIndex >= 0) {
-                        uiState.lazyListState.scrollToItem(itemIndex)
-                        uiState.lazyListState.scrollToItem(
-                            itemIndex,
-                            uiState.lazyListState.layoutInfo.visibleItemsInfo.firstOrNull { it.key == id }
-                                ?.let {
-                                    ((it.size * (userReadingData.chapterReadingProgressMap[id] ?: 0f)).toInt() - lazyColumnSize.height).coerceAtLeast(0)
-                                } ?: 0
-                        )
-                    }
-                }.let(loadChapterJobs::add)
+                uiState.readingProgress = userReadingData.currentChapterReadingProgressMap[id] ?: 0f
             }
         }.let(loadChapterJobs::add)
     }

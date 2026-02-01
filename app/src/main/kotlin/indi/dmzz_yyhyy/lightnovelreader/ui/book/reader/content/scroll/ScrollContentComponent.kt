@@ -1,3 +1,5 @@
+@file:Suppress("AssignedValueIsNeverRead")
+
 package indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.content.scroll
 
 import androidx.compose.animation.AnimatedVisibility
@@ -5,8 +7,19 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
@@ -33,7 +46,11 @@ import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.SettingState
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Loading
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.data.MenuOptions
-import indi.dmzz_yyhyy.lightnovelreader.utils.*
+import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
+import indi.dmzz_yyhyy.lightnovelreader.utils.readerTextColor
+import indi.dmzz_yyhyy.lightnovelreader.utils.rememberReaderBackgroundPainter
+import indi.dmzz_yyhyy.lightnovelreader.utils.rememberReaderFontFamily
+import indi.dmzz_yyhyy.lightnovelreader.utils.showSnackbar
 import kotlinx.coroutines.launch
 
 @Composable
@@ -217,81 +234,78 @@ fun ScrollContentTextComponent(
             state = listState,
         ) {
             items(
-                count = uiState.contentList.size,
-                key = { index -> uiState.contentList.getOrNull(index)?.id ?: -1 } ,
-                contentType = { { null } }
-            ) { index ->
-                uiState.contentList.getOrNull(index)?.let{ chapterContent ->
-                    Column(
-                        Modifier.defaultMinSize(
-                            minHeight = with(density) {
-                                screenHeight.toDp()
-                            }
-                        )
-                    ) {
-                        if (settingState.isUsingContinuousScrolling) {
-                            val titleRegex = Regex("^(第[一二三四五六七八九十]+卷)\\s+(.*)")
-                            val matchResult = titleRegex.find(chapterContent.title)
+                items = uiState.contentList,
+                key = { it.id }
+            ) { chapterContent ->
+                Column(
+                    Modifier.defaultMinSize(
+                        minHeight = with(density) {
+                            screenHeight.toDp()
+                        }
+                    )
+                ) {
+                    if (settingState.isUsingContinuousScrolling) {
+                        val titleRegex = Regex("^(第[一二三四五六七八九十]+卷)\\s+(.*)")
+                        val matchResult = titleRegex.find(chapterContent.title)
 
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(vertical = 36.dp),
-                                verticalArrangement = Arrangement.spacedBy(16.dp)
-                            ) {
-                                if (matchResult != null) {
-                                    val (volumeTitle, chapterTitle) = matchResult.destructured
-                                    Text(
-                                        text = volumeTitle,
-                                        textAlign = TextAlign.Center,
-                                        fontSize = (settingState.fontSize + 2).sp,
-                                        fontWeight = FontWeight.Medium,
-                                        fontFamily = fontFamily,
-                                        color = textColor,
-                                        modifier = Modifier.fillMaxWidth()
-                                    )
-                                    Text(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 8.dp),
-                                        text = chapterTitle,
-                                        textAlign = TextAlign.Center,
-                                        fontSize = (settingState.fontSize + 6).sp,
-                                        lineHeight = (settingState.fontSize + settingState.fontLineHeight + 6).sp,
-                                        fontWeight = FontWeight((settingState.fontWeigh.toInt() + 100)),
-                                        fontFamily = fontFamily,
-                                        color = textColor
-                                    )
-                                } else {
-                                    Text(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .padding(horizontal = 8.dp),
-                                        text = chapterContent.title,
-                                        textAlign = TextAlign.Center,
-                                        fontSize = (settingState.fontSize + 6).sp,
-                                        lineHeight = (settingState.fontSize + settingState.fontLineHeight + 6).sp,
-                                        fontWeight = FontWeight((settingState.fontWeigh.toInt() + 100)),
-                                        fontFamily = fontFamily,
-                                        color = textColor
-                                    )
-                                }
-                                Box(
-                                    modifier = Modifier.fillMaxWidth(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    HorizontalDivider(
-                                        modifier = Modifier.width(48.dp),
-                                        color = textColor
-                                    )
-                                }
-                                Spacer(Modifier.height(16.dp))
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 36.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp)
+                        ) {
+                            if (matchResult != null) {
+                                val (volumeTitle, chapterTitle) = matchResult.destructured
+                                Text(
+                                    text = volumeTitle,
+                                    textAlign = TextAlign.Center,
+                                    fontSize = (settingState.fontSize + 2).sp,
+                                    fontWeight = FontWeight.Medium,
+                                    fontFamily = fontFamily,
+                                    color = textColor,
+                                    modifier = Modifier.fillMaxWidth()
+                                )
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 8.dp),
+                                    text = chapterTitle,
+                                    textAlign = TextAlign.Center,
+                                    fontSize = (settingState.fontSize + 6).sp,
+                                    lineHeight = (settingState.fontSize + settingState.fontLineHeight + 6).sp,
+                                    fontWeight = FontWeight((settingState.fontWeigh.toInt() + 100)),
+                                    fontFamily = fontFamily,
+                                    color = textColor
+                                )
+                            } else {
+                                Text(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(horizontal = 8.dp),
+                                    text = chapterContent.title,
+                                    textAlign = TextAlign.Center,
+                                    fontSize = (settingState.fontSize + 6).sp,
+                                    lineHeight = (settingState.fontSize + settingState.fontLineHeight + 6).sp,
+                                    fontWeight = FontWeight((settingState.fontWeigh.toInt() + 100)),
+                                    fontFamily = fontFamily,
+                                    color = textColor
+                                )
                             }
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                HorizontalDivider(
+                                    modifier = Modifier.width(48.dp),
+                                    color = textColor
+                                )
+                            }
+                            Spacer(Modifier.height(16.dp))
                         }
-                        val contentData = remember(chapterContent.content) { uiState.getContentData(chapterContent.content) }
-                        contentData.components.fastForEach {
-                            it.Content(Modifier)
-                        }
+                    }
+                    val contentData = remember(chapterContent.content) { uiState.getContentData(chapterContent.content) }
+                    contentData.components.fastForEach {
+                        it.Content(Modifier)
                     }
                 }
             }

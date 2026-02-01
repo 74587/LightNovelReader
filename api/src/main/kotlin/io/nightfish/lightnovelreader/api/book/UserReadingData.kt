@@ -17,7 +17,8 @@ interface UserReadingData: CanBeEmpty {
     val readingProgress: Float
     val lastReadChapterId: String
     val lastReadChapterTitle: String
-    val chapterReadingProgressMap: Map<String, Float>
+    val currentChapterReadingProgressMap: Map<String, Float>
+    val maxChapterReadingProgressMap: Map<String, Float>
 
     override fun isEmpty(): Boolean = id.isEmpty()
 
@@ -29,6 +30,7 @@ interface UserReadingData: CanBeEmpty {
             0.0f,
             "",
             "",
+            emptyMap(),
             emptyMap()
         )
     }
@@ -36,7 +38,7 @@ interface UserReadingData: CanBeEmpty {
     fun toMutable(): MutableUserReadingData {
         if (this is MutableUserReadingData)
             return this
-        return MutableUserReadingData(id, lastReadTime, totalReadTime, readingProgress, lastReadChapterId, lastReadChapterTitle, chapterReadingProgressMap)
+        return MutableUserReadingData(id, lastReadTime, totalReadTime, readingProgress, lastReadChapterId, lastReadChapterTitle, currentChapterReadingProgressMap, maxChapterReadingProgressMap)
     }
 }
 
@@ -47,7 +49,8 @@ class MutableUserReadingData(
     readingProgress: Float,
     lastReadChapterId: String,
     lastReadChapterTitle: String,
-    chapterReadingProgressMap: Map<String, Float>
+    currentChapterReadingProgressMap: Map<String, Float>,
+    maxChapterReadingProgressMap: Map<String, Float>
 ): UserReadingData {
     override var id by mutableStateOf(id)
     override var lastReadTime by mutableStateOf(lastReadTime)
@@ -55,7 +58,8 @@ class MutableUserReadingData(
     override var readingProgress by mutableFloatStateOf(readingProgress)
     override var lastReadChapterId by mutableStateOf(lastReadChapterId)
     override var lastReadChapterTitle by mutableStateOf(lastReadChapterTitle)
-    override val chapterReadingProgressMap = mutableStateMapOf(*chapterReadingProgressMap.map { Pair(it.key, it.value) }.toTypedArray())
+    override val currentChapterReadingProgressMap = mutableStateMapOf(*currentChapterReadingProgressMap.map { Pair(it.key, it.value) }.toTypedArray())
+    override val maxChapterReadingProgressMap = mutableStateMapOf(*maxChapterReadingProgressMap.map { Pair(it.key, it.value) }.toTypedArray())
     
     companion object {
         fun empty(): MutableUserReadingData = MutableUserReadingData(
@@ -65,6 +69,7 @@ class MutableUserReadingData(
             0.0f,
             "",
             "",
+            emptyMap(),
             emptyMap()
         )
     }
@@ -76,12 +81,15 @@ class MutableUserReadingData(
         this.readingProgress = userReadingData.readingProgress
         this.lastReadChapterId = userReadingData.lastReadChapterId
         this.lastReadChapterTitle = userReadingData.lastReadChapterTitle
-        this.chapterReadingProgressMap.clear()
-        this.chapterReadingProgressMap.putAll(userReadingData.chapterReadingProgressMap)
+        this.currentChapterReadingProgressMap.clear()
+        this.currentChapterReadingProgressMap.putAll(userReadingData.currentChapterReadingProgressMap)
+        this.maxChapterReadingProgressMap.clear()
+        this.maxChapterReadingProgressMap.putAll(userReadingData.maxChapterReadingProgressMap)
     }
 
     fun updateChapterReadingProgress(chapterId: String, progress: Float) {
-        val progress = progress.coerceAtLeast(this.chapterReadingProgressMap[chapterId] ?: 0f)
-        this.chapterReadingProgressMap[chapterId] = progress
+        val maxProgress = progress.coerceAtLeast(this.maxChapterReadingProgressMap[chapterId] ?: 0f)
+        this.currentChapterReadingProgressMap[chapterId] = progress
+        this.maxChapterReadingProgressMap[chapterId] = maxProgress
     }
 }

@@ -696,7 +696,13 @@ abstract class LightNovelReaderDatabase : RoomDatabase() {
                             cursor.getInt(cursor.columnNames.indexOfFirst { it == "total_read_time" })
                         )
                         contentValues.put(
-                            "chapter_reading_progress_map",
+                            "current_chapter_reading_progress_map",
+                            ChapterReadingProgressMapConverter.mapToByteArray(
+                                chapterReadingProgressMap
+                            )
+                        )
+                        contentValues.put(
+                            "max_chapter_reading_progress_map",
                             ChapterReadingProgressMapConverter.mapToByteArray(
                                 chapterReadingProgressMap
                             )

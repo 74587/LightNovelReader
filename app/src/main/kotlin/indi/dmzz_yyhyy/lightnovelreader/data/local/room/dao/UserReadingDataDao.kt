@@ -13,8 +13,8 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface UserReadingDataDao {
     @TypeConverters(ChapterReadingProgressMapConverter::class)
-    @Query("replace into user_reading_data (id, last_read_time, total_read_time, reading_progress, last_read_chapter_id, last_read_chapter_title, chapter_reading_progress_map) " +
-            "values (:id, :lastReadTime, :totalReadTime, :readingProgress, :lastReadChapterId, :lastReadChapterTitle, :chapterReadingProgress)")
+    @Query("replace into user_reading_data (id, last_read_time, total_read_time, reading_progress, last_read_chapter_id, last_read_chapter_title, current_chapter_reading_progress_map, max_chapter_reading_progress_map) " +
+            "values (:id, :lastReadTime, :totalReadTime, :readingProgress, :lastReadChapterId, :lastReadChapterTitle, :currentChapterReadingProgressMap, :maxChapterReadingProgressMap)")
     fun update(
         id: String,
         lastReadTime: String,
@@ -22,7 +22,8 @@ interface UserReadingDataDao {
         readingProgress: Float,
         lastReadChapterId: String,
         lastReadChapterTitle: String,
-        chapterReadingProgress: Map<String, Float>
+        currentChapterReadingProgressMap: Map<String, Float>,
+        maxChapterReadingProgressMap: Map<String, Float>
     )
 
     @Transaction
@@ -35,7 +36,8 @@ interface UserReadingDataDao {
                 userReading.readingProgress,
                 userReading.lastReadChapterId,
                 userReading.lastReadChapterTitle,
-                userReading.chapterReadingProgressMap
+                userReading.currentChapterReadingProgressMap,
+                userReading.maxChapterReadingProgressMap
             )
         }
     }

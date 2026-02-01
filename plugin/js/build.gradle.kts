@@ -1,14 +1,14 @@
+import com.android.build.api.dsl.ApplicationExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
 }
 
-android {
+extensions.configure(ApplicationExtension::class.java) {
     namespace = "io.nightfish.lightnovelreader.plugin.js"
     compileSdk = 36
 
@@ -36,15 +36,15 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    applicationVariants.all {
-        val variant = this
-        variant.outputs.all {
-            val outputImpl = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
-            val originalFileName = outputImpl.outputFileName
-            val newFileName = originalFileName.replace(".apk", ".apk.lnrp")
-            outputImpl.outputFileName = newFileName
-        }
-    }
+//    applicationVariants.all {
+//        val variant = this
+//        variant.outputs.all {
+//            val outputImpl = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
+//            val originalFileName = outputImpl.outputFileName
+//            val newFileName = originalFileName.replace(".apk", ".apk.lnrp")
+//            outputImpl.outputFileName = newFileName
+//        }
+//    }
 }
 
 tasks.withType<KotlinJvmCompile>().configureEach {

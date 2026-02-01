@@ -32,7 +32,7 @@ class MutableScrollContentUiSate(
 ) : ScrollContentUiState {
     override var bookId by mutableStateOf("")
     override var readingProgress by mutableFloatStateOf(0f)
-    override val lazyListState: LazyListState = LazyListState()
+    override var lazyListState: LazyListState by mutableStateOf(LazyListState())
     override var readingContentId by mutableStateOf("")
     override val contentList = mutableStateListOf<ChapterContent>()
 }

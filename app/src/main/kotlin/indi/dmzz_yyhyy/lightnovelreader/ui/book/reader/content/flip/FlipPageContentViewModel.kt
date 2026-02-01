@@ -114,7 +114,7 @@ class FlipPageContentViewModel(
         }
         coroutineScope.launch(Dispatchers.IO) {
             bookRepository.getUserReadingData(uiState.bookId).let {
-                notRecoveredProgress = it.chapterReadingProgressMap[id] ?: 0f
+                notRecoveredProgress = it.currentChapterReadingProgressMap[id] ?: 0f
             }
         }
     }

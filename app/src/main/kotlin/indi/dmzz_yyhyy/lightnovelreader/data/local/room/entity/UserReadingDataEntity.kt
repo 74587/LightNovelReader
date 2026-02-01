@@ -24,6 +24,8 @@ data class UserReadingDataEntity(
     val lastReadChapterId: String,
     @ColumnInfo(name = "last_read_chapter_title")
     val lastReadChapterTitle: String,
-    @ColumnInfo(name = "chapter_reading_progress_map")
-    val chapterReadingProgress: Map<String, Float>
+    @ColumnInfo(name = "current_chapter_reading_progress_map")
+    val currentChapterReadingProgress: Map<String, Float>,
+    @ColumnInfo(name = "max_chapter_reading_progress_map")
+    val maxChapterReadingProgress: Map<String, Float>
 )
