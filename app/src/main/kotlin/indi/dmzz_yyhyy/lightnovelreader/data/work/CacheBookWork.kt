@@ -32,7 +32,7 @@ class CacheBookWork @AssistedInject constructor(
         val bookVolumes = webBookDataSourceProvider.default.getBookVolumes(bookId)
         val total = bookVolumes.volumes.sumOf { it.chapters.size } + 1
         if (bookVolumes.volumes.isEmpty()) return Result.failure()
-        localBookDataSource.updateBookVolumes(bookId, bookVolumes)
+        localBookDataSource.updateBookVolumes(bookVolumes)
         bookVolumes.volumes.forEach { volume ->
             volume.chapters.map { it.id }.forEach { chapterId ->
                 val chapter = webBookDataSourceProvider.default.getChapterContent(

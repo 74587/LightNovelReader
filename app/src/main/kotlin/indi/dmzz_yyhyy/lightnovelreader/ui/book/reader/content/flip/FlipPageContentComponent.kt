@@ -39,12 +39,11 @@ import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.platform.LocalWindowInfo
-import androidx.compose.ui.util.fastForEach
+import androidx.compose.ui.res.stringResource
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.SettingState
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Loading
@@ -92,7 +91,6 @@ private fun SimpleFlipPageTextComponent(
     onClickNextChapter: () -> Unit,
 ) {
     val scope = rememberCoroutineScope()
-    val context = LocalContext.current
     val resources = LocalResources.current
     val density = LocalDensity.current
     val layoutDirection = LocalLayoutDirection.current
@@ -114,9 +112,8 @@ private fun SimpleFlipPageTextComponent(
             )
         val key = uiState.readingChapterContent.content.hashCode() + width + height
         if (key == contentKey) return@remember emptyList()
-        contentKey = key
         val result = mutableListOf<AbstractContentComponent<*>>()
-        uiState.getContentData(uiState.readingChapterContent.content).components.fastForEach {
+        uiState.contentComponentsMap[uiState.readingChapterContent.id]?.forEach {
             if (it is AbstractDivisibleContentComponent<*, *>) {
                 result.addAll(it.split(height, width))
             } else {
@@ -138,7 +135,8 @@ private fun SimpleFlipPageTextComponent(
 
     val windowInfo = LocalWindowInfo.current
     val screenWidthPx = windowInfo.containerSize.width.toFloat()
-
+    val readerFirstPageText = stringResource(R.string.reader_first_page)
+    val previousChapterText = stringResource(R.string.previous_chapter)
     fun lastPage(pagerState: PagerState) {
         if (pagerState.currentPage != 0) {
             scope.launch {
@@ -155,8 +153,8 @@ private fun SimpleFlipPageTextComponent(
                 coroutineScope = scope,
                 hostState = snackbarHostState,
                 duration = SnackbarDuration.Short,
-                message = context.getString(R.string.reader_first_page),
-                actionLabel = context.getString(R.string.previous_chapter)
+                message = readerFirstPageText,
+                actionLabel = previousChapterText
             ) {
                 if (it == SnackbarResult.ActionPerformed) {
                     onClickPrevChapter()
@@ -165,6 +163,9 @@ private fun SimpleFlipPageTextComponent(
 
         }
     }
+
+    val readerLastPageText = stringResource(R.string.reader_last_page)
+    val nextPageText = stringResource(R.string.next_chapter)
 
     fun nextPage(pagerState: PagerState) {
         if (pagerState.currentPage + 1 < pagerState.pageCount) {
@@ -182,8 +183,8 @@ private fun SimpleFlipPageTextComponent(
                 coroutineScope = scope,
                 hostState = snackbarHostState,
                 duration = SnackbarDuration.Short,
-                message = context.getString(R.string.reader_last_page),
-                actionLabel = context.getString(R.string.next_chapter)
+                message = readerLastPageText,
+                actionLabel = nextPageText
             ) {
                 if (it == SnackbarResult.ActionPerformed) {
                     onClickNextChapter()

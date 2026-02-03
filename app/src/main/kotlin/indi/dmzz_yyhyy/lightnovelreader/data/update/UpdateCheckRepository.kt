@@ -123,7 +123,7 @@ class UpdateCheckRepository @Inject constructor(
                         return@use
                     }
 
-                    response.body?.let { body ->
+                    response.body.let { body ->
                         val total = body.contentLength()
                         val input = body.byteStream()
                         FileOutputStream(tempFile).use { output ->
@@ -140,10 +140,6 @@ class UpdateCheckRepository @Inject constructor(
                                 _updatePhase.emit("下载中... $progress%")
                             }
                         }
-                    } ?: run {
-                        Log.e("UpdateChecker", "Response body is null")
-                        _updatePhase.emit("下载失败 (空响应)")
-                        return@launch
                     }
                 }
 

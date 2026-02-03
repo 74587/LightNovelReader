@@ -25,8 +25,8 @@ class LocalBookDataSource @Inject constructor(
     override suspend fun getBookInformation(id: String): BookInformation? = bookInformationDao.get(id)
     override fun updateBookInformation(info: BookInformation) = bookInformationDao.update(info)
     override suspend fun getBookVolumes(id: String): BookVolumes? = bookVolumesDao.getBookVolumes(id)
-    override fun updateBookVolumes(bookId: String, bookVolumes: BookVolumes) =
-        bookVolumesDao.update(bookId, bookVolumes)
+    override fun updateBookVolumes(bookVolumes: BookVolumes) =
+        bookVolumesDao.update(bookVolumes.bookId, bookVolumes)
 
     override suspend fun getChapterContent(id: String) = chapterContentDao.get(id)?.let {
         MutableChapterContent(

@@ -1,4 +1,3 @@
-import com.android.build.api.dsl.ApplicationExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
@@ -11,7 +10,7 @@ plugins {
     id("com.mikepenz.aboutlibraries.plugin.android")
 }
 
-extensions.configure(ApplicationExtension::class.java) {
+android {
     namespace = "indi.dmzz_yyhyy.lightnovelreader"
     compileSdk = 36
 
@@ -160,6 +159,8 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.okhttp3.logging.interceptor)
     implementation(libs.androidx.profileinstaller)
+    //RE2J
+    implementation(libs.re2j)
 }
 
 configurations.implementation {
@@ -168,12 +169,12 @@ configurations.implementation {
 
 tasks.register("printVersion") {
     doFirst {
-        println(extensions.getByType(ApplicationExtension::class.java).defaultConfig.versionName)
+        println(android.defaultConfig.versionName)
     }
 }
 
 tasks.register("printVersionCode") {
     doFirst {
-        println(extensions.getByType(ApplicationExtension::class.java).defaultConfig.versionCode)
+        println(android.defaultConfig.versionCode)
     }
 }

@@ -25,9 +25,8 @@ import io.nightfish.lightnovelreader.api.web.WebDataSourcePriority
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
@@ -73,63 +72,36 @@ class BookRepository @Inject constructor(
 
     override fun getBookInformationFlow(
         id: String,
-        coroutineScope: CoroutineScope,
         priority: WebDataSourcePriority
-    ): Flow<BookInformation> {
-        val bookInformation: MutableStateFlow<BookInformation> =
-            MutableStateFlow(BookInformation.empty(id))
-        coroutineScope.launch(Dispatchers.IO) {
-            bookInformation.update {
-                localBookDataSource.getBookInformation(id) ?: BookInformation.empty(id)
+    ): Flow<BookInformation> = flow {
+        val local = localBookDataSource.getBookInformation(id) ?: BookInformation.empty(id)
+        emit(local)
+        val remote = priority.get().getBookInformation(id)
+        if (remote.isEmpty()) return@flow
+        localBookDataSource.updateBookInformation(remote)
+        emit(remote)
+        val bookshelfBookMetadata = bookshelfRepository.getBookshelfBookMetadata(remote.id) ?: return@flow
+        if (bookshelfBookMetadata.lastUpdate.isBefore(remote.lastUpdated))
+            bookshelfBookMetadata.bookShelfIds.forEach {
+                bookshelfRepository.updateBookshelfBookMetadataLastUpdateTime(
+                    remote.id,
+                    remote.lastUpdated
+                )
+                bookshelfRepository.addUpdatedBooksIntoBookShelf(it, id)
             }
-            priority.get().getBookInformation(id).let { information ->
-                localBookDataSource.updateBookInformation(information)
-                localBookDataSource.getBookInformation(id)?.let { newInfo ->
-                    bookInformation.update { newInfo }
-                    bookshelfRepository.getBookshelfBookMetadata(information.id)
-                        ?.let { bookshelfBookMetadata ->
-                            if (bookshelfBookMetadata.lastUpdate.isBefore(information.lastUpdated))
-                                bookshelfBookMetadata.bookShelfIds.forEach {
-                                    bookshelfRepository.updateBookshelfBookMetadataLastUpdateTime(
-                                        information.id,
-                                        information.lastUpdated
-                                    )
-                                    bookshelfRepository.addUpdatedBooksIntoBookShelf(it, id)
-                                }
-                        }
-                }
-            }
-        }
-
-        return bookInformation.map {
-            textProcessingRepository.processBookInformation { it }
-        }
-    }
+    }.map { textProcessingRepository.processBookInformation { it } }
 
     override fun getBookVolumesFlow(
         id: String,
-        coroutineScope: CoroutineScope,
         priority: WebDataSourcePriority
-    ): Flow<BookVolumes> {
-        val bookVolumes: MutableStateFlow<BookVolumes> =
-            MutableStateFlow(BookVolumes.empty(id))
-
-        coroutineScope.launch(Dispatchers.IO) {
-            bookVolumes.update {
-                localBookDataSource.getBookVolumes(id) ?: BookVolumes.empty(id)
-            }
-            priority.get().getBookVolumes(id).let { newBookVolumes ->
-                localBookDataSource.updateBookVolumes(id, newBookVolumes)
-                bookVolumes.update {
-                    newBookVolumes
-                }
-            }
-        }
-
-        return bookVolumes.map {
-            textProcessingRepository.processBookVolumes { it }
-        }
-    }
+    ): Flow<BookVolumes> = flow {
+        val local = localBookDataSource.getBookVolumes(id) ?: BookVolumes.empty(id)
+        emit(local)
+        val remote = priority.get().getBookVolumes(id)
+        if (remote.isEmpty()) return@flow
+        localBookDataSource.updateBookVolumes(remote)
+        emit(remote)
+    }.map { textProcessingRepository.processBookVolumes { it } }
 
     override fun getStateChapterContent(
         chapterId: String,
@@ -183,40 +155,20 @@ class BookRepository @Inject constructor(
     override fun getChapterContentFlow(
         chapterId: String,
         bookId: String,
-        coroutineScope: CoroutineScope,
         priority: WebDataSourcePriority
-    ): Flow<ChapterContent> {
-        val chapterContent: MutableStateFlow<ChapterContent> =
-            MutableStateFlow(
-                ChapterContent.empty().toMutable().apply { id = chapterId }
-            )
-        coroutineScope.launch(Dispatchers.IO) {
-            chapterContent.update {
-                localBookDataSource.getChapterContent(chapterId) ?: MutableChapterContent.empty()
-                    .apply { id = chapterId }
-            }
-            priority.get().getChapterContent(
-                chapterId = chapterId,
-                bookId = bookId
-            ).let { content ->
-                if (content.isEmpty()) return@launch
-                localBookDataSource.updateChapterContent(content)
-                localBookDataSource.getChapterContent(chapterId)?.let { newContent ->
-                    chapterContent.update {
-                        newContent.toMutable().apply {
-                            lastChapter =
-                                if (!newContent.hasPrevChapter()) it.lastChapter else newContent.lastChapter
-                            nextChapter =
-                                if (!newContent.hasNextChapter()) it.nextChapter else newContent.nextChapter
-                        }
-                    }
-                }
-            }
-        }
-        return chapterContent.map {
-            textProcessingRepository.processChapterContent(bookId) { it }
-        }
-    }
+    ): Flow<ChapterContent> = flow {
+        val localChapter = localBookDataSource.getChapterContent(chapterId) ?: MutableChapterContent.empty()
+                .apply { id = chapterId }
+        emit(localChapter)
+        val remoteChapter = priority.get().getChapterContent(
+            chapterId = chapterId,
+            bookId = bookId
+        )
+        if (remoteChapter.isEmpty()) return@flow
+        localBookDataSource.updateChapterContent(remoteChapter)
+        emit(remoteChapter)
+        localBookDataSource.getChapterContent(chapterId)
+    }.map { textProcessingRepository.processChapterContent(bookId) { it } }
 
     override fun getStateUserReadingData(bookId: String, coroutineScope: CoroutineScope): UserReadingData {
         val userReadingData = MutableUserReadingData.empty()

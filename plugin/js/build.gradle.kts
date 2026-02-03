@@ -1,4 +1,3 @@
-import com.android.build.api.dsl.ApplicationExtension
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
@@ -8,7 +7,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
 }
 
-extensions.configure(ApplicationExtension::class.java) {
+android {
     namespace = "io.nightfish.lightnovelreader.plugin.js"
     compileSdk = 36
 

@@ -27,6 +27,7 @@
 -dontwarn org.kxml2.io.**
 -dontwarn android.content.res.**
 -dontwarn org.slf4j.impl.StaticLoggerBinder
+-dontwarn org.jetbrains.kotlin.**
 -keep,allowobfuscation,allowshrinking class kotlin.coroutines.Continuation
 -keep,allowobfuscation,allowshrinking class indi.dmzz_yyhyy.lightnovelreader.data.json.** { *; }
 -keep,allowobfuscation,allowshrinking class indi.dmzz_yyhyy.lightnovelreader.data.web.zaicomic.** { *; }

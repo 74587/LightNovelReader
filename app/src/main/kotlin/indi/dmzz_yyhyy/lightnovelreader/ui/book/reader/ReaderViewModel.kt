@@ -56,7 +56,7 @@ class ReaderViewModel @Inject constructor(
             }
 
             viewModelScope.launch(Dispatchers.IO) {
-                bookRepository.getBookVolumesFlow(value, viewModelScope).collect { _uiState.bookVolumes = it }
+                bookRepository.getBookVolumesFlow(value).collect { _uiState.bookVolumes = it }
             }
         }
     private var chapterId = ""

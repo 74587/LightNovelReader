@@ -33,7 +33,7 @@ class MarkAllChaptersAsReadDialogViewModel @Inject constructor(
 
         volumesJob?.cancel()
         volumesJob = viewModelScope.launch(Dispatchers.IO) {
-            bookRepository.getBookVolumesFlow(bookId, viewModelScope).collect { volumes ->
+            bookRepository.getBookVolumesFlow(bookId).collect { volumes ->
                 if (volumes.volumes.isEmpty()) return@collect
                 bookVolumes = volumes
             }

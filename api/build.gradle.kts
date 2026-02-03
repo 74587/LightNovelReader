@@ -1,5 +1,3 @@
-import com.android.build.api.dsl.LibraryExtension
-
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.compose.compiler)
@@ -16,7 +14,7 @@ kotlin {
     }
 }
 
-extensions.configure(LibraryExtension::class.java) {
+android {
     namespace = "io.nightfish.lightnovelreader.api"
     defaultConfig {
         multiDexEnabled = true

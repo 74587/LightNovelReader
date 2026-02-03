@@ -2,8 +2,7 @@ package indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.content
 
 import androidx.compose.runtime.Stable
 import io.nightfish.lightnovelreader.api.book.ChapterContent
-import io.nightfish.lightnovelreader.api.content.ContentData
-import kotlinx.serialization.json.JsonObject
+import io.nightfish.lightnovelreader.api.content.component.AbstractContentComponent
 
 @Stable
 interface ContentUiState {
@@ -13,5 +12,5 @@ interface ContentUiState {
     val loadNextChapter: () -> Unit
     val loadLastChapter: () -> Unit
     val changeChapter: (String) -> Unit
-    val getContentData: (JsonObject) -> ContentData
+    val contentComponentsMap: Map<String, List<AbstractContentComponent<*>>>
 }

@@ -1,11 +1,9 @@
 package indi.dmzz_yyhyy.lightnovelreader.data.content.component
 
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import android.content.Context
 import android.net.Uri
 import android.util.DisplayMetrics
 import android.view.View
-import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -29,6 +27,7 @@ import indi.dmzz_yyhyy.lightnovelreader.utils.loadReaderFontFamilySafe
 import indi.dmzz_yyhyy.lightnovelreader.utils.rememberReaderFontFamily
 import io.nightfish.lightnovelreader.api.content.component.AbstractDivisibleContentComponent
 import io.nightfish.lightnovelreader.api.content.component.SimpleTextComponentData
+import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import io.nightfish.lightnovelreader.api.userdata.UriUserData
 import io.nightfish.lightnovelreader.api.userdata.UserDataPath
 import io.nightfish.lightnovelreader.api.userdata.UserDataRepositoryApi
@@ -87,18 +86,22 @@ class SimpleTextComponent(
                     textDarkColor = textDarkColor,
                 )
             }
-        }.collectAsState(initial = null)
-
-        val style = combinedStyle ?: return Box(modifier)
+        }.collectAsState(initial = ReaderStyle(
+            fontSize = 15f,
+            fontLineHeight = 7f,
+            fontWeight = 500f,
+            textColor = Color.Unspecified,
+            textDarkColor = Color.Unspecified,
+        ))
 
         SimpleTextComponentContent(
             modifier = modifier,
             text = data.text,
-            fontSize = style.fontSize.sp,
-            fontLineHeight = style.fontLineHeight.sp,
-            fontWeight = FontWeight(style.fontWeight.toInt()),
+            fontSize = combinedStyle.fontSize.sp,
+            fontLineHeight = combinedStyle.fontLineHeight.sp,
+            fontWeight = FontWeight(combinedStyle.fontWeight.toInt()),
             fontFamily = rememberReaderFontFamily(fontFamilyUriUserData),
-            color = readerTextColor(style.textColor, style.textDarkColor)
+            color = readerTextColor(combinedStyle.textColor, combinedStyle.textDarkColor)
         )
     }
 
@@ -178,9 +181,11 @@ class SimpleTextComponent(
             getNotOverflowText(lastLine).let(result::add)
         }
         return result.mapIndexedNotNull { index, string ->
-            if (index == 0 && string.isBlank()) null
-            else if (index == result.size - 1 && string.isBlank()) null
-            else string
+            when (index) {
+                0 if string.isBlank() -> null
+                result.size - 1 if string.isBlank() -> null
+                else -> string
+            }
         }
     }
 }

@@ -25,8 +25,13 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
@@ -37,9 +42,9 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import indi.dmzz_yyhyy.lightnovelreader.R
@@ -51,6 +56,8 @@ import indi.dmzz_yyhyy.lightnovelreader.utils.readerTextColor
 import indi.dmzz_yyhyy.lightnovelreader.utils.rememberReaderBackgroundPainter
 import indi.dmzz_yyhyy.lightnovelreader.utils.rememberReaderFontFamily
 import indi.dmzz_yyhyy.lightnovelreader.utils.showSnackbar
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @Composable
@@ -90,6 +97,8 @@ fun ScrollContentTextComponent(
     val textColor = readerTextColor(settingState)
     val fontFamily = rememberReaderFontFamily(settingState.fontFamilyUriUserData)
     val listState = uiState.lazyListState
+    val scope = rememberCoroutineScope()
+    var lazyColumnSize by remember { mutableStateOf(IntSize(0, 0)) }
 
     val reachedTopMsg = stringResource(R.string.reader_reached_top)
     val prevChapterLabel = stringResource(R.string.previous_chapter)
@@ -99,6 +108,19 @@ fun ScrollContentTextComponent(
     val reachedStartMsg = stringResource(R.string.reader_reached_start)
     val reachedEndMsg = stringResource(R.string.reader_reached_end)
 
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo }
+            .filter { it.isNotEmpty() }
+            .first()
+        withFrameNanos {  }
+        listState.scrollToItem(1)
+        val item = uiState.lazyListState.layoutInfo.visibleItemsInfo.firstOrNull { it.key == uiState.readingContentId } ?: return@LaunchedEffect
+        snapshotFlow { lazyColumnSize }
+            .filter { lazyColumnSize.height > 0 }
+            .first()
+        val offset = (item.size * uiState.readingProgress).toInt() - lazyColumnSize.height
+        listState.scrollToItem(1, offset)
+    }
     LaunchedEffect(listState) {
         var atTop = false
         var atBottom = false
@@ -141,6 +163,7 @@ fun ScrollContentTextComponent(
                             }
                             atTop = true; atBottom = false
                         }
+
                         isAtBottom -> {
                             if (atBottom) {
                                 if (uiState.readingChapterContent.hasNextChapter())
@@ -164,6 +187,7 @@ fun ScrollContentTextComponent(
                             }
                             atBottom = true; atTop = false
                         }
+
                         else -> {
                             snackbarHostState.currentSnackbarData?.dismiss()
                             atTop = false; atBottom = false
@@ -218,6 +242,7 @@ fun ScrollContentTextComponent(
         enter = fadeIn(),
         exit = fadeOut()
     ) {
+        var index = remember { 0 }
         LazyColumn(
             modifier = modifier
                 .padding(paddingValues)
@@ -229,83 +254,90 @@ fun ScrollContentTextComponent(
                     )
                 }
                 .onGloballyPositioned {
-                    uiState.setLazyColumnSize(it.size)
+                    scope.launch {
+                        withFrameNanos { }
+                        uiState.setLazyColumnSize(it.size)
+                        lazyColumnSize = it.size
+                    }
                 },
             state = listState,
         ) {
             items(
                 items = uiState.contentList,
-                key = { it.id }
+                key = { it?.id ?: index++ }
             ) { chapterContent ->
-                Column(
-                    Modifier.defaultMinSize(
-                        minHeight = with(density) {
-                            screenHeight.toDp()
-                        }
-                    )
-                ) {
-                    if (settingState.isUsingContinuousScrolling) {
-                        val titleRegex = Regex("^(第[一二三四五六七八九十]+卷)\\s+(.*)")
-                        val matchResult = titleRegex.find(chapterContent.title)
-
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 36.dp),
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            if (matchResult != null) {
-                                val (volumeTitle, chapterTitle) = matchResult.destructured
-                                Text(
-                                    text = volumeTitle,
-                                    textAlign = TextAlign.Center,
-                                    fontSize = (settingState.fontSize + 2).sp,
-                                    fontWeight = FontWeight.Medium,
-                                    fontFamily = fontFamily,
-                                    color = textColor,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 8.dp),
-                                    text = chapterTitle,
-                                    textAlign = TextAlign.Center,
-                                    fontSize = (settingState.fontSize + 6).sp,
-                                    lineHeight = (settingState.fontSize + settingState.fontLineHeight + 6).sp,
-                                    fontWeight = FontWeight((settingState.fontWeigh.toInt() + 100)),
-                                    fontFamily = fontFamily,
-                                    color = textColor
-                                )
-                            } else {
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 8.dp),
-                                    text = chapterContent.title,
-                                    textAlign = TextAlign.Center,
-                                    fontSize = (settingState.fontSize + 6).sp,
-                                    lineHeight = (settingState.fontSize + settingState.fontLineHeight + 6).sp,
-                                    fontWeight = FontWeight((settingState.fontWeigh.toInt() + 100)),
-                                    fontFamily = fontFamily,
-                                    color = textColor
-                                )
+                chapterContent?.let { content ->
+                    Column(
+                        Modifier.defaultMinSize(
+                            minHeight = with(density) {
+                                screenHeight.toDp()
                             }
-                            Box(
-                                modifier = Modifier.fillMaxWidth(),
-                                contentAlignment = Alignment.Center
+                        )
+                    ) {
+                        if (settingState.isUsingContinuousScrolling) {
+                            val titleRegex = Regex("^(第[一二三四五六七八九十]+卷)\\s+(.*)")
+                            val matchResult = titleRegex.find(content.title)
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(vertical = 36.dp),
+                                verticalArrangement = Arrangement.spacedBy(16.dp)
                             ) {
-                                HorizontalDivider(
-                                    modifier = Modifier.width(48.dp),
-                                    color = textColor
-                                )
+                                if (matchResult != null) {
+                                    val (volumeTitle, chapterTitle) = matchResult.destructured
+                                    Text(
+                                        text = volumeTitle,
+                                        textAlign = TextAlign.Center,
+                                        fontSize = (settingState.fontSize + 2).sp,
+                                        fontWeight = FontWeight.Medium,
+                                        fontFamily = fontFamily,
+                                        color = textColor,
+                                        modifier = Modifier.fillMaxWidth()
+                                    )
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 8.dp),
+                                        text = chapterTitle,
+                                        textAlign = TextAlign.Center,
+                                        fontSize = (settingState.fontSize + 6).sp,
+                                        lineHeight = (settingState.fontSize + settingState.fontLineHeight + 6).sp,
+                                        fontWeight = FontWeight((settingState.fontWeigh.toInt() + 100)),
+                                        fontFamily = fontFamily,
+                                        color = textColor
+                                    )
+                                } else {
+                                    Text(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(horizontal = 8.dp),
+                                        text = content.title,
+                                        textAlign = TextAlign.Center,
+                                        fontSize = (settingState.fontSize + 6).sp,
+                                        lineHeight = (settingState.fontSize + settingState.fontLineHeight + 6).sp,
+                                        fontWeight = FontWeight((settingState.fontWeigh.toInt() + 100)),
+                                        fontFamily = fontFamily,
+                                        color = textColor
+                                    )
+                                }
+                                Box(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    HorizontalDivider(
+                                        modifier = Modifier.width(48.dp),
+                                        color = textColor
+                                    )
+                                }
+                                Spacer(Modifier.height(16.dp))
                             }
-                            Spacer(Modifier.height(16.dp))
                         }
-                    }
-                    val contentData = remember(chapterContent.content) { uiState.getContentData(chapterContent.content) }
-                    contentData.components.fastForEach {
-                        it.Content(Modifier)
+                        val components = remember { uiState.contentComponentsMap[content.id] }
+                        components?.let {
+                            for (component in it) {
+                                component.Content(modifier)
+                            }
+                        }
                     }
                 }
             }
