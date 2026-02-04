@@ -653,7 +653,8 @@ abstract class LightNovelReaderDatabase : RoomDatabase() {
                             "last_read_chapter_id TEXT NOT NULL," +
                             "last_read_chapter_title TEXT NOT NULL," +
                             "last_read_time TEXT NOT NULL," +
-                            "chapter_reading_progress_map BLOB NOT NULL," +
+                            "current_chapter_reading_progress_map BLOB NOT NULL," +
+                            "max_chapter_reading_progress_map BLOB NOT NULL," +
                             "total_read_time INTEGER NOT NULL," +
                             "reading_progress REAL NOT NULL," +
                             "PRIMARY KEY(id))"
