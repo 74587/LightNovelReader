@@ -169,7 +169,7 @@ private fun ThirdPartyPluginTips() {
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.info_24px),
-                contentDescription = stringResource(R.string.plugin_cd_warning)
+                contentDescription = "warning"
             )
             Spacer(Modifier.width(12.dp))
             Column {
