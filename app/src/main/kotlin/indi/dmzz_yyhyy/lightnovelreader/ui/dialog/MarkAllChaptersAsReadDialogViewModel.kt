@@ -33,7 +33,7 @@ class MarkAllChaptersAsReadDialogViewModel @Inject constructor(
 
         volumesJob?.cancel()
         volumesJob = viewModelScope.launch(Dispatchers.IO) {
-            bookRepository.getBookVolumesFlow(bookId, viewModelScope).collect { volumes ->
+            bookRepository.getBookVolumesFlow(bookId).collect { volumes ->
                 if (volumes.volumes.isEmpty()) return@collect
                 bookVolumes = volumes
             }
@@ -48,9 +48,9 @@ class MarkAllChaptersAsReadDialogViewModel @Inject constructor(
             bookRepository.updateUserReadingData(bookId) { userReadingData ->
                 userReadingData.apply {
                     lastReadTime = LocalDateTime.now()
-                    lastReadChapterProgress = 1f
-                    readCompletedChapterIds.clear()
-                    readCompletedChapterIds.addAll(allChapterIds)
+                    for (id in allChapterIds) {
+                        updateChapterReadingProgress(id, 1f)
+                    }
                     readingProgress = if (allChapterIds.isEmpty()) 0f else 1f
                 }
             }
@@ -66,12 +66,11 @@ class MarkAllChaptersAsReadDialogViewModel @Inject constructor(
             bookRepository.updateUserReadingData(bookId) { userReadingData ->
                 userReadingData.apply {
                     lastReadTime = LocalDateTime.now()
-                    val set = readCompletedChapterIds.toMutableSet()
-                    set.addAll(chapterIds)
-                    readCompletedChapterIds.clear()
-                    readCompletedChapterIds.addAll(set)
+                    for (id in chapterIds) {
+                        userReadingData.updateChapterReadingProgress(id, 1f)
+                    }
                     readingProgress = if (allChapterIds.isEmpty()) 0f
-                    else set.size.toFloat() / allChapterIds.size
+                    else userReadingData.currentChapterReadingProgressMap.values.sum() / allChapterIds.size
                 }
             }
         }

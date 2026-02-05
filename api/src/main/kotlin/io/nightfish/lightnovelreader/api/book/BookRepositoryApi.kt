@@ -13,12 +13,10 @@ interface BookRepositoryApi {
     ): BookInformation
     fun getBookInformationFlow(
         id: String,
-        coroutineScope: CoroutineScope,
         priority: WebDataSourcePriority = WebDataSourcePriority.Default
     ): Flow<BookInformation>
     fun getBookVolumesFlow(
         id: String,
-        coroutineScope: CoroutineScope,
         priority: WebDataSourcePriority = WebDataSourcePriority.Default
     ): Flow<BookVolumes>
     fun getStateChapterContent(
@@ -36,7 +34,6 @@ interface BookRepositoryApi {
     fun getChapterContentFlow(
         chapterId: String,
         bookId: String,
-        coroutineScope: CoroutineScope,
         priority: WebDataSourcePriority = WebDataSourcePriority.Default
     ): Flow<ChapterContent>
 

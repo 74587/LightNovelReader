@@ -45,7 +45,7 @@ class DetailViewModel @Inject constructor(
         if (isInitialized) return
         isInitialized = true
         viewModelScope.launch(Dispatchers.IO) {
-            bookRepository.getBookInformationFlow(bookId, viewModelScope, WebDataSourcePriority.High).collect {
+            bookRepository.getBookInformationFlow(bookId, WebDataSourcePriority.High).collect {
                 if (it.id.isBlank()) return@collect
                 _uiState.bookInformation = it
                 _uiState.isLoading = false
@@ -57,7 +57,7 @@ class DetailViewModel @Inject constructor(
             }
         }
         viewModelScope.launch(Dispatchers.IO) {
-            bookRepository.getBookVolumesFlow(bookId, viewModelScope, WebDataSourcePriority.High).collect {
+            bookRepository.getBookVolumesFlow(bookId, WebDataSourcePriority.High).collect {
                 if (it.volumes.isEmpty()) return@collect
                 _uiState.bookVolumes = it
             }

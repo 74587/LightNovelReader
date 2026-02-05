@@ -70,7 +70,7 @@
     <string name="reader_reached_top">已经到顶了</string>
     <string name="reader_last_page">已经是最后一页了</string>
     <string name="reader_reached_bottom">已经到底了</string>
-    <string name="reader_reached_start">文章才刚刚开始</string>
+    <string name="reader_reached_start">故事才刚刚开始</string>
     <string name="reader_reached_end">已经结束了…</string>
     <string name="font_file_error">字体文件错误或已损坏, 请您检查后导入</string>
     <string name="settings_data_source_pending_title">切换到 %s</string>

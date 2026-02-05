@@ -57,7 +57,7 @@ class ReadingHomeViewModel @Inject constructor(
 
         if (_bookVolumesMap.containsKey(bookId)) return
         viewModelScope.launch(Dispatchers.IO) {
-            bookRepository.getBookVolumesFlow(bookId, viewModelScope)
+            bookRepository.getBookVolumesFlow(bookId)
                 .collect { volumes ->
                     _bookVolumesMap[bookId] = volumes
                     if (volumes.volumes.isNotEmpty()) cancel()

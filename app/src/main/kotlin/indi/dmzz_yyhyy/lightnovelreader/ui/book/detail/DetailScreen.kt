@@ -70,7 +70,6 @@ import androidx.compose.runtime.movableContentOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.withFrameNanos
@@ -111,6 +110,7 @@ import io.nightfish.lightnovelreader.api.book.Volume
 import io.nightfish.lightnovelreader.api.ui.LocalNavController
 import kotlinx.coroutines.delay
 
+@Suppress("AssignedValueIsNeverRead")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailScreen(
@@ -533,7 +533,7 @@ private fun DetailContent(
                 modifier = Modifier.fadeInOnce(volume.volumeId),
                 volume = volume,
                 hideReadChapters = hideReadChapters,
-                readCompletedChapterIds = uiState.userReadingData.readCompletedChapterIds,
+                readCompletedChapterIds = uiState.userReadingData.currentChapterReadingProgressMap.filterValues { it >= 1f }.keys.toList(),
                 onClickChapter = onClickChapter,
                 volumesSize = uiState.bookVolumes.volumes.size,
                 lastReadingChapterId = uiState.userReadingData.lastReadChapterId

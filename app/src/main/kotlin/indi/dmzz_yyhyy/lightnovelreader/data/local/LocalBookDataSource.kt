@@ -25,8 +25,8 @@ class LocalBookDataSource @Inject constructor(
     override suspend fun getBookInformation(id: String): BookInformation? = bookInformationDao.get(id)
     override fun updateBookInformation(info: BookInformation) = bookInformationDao.update(info)
     override suspend fun getBookVolumes(id: String): BookVolumes? = bookVolumesDao.getBookVolumes(id)
-    override fun updateBookVolumes(bookId: String, bookVolumes: BookVolumes) =
-        bookVolumesDao.update(bookId, bookVolumes)
+    override fun updateBookVolumes(bookVolumes: BookVolumes) =
+        bookVolumesDao.update(bookVolumes.bookId, bookVolumes)
 
     override suspend fun getChapterContent(id: String) = chapterContentDao.get(id)?.let {
         MutableChapterContent(
@@ -49,8 +49,9 @@ class LocalBookDataSource @Inject constructor(
             it.readingProgress,
             it.lastReadChapterId,
             it.lastReadChapterTitle,
-            it.lastReadChapterProgress,
-            it.readCompletedChapterIds
+            it.currentChapterReadingProgress,
+            it.maxChapterReadingProgress
+
         )
     }
 
@@ -63,8 +64,8 @@ class LocalBookDataSource @Inject constructor(
             it.readingProgress,
             it.lastReadChapterId,
             it.lastReadChapterTitle,
-            it.lastReadChapterProgress,
-            it.readCompletedChapterIds
+            it.currentChapterReadingProgress,
+            it.maxChapterReadingProgress
         )
     }
 
@@ -77,17 +78,11 @@ class LocalBookDataSource @Inject constructor(
                 it.readingProgress,
                 it.lastReadChapterId,
                 it.lastReadChapterTitle,
-                it.lastReadChapterProgress,
-                it.readCompletedChapterIds
+                it.currentChapterReadingProgress,
+                it.maxChapterReadingProgress
             )
         } ?: MutableUserReadingData.empty().apply { this.id = id }
-        userReadingDataDao.update(update(userReadingData.apply { this.id = id }).let {
-            var data = it.toMutable()
-            if (it.readingProgress.isNaN()) data = data.apply { this.readingProgress = 0.0f }
-            if (it.lastReadChapterProgress.isNaN()) data =
-                data.apply { this.lastReadChapterProgress = 0.0f }
-            return@let data
-        })
+        userReadingDataDao.update(update(userReadingData.apply { this.id = id }))
     }
 
     override fun getAllUserReadingData(): List<UserReadingData> =
@@ -99,8 +94,8 @@ class LocalBookDataSource @Inject constructor(
                 it.readingProgress,
                 it.lastReadChapterId,
                 it.lastReadChapterTitle,
-                it.lastReadChapterProgress,
-                it.readCompletedChapterIds
+                it.currentChapterReadingProgress,
+                it.maxChapterReadingProgress
             )
         }
 

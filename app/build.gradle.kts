@@ -3,7 +3,6 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.google.dagger.hilt)
     alias(libs.plugins.google.ksp)
     alias(libs.plugins.kotlin.serialization)
@@ -21,7 +20,7 @@ android {
         minSdk = 24
         targetSdk = 36
         // 版本号为x.y.z则versionCode为x*1000000+y*10000+z*1000+debug版本号(开发需要时迭代, 三位数)
-        versionCode = 1_02_00_023
+        versionCode = 1_02_00_024
         versionName = "1.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -40,14 +39,18 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            setProperty("archivesBaseName", "LightNovelReader-${defaultConfig.versionName}")
         }
+
         debug {
             applicationIdSuffix = ".debug"
             isDebuggable = true
             isJniDebuggable = true
             vcsInfo.include = false
-            setProperty("archivesBaseName", "LightNovelReader-${defaultConfig.versionCode}")
+            versionNameSuffix = defaultConfig.versionCode.toString()
+        }
+
+        base {
+            archivesName = "LightNovelReader-${defaultConfig.versionName}"
         }
     }
     compileOptions {
@@ -64,9 +67,10 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
-    composeCompiler {
-        includeSourceInformation = true
-    }
+}
+
+composeCompiler {
+    includeSourceInformation = true
 }
 
 tasks.withType<KotlinJvmCompile>().configureEach {
@@ -128,7 +132,9 @@ dependencies {
     implementation(libs.work.runtime.ktx)
     // Potato EPUB
     implementation(project(":epub"))
+    // Kotlin Serialization
     implementation(libs.kotlinx.serialization.json)
+    implementation(libs.kotlinx.serialization.cbor)
     // Swipe
     implementation(libs.swipe)
     // Chart
@@ -153,6 +159,8 @@ dependencies {
     implementation(libs.okhttp)
     implementation(libs.okhttp3.logging.interceptor)
     implementation(libs.androidx.profileinstaller)
+    //RE2J
+    implementation(libs.re2j)
 }
 
 configurations.implementation {

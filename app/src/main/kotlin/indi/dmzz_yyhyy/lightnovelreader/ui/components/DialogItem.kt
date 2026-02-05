@@ -6,7 +6,6 @@ import androidx.compose.material3.ListItem
 import androidx.compose.material3.ListItemColors
 import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -59,30 +58,6 @@ fun CheckBoxListItem(
         Checkbox(
             checked = checked,
             onCheckedChange = onCheckedChange
-        )
-    }
-}
-
-@Composable
-fun RadioButtonListItem(
-    modifier: Modifier = Modifier,
-    title: String,
-    colors: ListItemColors = ListItemDefaults.colors().copy(
-        containerColor = Color.Transparent
-    ),
-    supportingText: String,
-    selected: Boolean,
-    onClick: () -> Unit,
-) {
-    ListItem(
-        modifier = modifier,
-        title = title,
-        colors = colors,
-        supportingText = supportingText,
-    ) {
-        RadioButton(
-            selected = selected,
-            onClick = onClick
         )
     }
 }

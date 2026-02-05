@@ -17,10 +17,10 @@ data class BookUserData(
     val lastReadChapterId: String,
     @SerializedName("last_read_chapter_title")
     val lastReadChapterTitle: String,
-    @SerializedName("last_read_chapter_progress")
-    val lastReadChapterProgress: Float,
-    @SerializedName("read_completed_chapter_ids")
-    val readCompletedChapterIds: List<String>,
+    @SerializedName("current_chapter_reading_progress_map")
+    val currentChapterReadingProgressMap: Map<String, Float>,
+    @SerializedName("max_chapter_reading_progress_map")
+    val maxChapterReadingProgressMap: Map<String, Float>
 )
 
 fun UserReadingData.toJsonData() =
@@ -31,6 +31,6 @@ fun UserReadingData.toJsonData() =
         readingProgress = this.readingProgress,
         lastReadChapterId = this.lastReadChapterId,
         lastReadChapterTitle = this.lastReadChapterTitle,
-        lastReadChapterProgress = this.lastReadChapterProgress,
-        readCompletedChapterIds = this.readCompletedChapterIds,
+        currentChapterReadingProgressMap = this.currentChapterReadingProgressMap,
+        maxChapterReadingProgressMap = this.maxChapterReadingProgressMap
     )

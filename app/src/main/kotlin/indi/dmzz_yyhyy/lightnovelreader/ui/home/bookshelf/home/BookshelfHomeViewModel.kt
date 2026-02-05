@@ -48,7 +48,7 @@ class BookshelfHomeViewModel @Inject constructor(
 
     fun getBookInfoStateFlow(id: String): StateFlow<BookInformation> {
         return bookInfoStateFlows.getOrPut(id) {
-            bookRepository.getBookInformationFlow(id, viewModelScope)
+            bookRepository.getBookInformationFlow(id)
                 .stateIn(
                     scope = viewModelScope,
                     started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000),
@@ -59,7 +59,7 @@ class BookshelfHomeViewModel @Inject constructor(
 
     fun getBookVolumesStateFlow(id: String): StateFlow<BookVolumes> {
         return bookVolumesStateFlows.getOrPut(id) {
-            bookRepository.getBookVolumesFlow(id, viewModelScope)
+            bookRepository.getBookVolumesFlow(id)
                 .stateIn(
                     scope = viewModelScope,
                     started = SharingStarted.WhileSubscribed(stopTimeoutMillis = 5_000),
@@ -84,7 +84,7 @@ class BookshelfHomeViewModel @Inject constructor(
 
                 oldMutableBookshelf.updatedBookIds.forEach { bookId ->
                     viewModelScope.launch(Dispatchers.IO) {
-                        bookRepository.getBookVolumesFlow(bookId, viewModelScope).collect {
+                        bookRepository.getBookVolumesFlow(bookId).collect {
                             if (it.volumes.isNotEmpty()) {
                                 viewModelScope.launch(Dispatchers.Main) {
                                     _uiState.bookLastChapterTitleMap[bookId] =

@@ -1,3 +1,5 @@
+@file:Suppress("AssignedValueIsNeverRead")
+
 package indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.content.scroll
 
 import androidx.compose.animation.AnimatedVisibility
@@ -5,15 +7,31 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
+import androidx.compose.runtime.withFrameNanos
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
@@ -24,16 +42,22 @@ import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.util.fastForEach
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LifecycleEventEffect
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.SettingState
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Loading
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.data.MenuOptions
-import indi.dmzz_yyhyy.lightnovelreader.utils.*
+import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
+import indi.dmzz_yyhyy.lightnovelreader.utils.readerTextColor
+import indi.dmzz_yyhyy.lightnovelreader.utils.rememberReaderBackgroundPainter
+import indi.dmzz_yyhyy.lightnovelreader.utils.rememberReaderFontFamily
+import indi.dmzz_yyhyy.lightnovelreader.utils.showSnackbar
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @Composable
@@ -73,6 +97,8 @@ fun ScrollContentTextComponent(
     val textColor = readerTextColor(settingState)
     val fontFamily = rememberReaderFontFamily(settingState.fontFamilyUriUserData)
     val listState = uiState.lazyListState
+    val scope = rememberCoroutineScope()
+    var lazyColumnSize by remember { mutableStateOf(IntSize(0, 0)) }
 
     val reachedTopMsg = stringResource(R.string.reader_reached_top)
     val prevChapterLabel = stringResource(R.string.previous_chapter)
@@ -82,6 +108,19 @@ fun ScrollContentTextComponent(
     val reachedStartMsg = stringResource(R.string.reader_reached_start)
     val reachedEndMsg = stringResource(R.string.reader_reached_end)
 
+    LaunchedEffect(listState) {
+        snapshotFlow { listState.layoutInfo.visibleItemsInfo }
+            .filter { it.isNotEmpty() }
+            .first()
+        withFrameNanos {  }
+        listState.scrollToItem(1)
+        val item = uiState.lazyListState.layoutInfo.visibleItemsInfo.firstOrNull { it.key == uiState.readingContentId } ?: return@LaunchedEffect
+        snapshotFlow { lazyColumnSize }
+            .filter { lazyColumnSize.height > 0 }
+            .first()
+        val offset = (item.size * uiState.readingProgress).toInt() - lazyColumnSize.height
+        listState.scrollToItem(1, offset)
+    }
     LaunchedEffect(listState) {
         var atTop = false
         var atBottom = false
@@ -124,6 +163,7 @@ fun ScrollContentTextComponent(
                             }
                             atTop = true; atBottom = false
                         }
+
                         isAtBottom -> {
                             if (atBottom) {
                                 if (uiState.readingChapterContent.hasNextChapter())
@@ -147,6 +187,7 @@ fun ScrollContentTextComponent(
                             }
                             atBottom = true; atTop = false
                         }
+
                         else -> {
                             snackbarHostState.currentSnackbarData?.dismiss()
                             atTop = false; atBottom = false
@@ -201,6 +242,7 @@ fun ScrollContentTextComponent(
         enter = fadeIn(),
         exit = fadeOut()
     ) {
+        var index = remember { 0 }
         LazyColumn(
             modifier = modifier
                 .padding(paddingValues)
@@ -212,16 +254,19 @@ fun ScrollContentTextComponent(
                     )
                 }
                 .onGloballyPositioned {
-                    uiState.setLazyColumnSize(it.size)
+                    scope.launch {
+                        withFrameNanos { }
+                        uiState.setLazyColumnSize(it.size)
+                        lazyColumnSize = it.size
+                    }
                 },
             state = listState,
         ) {
             items(
-                count = uiState.contentList.size,
-                key = { index -> uiState.contentList.getOrNull(index)?.id ?: -1 } ,
-                contentType = { { null } }
-            ) { index ->
-                uiState.contentList.getOrNull(index)?.let{ chapterContent ->
+                items = uiState.contentList,
+                key = { it?.id ?: index++ }
+            ) { chapterContent ->
+                chapterContent?.let { content ->
                     Column(
                         Modifier.defaultMinSize(
                             minHeight = with(density) {
@@ -231,8 +276,7 @@ fun ScrollContentTextComponent(
                     ) {
                         if (settingState.isUsingContinuousScrolling) {
                             val titleRegex = Regex("^(第[一二三四五六七八九十]+卷)\\s+(.*)")
-                            val matchResult = titleRegex.find(chapterContent.title)
-
+                            val matchResult = titleRegex.find(content.title)
                             Column(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -267,7 +311,7 @@ fun ScrollContentTextComponent(
                                         modifier = Modifier
                                             .fillMaxWidth()
                                             .padding(horizontal = 8.dp),
-                                        text = chapterContent.title,
+                                        text = content.title,
                                         textAlign = TextAlign.Center,
                                         fontSize = (settingState.fontSize + 6).sp,
                                         lineHeight = (settingState.fontSize + settingState.fontLineHeight + 6).sp,
@@ -288,9 +332,11 @@ fun ScrollContentTextComponent(
                                 Spacer(Modifier.height(16.dp))
                             }
                         }
-                        val contentData = remember(chapterContent.content) { uiState.getContentData(chapterContent.content) }
-                        contentData.components.fastForEach {
-                            it.Content(Modifier)
+                        val components = remember { uiState.contentComponentsMap[content.id] }
+                        components?.let {
+                            for (component in it) {
+                                component.Content(modifier)
+                            }
                         }
                     }
                 }

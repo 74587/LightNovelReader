@@ -1,8 +1,7 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.content
 
 import io.nightfish.lightnovelreader.api.book.ChapterContent
-import io.nightfish.lightnovelreader.api.content.ContentData
-import kotlinx.serialization.json.JsonObject
+import io.nightfish.lightnovelreader.api.content.component.AbstractContentComponent
 
 interface ContentViewModel {
     val uiState: ContentUiState
@@ -20,7 +19,7 @@ interface ContentViewModel {
                 override val loadNextChapter: () -> Unit = {}
                 override val loadLastChapter: () -> Unit = {}
                 override val changeChapter: (String) -> Unit = {}
-                override val getContentData: (JsonObject) -> ContentData = { ContentData.empty() }
+                override val contentComponentsMap: Map<String, List<AbstractContentComponent<*>>> = emptyMap()
             }
 
             override fun changeBookId(id: String) {

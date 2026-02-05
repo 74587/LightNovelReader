@@ -6,7 +6,7 @@ interface LocalBookDataSourceApi {
     suspend fun getBookInformation(id: String): BookInformation?
     fun updateBookInformation(info: BookInformation)
     suspend fun getBookVolumes(id: String): BookVolumes?
-    fun updateBookVolumes(bookId: String, bookVolumes: BookVolumes)
+    fun updateBookVolumes(bookVolumes: BookVolumes)
     suspend fun getChapterContent(id: String): MutableChapterContent?
     fun updateChapterContent(chapterContent: ChapterContent)
     fun getUserReadingData(id: String): MutableUserReadingData
