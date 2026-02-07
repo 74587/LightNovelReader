@@ -1,4 +1,4 @@
-package indi.dmzz_yyhyy.lightnovelreader.utils
+package indi.dmzz_yyhyy.lightnovelreader.utils.network
 
 import android.util.Log
 import io.nightfish.potatoautoproxy.ProxyPool

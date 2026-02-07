@@ -70,14 +70,9 @@ sealed class UserDataPath(
         }
         data object Data: UserDataPath("data", Settings) {
             data object WebDataSourceId : UserDataPath("web_data_source_id", Data)
-            data object LogLevel: UserDataPath("log_level", Data)
-            data object IsUseProxy: UserDataPath("is_use_proxy", Data)
+            data object LogLevel : UserDataPath("log_level", Data)
+            data object IsUseProxy : UserDataPath("is_use_proxy", Data)
         }
-        /*data object Reader : UserDataPath("reader", Settings) {
-            data object FontSize : LinkUserData(Reader.FontSize)
-            data object FontLineHeight : LinkUserData(Reader.FontLineHeight)
-            data object KeepScreenOn : LinkUserData(Reader.KeepScreenOn)
-        }*/
     }
     data object CompletedDownloadBookList: UserDataPath("completedDownloadBookList")
     data object Plugin: UserDataPath("plugin") {

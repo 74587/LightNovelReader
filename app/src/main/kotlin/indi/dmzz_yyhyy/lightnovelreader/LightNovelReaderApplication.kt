@@ -18,6 +18,7 @@ import io.nightfish.potatoautoproxy.ProxyPool
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.serialization.ExperimentalSerializationApi
 import javax.inject.Inject
 
 @HiltAndroidApp
@@ -40,6 +41,7 @@ class LightNovelReaderApplication : Application(), Configuration.Provider {
         super.attachBaseContext(base)
     }
 
+    @ExperimentalSerializationApi
     override fun onCreate() {
         super.onCreate()
         CxHttpInit.init()
