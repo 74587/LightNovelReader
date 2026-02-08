@@ -156,7 +156,7 @@ class LocalDataManager @Inject constructor(
         } else importLocalDataToFile(localData)
     }
 
-    private fun importLocalDataToFile(localData: LocalData): Result<Unit, Throwable> {
+    fun importLocalDataToFile(localData: LocalData): Result<Unit, Throwable> {
         val webDataSourceId = localData.webBookDataSourceId
         val oldLocalDataFile = localDataDir.resolve(webDataSourceId.toString())
         if (!oldLocalDataFile.exists()) {
@@ -270,7 +270,7 @@ class LocalDataManager @Inject constructor(
         }
     }
 
-    private suspend fun importLocalDataToDatabase(localData: LocalData): Result<Unit, Throwable> {
+    suspend fun importLocalDataToDatabase(localData: LocalData): Result<Unit, Throwable> {
         for (entity in localData.bookInformationEntities) {
             bookBookInformationDao.insert(
                 bookBookInformationDao.getEntity(entity.id)?.let(entity::merge) ?: entity
@@ -348,6 +348,7 @@ class LocalDataManager @Inject constructor(
     }
 
     init {
+        registerWebDataSourceUserData(UserDataPath.Settings.Data.WebDataSourceId.path)
         registerWebDataSourceUserData(UserDataPath.ReadingBooks.path)
         registerWebDataSourceUserData(UserDataPath.CompletedDownloadBookList.path)
         registerWebDataSourceUserData(UserDataPath.Search.History.path)
