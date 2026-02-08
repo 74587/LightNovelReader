@@ -1,6 +1,5 @@
-package indi.dmzz_yyhyy.lightnovelreader.utils
+package indi.dmzz_yyhyy.lightnovelreader.utils.network
 
-import okhttp3.Headers
 import kotlin.random.Random
 
 object UserAgentGenerator {

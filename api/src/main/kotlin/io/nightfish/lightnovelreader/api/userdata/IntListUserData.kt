@@ -8,7 +8,7 @@ class IntListUserData (
     private val userDataDao: UserDataDaoApi
 ) : UserData<List<Int>>(path) {
     override fun set(value: List<Int>) {
-        userDataDao.update(path, group, "IntList", value.joinToString(","))
+        userDataDao.insert(path, group, "IntList", value.joinToString(","))
     }
 
     override fun get(): List<Int>? {

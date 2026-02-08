@@ -1,9 +1,5 @@
 package indi.dmzz_yyhyy.lightnovelreader.data.statistics
 
-import indi.dmzz_yyhyy.lightnovelreader.data.json.AppUserDataContent
-import indi.dmzz_yyhyy.lightnovelreader.data.json.DailyReadingStats
-import indi.dmzz_yyhyy.lightnovelreader.data.json.toDailyStatsData
-import indi.dmzz_yyhyy.lightnovelreader.data.json.toEntity
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.dao.BookRecordDao
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.dao.ReadingStatisticsDao
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.entity.BookRecordEntity
@@ -13,15 +9,6 @@ import java.time.LocalDate
 import java.time.LocalTime
 import javax.inject.Inject
 import javax.inject.Singleton
-
-data class ReadingStatsUpdate(
-    val bookId: String,
-    val secondDelta: Int = 0,
-    val sessionDelta: Int = 0,
-    val localTime: LocalTime = LocalTime.now(),
-    val startedBooks: List<String> = emptyList(),
-    val favoriteBooks: List<String> = emptyList()
-)
 
 @Singleton
 class StatsRepository @Inject constructor(
@@ -71,18 +58,6 @@ class StatsRepository @Inject constructor(
             val statistics = statsMap[date]
             val records = recordsMap[date] ?: emptyList()
             statistics?.toDailyStatsData(records)
-        }
-    }
-
-    fun importReadingStats(data: AppUserDataContent) {
-        data.readingStatsData?.forEach { dailyStats ->
-            val statsEntity = dailyStats.toEntity()
-            val recordEntities = dailyStats.bookRecords.map { it.toEntity() }
-
-            readingStatisticsDao.insertReadingStatistics(statsEntity)
-            recordEntities.forEach {
-                bookRecordDao.insertBookRecord(it)
-            }
         }
     }
 

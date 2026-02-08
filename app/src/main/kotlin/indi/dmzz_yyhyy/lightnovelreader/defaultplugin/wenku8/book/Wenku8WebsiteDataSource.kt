@@ -4,7 +4,7 @@ import androidx.core.net.toUri
 import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.Wenku8Api
 import indi.dmzz_yyhyy.lightnovelreader.defaultplugin.wenku8.autoReconnectionGetWithWenku8Cookie
 import indi.dmzz_yyhyy.lightnovelreader.utils.CxHttpInit
-import indi.dmzz_yyhyy.lightnovelreader.utils.selectFirstXpath
+import indi.dmzz_yyhyy.lightnovelreader.utils.network.selectFirstXpath
 import io.nightfish.lightnovelreader.api.book.BookInformation
 import io.nightfish.lightnovelreader.api.book.BookVolumes
 import io.nightfish.lightnovelreader.api.book.CanBeEmpty

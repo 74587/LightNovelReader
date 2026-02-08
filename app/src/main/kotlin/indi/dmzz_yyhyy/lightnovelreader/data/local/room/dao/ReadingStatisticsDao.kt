@@ -21,7 +21,6 @@ import java.time.LocalDate
     ListConverter::class
 )
 interface ReadingStatisticsDao {
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertReadingStatistics(statistics: ReadingStatisticsEntity)
 

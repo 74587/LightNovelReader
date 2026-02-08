@@ -1,4 +1,4 @@
-package indi.dmzz_yyhyy.lightnovelreader.utils
+package indi.dmzz_yyhyy.lightnovelreader.utils.network
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -7,10 +7,10 @@ import android.util.Log
 import androidx.work.ListenableWorker
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
+import indi.dmzz_yyhyy.lightnovelreader.utils.ImageUtils
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.File
-
 
 class ImageDownloader(
     private val context: Context,
@@ -24,7 +24,7 @@ class ImageDownloader(
 
     suspend fun run(): ListenableWorker.Result = withContext(Dispatchers.IO) {
         Log.i("ImageDownloader", "total tasks: ${tasks.size}")
-        tasks.forEach {task ->
+        tasks.forEach { task ->
             ImageUtils.uriToBitmap(task.uri, context)
                 .onSuccess { bitmap ->
                     task.file.mkdirs()
