@@ -13,10 +13,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
 import indi.dmzz_yyhyy.lightnovelreader.data.local.LocalDataManager
 import indi.dmzz_yyhyy.lightnovelreader.data.local.cbor.LocalData
+import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.web.WebBookDataSourceManager
 import indi.dmzz_yyhyy.lightnovelreader.data.web.WebBookDataSourceProvider
 import indi.dmzz_yyhyy.lightnovelreader.utils.readAppLocalData
 import indi.dmzz_yyhyy.lightnovelreader.utils.writeAppLocalData
+import io.nightfish.lightnovelreader.api.userdata.UserDataPath
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -31,6 +33,7 @@ class SourceChangeViewModel @Inject constructor(
     @param:ApplicationContext private val appContext: Context,
     private val webBookDataSourceProvider: WebBookDataSourceProvider,
     private val localDataManager: LocalDataManager,
+    private val userDataRepository: UserDataRepository,
     webBookDataSourceManager: WebBookDataSourceManager
 ) : ViewModel() {
 
@@ -50,14 +53,17 @@ class SourceChangeViewModel @Inject constructor(
             var isCleanedLocalData = false
             try {
                 val result = localDataManager.exportCurrentLocalData()
-                    .andThen {
+                    .andThen { data ->
                         runCatching {
                             val webBookDataSourceId = webBookDataSourceProvider.default.id
                             localDataManager.localDataDir
                                 .resolve(webBookDataSourceId.toString())
+                                .also {
+                                    if (it.exists()) it.delete()
+                                }
                                 .outputStream()
                                 .use {
-                                    it.writeAppLocalData(Cbor.encodeToByteArray(it))
+                                    it.writeAppLocalData(Cbor.encodeToByteArray(data))
                                 }
                         }
                     }.andThen {
@@ -65,9 +71,9 @@ class SourceChangeViewModel @Inject constructor(
                         runCatching {
                             localDataManager.cleanDatabaseWithoutGlobalUserData()
                         }
-                    }.andThen {
+                    }.andThen out@ {
                         val file = localDataManager.localDataDir.resolve(newWebDataSourceId.toString())
-                        if (!file.exists()) return@andThen Ok(Unit)
+                        if (!file.exists()) return@out Ok(Unit)
                         runCatching {
                             file
                                 .inputStream()
@@ -75,14 +81,20 @@ class SourceChangeViewModel @Inject constructor(
                                     Cbor.decodeFromByteArray<LocalData>(it.readAppLocalData())
                                 }
                         }.andThen {
-                            localDataManager.importLocalData(it)
+                            localDataManager.importLocalDataToDatabase(it)
+                        }
+                    }.andThen {
+                        runCatching {
+                            userDataRepository.intUserData(UserDataPath.Settings.Data.WebDataSourceId.path).set(newWebDataSourceId)
                         }
                     }
                 if (result.isErr) {
-                    Toast.makeText(appContext, "Failed to change data source. Please check the log for more information", Toast.LENGTH_LONG).show()
+                    CoroutineScope(Dispatchers.Main).launch {
+                        Toast.makeText(appContext, "Failed to change data source. Please check the log for more information", Toast.LENGTH_LONG).show()
+                    }
                     Log.e("SourceChangeViewModel", "Failed to change data source.")
                     result.unwrapError().printStackTrace()
-                    rollbackData()
+                    if (isCleanedLocalData) rollbackData()
                     return@launch
                 } else {
                     restartApp(appContext)
@@ -106,7 +118,7 @@ class SourceChangeViewModel @Inject constructor(
                     .use {
                         Cbor.decodeFromByteArray<LocalData>(it.readAppLocalData())
                     }
-            localDataManager.importLocalData(localData)
+            localDataManager.importLocalDataToDatabase(localData)
         }
     }
 
