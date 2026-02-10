@@ -80,4 +80,7 @@ sealed class UserDataPath(
         data object EnabledPluginPackages: UserDataPath("enabledPluginPackages", Plugin)
         data object ErrorPlugins: UserDataPath("errorPlugins", Plugin)
     }
+    data object LocalBook: UserDataPath("localBook") {
+        data object LocalBookIds: UserDataPath("localBookIds")
+    }
 }

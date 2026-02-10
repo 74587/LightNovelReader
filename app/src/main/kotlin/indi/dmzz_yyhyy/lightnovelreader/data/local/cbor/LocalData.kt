@@ -27,4 +27,21 @@ data class LocalData(
     val userDataEntities: List<UserDataEntity>,
     val userReadingDataEntities: List<UserReadingDataEntity>,
     val volumeEntities: List<VolumeEntity>
-)
+) {
+    companion object {
+        fun empty() = LocalData(
+            webBookDataSourceId = -1,
+            bookInformationEntities = emptyList(),
+            bookRecordEntities = emptyList(),
+            bookshelfEntities = emptyList(),
+            bookshelfBookMetadataEntities = emptyList(),
+            chapterContentEntities = emptyList(),
+            chapterInformationEntities = emptyList(),
+            formattingRuleEntities = emptyList(),
+            readingStatisticsEntities = emptyList(),
+            userDataEntities = emptyList(),
+            userReadingDataEntities = emptyList(),
+            volumeEntities = emptyList()
+        )
+    }
+}

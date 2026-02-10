@@ -55,22 +55,13 @@ class SaveBookshelfWork @AssistedInject constructor(
         val appLocalData = AppLocalData(
             version = localDataManager.currentAppDataVersion,
             localDataList = listOf(
-                LocalData(
+                LocalData.empty().copy(
                     webBookDataSourceId = webBookDataSourceProvider.default.id,
                     bookshelfEntities = bookshelfEntityList,
-                    bookshelfBookMetadataEntities = bookshelfBookMetadataEntities,
-                    bookInformationEntities = emptyList(),
-                    bookRecordEntities = emptyList(),
-                    chapterContentEntities = emptyList(),
-                    chapterInformationEntities = emptyList(),
-                    formattingRuleEntities = emptyList(),
-                    readingStatisticsEntities = emptyList(),
-                    userDataEntities = emptyList(),
-                    userReadingDataEntities = emptyList(),
-                    volumeEntities = emptyList()
+                    bookshelfBookMetadataEntities = bookshelfBookMetadataEntities
                 )
             ),
-            globalUserDataEntity = emptyList()
+            globalLocalData = LocalData.empty()
         )
         try {
             applicationContext.contentResolver.openFileDescriptor(uri, "w")
