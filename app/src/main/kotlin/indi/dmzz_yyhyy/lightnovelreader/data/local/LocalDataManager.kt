@@ -21,6 +21,7 @@ import indi.dmzz_yyhyy.lightnovelreader.data.local.room.dao.ReadingStatisticsDao
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.dao.UserDataDao
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.dao.UserReadingDataDao
 import indi.dmzz_yyhyy.lightnovelreader.data.web.WebBookDataSourceProvider
+import indi.dmzz_yyhyy.lightnovelreader.utils.readAppLocalData
 import io.nightfish.lightnovelreader.api.userdata.UserDataPath
 import kotlinx.serialization.cbor.Cbor
 import kotlinx.serialization.decodeFromByteArray
@@ -49,8 +50,8 @@ class LocalDataManager @Inject constructor(
 
     val currentAppDataVersion = 0
     val localDataDir = context.dataDir.resolve("local_data").also {
-            if (!it.exists()) it.mkdirs()
-        }
+        if (!it.exists()) it.mkdirs()
+    }
     val webDataSourceUserDataPathSet = mutableSetOf<String>()
 
     fun registerWebDataSourceUserData(path: String) {
@@ -65,8 +66,8 @@ class LocalDataManager @Inject constructor(
     ): Result<AppLocalData, Throwable> {
         val localDataList = mutableListOf<LocalData>()
         localDataDir.listFiles()?.forEach {
-            it.inputStream().buffered().use { inputStream ->
-                Cbor.decodeFromByteArray<LocalData>(inputStream.readBytes())
+            it.inputStream().use { inputStream ->
+                Cbor.decodeFromByteArray<LocalData>(inputStream.readAppLocalData())
             }.let(localDataList::add)
         }
         exportCurrentLocalData(
@@ -74,15 +75,16 @@ class LocalDataManager @Inject constructor(
         ).let {
             it.component1() ?: return it.asErr()
         }.let(localDataList::add)
-        val userDataEntities = if (settings) userDataDao.getAllEntities().filter {
-            !webDataSourceUserDataPathSet.contains(it.path)
-        }
-        else emptyList()
+        val globalLocalData = LocalData.empty()
+            .copy(userDataEntities = if (settings) userDataDao.getAllEntities().filter {
+                !webDataSourceUserDataPathSet.contains(it.path)
+            }
+            else emptyList())
         return Ok(
             AppLocalData(
                 version = currentAppDataVersion,
                 localDataList = localDataList,
-                globalUserDataEntity = userDataEntities
+                globalLocalData = globalLocalData
             )
         )
     }
@@ -114,23 +116,23 @@ class LocalDataManager @Inject constructor(
         return runCatching {
             exportOptionLocalData.solve()
         }.andThen {
-                Ok(
-                    LocalData(
-                        webBookDataSourceId = webDataSourceProvider.default.id,
-                        bookInformationEntities = exportOptionLocalData.bookInformationEntities,
-                        bookRecordEntities = exportOptionLocalData.bookRecordEntities,
-                        bookshelfEntities = exportOptionLocalData.bookshelfEntities,
-                        bookshelfBookMetadataEntities = exportOptionLocalData.bookshelfBookMetadataEntities,
-                        chapterContentEntities = exportOptionLocalData.chapterContentEntities,
-                        chapterInformationEntities = exportOptionLocalData.chapterInformationEntities,
-                        formattingRuleEntities = exportOptionLocalData.formattingRuleEntities,
-                        readingStatisticsEntities = exportOptionLocalData.readingStatisticsEntities,
-                        userReadingDataEntities = exportOptionLocalData.userReadingDataEntities,
-                        volumeEntities = exportOptionLocalData.volumeEntities,
-                        userDataEntities = exportOptionLocalData.userDataEntities
-                    )
+            Ok(
+                LocalData(
+                    webBookDataSourceId = webDataSourceProvider.default.id,
+                    bookInformationEntities = exportOptionLocalData.bookInformationEntities,
+                    bookRecordEntities = exportOptionLocalData.bookRecordEntities,
+                    bookshelfEntities = exportOptionLocalData.bookshelfEntities,
+                    bookshelfBookMetadataEntities = exportOptionLocalData.bookshelfBookMetadataEntities,
+                    chapterContentEntities = exportOptionLocalData.chapterContentEntities,
+                    chapterInformationEntities = exportOptionLocalData.chapterInformationEntities,
+                    formattingRuleEntities = exportOptionLocalData.formattingRuleEntities,
+                    readingStatisticsEntities = exportOptionLocalData.readingStatisticsEntities,
+                    userReadingDataEntities = exportOptionLocalData.userReadingDataEntities,
+                    volumeEntities = exportOptionLocalData.volumeEntities,
+                    userDataEntities = exportOptionLocalData.userDataEntities
                 )
-            }
+            )
+        }
     }
 
     suspend fun importAppLocalData(appLocalData: AppLocalData): Result<Unit, Throwable> {
@@ -138,9 +140,7 @@ class LocalDataManager @Inject constructor(
             Log.e(TAG, "Unsupported data versions")
             return Err(Error("Unsupported data versions"))
         }
-        for (entity in appLocalData.globalUserDataEntity) {
-            userDataDao.insert(entity)
-        }
+        importLocalDataToDatabase(appLocalData.globalLocalData)
         for (localData in appLocalData.localDataList) {
             importLocalData(localData).let {
                 it.component1() ?: return it.asErr()
