@@ -8,7 +8,6 @@ javet = "5.0.4"
 kotlin = "2.3.0"
 kotlinComposeCompilerPlugin = "2.1.20"
 kotlinResult = "2.1.0"
-kotlinxCoroutinesDebug = "1.10.2"
 ksp = "2.3.5"
 loggingInterceptor = "5.3.2"
 materialIconsCore = "1.7.8"
@@ -60,7 +59,6 @@ javet-node-macos-arm64 = { module = "com.caoccao.javet:javet-node-macos-arm64", 
 javet-node-linux-x86_x4 = { module = "com.caoccao.javet:javet-node-linux-x86_64", version.ref = "javet" }
 javet-node-windows-x86_x4 = { module = "com.caoccao.javet:javet-node-windows-x86_64", version.ref = "javet" }
 javet-node-macos-x86_x4 = { module = "com.caoccao.javet:javet-node-macos-x86_64", version.ref = "javet" }
-jetbrains-kotlinx-coroutines-debug = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-debug", version.ref = "kotlinxCoroutinesDebug" }
 kotlin-result = { module = "com.michael-bull.kotlin-result:kotlin-result", version.ref = "kotlinResult" }
 kotlin-result-coroutines = { module = "com.michael-bull.kotlin-result:kotlin-result-coroutines", version.ref = "kotlinResult" }
 okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }

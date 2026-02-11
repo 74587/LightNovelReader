@@ -160,8 +160,6 @@ dependencies {
     implementation(libs.androidx.profileinstaller)
     // RE2J
     implementation(libs.re2j)
-    // Coroutines
-    debugImplementation(libs.jetbrains.kotlinx.coroutines.debug)
 }
 
 configurations.implementation {

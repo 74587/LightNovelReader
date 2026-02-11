@@ -10,10 +10,12 @@ import androidx.navigation.compose.rememberNavController
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.UpdatesAvailableDialogViewModel
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.navigateUpdatesAvailableDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.LightNovelReaderNavHost
+import io.nightfish.lightnovelreader.api.ui.ReaderStyle
 
 @Composable
 fun LightNovelReaderApp(
-    onBuildNavHost: NavGraphBuilder.() -> Unit
+    onBuildNavHost: NavGraphBuilder.() -> Unit,
+    readerStyle: ReaderStyle
 ) {
     val navController = rememberNavController()
     val updatesAvailableDialogViewModel = hiltViewModel<UpdatesAvailableDialogViewModel>()
@@ -24,5 +26,5 @@ fun LightNovelReaderApp(
             navController.navigateUpdatesAvailableDialog()
         }
     }
-    LightNovelReaderNavHost(navController, onBuildNavHost)
+    LightNovelReaderNavHost(navController, onBuildNavHost, readerStyle)
 }
