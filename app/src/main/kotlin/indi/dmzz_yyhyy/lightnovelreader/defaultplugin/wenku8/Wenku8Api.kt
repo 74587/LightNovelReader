@@ -78,7 +78,7 @@ object Wenku8Api : WebBookDataSource {
     )
     var host = hosts[0]
 
-    init {
+    override fun onLoad() {
         coroutineScope.launch {
             while (currentCoroutineContext().isActive) {
                 offLine = isOffLine()

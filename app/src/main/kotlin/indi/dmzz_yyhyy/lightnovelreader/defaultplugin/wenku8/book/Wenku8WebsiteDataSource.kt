@@ -22,7 +22,8 @@ import io.nightfish.lightnovelreader.api.web.search.SearchResult
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import org.jsoup.Jsoup
+import org.jsoup.nodes.Element
+import org.jsoup.nodes.TextNode
 import java.net.URLEncoder
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -156,6 +157,25 @@ class Wenku8WebsiteDataSource: Wenku8BookDataSource {
         val content = soup.selectFirstXpath("//*[@id=\"content\"]") ?: return@ifCache ChapterContent.empty(chapterId)
         val jsonObject = ContentBuilder().apply {
             var text = ""
+            for (node in content.childNodes()) {
+                when {
+                    node is TextNode -> text += node.nodeValue().replace(" ", "  ")
+                    node is Element && node.`is`("div.divimage") -> {
+                        simpleText(text)
+                        text = ""
+                        node
+                            .selectFirst("img")
+                            ?.attr("src")
+                            ?.toUri()
+                            ?.let(::image)
+                    }
+                }
+            }
+            if (text.isNotEmpty()) {
+                simpleText(text)
+            }
+            /*
+            var text = ""
             content.toString().split("\n").forEach {
                 val doc = Jsoup.parse(it)
                 if (doc.body().children().isEmpty()) return@forEach
@@ -180,22 +200,24 @@ class Wenku8WebsiteDataSource: Wenku8BookDataSource {
             }
             if (text.isNotEmpty()) {
                 simpleText(text)
-            }
+            }*/
         }.build()
+        val lastChapter = soup.selectFirstXpath("//*[@id=\"foottext\"]/a[3]").let {
+            it ?: return@let ""
+            if (it.attr("href") == "index.htm" || it.attr("href").contains("article")) ""
+            else it.attr("href").split(".").firstOrNull() ?: ""
+        }
+        val nextChapter = soup.selectFirstXpath("//*[@id=\"foottext\"]/a[4]").let {
+            it ?: return@let ""
+            if (it.attr("href") == "index.htm" || it.attr("href").contains("article")) ""
+            else it.attr("href").split(".").firstOrNull() ?: ""
+        }
         return@ifCache MutableChapterContent(
             id = chapterId,
             title = soup.selectFirstXpath("//*[@id=\"title\"]")?.text() ?: return@ifCache ChapterContent.empty(chapterId),
             content = jsonObject,
-            lastChapter = soup.selectFirstXpath("//*[@id=\"foottext\"]/a[3]").let {
-                it ?: return@let ""
-                if (it.attr("href") == "index.htm") ""
-                else it.attr("href").split(".").firstOrNull() ?: ""
-            },
-            nextChapter = soup.selectFirstXpath("//*[@id=\"foottext\"]/a[4]").let {
-                it ?: return@let ""
-                if (it.attr("href") == "index.htm") ""
-                else it.attr("href").split(".").firstOrNull() ?: ""
-            }
+            lastChapter = lastChapter,
+            nextChapter = nextChapter
         )
     }
 

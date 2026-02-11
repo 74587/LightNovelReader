@@ -24,10 +24,10 @@ class ContentComponentRepository @Inject constructor(
     val pluginInjectorProvider: PluginInjectorProvider
 ): ContentComponentRepositoryApi {
     private val serializeMutableMap = mutableMapOf<String, ComponentDataJsonElementSerializer<out AbstractContentComponentData>>()
-    val serializeMap = serializeMutableMap.toMap()
+    val serializeMap get() =  serializeMutableMap.toMap()
     private val kClassMutableMap = mutableMapOf<String, KClass<out AbstractContentComponent<out AbstractContentComponentData>>>()
     private val dataKClassMutableMap = mutableMapOf<String, KClass<out AbstractContentComponentData>>()
-    val dataKClassMap = dataKClassMutableMap.toMap()
+    val dataKClassMap get() = dataKClassMutableMap.toMap()
 
     fun getContentDataFromJson(jsonObject: JsonObject): ContentData = ContentData(
         jsonObject["components"]

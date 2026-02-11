@@ -153,12 +153,15 @@ dependencies {
     implementation(libs.kotlin.result.coroutines)
     // apksig
     implementation(libs.apksig)
+    // http
     implementation(libs.cxhttp)
     implementation(libs.okhttp)
     implementation(libs.okhttp3.logging.interceptor)
     implementation(libs.androidx.profileinstaller)
-    //RE2J
+    // RE2J
     implementation(libs.re2j)
+    // Coroutines
+    debugImplementation(libs.jetbrains.kotlinx.coroutines.debug)
 }
 
 configurations.implementation {
