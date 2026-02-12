@@ -174,33 +174,6 @@ class Wenku8WebsiteDataSource: Wenku8BookDataSource {
             if (text.isNotEmpty()) {
                 simpleText(text)
             }
-            /*
-            var text = ""
-            content.toString().split("\n").forEach {
-                val doc = Jsoup.parse(it)
-                if (doc.body().children().isEmpty()) return@forEach
-                val element = doc.body().child(0)
-                if (element.id() == "content" || element.id() == "contentdp") return@forEach
-                val line = doc.body().text()
-                if (line.isNotEmpty()) {
-                    text = "$text    $line"
-                }
-                when {
-                    element.`is`("br") -> text += "\n"
-                    element.`is`("div.divimage") -> {
-                        simpleText(text)
-                        text = ""
-                        element
-                            .selectFirst("img")
-                            ?.attr("src")
-                            ?.toUri()
-                            ?.let(::image)
-                    }
-                }
-            }
-            if (text.isNotEmpty()) {
-                simpleText(text)
-            }*/
         }.build()
         val lastChapter = soup.selectFirstXpath("//*[@id=\"foottext\"]/a[3]").let {
             it ?: return@let ""

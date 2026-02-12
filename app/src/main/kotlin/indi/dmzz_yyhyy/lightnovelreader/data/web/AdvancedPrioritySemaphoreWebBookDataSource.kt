@@ -23,7 +23,7 @@ class AdvancedPrioritySemaphoreWebBookDataSource(
     override suspend fun getBookInformation(id: String): BookInformation {
         try {
             advancedPrioritySemaphore.acquire(priority)
-            return webBookDataSource.getBookInformation(id)
+            return webBookDataSource.getBookInformation(id).copy()
         } finally {
             advancedPrioritySemaphore.release()
         }
@@ -32,7 +32,7 @@ class AdvancedPrioritySemaphoreWebBookDataSource(
     override suspend fun getBookVolumes(id: String): BookVolumes {
         try {
             advancedPrioritySemaphore.acquire(priority)
-            return webBookDataSource.getBookVolumes(id)
+            return webBookDataSource.getBookVolumes(id).copy()
         } finally {
             advancedPrioritySemaphore.release()
         }
@@ -41,7 +41,7 @@ class AdvancedPrioritySemaphoreWebBookDataSource(
     override suspend fun getChapterContent(chapterId: String, bookId: String): ChapterContent {
         try {
             advancedPrioritySemaphore.acquire(priority)
-            return webBookDataSource.getChapterContent(chapterId, bookId)
+            return webBookDataSource.getChapterContent(chapterId, bookId).copy()
         } finally {
             advancedPrioritySemaphore.release()
         }
