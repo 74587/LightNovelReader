@@ -15,7 +15,7 @@ import io.nightfish.lightnovelreader.api.book.ChapterInformation
 import io.nightfish.lightnovelreader.api.book.MutableBookInformation
 import io.nightfish.lightnovelreader.api.book.MutableChapterContent
 import io.nightfish.lightnovelreader.api.book.Volume
-import io.nightfish.lightnovelreader.api.book.WorldCount
+import io.nightfish.lightnovelreader.api.book.WordCount
 import io.nightfish.lightnovelreader.api.content.builder.ContentBuilder
 import io.nightfish.lightnovelreader.api.content.builder.image
 import io.nightfish.lightnovelreader.api.content.builder.simpleText
@@ -138,7 +138,7 @@ class Wenku8AppDataSource(
                     description = wenku8Api("action=book&do=intro&aid=$id&t=0")?.text() ?: "",
                     tags = it.selectFirst("[name=Tags]")?.attr("value")?.split(" ") ?: emptyList(),
                     publishingHouse = it.selectFirst("[name=PressId]")?.attr("value") ?: "",
-                    wordCount = WorldCount(
+                    wordCount = WordCount(
                         it.selectFirst("[name=BookLength]")?.attr("value")?.toInt() ?: -1
                     ),
                     lastUpdated = LocalDate.parse(

@@ -13,7 +13,7 @@ import io.nightfish.lightnovelreader.api.book.ChapterInformation
 import io.nightfish.lightnovelreader.api.book.MutableBookInformation
 import io.nightfish.lightnovelreader.api.book.MutableChapterContent
 import io.nightfish.lightnovelreader.api.book.Volume
-import io.nightfish.lightnovelreader.api.book.WorldCount
+import io.nightfish.lightnovelreader.api.book.WordCount
 import io.nightfish.lightnovelreader.api.content.builder.ContentBuilder
 import io.nightfish.lightnovelreader.api.content.builder.image
 import io.nightfish.lightnovelreader.api.content.builder.simpleText
@@ -101,7 +101,7 @@ class Wenku8WebsiteDataSource: Wenku8BookDataSource {
                 ?.replace("全文长度：", "")
                 ?.replace("字", "")
                 ?.toIntOrNull()
-                ?.let { WorldCount(it) }
+                ?.let { WordCount(it) }
                 ?: return@ifCache BookInformation.empty(),
             lastUpdated = soup
                 .selectFirstXpath("//*[@id=\"content\"]/div[1]/table[1]/tbody/tr[2]/td[4]")

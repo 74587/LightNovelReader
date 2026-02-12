@@ -18,7 +18,7 @@ interface BookInformation: CanBeEmpty {
     val description: String
     val tags: List<String>
     val publishingHouse: String
-    val wordCount: WorldCount
+    val wordCount: WordCount
     val lastUpdated: LocalDateTime
     val isComplete: Boolean
 
@@ -33,7 +33,7 @@ interface BookInformation: CanBeEmpty {
             "",
             emptyList(),
             "",
-            WorldCount(0),
+            WordCount(0),
             LocalDateTime.MIN,
             false
         )
@@ -58,7 +58,7 @@ class MutableBookInformation(
     description: String,
     tags: List<String>,
     publishingHouse: String,
-    wordCount: WorldCount,
+    wordCount: WordCount,
     lastUpdated: LocalDateTime,
     isComplete: Boolean
 ): BookInformation {
@@ -84,7 +84,7 @@ class MutableBookInformation(
             "",
             emptyList(),
             "",
-            WorldCount(0),
+            WordCount(0),
             LocalDateTime.MIN,
             false
         )
