@@ -37,6 +37,7 @@ class ExploreHomeViewModel @Inject constructor(
 
     fun changePage(page: Int) {
         if (explorePageProvider !is ExplorePageProvider.DefaultExplorePageProvider) return
+        if (explorePageProvider.explorePageIdList.isEmpty()) return
         workingExplorePageJob?.cancel()
         workingExploreBooksRowsJob?.cancel()
         _uiState.selectedPage = page

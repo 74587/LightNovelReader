@@ -1,0 +1,37 @@
+{
+  "version": 3,
+  "artifactType": {
+    "type": "APK",
+    "kind": "Directory"
+  },
+  "applicationId": "indi.dmzz_yyhyy.lightnovelreader.snapshot",
+  "variantName": "snapshot",
+  "elements": [
+    {
+      "type": "SINGLE",
+      "filters": [],
+      "attributes": [],
+      "versionCode": 10200026,
+      "versionName": "1.2.0-Feb-12-17-37-42",
+      "outputFile": "LightNovelReader-1.2.0-snapshot-Feb-12-17-37-42.apk"
+    }
+  ],
+  "elementType": "File",
+  "baselineProfiles": [
+    {
+      "minApi": 28,
+      "maxApi": 30,
+      "baselineProfiles": [
+        "baselineProfiles/1/LightNovelReader-1.2.0-snapshot-Feb-12-17-37-42.dm"
+      ]
+    },
+    {
+      "minApi": 31,
+      "maxApi": 2147483647,
+      "baselineProfiles": [
+        "baselineProfiles/0/LightNovelReader-1.2.0-snapshot-Feb-12-17-37-42.dm"
+      ]
+    }
+  ],
+  "minSdkVersionForDexing": 24
+}

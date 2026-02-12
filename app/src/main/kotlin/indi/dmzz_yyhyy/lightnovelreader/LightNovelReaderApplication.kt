@@ -17,6 +17,7 @@ import io.nightfish.lightnovelreader.api.userdata.UserDataPath
 import io.nightfish.potatoautoproxy.ProxyPool
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.serialization.ExperimentalSerializationApi
 import javax.inject.Inject
@@ -41,9 +42,13 @@ class LightNovelReaderApplication : Application(), Configuration.Provider {
         super.attachBaseContext(base)
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     @ExperimentalSerializationApi
     override fun onCreate() {
         super.onCreate()
+        if (BuildConfig.DEBUG) {
+            System.setProperty("kotlinx.coroutines.debug", "on")
+        }
         CxHttpInit.init()
         registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
             override fun onActivityStarted(activity: Activity) {

@@ -11,7 +11,7 @@ import indi.dmzz_yyhyy.lightnovelreader.data.local.room.converter.UriConverter
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.converter.WorldCountConverter
 import indi.dmzz_yyhyy.lightnovelreader.data.serialier.LocalDateTimeSerializer
 import indi.dmzz_yyhyy.lightnovelreader.data.serialier.UriSerializer
-import io.nightfish.lightnovelreader.api.book.WorldCount
+import io.nightfish.lightnovelreader.api.book.WordCount
 import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
 
@@ -37,7 +37,7 @@ data class BookInformationEntity(
     @ColumnInfo(name = "publishing_house")
     val publishingHouse: String,
     @ColumnInfo(name = "word_count")
-    val wordCount: WorldCount,
+    val wordCount: WordCount,
     @ColumnInfo(name = "last_update")
     @Serializable(LocalDateTimeSerializer::class)
     val lastUpdated: LocalDateTime,

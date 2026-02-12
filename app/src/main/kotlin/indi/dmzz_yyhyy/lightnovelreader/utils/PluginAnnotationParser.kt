@@ -37,7 +37,8 @@ object PluginAnnotationParser {
             val id = pluginClass.`package`?.name ?: return null
 
             id to annotation
-        } catch (_: Throwable) {
+        } catch (e: Throwable) {
+            e.printStackTrace()
             null
         } finally {
             useFile?.delete()

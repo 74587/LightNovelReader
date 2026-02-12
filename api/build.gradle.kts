@@ -39,6 +39,12 @@ android {
             withSourcesJar()
         }
     }
+
+    buildTypes {
+        register("snapshot") {
+            initWith(getByName("release"))
+        }
+    }
 }
 
 dependencies {

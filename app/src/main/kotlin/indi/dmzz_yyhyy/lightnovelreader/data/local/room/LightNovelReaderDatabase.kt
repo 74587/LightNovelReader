@@ -33,7 +33,7 @@ import indi.dmzz_yyhyy.lightnovelreader.data.local.room.entity.ReadingStatistics
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.entity.UserDataEntity
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.entity.UserReadingDataEntity
 import indi.dmzz_yyhyy.lightnovelreader.data.local.room.entity.VolumeEntity
-import io.nightfish.lightnovelreader.api.book.WorldCount
+import io.nightfish.lightnovelreader.api.book.WordCount
 import io.nightfish.lightnovelreader.api.content.builder.ContentBuilder
 import io.nightfish.lightnovelreader.api.content.builder.image
 import io.nightfish.lightnovelreader.api.content.builder.simpleText
@@ -289,7 +289,7 @@ abstract class LightNovelReaderDatabase : RoomDatabase() {
                         )
                         contentValues.put(
                             "word_count",
-                            WorldCountConverter.worldCountToString(WorldCount(cursor.getInt(cursor.columnNames.indexOfFirst { it == "word_count" })))
+                            WorldCountConverter.worldCountToString(WordCount(cursor.getInt(cursor.columnNames.indexOfFirst { it == "word_count" })))
                         )
                         contentValues.put(
                             "publishing_house",
