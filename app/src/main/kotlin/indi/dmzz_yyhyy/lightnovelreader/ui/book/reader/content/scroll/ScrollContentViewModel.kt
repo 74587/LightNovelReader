@@ -134,7 +134,7 @@ class ScrollContentViewModel(
                         }
                     }
                     if (uiState.readingChapterContent.hasPrevChapter())
-                    collectLastChapterJob = collectChapter(0, uiState.readingChapterContent.lastChapter)
+                        collectLastChapterJob = collectChapter(0, uiState.readingChapterContent.lastChapter)
                 }
                 if (
                     itemInfo?.key == uiState.readingChapterContent.nextChapter &&
@@ -160,7 +160,7 @@ class ScrollContentViewModel(
                         }
                     }
                     if (uiState.readingChapterContent.hasNextChapter())
-                    collectNextChapterJob = collectChapter(2, uiState.readingChapterContent.nextChapter)
+                        collectNextChapterJob = collectChapter(2, uiState.readingChapterContent.nextChapter)
                 }
             }
         }

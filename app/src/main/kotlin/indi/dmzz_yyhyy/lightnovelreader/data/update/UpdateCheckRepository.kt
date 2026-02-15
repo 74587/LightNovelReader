@@ -59,7 +59,7 @@ class UpdateCheckRepository @Inject constructor(
     fun check() {
         if (checkJob != null && checkJob!!.isActive) return
         checkJob = coroutineScope.launch {
-            val updateChannelKey = userDataRepository.stringUserData(UserDataPath.Settings.App.UpdateChannel.path).get() ?: MenuOptions.UpdateChannelOptions.Development
+            val updateChannelKey = userDataRepository.stringUserData(UserDataPath.Settings.App.UpdateChannel.path).get() ?: MenuOptions.UpdateChannelOptions.DEVELOPMENT
             val distributionPlatform = userDataRepository.stringUserData(UserDataPath.Settings.App.DistributionPlatform.path).get() ?: MenuOptions.UpdatePlatformOptions.GitHub
             Log.i("UpdateChecker", "Checking for updates from $distributionPlatform/$updateChannelKey")
             _updatePhase.update { "已请求更新，等待 $distributionPlatform 应答" }
@@ -144,9 +144,8 @@ class UpdateCheckRepository @Inject constructor(
                 }
 
                 release.downloadFileProgress?.let { transform ->
-                    val dataFile = tempFile
                     _updatePhase.emit("合并更新文件…")
-                    transform(dataFile, apkFile)
+                    transform(tempFile, apkFile)
                 } ?: tempFile.renameTo(apkFile)
 
                 if (apkFile.exists() && apkFile.length() > 0L) {

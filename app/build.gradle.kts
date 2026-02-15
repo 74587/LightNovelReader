@@ -116,6 +116,7 @@ dependencies {
     coreLibraryDesugaring(libs.desugar.jdk.libs)
     // Android lib
     implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.foundation)
     implementation(libs.core.splashscreen)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.lifecycle.runtime.compose)

@@ -21,7 +21,7 @@ object Wenku8TagsExploreTapPage: ExploreTapPageDataSource {
             ?.select("a[href~=tags\\.php\\?t=.*]")
             ?.slice(0..48)
             ?.map { "${host}/modules/article/" + it.attr("href") }
-            ?.map {url ->
+            ?.forEach { url ->
                 val soup = autoReconnectionGetWithWenku8Cookie(url.split("=")[0] + "=" +
                         URLEncoder.encode(url.split("=")[1], "gb2312"))
                 rows.add(

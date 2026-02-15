@@ -3,7 +3,7 @@ package indi.dmzz_yyhyy.lightnovelreader.data.web
 import indi.dmzz_yyhyy.lightnovelreader.utils.AdvancedPrioritySemaphore
 import io.nightfish.lightnovelreader.api.web.WebBookDataSource
 
-class MutableWebDataSourceProvider(): WebBookDataSourceProvider {
+class MutableWebDataSourceProvider: WebBookDataSourceProvider {
     private var _value: WebBookDataSource = EmptyWebDataSource
         set(value) {
             advancedPrioritySemaphore = AdvancedPrioritySemaphore(value.permits)

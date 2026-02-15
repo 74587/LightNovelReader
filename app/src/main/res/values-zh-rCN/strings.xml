@@ -418,6 +418,11 @@
     <string name="plugin_api_incompatible">该插件基于旧版本的 LightNovelReader 构建，与当前版本不兼容。更新插件可能可以解决此问题。</string>
     <string name="plugin_install_cancelled">安装已取消</string>
     <string name="plugin_install_failed_with_reason">安装失败：%1$s</string>
+    <string name="plugin_error_unsupported_api">不支持的 API 版本 %1$d，当前版本为 %2$d</string>
+    <string name="plugin_error_version_too_high">已安装的插件版本高于待安装版本</string>
+    <string name="plugin_error_app_plugin_exist">已经存在package name相同的App插件</string>
+    <string name="plugin_error_signature_mismatch">插件签名与已安装版本不匹配</string>
+    <string name="plugin_error_unknown">未知错误：%1$s</string>
     <string name="plugin_install_conflict_app_plugin">安装失败：已存在同 ID 的插件应用，请先卸载该应用插件。</string>
     <string name="plugin_install_signature_mismatch">安装失败：检测到不同签名，请先卸载已安装版本后再安装此插件。</string>
     <string name="plugin_install_overwrite_prompt">检测到已安装插件，是否覆盖安装？</string>
@@ -426,7 +431,15 @@
     <string name="plugin_install_verifying">正在校验插件…</string>
     <string name="plugin_install_installing">正在安装插件…</string>
     <string name="plugin_install_continue">继续安装…</string>
+    <string name="plugin_install_parse_package_info">正在解析包信息…</string>
+    <string name="plugin_install_parse_plugin_metadata">正在解析插件元数据…</string>
+    <string name="plugin_install_clean">正在清理…</string>
+    <string name="plugin_install_check_legality">正在检查安装合法性…</string>
+    <string name="plugin_install_write_metadata">正在写入插件元数据…</string>
+    <string name="plugin_install_copy_plugin">正在复制插件…</string>
     <string name="plugin_update_preparing">准备更新…</string>
+    <string name="plugin_delete_confirm_body">确定要删除此插件吗？此操作不可撤销。</string>
+    <string name="plugin_delete_confirm">删除</string>
     <string name="plugin_delete_deleting">正在删除…</string>
     <string name="plugin_delete_completed">删除完成</string>
     <string name="plugin_delete_failed_with_reason">删除失败：%1$s</string>

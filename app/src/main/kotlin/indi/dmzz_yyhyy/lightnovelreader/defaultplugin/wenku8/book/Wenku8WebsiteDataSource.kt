@@ -19,9 +19,11 @@ import io.nightfish.lightnovelreader.api.content.builder.image
 import io.nightfish.lightnovelreader.api.content.builder.simpleText
 import io.nightfish.lightnovelreader.api.util.Cache
 import io.nightfish.lightnovelreader.api.web.search.SearchResult
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import org.jsoup.nodes.Element
 import org.jsoup.nodes.TextNode
 import java.net.URLEncoder
@@ -158,9 +160,9 @@ class Wenku8WebsiteDataSource: Wenku8BookDataSource {
         val jsonObject = ContentBuilder().apply {
             var text = ""
             for (node in content.childNodes()) {
-                when {
-                    node is TextNode -> text += node.nodeValue().replace(" ", "  ")
-                    node is Element && node.`is`("div.divimage") -> {
+                when (node) {
+                    is TextNode -> text += node.nodeValue().replace(" ", "  ")
+                    is Element if node.`is`("div.divimage") -> {
                         simpleText(text)
                         text = ""
                         node
@@ -199,8 +201,9 @@ class Wenku8WebsiteDataSource: Wenku8BookDataSource {
 
         var targetPage = 1
         var presentPage = 1
-        while(presentPage <= targetPage) {
-            val soup = autoReconnectionGetWithWenku8Cookie(url("modules/article/search.php?searchtype=$searchType&searchkey=$encodedKeyword&page=$presentPage"))
+        while (presentPage <= targetPage) {
+            val soup =
+                autoReconnectionGetWithWenku8Cookie(url("modules/article/search.php?searchtype=$searchType&searchkey=$encodedKeyword&page=$presentPage"))
             if (soup == null) {
                 emit(SearchResult.Error("Failed to request the web page"))
                 return@flow
@@ -209,7 +212,8 @@ class Wenku8WebsiteDataSource: Wenku8BookDataSource {
                 delay(5.seconds)
                 continue
             }
-            val menu = soup.selectFirstXpath("//*[@id=\"content\"]/div[1]/div[4]/div/span[1]/fieldset/div/a")
+            val menu =
+                soup.selectFirstXpath("//*[@id=\"content\"]/div[1]/div[4]/div/span[1]/fieldset/div/a")
             if (menu != null && menu.text().contains("小说目录")) {
                 val id = menu.attr("href").split("/").getOrNull(3)
                 if (id == null) {
@@ -221,7 +225,8 @@ class Wenku8WebsiteDataSource: Wenku8BookDataSource {
             }
             soup.baseUri()
             if (targetPage == 1) {
-                val page = soup.selectFirstXpath("//*[@id=\"pagelink\"]/em")?.text()?.split("/")?.getOrNull(1)?.toIntOrNull()
+                val page = soup.selectFirstXpath("//*[@id=\"pagelink\"]/em")?.text()?.split("/")
+                    ?.getOrNull(1)?.toIntOrNull()
                 if (page == null) {
                     emit(SearchResult.Error("Failed to request the web page"))
                     return@flow
@@ -229,7 +234,8 @@ class Wenku8WebsiteDataSource: Wenku8BookDataSource {
                 targetPage = page
             }
 
-            val books = Wenku8Api.getBookInformationListFromBookCards(soup.selectXpath("//*[@id=\"content\"]/table/tbody/tr/td/div"))
+            val books =
+                Wenku8Api.getBookInformationListFromBookCards(soup.selectXpath("//*[@id=\"content\"]/table/tbody/tr/td/div"))
             for (information in books) {
                 emit(SearchResult.MultipleBook(information))
             }
@@ -246,6 +252,7 @@ class Wenku8WebsiteDataSource: Wenku8BookDataSource {
         }
         emit(SearchResult.End())
     }
+        .flowOn(Dispatchers.IO)
 
     init {
         CxHttpInit.init()

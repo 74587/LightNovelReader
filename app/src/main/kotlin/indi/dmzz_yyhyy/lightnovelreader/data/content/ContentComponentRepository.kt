@@ -91,9 +91,9 @@ class ContentComponentRepository @Inject constructor(
 
         override fun register() {
             if (componentKClass == null || componentDataKClass == null ||serializer == null) throw Error("builder missing parameters")
-            kClassMap.put(id, componentKClass!!)
-            dataKClassMap.put(id, componentDataKClass!!)
-            serializerMap.put(id, serializer!!)
+            kClassMap[id] = componentKClass!!
+            dataKClassMap[id] = componentDataKClass!!
+            serializerMap[id] = serializer!!
         }
     }
     fun getDataFromJsonObject(content: JsonObject, block: (AbstractContentComponentData) -> Unit) {

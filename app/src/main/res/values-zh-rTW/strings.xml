@@ -27,7 +27,6 @@
     <string name="enabled">啟用</string>
     <string name="disabled">停用</string>
     <string name="install_update">安裝更新</string>
-    <string name="unspecified">未指定</string>
     <string name="ignore">忽略</string>
     <string name="ignore_version">忽略此版本</string>
     <string name="switch_and_restart">切換並重新啟動</string>
@@ -408,6 +407,10 @@
     <string name="plugin_api_incompatible">此外掛基於舊版本的 LightNovelReader 建置，與目前版本不相容。更新外掛可能可以解決此問題。</string>
     <string name="plugin_install_cancelled">安裝已取消</string>
     <string name="plugin_install_failed_with_reason">安裝失敗：%1$s</string>
+    <string name="plugin_error_unsupported_api">不支援的 API 版本 %1$d，目前版本為 %2$d</string>
+    <string name="plugin_error_version_too_high">已安裝的外掛版本高於待安裝版本</string>
+    <string name="plugin_error_signature_mismatch">外掛簽名與已安裝版本不匹配</string>
+    <string name="plugin_error_unknown">未知錯誤：%1$s</string>
     <string name="plugin_install_conflict_app_plugin">安裝失敗：已存在相同 ID 的外掛應用程式，請先解除安裝該應用外掛。</string>
     <string name="plugin_install_signature_mismatch">安裝失敗：偵測到不同簽名，請先解除安裝已安裝版本後再安裝此外掛。</string>
     <string name="plugin_install_overwrite_prompt">偵測到已安裝外掛，是否覆蓋安裝？</string>
@@ -416,7 +419,15 @@
     <string name="plugin_install_verifying">正在驗證外掛…</string>
     <string name="plugin_install_installing">正在安裝外掛…</string>
     <string name="plugin_install_continue">繼續安裝…</string>
+    <string name="plugin_install_parse_package_info">正在解析套件資訊…</string>
+    <string name="plugin_install_parse_plugin_metadata">正在解析外掛元資料…</string>
+    <string name="plugin_install_clean">正在清理…</string>
+    <string name="plugin_install_check_legality">正在檢查安裝合法性…</string>
+    <string name="plugin_install_write_metadata">正在寫入外掛元資料…</string>
+    <string name="plugin_install_copy_plugin">正在複製外掛…</string>
     <string name="plugin_update_preparing">準備更新…</string>
+    <string name="plugin_delete_confirm_body">確定要刪除此外掛嗎？此操作不可撤銷。</string>
+    <string name="plugin_delete_confirm">刪除</string>
     <string name="plugin_delete_deleting">正在刪除…</string>
     <string name="plugin_delete_completed">刪除完成</string>
     <string name="plugin_delete_failed_with_reason">刪除失敗：%1$s</string>
