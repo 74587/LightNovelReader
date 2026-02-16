@@ -28,6 +28,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalBottomBarController
+import indi.dmzz_yyhyy.lightnovelreader.ui.LocalImageHeaderGetter
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.bookNavigation
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.LnrNavigationBar
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.LnrSnackbar
@@ -53,7 +54,8 @@ import io.nightfish.lightnovelreader.api.ui.ReaderStyle
 fun LightNovelReaderNavHost(
     navController: NavHostController,
     onBuildNavHost: NavGraphBuilder.() -> Unit,
-    readerStyle: ReaderStyle
+    readerStyle: ReaderStyle,
+    imageHeaderGetter: () -> Map<String, String>
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -67,6 +69,7 @@ fun LightNovelReaderNavHost(
         LocalSnackbarHost provides snackbarHostState,
         LocalClaimSnackbarHost provides claim,
         LocalBottomBarController provides { visible -> bottomBarVisible = visible },
+        LocalImageHeaderGetter provides imageHeaderGetter
     ) {
         val backStackEntry by navController.currentBackStackEntryAsState()
         val currentDest = backStackEntry?.destination
