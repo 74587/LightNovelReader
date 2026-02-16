@@ -27,6 +27,7 @@ import indi.dmzz_yyhyy.lightnovelreader.data.logging.LoggerRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginManager
 import indi.dmzz_yyhyy.lightnovelreader.data.update.UpdateCheckRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataRepository
+import indi.dmzz_yyhyy.lightnovelreader.data.web.WebBookDataSourceProvider
 import indi.dmzz_yyhyy.lightnovelreader.data.work.CheckUpdateWork
 import indi.dmzz_yyhyy.lightnovelreader.theme.LightNovelReaderTheme
 import indi.dmzz_yyhyy.lightnovelreader.ui.LightNovelReaderApp
@@ -50,6 +51,7 @@ class MainActivity : ComponentActivity() {
     @Inject lateinit var updateCheckRepository: UpdateCheckRepository
     @Inject lateinit var workManager: WorkManager
     @Inject lateinit var pluginManager: PluginManager
+    @Inject lateinit var webBookDataSourceProvider: WebBookDataSourceProvider
     private val coroutineScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -171,7 +173,8 @@ class MainActivity : ComponentActivity() {
                         with(pluginManager) {
                             onBuildNavHost()
                         }
-                    }
+                    },
+                    imageHeaderGetter = { webBookDataSourceProvider.default.imageHeader }
                 )
             }
         }

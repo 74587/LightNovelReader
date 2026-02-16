@@ -15,7 +15,8 @@ import io.nightfish.lightnovelreader.api.ui.ReaderStyle
 @Composable
 fun LightNovelReaderApp(
     onBuildNavHost: NavGraphBuilder.() -> Unit,
-    readerStyle: ReaderStyle
+    readerStyle: ReaderStyle,
+    imageHeaderGetter: () -> Map<String, String>
 ) {
     val navController = rememberNavController()
     val updatesAvailableDialogViewModel = hiltViewModel<UpdatesAvailableDialogViewModel>()
@@ -26,5 +27,5 @@ fun LightNovelReaderApp(
             navController.navigateUpdatesAvailableDialog()
         }
     }
-    LightNovelReaderNavHost(navController, onBuildNavHost, readerStyle)
+    LightNovelReaderNavHost(navController, onBuildNavHost, readerStyle, imageHeaderGetter)
 }
