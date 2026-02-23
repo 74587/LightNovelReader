@@ -14,7 +14,7 @@ import kotlinx.serialization.Serializable
  * @param unitResId 单位名称的ResId, 其中字符串的{count}部分将被替换为数字, 如果不存在{count}占位符则会直接将单位加到数字后面
  */
 @Serializable
-data class WorldCount(
+data class WordCount(
     val count: Int,
     val unit: String?,
     @param:StringRes val unitResId: Int?

@@ -121,6 +121,9 @@ class ExportBookToEPUBWork @AssistedInject constructor(
         val fileUri = inputData.getString("uri")?.let(Uri::parse) ?: return@withContext Result.failure()
         val tempDir = applicationContext.cacheDir.resolve("epub").resolve(bookId)
         val cover = tempDir.resolve("cover.jpg")
+            .also {
+                if (it.exists()) it.delete()
+            }
         val downloadItem = MutableDownloadItem(DownloadType.EPUB_EXPORT, bookId)
         downloadProgressRepository.addExportItem(downloadItem)
         if (bookId.isBlank()) {
@@ -403,12 +406,12 @@ class ExportBookToEPUBWork @AssistedInject constructor(
         tasks: MutableList<ImageDownloader.Task>,
         epubBuilder: EpubBuilder
     ) {
-        val src = this.attributes().first { it.name == "src" }
+        val src = this.attributes().firstOrNull { it.name == "src" }
         if (src != null && src.value.runCatching { this.toUri() }.isSuccess) {
             val id = src.value.hashCode()
-            val image = tempDir.resolve("image_id.jpg")
+            val image = tempDir.resolve("image_$id.jpg")
             tasks.add(ImageDownloader.Task(image, src.value.toUri()))
-            src.value = "image/image_${src.value}.jpg"
+            src.value = "image/image_$id.jpg"
             epubBuilder.imgRes(
                 href = src.value,
                 id = id.toString(),

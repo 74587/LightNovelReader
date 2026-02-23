@@ -1,5 +1,8 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 plugins {
     alias(libs.plugins.android.application)
@@ -49,10 +52,26 @@ android {
             versionNameSuffix = defaultConfig.versionCode.toString()
         }
 
+        register("snapshot") {
+            initWith(getByName("release"))
+            matchingFallbacks.add("relese")
+            applicationIdSuffix = ".snapshot"
+            isShrinkResources = true
+            isMinifyEnabled = true
+            vcsInfo.include = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            val dateFormat = SimpleDateFormat("MMM-dd-HH-mm-ss", Locale.US)
+            versionNameSuffix = "-${dateFormat.format(Date())}"
+        }
+
         base {
             archivesName = "LightNovelReader-${defaultConfig.versionName}"
         }
     }
+
     compileOptions {
         isCoreLibraryDesugaringEnabled = true
         sourceCompatibility = JavaVersion.VERSION_17
@@ -65,6 +84,18 @@ android {
     packaging {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
+    }
+}
+
+androidComponents {
+    onVariants(selector().withBuildType("snapshot")) { variant ->
+        variant.outputs.forEach { output ->
+            val outputImpl = output as com.android.build.api.variant.impl.VariantOutputImpl
+            val originalFileName = outputImpl.outputFileName.get()
+            val dateFormat = SimpleDateFormat("MMM-dd-HH-mm-ss", Locale.US)
+            val newFileName = originalFileName.replace(".apk", "-${dateFormat.format(Date())}.apk")
+            outputImpl.outputFileName = newFileName
         }
     }
 }
@@ -153,11 +184,12 @@ dependencies {
     implementation(libs.kotlin.result.coroutines)
     // apksig
     implementation(libs.apksig)
+    // http
     implementation(libs.cxhttp)
     implementation(libs.okhttp)
     implementation(libs.okhttp3.logging.interceptor)
     implementation(libs.androidx.profileinstaller)
-    //RE2J
+    // RE2J
     implementation(libs.re2j)
 }
 

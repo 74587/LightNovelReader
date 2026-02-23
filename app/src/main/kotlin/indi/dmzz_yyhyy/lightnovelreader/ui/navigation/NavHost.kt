@@ -28,6 +28,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalBottomBarController
+import indi.dmzz_yyhyy.lightnovelreader.ui.LocalImageHeaderGetter
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.bookNavigation
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.LnrNavigationBar
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.LnrSnackbar
@@ -45,12 +46,16 @@ import indi.dmzz_yyhyy.lightnovelreader.utils.expandExit
 import indi.dmzz_yyhyy.lightnovelreader.utils.expandPopEnter
 import indi.dmzz_yyhyy.lightnovelreader.utils.expandPopExit
 import io.nightfish.lightnovelreader.api.ui.LocalNavController
+import io.nightfish.lightnovelreader.api.ui.LocalReaderStyle
+import io.nightfish.lightnovelreader.api.ui.ReaderStyle
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalSharedTransitionApi::class)
 @Composable
 fun LightNovelReaderNavHost(
     navController: NavHostController,
-    onBuildNavHost: NavGraphBuilder.() -> Unit
+    onBuildNavHost: NavGraphBuilder.() -> Unit,
+    readerStyle: ReaderStyle,
+    imageHeaderGetter: () -> Map<String, String>
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
 
@@ -58,12 +63,13 @@ fun LightNovelReaderNavHost(
     val claim: (Boolean) -> Unit = remember { { take -> claimCount += if (take) 1 else -1 } }
 
     var bottomBarVisible by remember { mutableStateOf(true) }
-
     CompositionLocalProvider(
+        LocalReaderStyle provides readerStyle,
         LocalNavController provides navController,
         LocalSnackbarHost provides snackbarHostState,
         LocalClaimSnackbarHost provides claim,
         LocalBottomBarController provides { visible -> bottomBarVisible = visible },
+        LocalImageHeaderGetter provides imageHeaderGetter
     ) {
         val backStackEntry by navController.currentBackStackEntryAsState()
         val currentDest = backStackEntry?.destination

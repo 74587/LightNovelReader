@@ -3,7 +3,7 @@ package indi.dmzz_yyhyy.lightnovelreader.data.book
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.stringResource
 import indi.dmzz_yyhyy.lightnovelreader.R
-import io.nightfish.lightnovelreader.api.book.WorldCount
+import io.nightfish.lightnovelreader.api.book.WordCount
 import java.text.NumberFormat
 import java.util.Locale
 
@@ -16,7 +16,7 @@ private fun Int.numberTransform(): String =
     }
 
 @Composable
-fun WorldCount.get(): String =
+fun WordCount.get(): String =
     if (unit != null)
         if (unit!!.contains("{count}")) unit!!.replace("{count}", count.numberTransform())
         else "$count $unit"

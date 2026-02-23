@@ -133,6 +133,7 @@ class ScrollContentViewModel(
                             lastReadChapterTitle = uiState.readingChapterContent.title
                         }
                     }
+                    if (uiState.readingChapterContent.hasPrevChapter())
                     collectLastChapterJob = collectChapter(0, uiState.readingChapterContent.lastChapter)
                 }
                 if (
@@ -158,6 +159,7 @@ class ScrollContentViewModel(
                             lastReadChapterTitle = uiState.readingChapterContent.title
                         }
                     }
+                    if (uiState.readingChapterContent.hasNextChapter())
                     collectNextChapterJob = collectChapter(2, uiState.readingChapterContent.nextChapter)
                 }
             }

@@ -27,7 +27,7 @@ class ImageDownloader(
         tasks.forEach { task ->
             ImageUtils.uriToBitmap(task.uri, context)
                 .onSuccess { bitmap ->
-                    task.file.mkdirs()
+                    task.file.parentFile?.mkdirs()
                     task.file.outputStream().use {
                         bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
                     }

@@ -7,6 +7,7 @@ plugins {
 dependencies {
     testImplementation(kotlin("test"))
     implementation(libs.dom4j)
+    implementation(libs.jaxen)
 }
 
 tasks.test {

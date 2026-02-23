@@ -13,7 +13,7 @@ import io.nightfish.lightnovelreader.api.book.ChapterInformation
 import io.nightfish.lightnovelreader.api.book.MutableBookInformation
 import io.nightfish.lightnovelreader.api.book.MutableChapterContent
 import io.nightfish.lightnovelreader.api.book.Volume
-import io.nightfish.lightnovelreader.api.book.WorldCount
+import io.nightfish.lightnovelreader.api.book.WordCount
 import io.nightfish.lightnovelreader.api.content.builder.ContentBuilder
 import io.nightfish.lightnovelreader.api.content.builder.image
 import io.nightfish.lightnovelreader.api.content.builder.simpleText
@@ -22,7 +22,8 @@ import io.nightfish.lightnovelreader.api.web.search.SearchResult
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
-import org.jsoup.Jsoup
+import org.jsoup.nodes.Element
+import org.jsoup.nodes.TextNode
 import java.net.URLEncoder
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -100,7 +101,7 @@ class Wenku8WebsiteDataSource: Wenku8BookDataSource {
                 ?.replace("全文长度：", "")
                 ?.replace("字", "")
                 ?.toIntOrNull()
-                ?.let { WorldCount(it) }
+                ?.let { WordCount(it) }
                 ?: return@ifCache BookInformation.empty(),
             lastUpdated = soup
                 .selectFirstXpath("//*[@id=\"content\"]/div[1]/table[1]/tbody/tr[2]/td[4]")
@@ -156,21 +157,13 @@ class Wenku8WebsiteDataSource: Wenku8BookDataSource {
         val content = soup.selectFirstXpath("//*[@id=\"content\"]") ?: return@ifCache ChapterContent.empty(chapterId)
         val jsonObject = ContentBuilder().apply {
             var text = ""
-            content.toString().split("\n").forEach {
-                val doc = Jsoup.parse(it)
-                if (doc.body().children().isEmpty()) return@forEach
-                val element = doc.body().child(0)
-                if (element.id() == "content" || element.id() == "contentdp") return@forEach
-                val line = doc.body().text()
-                if (line.isNotEmpty()) {
-                    text = "$text    $line"
-                }
+            for (node in content.childNodes()) {
                 when {
-                    element.`is`("br") -> text += "\n"
-                    element.`is`("div.divimage") -> {
+                    node is TextNode -> text += node.nodeValue().replace(" ", "  ")
+                    node is Element && node.`is`("div.divimage") -> {
                         simpleText(text)
                         text = ""
-                        element
+                        node
                             .selectFirst("img")
                             ?.attr("src")
                             ?.toUri()
@@ -182,20 +175,22 @@ class Wenku8WebsiteDataSource: Wenku8BookDataSource {
                 simpleText(text)
             }
         }.build()
+        val lastChapter = soup.selectFirstXpath("//*[@id=\"foottext\"]/a[3]").let {
+            it ?: return@let ""
+            if (it.attr("href") == "index.htm" || it.attr("href").contains("article")) ""
+            else it.attr("href").split(".").firstOrNull() ?: ""
+        }
+        val nextChapter = soup.selectFirstXpath("//*[@id=\"foottext\"]/a[4]").let {
+            it ?: return@let ""
+            if (it.attr("href") == "index.htm" || it.attr("href").contains("article")) ""
+            else it.attr("href").split(".").firstOrNull() ?: ""
+        }
         return@ifCache MutableChapterContent(
             id = chapterId,
             title = soup.selectFirstXpath("//*[@id=\"title\"]")?.text() ?: return@ifCache ChapterContent.empty(chapterId),
             content = jsonObject,
-            lastChapter = soup.selectFirstXpath("//*[@id=\"foottext\"]/a[3]").let {
-                it ?: return@let ""
-                if (it.attr("href") == "index.htm") ""
-                else it.attr("href").split(".").firstOrNull() ?: ""
-            },
-            nextChapter = soup.selectFirstXpath("//*[@id=\"foottext\"]/a[4]").let {
-                it ?: return@let ""
-                if (it.attr("href") == "index.htm") ""
-                else it.attr("href").split(".").firstOrNull() ?: ""
-            }
+            lastChapter = lastChapter,
+            nextChapter = nextChapter
         )
     }
 
