@@ -31,6 +31,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.work.OneTimeWorkRequest
+import indi.dmzz_yyhyy.lightnovelreader.BuildConfig
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SectionHeader
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsClickableEntry
@@ -131,11 +132,12 @@ fun SettingsScreen(
                         title = stringResource(R.string.about_settings),
                     ) {
                         AboutSettingsList(
+                            settingState = settingState,
                             onClickLicenses = onClickLicenses
                         )
                     }
                 }
-                if (true) {
+                if (BuildConfig.DEBUG) {
                     item {
                         SettingsCategory(
                             title = stringResource(R.string.debug_settings)

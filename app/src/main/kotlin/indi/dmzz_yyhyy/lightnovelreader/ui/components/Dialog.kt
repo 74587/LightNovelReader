@@ -29,6 +29,8 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MaterialTheme.colorScheme
+import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Slider
 import androidx.compose.material3.SliderDefaults
@@ -412,6 +414,38 @@ fun SettingsAboutInfoDialog(
             }
         },
         confirmButton = {},
+    )
+}
+
+@Composable
+fun SettingsDisableStatsDialog(
+    onClickConfirm: () -> Unit,
+    onDismissRequest: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = { Text(
+            text = stringResource(R.string.settings_statistics_disable_dialog_title),
+            style = typography.titleLarge
+        ) },
+        text = { Text(text = stringResource(R.string.settings_statistics_disable_dialog_text)) },
+        confirmButton = {
+            TextButton(
+                onClick = {
+                    onClickConfirm()
+                }
+            ) {
+                Text(
+                    text = stringResource(R.string.settings_statistics_disable_dialog_confirm),
+                    color = colorScheme.error
+                )
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text(text = stringResource(R.string.cancel))
+            }
+        }
     )
 }
 
