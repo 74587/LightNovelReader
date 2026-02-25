@@ -115,12 +115,14 @@ sealed class MenuOptions {
     )
 
     data object LightThemeNameOptions: MenuOptions(
-        Option("light_default", R.string.key_light_theme_default)
+        Option("light_default", R.string.key_light_theme_default),
+        Option("light_designer", R.string.key_light_theme_designer)
     )
 
     data object DarkThemeNameOptions: MenuOptions(
         Option("dark_default", R.string.key_dark_theme_default),
-        Option("dark_obsidian", R.string.key_dark_theme_obsidian)
+        Option("dark_obsidian", R.string.key_dark_theme_obsidian),
+        Option("dark_designer", R.string.key_dark_theme_designer)
     )
 
     data object ReaderBgImageDisplayModeOptions: MenuOptions() {

@@ -23,7 +23,7 @@ android {
         minSdk = 24
         targetSdk = 36
         // 版本号为x.y.z则versionCode为x*1000000+y*10000+z*1000+debug版本号(开发需要时迭代, 三位数)
-        versionCode = 1_02_00_026
+        versionCode = 1_02_00_027
         versionName = "1.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -49,7 +49,7 @@ android {
             isDebuggable = true
             isJniDebuggable = true
             vcsInfo.include = false
-            versionNameSuffix = defaultConfig.versionCode.toString()
+            versionNameSuffix = "-" + defaultConfig.versionCode.toString()
         }
 
         register("snapshot") {
@@ -191,6 +191,8 @@ dependencies {
     implementation(libs.androidx.profileinstaller)
     // RE2J
     implementation(libs.re2j)
+    // Matomo
+    implementation(libs.matomo.sdk.android)
 }
 
 configurations.implementation {
