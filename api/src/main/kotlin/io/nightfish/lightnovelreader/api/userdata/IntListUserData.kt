@@ -19,8 +19,8 @@ class IntListUserData (
     }
 
     override fun getFlow(): Flow<List<Int>?> {
-        return userDataDao.getFlow(path).map {
-            it?.split(",")
+        return userDataDao.getFlow(path).map { text ->
+            text?.split(",")
                 ?.filter { it.isNotBlank() }
                 ?.map(String::toInt)
         }

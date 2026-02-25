@@ -28,6 +28,7 @@ import io.nightfish.lightnovelreader.api.book.BookVolumes
 import io.nightfish.lightnovelreader.api.book.ChapterContent
 import io.nightfish.lightnovelreader.api.book.ChapterInformation
 import io.nightfish.lightnovelreader.api.book.Volume
+import io.nightfish.lightnovelreader.api.book.isNullOrEmpty
 import io.nightfish.potatoepub.builder.ChapterBuilder
 import io.nightfish.potatoepub.builder.EpubBuilder
 import kotlinx.coroutines.Dispatchers
@@ -135,7 +136,7 @@ class ExportBookToEPUBWork @AssistedInject constructor(
         var bookInformation = webBookDataSourceProvider.lowPriority.getBookInformation(bookId)
         if (bookInformation.isEmpty()) {
             val localData = localBookDataSource.getBookInformation(bookId)
-            if (localData == null || localData.isEmpty()) {
+            if (localData.isNullOrEmpty()) {
                 downloadItem.progress = -1f
                 updateFailureNotification(bookId)
                 return@withContext Result.failure()
@@ -145,12 +146,12 @@ class ExportBookToEPUBWork @AssistedInject constructor(
         var bookVolumes = webBookDataSourceProvider.lowPriority.getBookVolumes(bookId)
         if (bookVolumes.isEmpty()) {
             val localData = localBookDataSource.getBookVolumes(bookId)
-            if (localData == null || localData.isEmpty()) {
+            if (localData.isNullOrEmpty()) {
                 downloadItem.progress = -1f
                 updateFailureNotification(bookId)
                 return@withContext Result.failure()
             }
-            else bookVolumes = localData
+            else bookVolumes = localData!!
         }
         val bookContentMap = mutableMapOf<String, ChapterContent>()
         updateProgressNotification(bookId, 0)
@@ -167,12 +168,12 @@ class ExportBookToEPUBWork @AssistedInject constructor(
                 var chapterContent = webBookDataSourceProvider.lowPriority.getChapterContent(it.id, bookId)
                 if (chapterContent.isEmpty()) {
                     val localData = localBookDataSource.getChapterContent(it.id)
-                    if (localData == null || localData.isEmpty()) {
+                    if (localData.isNullOrEmpty()) {
                         downloadItem.progress = -1f
                         updateFailureNotification(bookId)
                         return@withContext Result.failure()
                     }
-                    else chapterContent = localData
+                    else chapterContent = localData!!
                 }
                 bookContentMap[it.id] = chapterContent
             }

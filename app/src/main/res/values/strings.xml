@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="app_name" translatable="false">LightNovelReader</string>
     <string name="language">English</string>
     <string name="language_translators">yukonisen, NightFish</string>
@@ -432,6 +432,7 @@
     <string name="plugin_install_failed_with_reason">Installation failed: %1$s</string>
     <string name="plugin_error_unsupported_api">Unsupported API version %1$d, current version is %2$d</string>
     <string name="plugin_error_version_too_high">The installed plugin version is higher than the version being installed</string>
+    <string name="plugin_error_app_plugin_exist">There is already a app plugin which has the same package name with the installing plugin</string>
     <string name="plugin_error_signature_mismatch">Plugin signature does not match the installed version</string>
     <string name="plugin_error_unknown">Unknown error: %1$s</string>
     <string name="plugin_install_conflict_app_plugin">Installation failed: a plugin app with the same ID is installed. Please uninstall the app plugin first.</string>
