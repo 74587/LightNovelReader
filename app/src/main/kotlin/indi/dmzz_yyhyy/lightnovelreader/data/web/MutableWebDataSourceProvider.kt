@@ -38,11 +38,7 @@ class MutableWebDataSourceProvider: WebBookDataSourceProvider {
     fun update(webBookDataSource: WebBookDataSource) {
                 _value = webBookDataSource
     }
-    val value =
-        if (_value.cache != null)
-            CacheWebBookDataSource(_value.cache!!, MargeWebBookDataSource(_value))
-        else
-            MargeWebBookDataSource(_value)
+    val value get() = _value
     override val highPriority: WebBookDataSource
         get() =
             if (highPriorityProcessedDataSource.id == _value.id) highPriorityProcessedDataSource

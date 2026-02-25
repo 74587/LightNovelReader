@@ -9,12 +9,12 @@ class MargeWebBookDataSource(
     val webBookDataSource: WebBookDataSource,
     val requestMarge: RequestMarge = RequestMarge()
 ): WebBookDataSource {
-    override val id = webBookDataSource.id
+    override val id get() = webBookDataSource.id
     override suspend fun isOffLine() = webBookDataSource.isOffLine()
-    override val offLine = webBookDataSource.offLine
-    override val isOffLineFlow = webBookDataSource.isOffLineFlow
-    override val explorePageProvider: ExplorePageProvider = webBookDataSource.explorePageProvider
-    override val searchProvider: SearchProvider = webBookDataSource.searchProvider
+    override val offLine get() = webBookDataSource.offLine
+    override val isOffLineFlow get() = webBookDataSource.isOffLineFlow
+    override val explorePageProvider: ExplorePageProvider get() = webBookDataSource.explorePageProvider
+    override val searchProvider: SearchProvider get() = webBookDataSource.searchProvider
 
     override suspend fun getBookInformation(id: String) = requestMarge.margeRequest(id.hashCode()) {
         webBookDataSource.getBookInformation(id)
