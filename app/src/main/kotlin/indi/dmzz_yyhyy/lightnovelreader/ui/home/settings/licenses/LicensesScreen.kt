@@ -44,6 +44,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.mikepenz.aboutlibraries.entity.Library
+import com.mikepenz.aboutlibraries.ui.compose.android.produceLibraries
 import com.mikepenz.aboutlibraries.ui.compose.util.author
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
@@ -52,14 +53,12 @@ import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
 fun LicensesScreen(
     onClickBack: () -> Unit
 ) {
-    //FIXME
-    //val libraries by produceLibraries(R.raw.aboutlibraries)
+    val libraries by produceLibraries(R.raw.aboutlibraries)
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         TopBar(onClickBack)
-        //FIXME
-        //LicenseList(libraries?.libraries ?: emptyList())
+        LicenseList(libraries?.libraries ?: emptyList())
     }
 }
 

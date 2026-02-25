@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,8 +19,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.sizeIn
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
@@ -420,7 +423,8 @@ fun SettingsAboutInfoDialog(
 @Composable
 fun SettingsDisableStatsDialog(
     onClickConfirm: () -> Unit,
-    onDismissRequest: () -> Unit
+    onDismissRequest: () -> Unit,
+    onClickShowPrivacyPolicy: () -> Unit
 ) {
     AlertDialog(
         onDismissRequest = onDismissRequest,
@@ -428,7 +432,23 @@ fun SettingsDisableStatsDialog(
             text = stringResource(R.string.settings_statistics_disable_dialog_title),
             style = typography.titleLarge
         ) },
-        text = { Text(text = stringResource(R.string.settings_statistics_disable_dialog_text)) },
+        text = { 
+            Column(modifier = Modifier.fillMaxWidth()) {
+                Text(text = stringResource(R.string.settings_statistics_disable_dialog_text))
+                Spacer(modifier = Modifier.height(12.dp))
+                TextButton(
+                    onClick = onClickShowPrivacyPolicy,
+                    modifier = Modifier.align(Alignment.Start),
+                    contentPadding = PaddingValues(0.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.privacy_policy),
+                        color = colorScheme.primary,
+                        style = typography.labelMedium
+                    )
+                }
+            }
+        },
         confirmButton = {
             TextButton(
                 onClick = {
@@ -444,6 +464,71 @@ fun SettingsDisableStatsDialog(
         dismissButton = {
             TextButton(onClick = onDismissRequest) {
                 Text(text = stringResource(R.string.cancel))
+            }
+        }
+    )
+}
+
+@Composable
+fun SettingsPrivacyPolicyDialog(
+    onDismissRequest: () -> Unit
+) {
+    AlertDialog(
+        onDismissRequest = onDismissRequest,
+        title = { 
+            Text(
+                text = stringResource(R.string.privacy_policy_title),
+                style = typography.titleLarge
+            ) 
+        },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                Text(
+                    text = stringResource(R.string.privacy_policy_collect_title),
+                    style = typography.titleMedium,
+                    color = colorScheme.primary,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Text(
+                    text = stringResource(R.string.privacy_policy_collect_items),
+                    style = typography.bodyMedium,
+                    color = colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                
+                Text(
+                    text = stringResource(R.string.privacy_policy_not_collect_title),
+                    style = typography.titleMedium,
+                    color = colorScheme.primary,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Text(
+                    text = stringResource(R.string.privacy_policy_not_collect_items),
+                    style = typography.bodyMedium,
+                    color = colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+                
+                Text(
+                    text = stringResource(R.string.privacy_policy_commitment_title),
+                    style = typography.titleMedium,
+                    color = colorScheme.primary,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Text(
+                    text = stringResource(R.string.privacy_policy_commitment_items),
+                    style = typography.bodyMedium,
+                    color = colorScheme.onSurfaceVariant
+                )
+            }
+        },
+        confirmButton = {
+            TextButton(onClick = onDismissRequest) {
+                Text(text = stringResource(android.R.string.ok))
             }
         }
     )

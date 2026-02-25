@@ -213,6 +213,14 @@
         \n關閉後夜魚只能對著 0 日活哭泣了 ≧ ﹏ ≦
     </string>
     <string name="settings_statistics_disable_dialog_confirm">仍要關閉</string>
+    <string name="privacy_policy">隱私政策</string>
+    <string name="privacy_policy_title">我們蒐集什麼</string>
+    <string name="privacy_policy_collect_title">我們蒐集</string>
+    <string name="privacy_policy_collect_items">• 裝置品牌和型號\n• 系統與 LightNovelReader 版本\n• 基礎日活資訊（會話時間與時長）\n• 根據 IP 的模糊地區</string>
+    <string name="privacy_policy_not_collect_title">我們不蒐集</string>
+    <string name="privacy_policy_not_collect_items">上述之外的任何個人資料，包括但不限於：LightNovelReader 應用內資料，以及其他可能用於確定你的身份的資訊。</string>
+    <string name="privacy_policy_commitment_title">隱私承諾</string>
+    <string name="privacy_policy_commitment_items">LightNovelReader 不會利用上述任何分享給我們的資料進行廣告定向、資料挖掘或其他可能損害你隱私的活動。</string>
     <string name="experimental_settings">實驗性</string>
     <string name="debug_settings">除錯</string>
     <string name="item_view_details">查看詳細資訊</string>
