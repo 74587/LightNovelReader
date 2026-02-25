@@ -219,6 +219,14 @@
         If you turn this off, NightFish can only cry at 0 DAU ≧ ﹏ ≦
     </string>
     <string name="settings_statistics_disable_dialog_confirm">Turn off</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="privacy_policy_title">What We Collect</string>
+    <string name="privacy_policy_collect_title">We Collect</string>
+    <string name="privacy_policy_collect_items">• Device brand and model\n• System and app version\n• Basic daily active usage (session time and duration)\n• Approximate geographic location based on IP address</string>
+    <string name="privacy_policy_not_collect_title">We Do NOT Collect</string>
+    <string name="privacy_policy_not_collect_items">Any personal data other than those listed above, including but not limited to: LightNovelReader in-app data, and any other information that could be used to identify you.</string>
+    <string name="privacy_policy_commitment_title">Our Privacy Commitment</string>
+    <string name="privacy_policy_commitment_items">LightNovelReader will not utilize any data shared with us for targeted advertising, data mining, or other privacy-harmful activities.</string>
     <string name="experimental_settings">Experimental</string>
     <string name="debug_settings">Debug</string>
     <string name="item_view_details">View Details</string>

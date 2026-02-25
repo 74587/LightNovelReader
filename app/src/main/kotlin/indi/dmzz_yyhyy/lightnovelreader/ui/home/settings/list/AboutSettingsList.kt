@@ -15,6 +15,7 @@ import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsAboutInfoDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsClickableEntry
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsDisableStatsDialog
+import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsPrivacyPolicyDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.SettingState
 import io.nightfish.lightnovelreader.api.ui.components.SettingsSwitchEntry
 
@@ -29,19 +30,32 @@ fun AboutSettingsList(
             .append(if (BuildConfig.DEBUG) "debug" else "release")
     }
     var showAppInfoDialog by remember { mutableStateOf(false) }
-    var showDisableStatisticsConfirmDialog by remember { mutableStateOf(false) }
+    var showDisableStatsDialog by remember { mutableStateOf(false) }
+    var showPrivacyPolicy by remember { mutableStateOf(false) }
 
     if (showAppInfoDialog) {
         SettingsAboutInfoDialog(onDismissRequest = { showAppInfoDialog = false })
     }
 
-    if (showDisableStatisticsConfirmDialog) {
+    if (showPrivacyPolicy) {
+        SettingsPrivacyPolicyDialog(
+            onDismissRequest = {
+                showPrivacyPolicy = false
+                showDisableStatsDialog = false
+            }
+        )
+    }
+
+    if (showDisableStatsDialog) {
         SettingsDisableStatsDialog(
             onClickConfirm = {
                 settingState.statisticsUserData.asynchronousSet(false)
-                showDisableStatisticsConfirmDialog = false
+                showDisableStatsDialog = false
             },
-            onDismissRequest = { showDisableStatisticsConfirmDialog = false }
+            onDismissRequest = { showDisableStatsDialog = false },
+            onClickShowPrivacyPolicy = {
+                showPrivacyPolicy = true
+            }
         )
     }
 
@@ -82,14 +96,12 @@ fun AboutSettingsList(
         checked = if (BuildConfig.DEBUG) false else settingState.statistics,
         onCheckedChange = { checked ->
             if (!checked && settingState.statistics) {
-                showDisableStatisticsConfirmDialog = true
+                showDisableStatsDialog = true
             } else {
                 settingState.statisticsUserData.asynchronousSet(checked)
             }
         },
-/*
         disabled = BuildConfig.DEBUG
-*/
     )
     SettingsClickableEntry(
         modifier = Modifier.background(colorScheme.surfaceContainer),
