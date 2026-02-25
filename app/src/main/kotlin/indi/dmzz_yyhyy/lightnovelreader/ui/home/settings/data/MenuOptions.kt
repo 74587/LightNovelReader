@@ -75,20 +75,20 @@ sealed class MenuOptions {
 
     open class UpdateChannelOptions(vararg options: OptionWithValue<UpdateParser>): MenuOptionsWithValues<UpdateParser>(options.toList()) {
         companion object {
-            const val REL = "Release"
-            const val DEV = "Development"
+            const val RELEASE = "Release"
+            const val DEVELOPMENT = "Development"
         }
     }
 
     data object GitHubUpdateChannelOptions: UpdateChannelOptions(
-        OptionWithValue(REL, R.string.key_update_channel_release, GithubParser.ReleaseParser),
-        OptionWithValue(DEV, R.string.key_update_channel_development, GithubParser.DevelopmentParser),
+        OptionWithValue(RELEASE, R.string.key_update_channel_release, GithubParser.ReleaseParser),
+        OptionWithValue(DEVELOPMENT, R.string.key_update_channel_development, GithubParser.DevelopmentParser),
         OptionWithValue("CI", R.string.key_update_channel_ci, GithubParser.CIParser)
     )
 
     data object LnrAPIUpdateChannelOptions: UpdateChannelOptions(
-        OptionWithValue(REL, R.string.key_update_channel_release, APIParser.StableParser),
-        OptionWithValue(DEV, R.string.key_update_channel_development, APIParser.BetaParser),
+        OptionWithValue(RELEASE, R.string.key_update_channel_release, APIParser.StableParser),
+        OptionWithValue(DEVELOPMENT, R.string.key_update_channel_development, APIParser.BetaParser),
         OptionWithValue("CI", R.string.key_update_channel_ci, APIParser.UnstableParser)
     )
 

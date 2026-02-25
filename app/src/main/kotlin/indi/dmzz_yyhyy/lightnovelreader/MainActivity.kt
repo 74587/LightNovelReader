@@ -134,7 +134,6 @@ class MainActivity : ComponentActivity() {
         val fontWeightUserData = userDataRepository.floatUserData(UserDataPath.Reader.FontWeigh.path)
         val textColorUserData = userDataRepository.colorUserData(UserDataPath.Reader.TextColor.path)
         val textDarkColorUserData = userDataRepository.colorUserData(UserDataPath.Reader.TextDarkColor.path)
-        val fontFamilyUriUserData = userDataRepository.uriUserData(UserDataPath.Reader.FontFamilyUri.path)
         setContent {
             val readerStyle by remember {
                 combine(
