@@ -2,7 +2,15 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <bytecodeTargetLevel target="17">
+      <module name="LightNovelReaderRefactoring.app" target="21" />
+      <module name="LightNovelReaderRefactoring.epub" target="21" />
+      <module name="LightNovelReaderRefactoring.epub.main" target="21" />
+      <module name="LightNovelReaderRefactoring.epub.test" target="21" />
       <module name="LightNovelReaderRefactoring.plugin.example" target="21" />
+      <module name="LightNovelReaderRefactoring.plugin.js" target="21" />
+      <module name="LightNovelReaderRefactoring.proxy" target="21" />
+      <module name="LightNovelReaderRefactoring.proxy.main" target="21" />
+      <module name="LightNovelReaderRefactoring.proxy.test" target="21" />
     </bytecodeTargetLevel>
   </component>
 </project>
