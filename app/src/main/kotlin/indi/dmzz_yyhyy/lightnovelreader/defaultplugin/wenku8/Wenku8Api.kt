@@ -145,7 +145,7 @@ object Wenku8Api : WebBookDataSource {
             navController.navigateToExploreExpandDestination(tag)
     }
 
-    override fun getCoverUriInVolume(
+    override suspend fun getCoverUriInVolume(
         bookId: String,
         volume: Volume,
         volumeChapterContentMap: MutableMap<String, ChapterContent>,

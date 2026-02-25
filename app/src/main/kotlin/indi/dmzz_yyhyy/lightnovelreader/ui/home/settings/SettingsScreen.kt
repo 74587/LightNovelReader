@@ -29,6 +29,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.work.OneTimeWorkRequest
+import indi.dmzz_yyhyy.lightnovelreader.BuildConfig
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SectionHeader
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsClickableEntry
@@ -62,9 +63,8 @@ fun SettingsScreen(
 
     Column {
         TopBar(scrollBehavior)
-        LazyColumn (
-            Modifier.fillMaxSize(),
-            listState
+        LazyColumn(
+            Modifier.fillMaxSize(), listState
         ) {
             item {
                 SettingsCategory(
@@ -126,21 +126,23 @@ fun SettingsScreen(
                     title = stringResource(R.string.about_settings),
                 ) {
                     AboutSettingsList(
-                        onClickLicenses = onClickLicenses
+                        settingState = settingState, onClickLicenses = onClickLicenses
                     )
                 }
             }
-            item {
-                SettingsCategory(
-                    title = stringResource(R.string.debug_settings)
-                ) {
-                    SettingsClickableEntry(
-                        modifier = Modifier.background(colorScheme.surfaceContainer),
-                        painter = painterResource(R.drawable.adb_24px),
-                        title = stringResource(R.string.settings_debug_tools),
-                        description = stringResource(R.string.settings_debug_tools_desc),
-                        onClick = onClickDebugMode
-                    )
+            if (BuildConfig.DEBUG) {
+                item {
+                    SettingsCategory(
+                        title = stringResource(R.string.debug_settings)
+                    ) {
+                        SettingsClickableEntry(
+                            modifier = Modifier.background(colorScheme.surfaceContainer),
+                            painter = painterResource(R.drawable.adb_24px),
+                            title = stringResource(R.string.settings_debug_tools),
+                            description = stringResource(R.string.settings_debug_tools_desc),
+                            onClick = onClickDebugMode
+                        )
+                    }
                 }
             }
             bottomBarSpacer()
@@ -158,8 +160,7 @@ private fun TopBar(
     TopAppBar(
         title = {
             Text(
-                text = stringResource(R.string.nav_settings),
-                style = typography.displayLarge
+                text = stringResource(R.string.nav_settings), style = typography.displayLarge
             )
         },
         navigationIcon = {
@@ -177,13 +178,11 @@ private fun TopBar(
 
 @Composable
 fun SettingsCategory(
-    title: String? = null,
-    content: @Composable ColumnScope.() -> Unit
+    title: String? = null, content: @Composable ColumnScope.() -> Unit
 ) {
     title?.let {
         SectionHeader(
-            modifier = Modifier.padding(horizontal = 24.dp, vertical = 10.dp),
-            text = it
+            modifier = Modifier.padding(horizontal = 24.dp, vertical = 10.dp), text = it
         )
     }
 
@@ -191,8 +190,7 @@ fun SettingsCategory(
         modifier = Modifier
             .padding(horizontal = 16.dp)
             .padding(bottom = 16.dp)
-            .clip(RoundedCornerShape(16.dp)),
-        verticalArrangement = Arrangement.spacedBy(2.dp)
+            .clip(RoundedCornerShape(16.dp)), verticalArrangement = Arrangement.spacedBy(2.dp)
     ) {
         content()
     }

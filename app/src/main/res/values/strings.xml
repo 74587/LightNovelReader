@@ -210,7 +210,15 @@
     <string name="settings_communication">Communication</string>
     <string name="settings_communication_desc">Join our QQ group for discussions and feedback</string>
     <string name="settings_statistics">Statistics</string>
-    <string name="settings_statistics_desc">We use Microsoft AppCenter to collect anonymous statistics to improve LightNovelReader</string>
+    <string name="settings_statistics_desc">We need to collect statistics to improve LightNovelReader</string>
+    <string name="settings_statistics_disable_dialog_title">Hold on…</string>
+    <string name="settings_statistics_disable_dialog_text">
+        Do you really want to turn off statistics? ο(=•ω＜=)ρ⌒☆
+        LightNovelReader only collects DAU and similar usage metrics.
+        No personal privacy data is involved, and all statistics are anonymous.
+        If you turn this off, NightFish can only cry at 0 DAU ≧ ﹏ ≦
+    </string>
+    <string name="settings_statistics_disable_dialog_confirm">Turn off</string>
     <string name="experimental_settings">Experimental</string>
     <string name="debug_settings">Debug</string>
     <string name="item_view_details">View Details</string>

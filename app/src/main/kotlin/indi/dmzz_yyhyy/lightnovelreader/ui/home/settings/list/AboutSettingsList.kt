@@ -16,8 +16,13 @@ import indi.dmzz_yyhyy.lightnovelreader.BuildConfig
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsAboutInfoDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsClickableEntry
+import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsDisableStatsDialog
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.SettingState
+import io.nightfish.lightnovelreader.api.ui.components.SettingsSwitchEntry
+
 @Composable
 fun AboutSettingsList(
+    settingState: SettingState,
     onClickLicenses: () -> Unit
 ) {
     val appInfo: String = buildString {
@@ -26,9 +31,20 @@ fun AboutSettingsList(
             .append(if (BuildConfig.DEBUG) "debug" else "release")
     }
     var showAppInfoDialog by remember { mutableStateOf(false) }
+    var showDisableStatisticsConfirmDialog by remember { mutableStateOf(false) }
 
     if (showAppInfoDialog) {
         SettingsAboutInfoDialog(onDismissRequest = { showAppInfoDialog = false })
+    }
+
+    if (showDisableStatisticsConfirmDialog) {
+        SettingsDisableStatsDialog(
+            onClickConfirm = {
+                settingState.statisticsUserData.asynchronousSet(false)
+                showDisableStatisticsConfirmDialog = false
+            },
+            onDismissRequest = { showDisableStatisticsConfirmDialog = false }
+        )
     }
 
     SettingsClickableEntry(
@@ -60,14 +76,23 @@ fun AboutSettingsList(
         description = stringResource(R.string.settings_support_author_desc),
         openUrl = "https://afdian.com/a/lightnovelreader"
     )
-    /* SettingsSwitchEntry(
+    SettingsSwitchEntry(
         modifier = Modifier.background(colorScheme.surfaceContainer),
+        painter = painterResource(R.drawable. data_usage_24px),
         title = stringResource(R.string.settings_statistics),
         description = stringResource(R.string.settings_statistics_desc),
         checked = if (BuildConfig.DEBUG) false else settingState.statistics,
-        booleanUserData = settingState.statisticsUserData,
+        onCheckedChange = { checked ->
+            if (!checked && settingState.statistics) {
+                showDisableStatisticsConfirmDialog = true
+            } else {
+                settingState.statisticsUserData.asynchronousSet(checked)
+            }
+        },
+/*
         disabled = BuildConfig.DEBUG
-    ) */
+*/
+    )
     SettingsClickableEntry(
         modifier = Modifier.background(colorScheme.surfaceContainer),
         painter = painterResource(R.drawable.code_24px),
