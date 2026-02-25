@@ -1,6 +1,7 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.data
 
 import indi.dmzz_yyhyy.lightnovelreader.R
+import indi.dmzz_yyhyy.lightnovelreader.data.update.APIParser
 import indi.dmzz_yyhyy.lightnovelreader.data.update.GithubParser
 import indi.dmzz_yyhyy.lightnovelreader.data.update.UpdateParser
 
@@ -74,19 +75,26 @@ sealed class MenuOptions {
 
     open class UpdateChannelOptions(vararg options: OptionWithValue<UpdateParser>): MenuOptionsWithValues<UpdateParser>(options.toList()) {
         companion object {
-            const val Release = "Release"
-            const val Development = "Development"
+            const val REL = "Release"
+            const val DEV = "Development"
         }
     }
 
     data object GitHubUpdateChannelOptions: UpdateChannelOptions(
-        OptionWithValue(Release, R.string.key_update_channel_release, GithubParser.ReleaseParser),
-        OptionWithValue(Development, R.string.key_update_channel_development, GithubParser.DevelopmentParser),
+        OptionWithValue(REL, R.string.key_update_channel_release, GithubParser.ReleaseParser),
+        OptionWithValue(DEV, R.string.key_update_channel_development, GithubParser.DevelopmentParser),
         OptionWithValue("CI", R.string.key_update_channel_ci, GithubParser.CIParser)
+    )
+
+    data object LnrAPIUpdateChannelOptions: UpdateChannelOptions(
+        OptionWithValue(REL, R.string.key_update_channel_release, APIParser.StableParser),
+        OptionWithValue(DEV, R.string.key_update_channel_development, APIParser.BetaParser),
+        OptionWithValue("CI", R.string.key_update_channel_ci, APIParser.UnstableParser)
     )
 
     data object UpdatePlatformOptions: MenuOptionsWithValues<UpdateChannelOptions>() {
         val GitHub = option("GitHub", R.string.key_platform_github, GitHubUpdateChannelOptions)
+        val LnrAPI = option("LnrAPI", R.string.key_platform_lnr_api, LnrAPIUpdateChannelOptions)
     }
 
     data object DarkModeOptions: MenuOptions(
