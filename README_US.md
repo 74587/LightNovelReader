@@ -75,11 +75,6 @@ We welcome contributions to LightNovelReader! Here's how you can get involved:
 - Keep commits atomic and descriptive.
 - If your change affects the version, update it in `app/build.gradle.kts`.
 
-### Version Management
-Versions are managed in `app/build.gradle.kts`:
-- `versionName`: The public version (e.g., "1.3.1"). Follow semantic versioning (major.minor.patch).
-- `versionCode`: Increases naturally as development progresses.
-
 ## Support the Project
 
 [![Support Us on Aifadian](https://img.shields.io/badge/❤%20Support%20Us-ifdian-orange)](https://www.ifdian.net/a/lightnovelreader)
