@@ -1,7 +1,10 @@
+import java.net.URI
+
 plugins {
     alias(libs.plugins.android.library)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.kotlin.serialization)
+    id("maven-publish")
 }
 
 java {
@@ -43,6 +46,31 @@ android {
     buildTypes {
         register("snapshot") {
             initWith(getByName("release"))
+        }
+    }
+}
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("release") {
+                from(components["release"])
+
+                groupId = "io.nightfish.lightnovelreader"
+                artifactId = "api"
+                version = "0.2-SNAPSHOT"
+            }
+        }
+
+        repositories {
+            maven {
+                name = "reposilite"
+                url = URI("https://maven.curiousers.org/lightnovelreader")
+                credentials {
+                    username = System.getenv("REPO_USER")
+                    password = System.getenv("REPO_PASS")
+                }
+            }
         }
     }
 }
