@@ -168,8 +168,8 @@ private fun LicenseTypeLabel(text: String) {
 private fun AppLicenseCard(onClick: (() -> Unit)? = null) {
     LicenseCard(
         title = stringResource(R.string.app_name),
-        subtitle = "GNU General Public License",
-        licenseType = "GPL",
+        subtitle = "LightNovelReader Developers",
+        licenseType = "Apache License 2.0",
         onClick = onClick
     )
 }

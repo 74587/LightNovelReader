@@ -1,11 +1,11 @@
-name: PublishApiArtifact
+name: PublishEpubArtifact
 on:
   workflow_dispatch:
   merge_group:
   push:
     branches: [refactoring]
     paths:
-      - .github/workflows/publish.yml
+      - .github/workflows/publish_epub.yml
       - api/**
 
 jobs:
@@ -27,7 +27,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Publish to maven
-        run: ./gradlew api:publish
+        run: ./gradlew epub:publish
         env:
           REPO_USER: ${{ secrets.REPOSILITE_USERNAME }}
           REPO_PASS: ${{ secrets.REPOSILITE_PASSWORD }}
