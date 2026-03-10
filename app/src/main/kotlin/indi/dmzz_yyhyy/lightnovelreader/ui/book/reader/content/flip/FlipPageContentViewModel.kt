@@ -48,9 +48,12 @@ class FlipPageContentViewModel(
     fun updatePagerState(pagerState: PagerState) {
         uiState.pagerState = pagerState
         if (pagerState.pageCount == 0) return
-        if (notRecoveredProgress <= 0f) return
-        val recovered = notRecoveredProgress.coerceIn(0f, 1f)
-        notRecoveredProgress = 0f
+        val progressToRestore = when {
+            notRecoveredProgress > 0f -> notRecoveredProgress.also { notRecoveredProgress = 0f }
+            uiState.readingProgress > 0f -> uiState.readingProgress
+            else -> return
+        }
+        val recovered = progressToRestore.coerceIn(0f, 1f)
         coroutineScope.launch {
             val target = ((pagerState.pageCount * recovered).roundToInt() - 1)
                 .coerceIn(0, pagerState.pageCount - 1)
