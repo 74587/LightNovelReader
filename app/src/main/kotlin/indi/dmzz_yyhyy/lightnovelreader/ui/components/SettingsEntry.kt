@@ -313,7 +313,7 @@ fun SettingsMenuEntry(
     onOptionChange: (String) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedOption by remember {
+    var selectedOption by remember(options, selectedOptionKey) {
         mutableStateOf(options.getOrNull(selectedOptionKey))
     }
 
