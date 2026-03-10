@@ -281,10 +281,11 @@ private fun SimpleFlipPageTextComponent(
                         detectTapGestures(
                             onTap = {
                                 if (settingState.isUsingFlipPage && settingState.isUsingClickFlipPage)
-                                    if (it.x <= screenWidthPx * 0.425)
-                                        lastPage(uiState.pagerState)
-                                    else
-                                        nextPage(uiState.pagerState)
+                                    when {
+                                        it.x < screenWidthPx / 3f -> lastPage(uiState.pagerState)
+                                        it.x > screenWidthPx * 2f / 3f -> nextPage(uiState.pagerState)
+                                        else -> changeIsImmersive.invoke()
+                                    }
                                 else changeIsImmersive.invoke()
                             }
                         )

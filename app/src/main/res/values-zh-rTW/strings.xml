@@ -125,7 +125,7 @@
     <string name="settings_reader_volume_key_control_desc">使用音量+鍵翻到上一頁，音量-鍵翻到下一頁</string>
     <string name="settings_reader_volume_key_interval">按鍵持續翻頁間隔</string>
     <string name="settings_reader_t2tp">點擊翻頁</string>
-    <string name="settings_reader_t2tp_desc">啟用點擊翻頁。垂直滑動以呼叫選單</string>
+    <string name="settings_reader_t2tp_desc">啟用點擊翻頁。點擊螢幕左側/右側以翻頁，點擊中間展開選單</string>
     <string name="settings_reader_page_turn_anim">翻頁動畫</string>
     <string name="settings_reader_page_turn_anim_desc">設定翻頁動畫，選擇「無」時啟用快速翻頁</string>
     <string name="settings_reader_quick_chapter_switch">快速章節切換</string>

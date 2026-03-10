@@ -130,7 +130,7 @@
     <string name="settings_reader_volume_key_control_desc">Use the volume + key to move to the previous page and the volume - key to move to the next page</string>
     <string name="settings_reader_volume_key_interval">Key Continuous Flip Interval</string>
     <string name="settings_reader_t2tp">Tap to Turn Pages</string>
-    <string name="settings_reader_t2tp_desc">Enable page turning by tapping, and change the menu trigger gesture to vertical swipe</string>
+    <string name="settings_reader_t2tp_desc">Enable tap-to-turn. Tap left/right side to flip pages, tap center to open the menu</string>
     <string name="settings_reader_page_turn_anim">Page Turn Animation</string>
     <string name="settings_reader_page_turn_anim_desc">Configure the page turn animation. When set to "None," fast page turning is enabled</string>
     <string name="settings_reader_quick_chapter_switch">Quick Chapter Switch</string>

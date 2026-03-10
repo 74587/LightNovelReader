@@ -17,6 +17,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -35,6 +36,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.material3.MaterialTheme.typography
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -62,6 +64,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -530,66 +533,81 @@ private fun BottomBar(
         Row(
             Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(horizontal = 4.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Spacer(Modifier.width(4.dp))
-
-            IconButton(
+            TextButton(
                 onClick = onClickPrevChapter,
                 enabled = chapterContent.hasPrevChapter()
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.arrow_back_24px),
-                    contentDescription = "prevChapter"
-                )
-            }
-
-            Spacer(Modifier.width(8.dp))
-
-            IconButton(
-                enabled = false,
-                onClick = {
-                    // TODO 添加至书签
+                Column(
+                    modifier = Modifier.padding(horizontal = 6.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.arrow_back_24px),
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        text = stringResource(R.string.previous_chapter),
+                        style = typography.labelSmall
+                    )
                 }
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.outline_bookmark_24px),
-                    contentDescription = "mark"
-                )
+                IconButton(
+                    enabled = false,
+                    onClick = {
+                        // TODO 添加至书签
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.outline_bookmark_24px),
+                        contentDescription = "mark"
+                    )
+                }
+
+                IconButton(onClick = onClickChapterSelector) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.menu_24px),
+                        contentDescription = "menu"
+                    )
+                }
+
+                IconButton(onClick = onClickSettings) {
+                    Icon(
+                        painter = painterResource(R.drawable.outline_settings_24px),
+                        contentDescription = "setting"
+                    )
+                }
             }
 
-            Spacer(Modifier.width(8.dp))
-
-            IconButton(onClick = onClickChapterSelector) {
-                Icon(
-                    painter = painterResource(id = R.drawable.menu_24px),
-                    contentDescription = "menu"
-                )
-            }
-
-            Spacer(Modifier.width(8.dp))
-
-            IconButton(onClick = onClickSettings) {
-                Icon(
-                    painter = painterResource(R.drawable.outline_settings_24px),
-                    contentDescription = "setting"
-                )
-            }
-
-            Spacer(modifier = Modifier.weight(1f))
-
-            IconButton(
+            TextButton(
                 onClick = onClickNextChapter,
                 enabled = chapterContent.hasNextChapter()
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.arrow_forward_24px),
-                    contentDescription = "nextChapter"
-                )
+                Column(
+                    modifier = Modifier.padding(horizontal = 6.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Icon(
+                        painter = painterResource(R.drawable.arrow_forward_24px),
+                        contentDescription = null,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        text = stringResource(R.string.next_chapter),
+                        style = typography.labelSmall
+                    )
+                }
             }
-
-            Spacer(Modifier.width(4.dp))
         }
     }
 }
