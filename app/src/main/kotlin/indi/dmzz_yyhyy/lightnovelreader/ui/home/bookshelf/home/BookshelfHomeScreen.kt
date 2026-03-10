@@ -63,7 +63,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -156,11 +155,7 @@ fun BookshelfHomeScreen(
         onClickDisableSelectMode()
     }
 
-    val listState = rememberSaveable(
-        saver = LazyListState.Saver
-    ) {
-        LazyListState()
-    }
+    val listState = remember(uiState.selectedBookshelfId) { LazyListState() }
 
     LifecycleEventEffect(Lifecycle.Event.ON_START) {
         init()
@@ -283,19 +278,29 @@ fun BookshelfHomeScreen(
                     }
                 }
 
-            val allBookIds = uiState.selectedBookshelf.allBookIds
+            val allBookIds = remember(uiState.selectedBookshelf.allBookIds) {
+                uiState.selectedBookshelf.allBookIds.toList()
+            }
 
-            val updatedIds by remember(uiState.selectedBookshelf.updatedBookIds) {
-                mutableStateOf(uiState.selectedBookshelf.updatedBookIds.reversed())
+            val updatedIds = remember(uiState.selectedBookshelf.updatedBookIds) {
+                uiState.selectedBookshelf.updatedBookIds.toList().asReversed()
             }
-            val pinnedIds by remember(uiState.selectedBookshelf.pinnedBookIds) {
-                mutableStateOf(uiState.selectedBookshelf.pinnedBookIds.reversed())
+            val pinnedIds = remember(uiState.selectedBookshelf.pinnedBookIds) {
+                uiState.selectedBookshelf.pinnedBookIds.toList().asReversed()
             }
-            val allIds by remember(uiState.selectedBookshelf.allBookIds) {
-                mutableStateOf(uiState.selectedBookshelf.allBookIds.reversed())
+            val allIds = remember(uiState.selectedBookshelf.allBookIds) {
+                uiState.selectedBookshelf.allBookIds.toList().asReversed()
             }
+            var initialScrollApplied by remember(uiState.selectedBookshelfId) { mutableStateOf(false) }
 
             var showEmptyPage by remember { mutableStateOf(allBookIds.isEmpty()) }
+
+            LaunchedEffect(uiState.selectedBookshelfId, allBookIds.isNotEmpty()) {
+                if (initialScrollApplied) return@LaunchedEffect
+                if (allBookIds.isEmpty()) return@LaunchedEffect
+                listState.scrollToItem(0)
+                initialScrollApplied = true
+            }
 
             LaunchedEffect(allBookIds) {
                 if (allBookIds.isEmpty()) {
