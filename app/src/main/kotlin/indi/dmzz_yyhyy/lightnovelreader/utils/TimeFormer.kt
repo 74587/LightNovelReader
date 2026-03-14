@@ -1,55 +1,51 @@
 package indi.dmzz_yyhyy.lightnovelreader.utils
 
+import android.icu.text.RelativeDateTimeFormatter
+import android.icu.text.RelativeDateTimeFormatter.AbsoluteUnit
+import android.icu.text.RelativeDateTimeFormatter.Direction
+import android.icu.text.RelativeDateTimeFormatter.RelativeUnit
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-import java.util.Locale
+import java.time.temporal.ChronoUnit
 
+fun formTime(
+    time: LocalDateTime,
+    dateFormat: DateFormat = DateFormat.NUMERIC,
+    useRelativeTime: Boolean = true,
+): String {
+    if (time == LocalDateTime.MIN) return "-"
 
-fun formTime(time: LocalDateTime): String {
     val now = LocalDateTime.now()
-    val yearDiff = now.year - time.year
-    val monthDiff = now.monthValue - time.monthValue
-    val dayDiff = now.dayOfYear - time.dayOfYear
-    val hourDiff = now.hour - time.hour
-    val minuteDiff = now.minute - time.minute
+    val locale = appDisplayLocale
+
+    val absFormatter = dateFormatter(
+        dateFormat,
+        FormattingSettings.dateShowYear,
+        DateOrder.fromString(FormattingSettings.dateOrder)
+    ).withLocale(locale)
+
+    if (!useRelativeTime) {
+        return time.format(absFormatter)
+    }
+
+    val minutesAgo = ChronoUnit.MINUTES.between(time, now)
+    val hoursAgo = ChronoUnit.HOURS.between(time, now)
+    val daysAgo = ChronoUnit.DAYS.between(time, now)
+    val yearsAgo = ChronoUnit.YEARS.between(time, now)
+
+    val rdf = RelativeDateTimeFormatter.getInstance(locale)
 
     return when {
-        time == LocalDateTime.MIN -> "从未"
-        yearDiff > 1 ->
-            if (Locale.getDefault().language.equals(Locale.CHINESE.language))
-                DateTimeFormatter
-                    .ofPattern("uuuu年MMMd日", Locale.CHINESE)
-                    .format(time)
-            else
-                DateTimeFormatter
-                    .ofPattern("d MMM uuuu", Locale.ENGLISH)
-                    .format(time)
-        yearDiff == 1 ->  "去年"
-        (dayDiff > 3 || monthDiff > 1) ->
-            if (Locale.getDefault().language.equals(Locale.CHINESE.language))
-                DateTimeFormatter
-                    .ofPattern("MMMd日", Locale.CHINESE)
-                    .format(time)
-            else
-                DateTimeFormatter
-                    .ofPattern("d MMM", Locale.ENGLISH)
-                    .format(time)
-        dayDiff in 1..3 -> {
-            val prefix = when (dayDiff) {
-                1 -> "昨天"
-                2 -> "前天"
-                3 -> "大前天"
-                else -> ""
-            }
-            if (dayDiff <=2) {
-                String.format(Locale.getDefault(), "%s %d:%02d", prefix, time.hour, time.minute)
-            } else {
-                prefix
-            }
-        }
-        hourDiff in 1..24 -> "$hourDiff 小时前"
-        minuteDiff in 1 until 60 -> "$minuteDiff 分钟前"
-        minuteDiff == 0 -> "刚刚"
-        else -> "很久以前"
+        yearsAgo >= 1 -> time.format(absFormatter)
+        daysAgo > 30 -> time.format(absFormatter)
+        daysAgo == 1L -> rdf.format(Direction.LAST, AbsoluteUnit.DAY)
+        daysAgo == 2L -> rdf.format(2.0, Direction.LAST, RelativeUnit.DAYS)
+        daysAgo == 3L -> rdf.format(3.0, Direction.LAST, RelativeUnit.DAYS)
+        daysAgo >= 4 -> rdf.format(daysAgo.toDouble(), Direction.LAST, RelativeUnit.DAYS)
+        hoursAgo >= 1 -> rdf.format(hoursAgo.toDouble(), Direction.LAST, RelativeUnit.HOURS)
+        minutesAgo >= 1 -> rdf.format(minutesAgo.toDouble(), Direction.LAST, RelativeUnit.MINUTES)
+        else -> rdf.format(Direction.PLAIN, AbsoluteUnit.NOW)
     }
 }
+
+fun formTime(time: LocalDateTime): String =
+    formTime(time, DateFormat.fromString(FormattingSettings.dateFormat), FormattingSettings.useRelativeTime)

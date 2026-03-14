@@ -21,13 +21,21 @@ class SettingState(
     val isUseProxyUserData = userDataRepository.booleanUserData(UserDataPath.Settings.Data.IsUseProxy.path)
     val enableSimplifiedTraditionalTransformUserData = userDataRepository.booleanUserData(
         UserDataPath.Reader.EnableSimplifiedTraditionalTransform.path)
+    val dateFormatUserData = userDataRepository.stringUserData(UserDataPath.Settings.Display.DateStyle.path)
+    val dateShowYearUserData = userDataRepository.booleanUserData(UserDataPath.Settings.Display.DateShowYear.path)
+    val dateOrderUserData = userDataRepository.stringUserData(UserDataPath.Settings.Display.DateOrder.path)
+    val useRelativeTimeUserData = userDataRepository.booleanUserData(UserDataPath.Settings.Display.RelativeTimeStyle.path)
 
     val checkUpdate by checkUpdateUserData.asState(true)
-    val appLocaleKey by appLocaleKeyUserData.asState("zh-CN")
+    val appLocaleKey by appLocaleKeyUserData.asState("none")
     val statistics by statisticsUserData.asState(true)
     val updateChannelKey by updateChannelKeyUserData.asState("Development")
     val distributionPlatformKey by distributionPlatformKeyUserData.asState("LnrAPI")
     val logLevelKey by logLevelKeyUserData.asState("none")
     val isUseProxy by isUseProxyUserData.asState(false)
     val enableSimplifiedTraditionalTransform by enableSimplifiedTraditionalTransformUserData.safeAsState(false)
+    val dateFormat by dateFormatUserData.safeAsState("numeric")
+    val dateShowYear by dateShowYearUserData.asState(true)
+    val dateOrder by dateOrderUserData.safeAsState("auto")
+    val useRelativeTime by useRelativeTimeUserData.asState(true)
 }

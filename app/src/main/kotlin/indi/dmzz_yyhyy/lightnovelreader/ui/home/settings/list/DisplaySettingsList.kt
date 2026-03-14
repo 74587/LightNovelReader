@@ -12,15 +12,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import indi.dmzz_yyhyy.lightnovelreader.R
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.formats.navigateToSettingsFormatsDestination
+import io.nightfish.lightnovelreader.api.ui.LocalNavController
 import io.nightfish.lightnovelreader.api.ui.components.SettingsClickableEntry
-import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsMenuEntry
-import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.SettingState
-import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.data.MenuOptions
 
 @Composable
-fun DisplaySettingsList(
-    settingState: SettingState
-) {
+fun DisplaySettingsList() {
+    val navController = LocalNavController.current
     val context = LocalContext.current
     val isAboveTiramisu = Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU
 
@@ -41,13 +39,11 @@ fun DisplaySettingsList(
             } else return@SettingsClickableEntry
         }
     )
-    SettingsMenuEntry(
+    SettingsClickableEntry(
         modifier = Modifier.background(colorScheme.surfaceContainer),
-        painter = painterResource(R.drawable.translate_24px),
-        title = stringResource(R.string.settings_characters_variant),
-        description = stringResource(R.string.settings_characters_variant_desc),
-        options = MenuOptions.AppLocaleOptions,
-        selectedOptionKey = settingState.appLocaleKey,
-        onOptionChange = settingState.appLocaleKeyUserData::asynchronousSet
+        painter = painterResource(R.drawable.short_text_24px),
+        title = stringResource(R.string.settings_formats),
+        description = stringResource(R.string.settings_formats_desc),
+        onClick = navController::navigateToSettingsFormatsDestination
     )
 }

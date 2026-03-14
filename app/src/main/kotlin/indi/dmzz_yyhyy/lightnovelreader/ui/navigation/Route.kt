@@ -89,6 +89,8 @@ object Route {
             object Theme
             @Serializable
             object Licenses
+            @Serializable
+            object Formats
         }
         @Serializable
         object ExportUserDataDialog

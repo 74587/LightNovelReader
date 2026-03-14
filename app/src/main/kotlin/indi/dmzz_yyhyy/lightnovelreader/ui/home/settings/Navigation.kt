@@ -30,6 +30,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.SliderValueDialogViewModel
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.UpdatesAvailableDialogViewModel
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.debug.navigateToSettingsDebugDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.debug.settingsDebugDestination
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.formats.settingsFormatsDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.licenses.navigateToSettingsLicensesDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.licenses.settingsLicensesDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.logcat.navigateToSettingsLogcatDestination
@@ -91,6 +92,7 @@ fun NavGraphBuilder.settingsNavigation() {
         settingsTextFormattingNavigation()
         settingsPluginManagerNavigation()
         settingsLicensesDestination()
+        settingsFormatsDestination()
     }
 }
 

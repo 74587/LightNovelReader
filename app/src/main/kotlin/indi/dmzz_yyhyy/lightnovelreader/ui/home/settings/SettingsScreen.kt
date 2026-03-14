@@ -93,9 +93,7 @@ fun SettingsScreen(
                 SettingsCategory(
                     title = stringResource(R.string.display_settings),
                 ) {
-                    DisplaySettingsList(
-                        settingState = settingState
-                    )
+                    DisplaySettingsList()
                 }
             }
             item {

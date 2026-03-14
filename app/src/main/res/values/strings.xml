@@ -59,6 +59,7 @@
     <string name="book_updated_to_title">Updated to:</string>
     <string name="book_word_count_limit">Word limit: </string>
     <string name="source_available_title">Available sources</string>
+    <string name="unavailable">Unavailable</string>
 
     <!-- Hints -->
     <string name="nothing_here">Nothing Here</string>
@@ -160,6 +161,19 @@
     <string name="settings_theme_m3e_description">
         Enables the Material 3 Expressive design. This feature is experimental and still in beta
     </string>
+
+    <string name="settings_formats">Formats</string>
+    <string name="settings_formats_desc">Set date or text format</string>
+    <string name="date_time_formats_settings">Date &amp; Time</string>
+    <string name="settings_formats_date_format">Date Format</string>
+    <string name="settings_formats_date_show_year">Show Year</string>
+    <string name="settings_formats_date_show_year_desc">Include the year in dates</string>
+    <string name="settings_formats_date_order">Date Order</string>
+    <string name="settings_formats_date_order_desc">Choose how dates are ordered</string>    <string name="settings_formats_duration_format">Duration Format</string>
+    <string name="settings_formats_relative_time_format">Use Relative Time</string>
+    <string name="settings_advanced">Advanced</string>
+    <string name="settings_formats_characters_variant_note">Chinese character variants only apply in the reader and require font support.</string>
+
     <string name="settings_app_language">Language</string>
     <string name="settings_app_language_desc">Set the app language</string>
     <string name="settings_app_language_desc_unavailable">Set the app language (Android 13+ required)</string>
@@ -274,7 +288,7 @@
     <string name="publishing_house">Publishing House</string>
     <string name="filter_by_publishing_house">Filter by Publishing House</string>
     <string name="filter_by_publishing_house_desc">Filter by the book\'s publishing house</string>
-    <string name="book_info_update_date">Updated on %1$d-%2$d-%3$d</string>
+    <string name="book_info_update_date">Updated on %s</string>
     <string name="book_info_word_count_kilo">%s Words</string>
     <string name="name">Name</string>
     <string name="bookshelf_name">Bookshelf Name</string>
@@ -430,7 +444,7 @@
     <string name="plugin_by_author">by %1$s</string>
     <string name="plugin_details">Details</string>
     <string name="plugin_repo">Plugin repo</string>
-    <string name="plugin_debug_reloading">Reloading...</string>
+    <string name="plugin_debug_reloading">Reloading…</string>
     <string name="plugin_install_read_failed">Failed to read source file</string>
     <string name="plugin_install_invalid_missing_annotation">Invalid plugin: missing a valid @Plugin annotation.\nPlease select a .lnrp plugin install file again.</string>
     <string name="plugin_install_invalid_missing_api_version">Invalid plugin: missing apiVersion</string>
@@ -446,21 +460,21 @@
     <string name="plugin_install_conflict_app_plugin">Installation failed: a plugin app with the same ID is installed. Please uninstall the app plugin first.</string>
     <string name="plugin_install_signature_mismatch">Installation failed: different signature detected. Please uninstall the installed version before installing this plugin.</string>
     <string name="plugin_install_overwrite_prompt">A plugin is already installed. Replace it?</string>
-    <string name="plugin_install_reading">Reading plugin...</string>
-    <string name="plugin_install_parsing">Parsing plugin info...</string>
-    <string name="plugin_install_verifying">Verifying plugin...</string>
-    <string name="plugin_install_installing">Installing plugin...</string>
-    <string name="plugin_install_continue">Continue installation...</string>
+    <string name="plugin_install_reading">Reading plugin…</string>
+    <string name="plugin_install_parsing">Parsing plugin info…</string>
+    <string name="plugin_install_verifying">Verifying plugin…</string>
+    <string name="plugin_install_installing">Installing plugin…</string>
+    <string name="plugin_install_continue">Continue installation…</string>
     <string name="plugin_install_parse_package_info">Parsing package info…</string>
     <string name="plugin_install_parse_plugin_metadata">Parsing plugin metadata…</string>
     <string name="plugin_install_clean">Cleaning up…</string>
     <string name="plugin_install_check_legality">Checking install legality…</string>
     <string name="plugin_install_write_metadata">Writing plugin metadata…</string>
     <string name="plugin_install_copy_plugin">Copying plugin…</string>
-    <string name="plugin_update_preparing">Preparing update...</string>
+    <string name="plugin_update_preparing">Preparing update…</string>
     <string name="plugin_delete_confirm_body">Are you sure you want to delete this plugin? This action cannot be undone.</string>
     <string name="plugin_delete_confirm">Delete</string>
-    <string name="plugin_delete_deleting">Deleting...</string>
+    <string name="plugin_delete_deleting">Deleting…</string>
     <string name="plugin_delete_completed">Deletion complete</string>
     <string name="plugin_delete_failed_with_reason">Deletion failed: %1$s</string>
     <string name="plugin_update_url_missing">Update URL not configured</string>

@@ -134,7 +134,6 @@ fun ReaderScreen(
                 isImmersive = false
                 onClickBackButton()
             }
-
             MenuOptions.ReaderBackBlockMode.DoublePress -> {
                 val now = System.currentTimeMillis()
                 if (!isImmersive || now - lastBackPressTime < 1500) {

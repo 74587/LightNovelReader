@@ -54,6 +54,7 @@
     <string name="book_updated_to_title">更新至:</string>
     <string name="book_word_count_limit">字數限制:</string>
     <string name="source_available_title">可用資料來源</string>
+    <string name="unavailable">無法使用</string>
 
     <!-- Hints -->
     <string name="nothing_here">沒有內容</string>
@@ -153,6 +154,20 @@
     <string name="settings_theme_dynamic_colors_desc_unavailable">從系統主題套用動態配色 (需要 Android 12+)</string>
     <string name="settings_theme_m3e">Material 3 Expressive</string>
     <string name="settings_theme_m3e_description">啟用 Material 3 Expressive 設計。此功能屬於實驗性內容，仍處於測試階段</string>
+
+    <string name="settings_formats">格式</string>
+    <string name="settings_formats_desc">設定日期或文字格式</string>
+    <string name="date_time_formats_settings">日期和時間</string>
+    <string name="settings_formats_date_format">日期格式</string>
+    <string name="settings_formats_date_show_year">顯示年份</string>
+    <string name="settings_formats_date_show_year_desc">在日期中包含年份</string>
+    <string name="settings_formats_date_order">日期順序</string>
+    <string name="settings_formats_date_order_desc">選擇日期中年、月、日的排列順序</string>
+    <string name="settings_formats_duration_format">時長格式</string>
+    <string name="settings_formats_relative_time_format">使用相對時間</string>
+    <string name="settings_advanced">進階</string>
+    <string name="settings_formats_characters_variant_note">漢字變體只對閱讀器生效，並且需要字型支援。</string>
+
     <string name="settings_app_language">語言</string>
     <string name="settings_app_language_desc">設定應用程式語言</string>
     <string name="settings_app_language_desc_unavailable">設定應用程式語言 (需要 Android 13+)</string>
@@ -269,7 +284,7 @@
     <string name="publishing_house">文庫</string>
     <string name="filter_by_publishing_house">文庫篩選</string>
     <string name="filter_by_publishing_house_desc">根據小說文庫的篩選。</string>
-    <string name="book_info_update_date">%1$d-%2$d-%3$d 更新</string>
+    <string name="book_info_update_date">%s 更新</string>
     <string name="book_info_word_count_kilo">%s 字</string>
     <string name="name">名稱</string>
     <string name="bookshelf_name">書架名稱</string>
@@ -485,5 +500,4 @@
     <string name="plugin_repo_install_failed">安裝 %1$s 失敗：%2$s</string>
     <string name="plugin_repo_install_cancelled">已取消安裝 %1$s</string>
     <string name="plugin_repo_parts_incomplete">分卷下載不完整：已完成 %1$d/%2$d，缺失 %3$s</string>
-
 </resources>

@@ -12,6 +12,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
+import io.nightfish.lightnovelreader.api.ui.LocalTextLocaleList
 
 @Composable
 fun SimpleTextComponentContent(
@@ -23,12 +24,16 @@ fun SimpleTextComponentContent(
     fontFamily: FontFamily?,
     color: Color
 ) {
+    val localeList = LocalTextLocaleList.current
+
     SelectionContainer {
         Text(
             modifier = modifier.fillMaxSize(),
             text = text,
             textAlign = TextAlign.Start,
-            style = MaterialTheme.typography.bodyMedium,
+            style = MaterialTheme.typography.bodyMedium.copy(
+                localeList = localeList
+            ),
             fontWeight = fontWeight,
             fontSize = fontSize,
             fontFamily = fontFamily,

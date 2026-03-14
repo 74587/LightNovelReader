@@ -47,6 +47,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.data.MenuOptions
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.navigateToSliderValueDialog
 import io.nightfish.lightnovelreader.api.ui.LocalNavController
@@ -99,7 +100,9 @@ fun SettingsSwitchEntry(
     ) {
         painter?.let {
             Icon(
-                modifier = Modifier.padding(end = 22.dp).size(24.dp),
+                modifier = Modifier
+                    .padding(end = 22.dp)
+                    .size(24.dp),
                 painter = it,
                 tint = colorScheme.onSurfaceVariant,
                 contentDescription = "Icon"
@@ -211,7 +214,9 @@ private fun SettingsSliderEntry(
     ) {
         painter?.let {
             Icon(
-                modifier = Modifier.padding(end = 22.dp).size(24.dp),
+                modifier = Modifier
+                    .padding(end = 22.dp)
+                    .size(24.dp),
                 painter = it,
                 tint = colorScheme.onSurfaceVariant,
                 contentDescription = "Icon"
@@ -288,6 +293,7 @@ fun SettingsMenuEntry(
     title: String,
     description: String? = null,
     options: MenuOptions,
+    disabled: Boolean = false,
     selectedOptionKey: String,
     stringUserData: StringUserData
 ) {
@@ -297,6 +303,7 @@ fun SettingsMenuEntry(
         title = title,
         description = description,
         options = options,
+        disabled = disabled,
         selectedOptionKey = selectedOptionKey,
         onOptionChange = { stringUserData.asynchronousSet(it) }
     )
@@ -309,6 +316,7 @@ fun SettingsMenuEntry(
     title: String,
     description: String? = null,
     options: MenuOptions,
+    disabled: Boolean = false,
     selectedOptionKey: String,
     onOptionChange: (String) -> Unit
 ) {
@@ -322,14 +330,20 @@ fun SettingsMenuEntry(
             .clip(RoundedCornerShape(4.dp))
             .then(modifier)
             .fillMaxWidth()
-            .clickable { expanded = !expanded }
+            .clickable {
+                if (!disabled) {
+                    expanded = !expanded
+                }
+            }
             .padding(horizontal = 22.dp)
             .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         painter?.let {
             Icon(
-                modifier = Modifier.padding(end = 22.dp).size(24.dp),
+                modifier = Modifier
+                    .padding(end = 22.dp)
+                    .size(24.dp),
                 painter = it,
                 tint = colorScheme.onSurfaceVariant,
                 contentDescription = "Icon"
@@ -351,10 +365,10 @@ fun SettingsMenuEntry(
                     style = typography.bodyMedium
                 )
             }
+            val option = selectedOption?.let { stringResource(it.nameId) } ?: "(null)"
             AnimatedTextLine(
-                text =
-                    selectedOption?.let { stringResource(it.nameId) }
-                        ?: "(null)",
+                text = if (disabled) stringResource(R.string.unavailable)
+                    else option,
                 style = typography.bodyMedium,
                 color = colorScheme.primary
             )
@@ -441,7 +455,9 @@ fun SettingsClickableEntry(
     ) {
         painter?.let {
             Icon(
-                modifier = Modifier.padding(end = 22.dp).size(24.dp),
+                modifier = Modifier
+                    .padding(end = 22.dp)
+                    .size(24.dp),
                 painter = it,
                 tint = colorScheme.onSurfaceVariant,
                 contentDescription = "Icon"
@@ -476,7 +492,8 @@ fun SettingsClickableEntry(
 
         trailingContent?.let { composable ->
             Box(
-                modifier = Modifier.fillMaxHeight()
+                modifier = Modifier
+                    .fillMaxHeight()
                     .width(55.dp),
                 contentAlignment = Alignment.Center
             ) {

@@ -67,6 +67,10 @@ sealed class UserDataPath(
             data object AppLocale : UserDataPath("app_locale", Display)
             data object LightThemeName : UserDataPath("light_theme_name", Display)
             data object DarkThemeName : UserDataPath("dark_theme_name", Display)
+            data object DateStyle : UserDataPath("date_style", Display)
+            data object DateShowYear : UserDataPath("date_show_year", Display)
+            data object DateOrder : UserDataPath("date_order", Display)
+            data object RelativeTimeStyle : UserDataPath("relative_time_style", Display)
         }
         data object Data: UserDataPath("data", Settings) {
             data object WebDataSourceId : UserDataPath("web_data_source_id", Data)
