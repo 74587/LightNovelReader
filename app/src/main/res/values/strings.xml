@@ -169,7 +169,8 @@
     <string name="settings_formats_date_show_year">Show Year</string>
     <string name="settings_formats_date_show_year_desc">Include the year in dates</string>
     <string name="settings_formats_date_order">Date Order</string>
-    <string name="settings_formats_date_order_desc">Choose how dates are ordered</string>    <string name="settings_formats_duration_format">Duration Format</string>
+    <string name="settings_formats_date_order_desc">Choose how dates are ordered</string>
+    <string name="settings_formats_duration_format">Duration Format</string>
     <string name="settings_formats_relative_time_format">Use Relative Time</string>
     <string name="settings_advanced">Advanced</string>
     <string name="settings_formats_characters_variant_note">Chinese character variants only apply in the reader and require font support.</string>
