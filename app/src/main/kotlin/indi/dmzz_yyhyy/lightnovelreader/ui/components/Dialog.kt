@@ -267,8 +267,8 @@ fun ExportUserDataDialog(
         Column(Modifier.width(IntrinsicSize.Max).sizeIn(maxHeight = 350.dp)) {
             CheckBoxListItem(
                 modifier = listItemModifier,
-                title = "书本本地缓存",
-                supportingText = "所有的已缓存的书本和本地书本",
+                title = stringResource(R.string.dialog_snap_local_book_cache),
+                supportingText = stringResource(R.string.dialog_snap_local_book_cache_text),
                 checked = mutableExportContext.localBookCache,
                 onCheckedChange = { mutableExportContext.localBookCache = it }
             )

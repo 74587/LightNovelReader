@@ -391,6 +391,8 @@
     <string name="dialog_export_to_epub_text">EPUB (Electronic Publication) is an open e-book standard with a .epub format.\n\nDo you want to export this book as an EPUB?</string>
     <string name="dialog_updates_available">Update Available</string>
     <string name="dialog_snap_user_data_text">Select the data to export</string>
+    <string name="dialog_snap_local_book_cache">Local Book Cache</string>
+    <string name="dialog_snap_local_book_cache_text">Includes all cached books and local books stored on the device.</string>
     <string name="dialog_snap_bookshelf">Bookshelf</string>
     <string name="dialog_snap_bookshelf_text">Includes bookshelf and book information.</string>
     <string name="dialog_snap_reading_data">Reading Data</string>

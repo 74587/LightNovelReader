@@ -388,6 +388,8 @@
     <string name="dialog_export_to_epub_text">EPUB (Electronic Publication) 是一种开放的电子书标准，格式为 .epub。\n\n要将这本书导出为 EPUB 吗？</string>
     <string name="dialog_updates_available">更新可用</string>
     <string name="dialog_snap_user_data_text">选择要导出的用户数据</string>
+    <string name="dialog_snap_local_book_cache">书本本地缓存</string>
+    <string name="dialog_snap_local_book_cache_text">包括所有已缓存的书本以及设备上的本地书本</string>
     <string name="dialog_snap_bookshelf">书架</string>
     <string name="dialog_snap_bookshelf_text">包括书架及书本信息</string>
     <string name="dialog_snap_reading_data">阅读信息</string>

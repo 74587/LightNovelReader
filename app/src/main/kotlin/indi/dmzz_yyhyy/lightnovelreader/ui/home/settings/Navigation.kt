@@ -151,8 +151,9 @@ private fun NavGraphBuilder.exportUserDataDialog() {
         ExportUserDataDialog(
             onDismissRequest = { navController.popBackStack() },
             onClickSaveAndSend = {
-                viewModel.exportAndSendToFile(exportContext, context)
-                navController.popBackStack()
+                viewModel.exportAndSendToFile(exportContext, context) {
+                    navController.popBackStack()
+                }
             },
             onClickSaveToFile = {
                 exportContext = it
