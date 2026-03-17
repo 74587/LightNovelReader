@@ -13,5 +13,15 @@ data class UserDataEntity(
     val type: String,
     val value: String
 ): Mergeable<UserDataEntity> {
-    override fun merge(new: UserDataEntity): UserDataEntity = new
+    override fun merge(new: UserDataEntity): UserDataEntity {
+        return when (type) {
+            "StringList" -> copy(
+                value = (value.split(",") + new.value.split(","))
+                    .filter { it.isNotBlank() }
+                    .distinct()
+                    .joinToString(",")
+            )
+            else -> new
+        }
+    }
 }
