@@ -20,11 +20,16 @@ class SettingsViewModel @Inject constructor(
 ) : ViewModel() {
     var settingState: SettingState = SettingState(userDataRepository, viewModelScope)
 
-    fun importFromFile(uri: Uri, ignoreDataIdCheck: Boolean = false): OneTimeWorkRequest {
+    fun importFromFile(
+        uri: Uri,
+        overwrite: Boolean = false,
+        ignoreDataIdCheck: Boolean = false
+    ): OneTimeWorkRequest {
         val workRequest = OneTimeWorkRequestBuilder<ImportDataWork>()
             .setInputData(
                 workDataOf(
                     "uri" to uri.toString(),
+                    "overwrite" to overwrite,
                     "ignoreDataIdCheck" to ignoreDataIdCheck
                 )
             )

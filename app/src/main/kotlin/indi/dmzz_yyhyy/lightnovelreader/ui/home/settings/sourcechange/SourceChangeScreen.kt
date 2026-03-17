@@ -155,10 +155,10 @@ private fun SourceChangeBottomBar(
                     if (isProcessing) {
                         CircularProgressIndicator(
                             modifier = Modifier
-                                .size(16.dp)
-                                .padding(end = 8.dp),
+                                .size(16.dp),
                             strokeWidth = 2.dp
                         )
+                        Spacer(Modifier.width(8.dp))
                         Text(text = stringResource(R.string.settings_data_source_applying))
                     } else {
                         Text(text = stringResource(
