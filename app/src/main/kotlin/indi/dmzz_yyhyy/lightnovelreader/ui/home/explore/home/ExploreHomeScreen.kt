@@ -41,14 +41,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -80,7 +78,6 @@ import io.nightfish.lightnovelreader.api.explore.ExploreDisplayBook
 import io.nightfish.lightnovelreader.api.explore.ExploreBooksRow
 import io.nightfish.lightnovelreader.api.web.explore.ExplorePageProvider
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -237,7 +234,6 @@ fun TopBar(
     )
 }
 
-@Suppress("AssignedValueIsNeverRead")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ExplorePage(
@@ -248,9 +244,7 @@ fun ExplorePage(
     refresh: () -> Unit,
     pageKey: Int
 ) {
-    val pullState = rememberPullToRefreshState()
     var isRefreshing by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
     val listState = remember(pageKey) { LazyListState() }
     var initialScrollApplied by remember(pageKey) { mutableStateOf(false) }
     val titleHeight = with(LocalDensity.current) {
@@ -258,10 +252,12 @@ fun ExplorePage(
     }
 
     LaunchedEffect(pageKey, explorePageBooksRawList.isNotEmpty()) {
-        if (initialScrollApplied) return@LaunchedEffect
         if (explorePageBooksRawList.isEmpty()) return@LaunchedEffect
-        listState.scrollToItem(0)
-        initialScrollApplied = true
+        if (!initialScrollApplied || isRefreshing) {
+            listState.scrollToItem(0)
+            initialScrollApplied = true
+        }
+        isRefreshing = false
     }
 
     PullToRefreshBox(
@@ -269,12 +265,7 @@ fun ExplorePage(
         onRefresh = {
             isRefreshing = true
             refresh()
-            scope.launch {
-                pullState.animateToHidden()
-                isRefreshing = false
-            }
         },
-        state = pullState
     ) {
         ExploreRowsList(
             modifier = Modifier
