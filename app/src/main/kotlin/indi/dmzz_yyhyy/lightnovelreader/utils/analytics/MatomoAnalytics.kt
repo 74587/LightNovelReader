@@ -20,7 +20,6 @@ import org.matomo.sdk.Matomo
 import org.matomo.sdk.Tracker
 import org.matomo.sdk.TrackerBuilder
 import org.matomo.sdk.extra.TrackHelper
-import java.util.Locale
 import kotlin.time.Duration.Companion.minutes
 
 @Singleton
@@ -34,7 +33,7 @@ class MatomoAnalytics @Inject constructor(
     private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     companion object {
-        private const val SERVER = "eNpb85aBtYRBO6OkpKDYSl8_MS8xp7IkM7lYL7m0KDO_tDi1qFgvvyhdPzexJD83X68gowAA2mUS-w"
+        private const val SERVER = "eNpb85aBtYRBPaOkpKDYSl8_MS8xp7IkM7lYLy-xKDM7Xy-_KF0_N7EkPzdfryCjAACLuxEn"
         private const val SITE_ID = 4
 
         private const val DIMENSION_APP_INF = 1
@@ -61,9 +60,8 @@ class MatomoAnalytics @Inject constructor(
 
     private fun buildAppInfo(): String {
         val version = "${BuildConfig.VERSION_NAME} (${BuildConfig.VERSION_CODE})"
-        val locale = Locale.getDefault().toLanguageTag()
         val buildType = if (BuildConfig.DEBUG) "debug" else "release"
-        return "$version, $locale, $buildType"
+        return "$version, $buildType"
     }
 
     private fun buildDeviceInfo(): String {

@@ -163,4 +163,22 @@ sealed class MenuOptions {
         val DoublePress = option("double_press", R.string.key_reader_back_block_mode_double_press)
         val FullyBlocked = option("blocked", R.string.key_reader_back_block_mode_blocked)
     }
+    data object DateFormatOptions: MenuOptions() {
+        val Numeric = option("numeric", R.string.key_date_format_numeric)
+        val Written = option("written", R.string.key_date_format_written)
+    }
+
+    data object DateOrderOptions: MenuOptions() {
+        val Auto = option("auto", R.string.key_date_order_auto)
+        val YMD  = option("ymd",  R.string.key_date_order_ymd)
+        val DMY  = option("dmy",  R.string.key_date_order_dmy)
+        val MDY  = option("mdy",  R.string.key_date_order_mdy)
+    }
+
+    data object DurationStyleOptions: MenuOptions() {
+        val Simple = option("simple", R.string.key_duration_style_simple)
+        val Detailed = option("detailed", R.string.key_duration_style_detailed)
+    }
+
+
 }

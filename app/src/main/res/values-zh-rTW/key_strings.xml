@@ -27,7 +27,7 @@
     <string name="key_dark_theme_obsidian">黑曜石</string>
     <string name="key_dark_theme_designer">Designer</string>
     <!-- Experimental Locale -->
-    <string name="key_locale_none">跟隨應用程式語言</string>
+    <string name="key_locale_none">無</string>
     <!-- FlipAnime -->
     <string name="key_flip_animation_none">無</string>
     <string name="key_flip_animation_scroll">捲動</string>
@@ -38,4 +38,23 @@
     <string name="key_reader_indicator_battery_display_mode_hidden">隱藏</string>
     <string name="key_reader_indicator_battery_display_mode_classic">經典</string>
     <string name="key_reader_indicator_battery_display_mode_immersed">在狀態欄顯示</string>
+    <!-- Date Time Style -->
+    <string name="key_date_time_style_short">短</string>
+    <string name="key_date_time_style_medium">中</string>
+    <string name="key_date_time_style_long">長</string>
+    <string name="key_date_time_style_full">完整</string>
+    <!-- Relative Time Style -->
+    <string name="key_relative_time_style_relative">相對時間</string>
+    <string name="key_relative_time_style_absolute">絕對日期</string>
+    <!-- Duration Style -->
+    <string name="key_duration_style_simple">簡潔</string>
+    <string name="key_duration_style_detailed">詳細</string>
+    <!-- Date Style -->
+    <string name="key_date_format_numeric">數字格式</string>
+    <string name="key_date_format_written">文字格式</string>
+    <!-- Date Order -->
+    <string name="key_date_order_auto">跟隨語言</string>
+    <string name="key_date_order_ymd">年月日</string>
+    <string name="key_date_order_dmy">日月年</string>
+    <string name="key_date_order_mdy">月日年</string>
 </resources>

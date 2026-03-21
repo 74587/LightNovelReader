@@ -101,6 +101,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.home.bookshelf.home.BookStatusIcon
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.textformatting.rules.navigateToSettingsTextFormattingRulesDestination
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalClaimSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
+import indi.dmzz_yyhyy.lightnovelreader.utils.dateFormatter
 import indi.dmzz_yyhyy.lightnovelreader.utils.fadeInOnce
 import indi.dmzz_yyhyy.lightnovelreader.utils.fadingEdge
 import indi.dmzz_yyhyy.lightnovelreader.utils.isScrollingUp
@@ -110,7 +111,6 @@ import io.nightfish.lightnovelreader.api.book.Volume
 import io.nightfish.lightnovelreader.api.ui.LocalNavController
 import kotlinx.coroutines.delay
 
-@Suppress("AssignedValueIsNeverRead")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DetailScreen(
@@ -688,9 +688,7 @@ private fun BookCardBlock(
     } else {
         stringResource(
             R.string.book_info_update_date,
-            bookInformation.lastUpdated.year,
-            bookInformation.lastUpdated.monthValue,
-            bookInformation.lastUpdated.dayOfMonth
+            bookInformation.lastUpdated.format(dateFormatter())
         )
     }
     val wordCountText = bookInformation.wordCount.get()

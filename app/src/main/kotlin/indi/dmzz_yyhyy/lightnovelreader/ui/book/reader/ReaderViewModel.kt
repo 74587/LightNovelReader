@@ -116,7 +116,7 @@ class ReaderViewModel @Inject constructor(
                     userReadingData.updateChapterReadingProgress(chapterId, progress)
                     val total = _uiState.bookVolumes.volumes.sumOf { it.chapters.size }
                     if (total > 0) {
-                        readingProgress = userReadingData.maxChapterReadingProgressMap.values.sum() / total
+                        readingProgress = (userReadingData.maxChapterReadingProgressMap.values.sum() / total).coerceIn(0f, 1f)
                     }
                 }
             }

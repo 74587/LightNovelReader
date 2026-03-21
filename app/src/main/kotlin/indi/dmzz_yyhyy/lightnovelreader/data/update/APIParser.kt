@@ -15,7 +15,7 @@ import java.util.zip.ZipFile
  */
 object APIParser {
     private const val TAG = "APIParser"
-    private const val BASE_URL = "https://lnr.curiousers.org"
+    private const val BASE_URL = "https://lnr.nariko.org"
     private const val API_PATH = "/api/update"
 
     class APIRelease(

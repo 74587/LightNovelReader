@@ -48,7 +48,7 @@ fun SettingsScreen(
     settingState: SettingState,
     updatePhase: String,
     checkUpdate: () -> Unit,
-    importData: (Uri) -> OneTimeWorkRequest,
+    importData: (Uri, Boolean) -> OneTimeWorkRequest,
     onClickLogcat: () -> Unit,
     onClickChangeSource: () -> Unit,
     onClickExportUserData: () -> Unit,
@@ -93,9 +93,7 @@ fun SettingsScreen(
                 SettingsCategory(
                     title = stringResource(R.string.display_settings),
                 ) {
-                    DisplaySettingsList(
-                        settingState = settingState
-                    )
+                    DisplaySettingsList()
                 }
             }
             item {

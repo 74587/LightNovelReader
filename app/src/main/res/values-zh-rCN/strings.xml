@@ -48,6 +48,17 @@
     <string name="delete_rule">删除规则</string>
     <string name="data_import_success">导入成功</string>
     <string name="data_import_failed">导入失败，请检查文件格式或文件已损坏。</string>
+    <string name="import_data_dialog_title">导入数据</string>
+    <string name="import_data_dialog_description">要合并还是覆盖导入这份数据？</string>
+    <string name="import_merge">合并</string>
+    <string name="import_merge_desc">合并进现有数据</string>
+    <string name="import_overwrite">覆盖</string>
+    <string name="import_overwrite_desc">清空所有数据，再导入选定数据</string>
+    <string name="import_overwrite_warning">「覆盖」操作会清空本地的所有数据，包括书架、阅读记录、缓存和设置项等，无论要导入的数据是否包含它们。该操作将无法撤销。</string>
+    <string name="import_overwrite_confirm">确认覆盖</string>
+    <string name="import_back">返回</string>
+    <string name="import_in_progress_title">正在导入…</string>
+    <string name="import_in_progress_desc">请稍候…</string>
     <string name="download_in_progress">进行中</string>
     <string name="download_item_progress">%s 已下载 %d%%</string>
     <string name="download_item_finished">%s完成</string>
@@ -55,6 +66,7 @@
     <string name="book_updated_to_title">更新至:</string>
     <string name="book_word_count_limit">字数限制:</string>
     <string name="source_available_title">可用数据源</string>
+    <string name="unavailable">不可用</string>
 
     <!-- Hints -->
     <string name="nothing_here">没有内容</string>
@@ -127,7 +139,7 @@
     <string name="settings_reader_volume_key_control_desc">使用音量+键翻到上一页，音量-键翻到下一页</string>
     <string name="settings_reader_volume_key_interval">按键持续翻页间隔</string>
     <string name="settings_reader_t2tp">点击翻页</string>
-    <string name="settings_reader_t2tp_desc">启用点击翻页。垂直滑动以触发菜单</string>
+    <string name="settings_reader_t2tp_desc">启用点击翻页。点击屏幕左侧/右侧以翻页，点击中间展开菜单</string>
     <string name="settings_reader_page_turn_anim">翻页动画</string>
     <string name="settings_reader_page_turn_anim_desc">设置翻页动画，选择“无”时启用快速翻页</string>
     <string name="settings_reader_quick_chapter_switch">快速章节切换</string>
@@ -155,6 +167,20 @@
     <string name="settings_theme_dynamic_colors_desc_unavailable">从系统主题应用动态配色 (需要 Android 12+)</string>
     <string name="settings_theme_m3e">Material 3 Expressive</string>
     <string name="settings_theme_m3e_description">启用 Material 3 Expressive 设计。该功能为实验性内容，仍处于测试阶段</string>
+
+    <string name="settings_formats">格式</string>
+    <string name="settings_formats_desc">设置日期或文本格式</string>
+    <string name="date_time_formats_settings">日期和时间</string>
+    <string name="settings_formats_date_format">日期格式</string>
+    <string name="settings_formats_date_show_year">显示年份</string>
+    <string name="settings_formats_date_show_year_desc">在日期中包含年份</string>
+    <string name="settings_formats_date_order">日期顺序</string>
+    <string name="settings_formats_date_order_desc">选择日期中年、月、日的排列顺序</string>
+    <string name="settings_formats_duration_format">时长格式</string>
+    <string name="settings_formats_relative_time_format">使用相对时间</string>
+    <string name="settings_advanced">高级</string>
+    <string name="settings_formats_characters_variant_note">汉字变体只对阅读器生效，并且需要字体支持。</string>
+
     <string name="settings_app_language">语言</string>
     <string name="settings_app_language_desc">设置应用语言</string>
     <string name="settings_app_language_desc_unavailable">设置应用语言 (需要 Android 13+)</string>
@@ -271,7 +297,7 @@
     <string name="publishing_house">文库</string>
     <string name="filter_by_publishing_house">文库筛选</string>
     <string name="filter_by_publishing_house_desc">根据小说文库的筛选。</string>
-    <string name="book_info_update_date">%1$d-%2$d-%3$d 更新</string>
+    <string name="book_info_update_date">%s 更新</string>
     <string name="book_info_word_count_kilo">%s 字</string>
     <string name="name">名称</string>
     <string name="bookshelf_name">书架名称</string>
@@ -373,6 +399,8 @@
     <string name="dialog_export_to_epub_text">EPUB (Electronic Publication) 是一种开放的电子书标准，格式为 .epub。\n\n要将这本书导出为 EPUB 吗？</string>
     <string name="dialog_updates_available">更新可用</string>
     <string name="dialog_snap_user_data_text">选择要导出的用户数据</string>
+    <string name="dialog_snap_local_book_cache">书籍本地缓存</string>
+    <string name="dialog_snap_local_book_cache_text">包括所有已缓存的书籍以及设备上的本地书籍</string>
     <string name="dialog_snap_bookshelf">书架</string>
     <string name="dialog_snap_bookshelf_text">包括书架及书本信息</string>
     <string name="dialog_snap_reading_data">阅读信息</string>
@@ -497,5 +525,4 @@
     <string name="plugin_repo_install_failed">安装 %1$s 失败：%2$s</string>
     <string name="plugin_repo_install_cancelled">已取消安装 %1$s</string>
     <string name="plugin_repo_parts_incomplete">分卷下载不完整: 已完成 %1$d/%2$d，缺失 %3$s</string>
-
 </resources>

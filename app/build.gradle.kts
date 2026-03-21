@@ -23,7 +23,7 @@ android {
         minSdk = 24
         targetSdk = 36
         // 版本号为x.y.z则versionCode为x*1000000+y*10000+z*1000+debug版本号(开发需要时迭代, 三位数)
-        versionCode = 1_02_00_030
+        versionCode = 1_02_00_034
         versionName = "1.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -63,8 +63,8 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
-            val dateFormat = SimpleDateFormat("MMM-dd-HH-mm-ss", Locale.US)
-            versionNameSuffix = "-${dateFormat.format(Date())}"
+            val dateFormat = SimpleDateFormat("yyyy/MM/dd", Locale.US)
+            versionNameSuffix = "_SN (${dateFormat.format(Date())})"
         }
 
         base {
@@ -93,8 +93,8 @@ androidComponents {
         variant.outputs.forEach { output ->
             val outputImpl = output as com.android.build.api.variant.impl.VariantOutputImpl
             val originalFileName = outputImpl.outputFileName.get()
-            val dateFormat = SimpleDateFormat("MMM-dd-HH-mm-ss", Locale.US)
-            val newFileName = originalFileName.replace(".apk", "-${dateFormat.format(Date())}.apk")
+            val dateFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+            val newFileName = originalFileName.replace(".apk", " (${dateFormat.format(Date())}).apk")
             outputImpl.outputFileName = newFileName
         }
     }
@@ -109,6 +109,10 @@ tasks.withType<KotlinJvmCompile>().configureEach {
         jvmTarget.set(JvmTarget.JVM_17)
         freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
     }
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs.add("-Xlint:-processing")
 }
 
 dependencies {
@@ -153,7 +157,6 @@ dependencies {
     implementation(libs.markdown)
     // Room
     implementation(libs.room.runtime)
-    annotationProcessor(libs.room.compiler)
     ksp(libs.room.compiler)
     implementation(libs.room.ktx)
     // Splash API

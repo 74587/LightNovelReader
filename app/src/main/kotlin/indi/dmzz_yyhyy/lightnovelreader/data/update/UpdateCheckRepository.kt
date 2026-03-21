@@ -33,9 +33,8 @@ import okhttp3.OkHttpClient
 import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -45,7 +44,6 @@ class UpdateCheckRepository @Inject constructor(
     @param:ApplicationContext @field:ApplicationContext private val context: Context,
     private val userDataRepository: UserDataRepository
 ) {
-    private val dateFormat = SimpleDateFormat("HH:mm", Locale.US)
     private val coroutineScope = CoroutineScope(Dispatchers.IO)
     private var checkJob: Job? = null
     var release: Release? = null
@@ -58,6 +56,9 @@ class UpdateCheckRepository @Inject constructor(
     val isDownloading: StateFlow<Boolean> = _isDownloading.asStateFlow()
     private val _downloadProgress = MutableStateFlow(0f)
     val downloadProgress: StateFlow<Float> = _downloadProgress.asStateFlow()
+
+    private fun formattedNow(): String =
+        LocalTime.now().format(DateTimeFormatter.ofPattern("HH:mm"))
 
     companion object {
         private const val NOTIFICATION_CHANNEL_ID = "AppUpdateDownload"
@@ -81,7 +82,7 @@ class UpdateCheckRepository @Inject constructor(
         if (checkJob != null && checkJob!!.isActive) return
         checkJob = coroutineScope.launch {
             val updateChannelKey = userDataRepository.stringUserData(UserDataPath.Settings.App.UpdateChannel.path).get() ?: MenuOptions.UpdateChannelOptions.DEVELOPMENT
-            val distributionPlatform = userDataRepository.stringUserData(UserDataPath.Settings.App.DistributionPlatform.path).get() ?: MenuOptions.UpdatePlatformOptions.GitHub
+            val distributionPlatform = userDataRepository.stringUserData(UserDataPath.Settings.App.DistributionPlatform.path).get() ?: MenuOptions.UpdatePlatformOptions.LnrAPI
             Log.i("UpdateChecker", "Checking for updates from $distributionPlatform/$updateChannelKey")
             _updatePhase.update { "已请求更新，等待 $distributionPlatform 应答" }
             try {
@@ -93,15 +94,15 @@ class UpdateCheckRepository @Inject constructor(
             } catch (e: Exception) {
                 Log.e("UpdateChecker", "failed to get release")
                 e.printStackTrace()
-                _updatePhase.emit("${dateFormat.format(Date())} | 失败: ${e.javaClass.simpleName}\n${e.message}")
+                _updatePhase.emit("${formattedNow()} | 失败: ${e.javaClass.simpleName}\n${e.message}")
             }
             if (release != null) {
                 if (release!!.version > BuildConfig.VERSION_CODE) {
                     Log.i("UpdateChecker", "Updates available: ${release!!.versionName}")
-                    _updatePhase.emit("${dateFormat.format(Date())} | 有可用更新: ${release!!.versionName}")
+                    _updatePhase.emit("${formattedNow()} | 有可用更新: ${release!!.versionName}")
                 } else {
                     Log.i("UpdateChecker", "App is up to date (${release!!.versionName})")
-                    _updatePhase.emit("${dateFormat.format(Date())} | 已是最新 (远程: ${release!!.versionName})")
+                    _updatePhase.emit("${formattedNow()} | 已是最新 (远程: ${release!!.versionName})")
                 }
             }
             mutableAvailable.emit(release != null && release!!.version > BuildConfig.VERSION_CODE)

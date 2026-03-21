@@ -45,7 +45,7 @@
     <string name="key_locale_ja_jp" translatable="false">日本語</string>
     <string name="key_locale_ko_kr" translatable="false">한국어 (대한민국)</string>
     <string name="key_locale_ko_kp" translatable="false">한국어 (조선민주주의인민공화국)</string>
-    <!-- FlipAnime -->
+    <!-- Flip Animation -->
     <string name="key_flip_animation_none">None</string>
     <string name="key_flip_animation_scroll">Scroll</string>
     <!-- Reader Bg Image Display Mode -->
@@ -59,4 +59,24 @@
     <string name="key_reader_back_block_mode_none">None</string>
     <string name="key_reader_back_block_mode_double_press">Double Press</string>
     <string name="key_reader_back_block_mode_blocked">Fully Blocked</string>
+    <!-- Date Time Style -->
+    <string name="key_date_time_style_system">Follow System</string>
+    <string name="key_date_time_style_short">Short</string>
+    <string name="key_date_time_style_medium">Medium</string>
+    <string name="key_date_time_style_long">Long</string>
+    <string name="key_date_time_style_full">Full</string>
+    <!-- Relative Time Style -->
+    <string name="key_relative_time_style_relative">Relative</string>
+    <string name="key_relative_time_style_absolute">Absolute</string>
+    <!-- Duration Style -->
+    <string name="key_duration_style_simple">Simple</string>
+    <string name="key_duration_style_detailed">Detailed</string>
+    <!-- Date Style -->
+    <string name="key_date_format_numeric">Numeric</string>
+    <string name="key_date_format_written">Written</string>
+    <!-- Date Order -->
+    <string name="key_date_order_auto">Follow Language</string>
+    <string name="key_date_order_ymd">Year-Month-Day</string>
+    <string name="key_date_order_dmy">Day-Month-Year</string>
+    <string name="key_date_order_mdy">Month-Day-Year</string>
 </resources>

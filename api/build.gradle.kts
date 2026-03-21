@@ -65,7 +65,7 @@ afterEvaluate {
         repositories {
             maven {
                 name = "reposilite"
-                url = URI("https://maven.curiousers.org/release")
+                url = URI("https://maven.nariko.org/release")
                 credentials {
                     username = System.getenv("REPO_USER")
                     password = System.getenv("REPO_PASS")

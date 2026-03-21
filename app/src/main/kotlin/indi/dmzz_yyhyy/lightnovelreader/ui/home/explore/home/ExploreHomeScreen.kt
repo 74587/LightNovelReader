@@ -23,7 +23,9 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -39,14 +41,12 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -74,10 +74,10 @@ import indi.dmzz_yyhyy.lightnovelreader.utils.bottomBarPadding
 import indi.dmzz_yyhyy.lightnovelreader.utils.bottomBarSpacer
 import indi.dmzz_yyhyy.lightnovelreader.utils.fadingEdge
 import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
+import io.nightfish.lightnovelreader.api.explore.ExploreDisplayBook
 import io.nightfish.lightnovelreader.api.explore.ExploreBooksRow
 import io.nightfish.lightnovelreader.api.web.explore.ExplorePageProvider
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -181,7 +181,8 @@ fun ExploreHomeScreen(
                             onClickExpand = onClickExpand,
                             onClickBook = onClickBook,
                             nestedScrollConnection = enterAlwaysScrollBehavior.nestedScrollConnection,
-                            refresh = refresh
+                            refresh = refresh,
+                            pageKey = exploreHomeUiState.selectedPage
                         )
                     }
                 }
@@ -233,7 +234,6 @@ fun TopBar(
     )
 }
 
-@Suppress("AssignedValueIsNeverRead")
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun ExplorePage(
@@ -241,168 +241,223 @@ fun ExplorePage(
     onClickExpand: (String) -> Unit,
     onClickBook: (String) -> Unit,
     nestedScrollConnection: NestedScrollConnection,
-    refresh: () -> Unit
+    refresh: () -> Unit,
+    pageKey: Int
 ) {
-    val pullState = rememberPullToRefreshState()
     var isRefreshing by remember { mutableStateOf(false) }
-    val scope = rememberCoroutineScope()
-    val listState = rememberLazyListState()
+    val listState = remember(pageKey) { LazyListState() }
+    var initialScrollApplied by remember(pageKey) { mutableStateOf(false) }
+    val titleHeight = with(LocalDensity.current) {
+        (16.sp * 2.2f).toDp()
+    }
+
+    LaunchedEffect(pageKey, explorePageBooksRawList.isNotEmpty()) {
+        if (explorePageBooksRawList.isEmpty()) return@LaunchedEffect
+        if (!initialScrollApplied || isRefreshing) {
+            listState.scrollToItem(0)
+            initialScrollApplied = true
+        }
+        isRefreshing = false
+    }
 
     PullToRefreshBox(
         isRefreshing = isRefreshing,
         onRefresh = {
             isRefreshing = true
             refresh()
-            scope.launch {
-                pullState.animateToHidden()
-                isRefreshing = false
-            }
         },
-        state = pullState
     ) {
-        val titleHeight = with(LocalDensity.current) {
-            (16.sp * 2.2f).toDp()
-        }
-
-        LazyColumn(
+        ExploreRowsList(
             modifier = Modifier
                 .fillMaxWidth()
                 .nestedScroll(nestedScrollConnection),
-            state = listState
+            listState = listState,
+            rows = explorePageBooksRawList,
+            titleHeight = titleHeight,
+            onClickExpand = onClickExpand,
+            onClickBook = onClickBook
+        )
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun ExploreRowsList(
+    modifier: Modifier,
+    listState: LazyListState,
+    rows: List<ExploreBooksRow>,
+    titleHeight: androidx.compose.ui.unit.Dp,
+    onClickExpand: (String) -> Unit,
+    onClickBook: (String) -> Unit
+) {
+    LazyColumn(
+        modifier = modifier,
+        state = listState
+    ) {
+        itemsIndexed(
+            items = rows,
+            key = { index, row ->
+                row.expandedPageDataSourceId?.let { "${it}_$index" } ?: "${row.title}_$index"
+            }
+        ) { _, exploreBooksRow ->
+            ExploreRowSection(
+                modifier = Modifier.animateItem(),
+                row = exploreBooksRow,
+                titleHeight = titleHeight,
+                onClickExpand = onClickExpand,
+                onClickBook = onClickBook
+            )
+        }
+        navigationBarSpacer()
+        bottomBarSpacer()
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun ExploreRowSection(
+    modifier: Modifier,
+    row: ExploreBooksRow,
+    titleHeight: androidx.compose.ui.unit.Dp,
+    onClickExpand: (String) -> Unit,
+    onClickBook: (String) -> Unit
+) {
+    Column(
+        modifier = modifier
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(vertical = 4.dp)
+                .fillMaxWidth()
+                .height(46.dp)
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            items(
-                items = explorePageBooksRawList
-            ) { exploreBooksRow ->
-                Column(
-                    modifier = Modifier
-                        .animateItem()
+            Text(
+                modifier = Modifier.weight(2f),
+                text = row.title,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.W600,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            if (row.expandable) {
+                IconButton(
+                    modifier = Modifier.size(40.dp),
+                    onClick = {
+                        row.expandedPageDataSourceId?.let(onClickExpand)
+                    }
                 ) {
-                    Row(
-                        modifier = Modifier
-                            .padding(vertical = 4.dp)
-                            .fillMaxWidth()
-                            .height(46.dp)
-                            .padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            modifier = Modifier.weight(2f),
-                            text = exploreBooksRow.title,
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.W600,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                        if (exploreBooksRow.expandable) {
-                            IconButton(
-                                modifier = Modifier.size(40.dp),
-                                onClick = {
-                                    exploreBooksRow.expandedPageDataSourceId?.let {
-                                        onClickExpand(it)
-                                    }
-                                }
-                            ) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.arrow_forward_24px),
-                                    contentDescription = "expand"
-                                )
-                            }
-                        }
-                    }
-
-                    val lazyRowState = rememberLazyListState()
-
-                    CompositionLocalProvider(LocalOverscrollFactory provides null) {
-                        LazyRow(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .fadingEdge(
-                                    Brush.horizontalGradient(
-                                        0.01f to Color.Transparent,
-                                        0.03f to Color.White,
-                                        0.97f to Color.White,
-                                        0.99f to Color.Transparent
-                                    )
-                                )
-                                .padding(bottom = 12.dp),
-                            horizontalArrangement = Arrangement.spacedBy(4.dp),
-                            state = lazyRowState,
-                            flingBehavior = rememberSnapFlingBehavior(lazyRowState)
-                        ) {
-                            item {
-                                Box(modifier = Modifier.width(10.dp))
-                            }
-
-                            items(
-                                items = exploreBooksRow.bookList.filter { it.id.isNotBlank() },
-                                key = { it.id }
-                            ) { exploreDisplayBook ->
-                                Column(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(10.dp))
-                                        .clickable {
-                                            onClickBook(exploreDisplayBook.id)
-                                        }
-                                ) {
-                                    Box(
-                                        modifier = Modifier.padding(horizontal = 4.dp)
-                                    ) {
-                                        Cover(
-                                            width = 98.dp,
-                                            height = 138.dp,
-                                            uri = exploreDisplayBook.coverUri,
-                                            rounded = 6.dp
-                                        )
-                                    }
-                                    Column(
-                                        modifier = Modifier
-                                            .width(100.dp)
-                                            .padding(horizontal = 2.dp)
-                                            .padding(top = 8.dp, bottom = 2.dp),
-                                        verticalArrangement = Arrangement.spacedBy(2.dp)
-                                    ) {
-                                        Text(
-                                            modifier = Modifier
-                                                .height(titleHeight)
-                                                .wrapContentHeight(Alignment.Top),
-                                            text = exploreDisplayBook.title,
-                                            style = MaterialTheme.typography.headlineMedium.copy(
-                                                letterSpacing = 0.5.sp
-                                            ),
-                                            fontWeight = FontWeight.W500,
-                                            maxLines = 2,
-                                            overflow = TextOverflow.Ellipsis
-                                        )
-                                        if (exploreDisplayBook.author.isNotEmpty()) {
-                                            Text(
-                                                text = exploreDisplayBook.author,
-                                                style = MaterialTheme.typography.headlineMedium.copy(
-                                                    letterSpacing = 0.5.sp
-                                                ),
-                                                color = MaterialTheme.colorScheme.secondary,
-                                                maxLines = 1,
-                                                overflow = TextOverflow.Ellipsis
-                                            )
-                                        }
-                                    }
-                                }
-                            }
-
-                            item {
-                                Box(modifier = Modifier.width(12.dp))
-                            }
-                        }
-                    }
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp)
-                    ) {
-                        HorizontalDivider()
-                    }
+                    Icon(
+                        painter = painterResource(id = R.drawable.arrow_forward_24px),
+                        contentDescription = "expand"
+                    )
                 }
             }
-            navigationBarSpacer()
-            bottomBarSpacer()
+        }
+
+        val lazyRowState = rememberLazyListState()
+        val validBooks = remember(row.bookList) {
+            row.bookList.filter { it.id.isNotBlank() }
+        }
+
+        CompositionLocalProvider(LocalOverscrollFactory provides null) {
+            LazyRow(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .fadingEdge(
+                        Brush.horizontalGradient(
+                            0.01f to Color.Transparent,
+                            0.03f to Color.White,
+                            0.97f to Color.White,
+                            0.99f to Color.Transparent
+                        )
+                )
+                    .padding(bottom = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp),
+                state = lazyRowState,
+                flingBehavior = rememberSnapFlingBehavior(lazyRowState)
+            ) {
+                item {
+                    Box(modifier = Modifier.width(10.dp))
+                }
+
+                items(
+                    items = validBooks,
+                    key = { it.id }
+                ) { exploreDisplayBook ->
+                    ExploreBookCard(
+                        book = exploreDisplayBook,
+                        titleHeight = titleHeight,
+                        onClickBook = onClickBook
+                    )
+                }
+
+                item {
+                    Box(modifier = Modifier.width(12.dp))
+                }
+            }
+        }
+        Box(
+            Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        ) {
+            HorizontalDivider()
+        }
+    }
+}
+
+@Composable
+private fun ExploreBookCard(
+    book: ExploreDisplayBook,
+    titleHeight: androidx.compose.ui.unit.Dp,
+    onClickBook: (String) -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .clip(RoundedCornerShape(10.dp))
+            .clickable { onClickBook(book.id) }
+    ) {
+        Box(
+            modifier = Modifier.padding(horizontal = 4.dp)
+        ) {
+            Cover(
+                width = 98.dp,
+                height = 138.dp,
+                uri = book.coverUri,
+                rounded = 6.dp
+            )
+        }
+        Column(
+            modifier = Modifier
+                .width(100.dp)
+                .padding(horizontal = 2.dp)
+                .padding(top = 8.dp, bottom = 2.dp),
+            verticalArrangement = Arrangement.spacedBy(2.dp)
+        ) {
+            Text(
+                modifier = Modifier
+                    .height(titleHeight)
+                    .wrapContentHeight(Alignment.Top),
+                text = book.title,
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    letterSpacing = 0.5.sp
+                ),
+                fontWeight = FontWeight.W500,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+            if (book.author.isNotEmpty()) {
+                Text(
+                    text = book.author,
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        letterSpacing = 0.5.sp
+                    ),
+                    color = MaterialTheme.colorScheme.secondary,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
     }
 }

@@ -44,11 +44,7 @@ fun UpdatesSettingsList(
         title = stringResource(R.string.settings_distribution_platform),
         options = MenuOptions.UpdatePlatformOptions,
         selectedOptionKey = settingState.distributionPlatformKey,
-        onOptionChange = { option ->
-            settingState.distributionPlatformKeyUserData.asynchronousSet(option)
-            if (MenuOptions.UpdatePlatformOptions.optionList.firstOrNull{ settingState.updateChannelKey == it.key } == null)
-                settingState.updateChannelKeyUserData.asynchronousSet(MenuOptions.UpdateChannelOptions.DEVELOPMENT)
-        }
+        onOptionChange = settingState.distributionPlatformKeyUserData::asynchronousSet
     )
     SettingsClickableEntry(
         modifier = Modifier.background(colorScheme.surfaceContainer),

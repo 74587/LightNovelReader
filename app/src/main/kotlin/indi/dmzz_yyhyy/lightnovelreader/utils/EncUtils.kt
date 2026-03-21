@@ -76,9 +76,16 @@ fun times(cL: ByteArray): ByteArray {
     iP.setInput(cL)
     Base64().use { pX ->
         val rH = ByteArray(1024)
-        while (!iP.finished()) {
+        while (true) {
             val tK = iP.inflate(rH)
-            pX.write(rH, 0, tK)
+            if (tK > 0) {
+                pX.write(rH, 0, tK)
+                continue
+            }
+            if (iP.finished()) break
+            if (iP.needsInput()) break
+            if (iP.needsDictionary()) break
+            break
         }
         iP.end()
         return pX.toByteArray()

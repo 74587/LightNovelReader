@@ -10,7 +10,11 @@ import androidx.activity.result.ActivityResult
 import androidx.compose.foundation.background
 import androidx.compose.material3.MaterialTheme.colorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -19,6 +23,7 @@ import androidx.work.OneTimeWorkRequest
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
 import indi.dmzz_yyhyy.lightnovelreader.R
+import indi.dmzz_yyhyy.lightnovelreader.ui.components.ImportUserDataDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsClickableEntry
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.SettingsSwitchEntry
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.SettingState
@@ -30,7 +35,7 @@ fun DataSettingsList(
     onClickChangeSource: () -> Unit,
     onClickExportUserData: () -> Unit,
     settingState: SettingState,
-    importData: (Uri) -> OneTimeWorkRequest,
+    importData: (Uri, Boolean) -> OneTimeWorkRequest,
 ) {
     val dataImportFailedText = stringResource(R.string.data_import_failed)
     val dataImportSuccessText = stringResource(R.string.data_import_success)
@@ -38,21 +43,57 @@ fun DataSettingsList(
     val context = LocalContext.current
     val workManager = WorkManager.getInstance(context)
     val scope = rememberCoroutineScope()
-    val importDataLauncher = uriLauncher { uri ->
+
+    var pendingImportUri by remember { mutableStateOf<Uri?>(null) }
+    var showImportDialog by remember { mutableStateOf(false) }
+    var isImporting by remember { mutableStateOf(false) }
+
+    val startImport: (Uri, Boolean) -> Unit = { uri, overwrite ->
+        isImporting = true
         scope.launch {
-            workManager.getWorkInfoByIdFlow(importData(uri).id).collect {
+            workManager.getWorkInfoByIdFlow(importData(uri, overwrite).id).collect {
                 when (it?.state) {
                     WorkInfo.State.FAILED -> {
+                        isImporting = false
+                        showImportDialog = false
+                        pendingImportUri = null
                         Toast.makeText(context, dataImportFailedText, Toast.LENGTH_SHORT).show()
                     }
                     WorkInfo.State.SUCCEEDED -> {
+                        isImporting = false
+                        showImportDialog = false
+                        pendingImportUri = null
                         Toast.makeText(context, dataImportSuccessText, Toast.LENGTH_SHORT).show()
+                    }
+                    WorkInfo.State.CANCELLED -> {
+                        isImporting = false
+                        showImportDialog = false
+                        pendingImportUri = null
                     }
                     else -> {}
                 }
             }
         }
     }
+
+    val importDataLauncher = uriLauncher { uri ->
+        pendingImportUri = uri
+        showImportDialog = true
+    }
+
+    if (showImportDialog && pendingImportUri != null) {
+        val uri = pendingImportUri!!
+        ImportUserDataDialog(
+            isImporting = isImporting,
+            onDismissRequest = {
+                showImportDialog = false
+                pendingImportUri = null
+            },
+            onClickMerge = { startImport(uri, false) },
+            onClickOverwrite = { startImport(uri, true) },
+        )
+    }
+
     SettingsClickableEntry(
         modifier = Modifier.background(colorScheme.surfaceContainer),
         painter = painterResource(R.drawable.output_24px),

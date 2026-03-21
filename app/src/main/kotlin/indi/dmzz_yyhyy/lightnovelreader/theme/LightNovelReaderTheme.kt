@@ -1,6 +1,5 @@
 package indi.dmzz_yyhyy.lightnovelreader.theme
 
-import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 import android.app.Activity
 import android.graphics.Color
 import android.os.Build
@@ -14,7 +13,6 @@ import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -22,7 +20,9 @@ import androidx.core.view.WindowCompat
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalAppTheme
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalDarkColorScheme
 import indi.dmzz_yyhyy.lightnovelreader.ui.LocalLightColorScheme
-import indi.dmzz_yyhyy.lightnovelreader.utils.LocaleUtil
+import io.nightfish.lightnovelreader.api.ui.LocalTextLocaleList
+import io.nightfish.lightnovelreader.api.ui.appLocaleToTextLocaleList
+import io.nightfish.lightnovelreader.api.ui.theme.AppTypography
 
 data class AppTheme(
     val isDark: Boolean,
@@ -78,6 +78,10 @@ fun LightNovelReaderTheme(
         AppTheme(isDark = isDark, colorScheme = colorScheme)
     }
 
+    val textLocaleList = remember(appLocale) {
+        appLocaleToTextLocaleList(appLocale)
+    }
+
     @Suppress("deprecation")
     DisposableEffect(view, isDark) {
         val window = (view.context as Activity).window
@@ -92,17 +96,11 @@ fun LightNovelReaderTheme(
         onDispose { }
     }
 
-    LaunchedEffect(appLocale) {
-        val parts = appLocale.split("-")
-        val language = parts.getOrNull(0) ?: "en"
-        val variant = parts.getOrNull(1) ?: ""
-        LocaleUtil.set(language = language, variant = variant)
-    }
-
     CompositionLocalProvider(
         LocalAppTheme provides appTheme,
         LocalLightColorScheme provides lightColorScheme,
-        LocalDarkColorScheme provides darkColorScheme
+        LocalDarkColorScheme provides darkColorScheme,
+        LocalTextLocaleList provides textLocaleList
     ) {
         if (enableM3E) {
             MaterialExpressiveTheme(

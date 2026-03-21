@@ -20,3 +20,16 @@ fun SectionHeader(
         fontWeight = FontWeight.W600
     )
 }
+
+@Composable
+fun SectionDescription(
+    modifier: Modifier = Modifier,
+    text: String
+) {
+    Text(
+        text = text,
+        modifier = modifier,
+        color = colorScheme.onSurfaceVariant,
+        style = typography.bodyMedium
+    )
+}

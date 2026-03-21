@@ -29,7 +29,8 @@ fun NavGraphBuilder.settingsThemeDestination() {
             },
             onClickChangeBackgroundColor = {
                 navController.navigateToColorPickerDialog(
-                    UserDataPath.Reader.BackgroundColor.path,
+                    if (isDark) UserDataPath.Reader.BackgroundDarkColor.path
+                    else UserDataPath.Reader.BackgroundColor.path,
                     listOf(-1, 0x38E8CCA5, 0x38FF8080, 0x38d3b17d,0x3834C759, 0x3832ADE6, 0x38007AFF, 0x385856D6, 0x38AF52DE)
                 )
             },

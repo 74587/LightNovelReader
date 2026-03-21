@@ -40,9 +40,9 @@ import androidx.compose.ui.unit.dp
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.book.get
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.Cover
+import indi.dmzz_yyhyy.lightnovelreader.utils.dateFormatter
 import indi.dmzz_yyhyy.lightnovelreader.utils.withHaptic
 import io.nightfish.lightnovelreader.api.book.BookInformation
-import java.time.format.DateTimeFormatter
 
 @Composable
 fun BookCardContent(
@@ -178,7 +178,7 @@ fun BookCardContent(
                     BookStatusIcon(bookInformation.isComplete)
                 }
 
-                val dateText = bookInformation.lastUpdated.format(DateTimeFormatter.ISO_LOCAL_DATE)
+                val dateText = bookInformation.lastUpdated.format(dateFormatter())
 
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(6.dp),

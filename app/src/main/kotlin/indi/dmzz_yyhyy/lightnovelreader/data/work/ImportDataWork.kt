@@ -30,6 +30,7 @@ class ImportDataWork @AssistedInject constructor(
     @OptIn(ExperimentalSerializationApi::class)
     override suspend fun doWork(): Result {
         val fileUri = inputData.getString("uri")?.let(Uri::parse) ?: return Result.failure()
+        val overwrite = inputData.getBoolean("overwrite", false)
         val appLocalData = try {
             applicationContext.contentResolver.openFileDescriptor(fileUri, "r")?.use { parcelFileDescriptor ->
                 FileInputStream(parcelFileDescriptor.fileDescriptor).use { inputStream ->
@@ -41,6 +42,9 @@ class ImportDataWork @AssistedInject constructor(
             e.printStackTrace()
             return Result.failure()
         } ?: return Result.failure()
+        if (overwrite) {
+            localDataManager.cleanDatabaseWithoutGlobalUserData()
+        }
         val result = localDataManager.importAppLocalData(appLocalData)
         if (result.isOk) return Result.success()
         else {

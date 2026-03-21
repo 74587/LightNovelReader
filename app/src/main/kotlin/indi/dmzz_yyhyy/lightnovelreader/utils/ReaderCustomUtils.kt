@@ -144,6 +144,24 @@ fun rememberReaderBackgroundPainter(
 }
 
 @Composable
+fun readerBackgroundColor(settingState: SettingState): Color {
+    val localTheme = LocalAppTheme.current
+    val isDark = localTheme.isDark
+    val background = localTheme.colorScheme.background
+
+    val color = remember(isDark, settingState.backgroundColor, settingState.backgroundDarkColor, background) {
+        when {
+            isDark && settingState.backgroundDarkColor.isUnspecified -> background
+            !isDark && settingState.backgroundColor.isUnspecified -> background
+            isDark -> settingState.backgroundDarkColor
+            else -> settingState.backgroundColor
+        }
+    }
+
+    return color
+}
+
+@Composable
 fun readerTextColor(settingState: SettingState): Color {
     val localTheme = LocalAppTheme.current
     val isDark = localTheme.isDark
