@@ -23,7 +23,7 @@ android {
         minSdk = 24
         targetSdk = 36
         // 版本号为x.y.z则versionCode为x*1000000+y*10000+z*1000+debug版本号(开发需要时迭代, 三位数)
-        versionCode = 1_02_00_033
+        versionCode = 1_02_00_034
         versionName = "1.2.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -111,6 +111,10 @@ tasks.withType<KotlinJvmCompile>().configureEach {
     }
 }
 
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs.add("-Xlint:-processing")
+}
+
 dependencies {
     // Desugaring
     coreLibraryDesugaring(libs.desugar.jdk.libs)
@@ -153,7 +157,6 @@ dependencies {
     implementation(libs.markdown)
     // Room
     implementation(libs.room.runtime)
-    annotationProcessor(libs.room.compiler)
     ksp(libs.room.compiler)
     implementation(libs.room.ktx)
     // Splash API

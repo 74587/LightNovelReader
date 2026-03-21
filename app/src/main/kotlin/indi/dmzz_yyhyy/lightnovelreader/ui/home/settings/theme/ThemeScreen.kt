@@ -49,7 +49,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.isUnspecified
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -83,6 +82,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.SettingsCategory
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.data.MenuOptions
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.navigationBarSpacer
+import indi.dmzz_yyhyy.lightnovelreader.utils.readerBackgroundColor
 import indi.dmzz_yyhyy.lightnovelreader.utils.readerTextColor
 import indi.dmzz_yyhyy.lightnovelreader.utils.rememberReaderBackgroundPainter
 import indi.dmzz_yyhyy.lightnovelreader.utils.rememberReaderFontFamily
@@ -350,6 +350,7 @@ fun ReaderThemeSettingsList(
         } else {
             val onSecondaryContainer = colorScheme.onSecondaryContainer
             val background = colorScheme.background
+            val currentBgColor = readerBackgroundColor(settingState)
             SettingsClickableEntry(
                 modifier = Modifier.background(colorScheme.surfaceContainer),
                 painter = painterResource(R.drawable.colorize_24px),
@@ -369,7 +370,7 @@ fun ReaderThemeSettingsList(
                             radius = 17.5.dp.toPx(),
                         )
                         drawCircle(
-                            color = if (settingState.backgroundColor.isUnspecified) background else settingState.backgroundColor,
+                            color = currentBgColor,
                             radius = 17.5.dp.toPx(),
                         )
                     }
@@ -487,7 +488,7 @@ fun ReaderTextSettings(settingState: SettingState, context: Context, onClickChan
                     contentScale = ContentScale.Crop
                 )
             } else {
-                Box(modifier = Modifier.fillMaxSize().background(settingState.backgroundColor))
+                Box(modifier = Modifier.fillMaxSize().background(readerBackgroundColor(settingState)))
             }
 
             Text(

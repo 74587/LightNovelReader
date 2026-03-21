@@ -43,6 +43,7 @@ sealed class UserDataPath(
         data object TextDarkColor : UserDataPath("textDarkColor", Reader)
         data object FontFamilyUri : UserDataPath("fontFamilyUri", Reader)
         data object BackgroundColor : UserDataPath("backgroundColor", Reader)
+        data object BackgroundDarkColor : UserDataPath("backgroundDarkColor", Reader)
         data object BackgroundImageUri : UserDataPath("backgroundImageUri", Reader)
         data object BackgroundDarkImageUri : UserDataPath("backgroundDarkImageUri", Reader)
         data object BackBlockMode : UserDataPath("backBlockMode", Reader)

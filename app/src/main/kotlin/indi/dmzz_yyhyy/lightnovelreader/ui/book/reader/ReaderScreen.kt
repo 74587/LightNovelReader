@@ -58,7 +58,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.isUnspecified
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -84,6 +83,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.components.RollingNumber
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.data.MenuOptions
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalClaimSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
+import indi.dmzz_yyhyy.lightnovelreader.utils.readerBackgroundColor
 import indi.dmzz_yyhyy.lightnovelreader.utils.rememberReaderBackgroundPainter
 import indi.dmzz_yyhyy.lightnovelreader.utils.showSnackbar
 import io.nightfish.lightnovelreader.api.book.ChapterContent
@@ -196,7 +196,7 @@ fun ReaderScreen(
                 )
             }
         },
-        containerColor = if (settingState.backgroundColor.isUnspecified) colorScheme.background else settingState.backgroundColor,
+        containerColor = readerBackgroundColor(settingState),
         contentWindowInsets = WindowInsets(0, 0, 0, 0)
     ) { _ ->
         if (settingState.enableBackgroundImage) {
