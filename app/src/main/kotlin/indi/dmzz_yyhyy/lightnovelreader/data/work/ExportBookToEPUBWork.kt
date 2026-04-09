@@ -234,8 +234,6 @@ class ExportBookToEPUBWork @AssistedInject constructor(
             }
         }
 
-        downloadItem.progress = 0.2f
-
         return@withContext when (exportType) {
             ExportType.BOOK -> bookToEPUB(
                 bookInformation,
@@ -418,15 +416,15 @@ class ExportBookToEPUBWork @AssistedInject constructor(
                 tasks = tasks,
                 onProgress = { current, total ->
                     val progress = (50 + current.toFloat() / total * 40).toInt()
-                        buildProgressNotification(
-                            bookId,
-                            progress,
-                            applicationContext.getString(
-                                R.string.epub_export_notification_stage_images,
-                                current,
-                                total
-                            )
+                    buildProgressNotification(
+                        bookId,
+                        progress,
+                        applicationContext.getString(
+                            R.string.epub_export_notification_stage_images,
+                            current,
+                            total
                         )
+                    )
                     downloadItem.progress = progress / 100f
                 }
             ).run()
@@ -541,13 +539,13 @@ class ExportBookToEPUBWork @AssistedInject constructor(
                         totalBytes += bytesRead
                         if (fileSize > 0) {
                             val writeProgress = 90 + (totalBytes.toFloat() / fileSize * 10).toInt()
-                            buildProgressNotification(bookId, writeProgress, "${totalBytes / 1024}/${fileSize / 1024} KB)")
+                            buildProgressNotification(bookId, writeProgress, "${totalBytes / 1024}/${fileSize / 1024} KB")
                             downloadItem.progress = writeProgress / 100f
                         }
                     }
                 }
             }
-        tempDir.delete()
+        tempDir.deleteRecursively()
         Log.d(TAG, "save finished")
         updateCompletionNotification(bookId)
         return Result.success()
