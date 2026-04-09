@@ -545,4 +545,13 @@
     <string name="plugin_repo_install_cancelled">Cancelled installing %1$s</string>
     <string name="plugin_repo_parts_incomplete">Split download incomplete: completed %1$d/%2$d, missing %3$s</string>
     <string name="plugin_app_conflict_message">Conflicts with installed plugin app; app plugin is preferred.</string>
+
+    <!-- Notifications -->
+    <string name="epub_export_notification_channel_name">EPUB export progress</string>
+    <string name="epub_export_notification_preparing">Preparing…</string>
+    <string name="epub_export_notification_failed">Export failed</string>
+    <string name="epub_export_notification_success">Successfully completed</string>
+    <string name="epub_export_notification_stage_chapters">Chapters %1$d/%2$d -</string>
+    <string name="epub_export_notification_stage_images">Images %1$d/%2$d -</string>
+    <string name="epub_export_notification_stage_save">Saving EPUB</string>
 </resources>

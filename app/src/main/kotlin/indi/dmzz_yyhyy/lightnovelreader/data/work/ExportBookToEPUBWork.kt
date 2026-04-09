@@ -67,7 +67,7 @@ class ExportBookToEPUBWork @AssistedInject constructor(
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             val channel = NotificationChannel(
                 "BookEpubExport",
-                "EPUB 导出进度",
+                applicationContext.getString(R.string.epub_export_notification_channel_name),
                 NotificationManager.IMPORTANCE_HIGH
             )
             notificationManager.createNotificationChannel(channel)
@@ -76,8 +76,8 @@ class ExportBookToEPUBWork @AssistedInject constructor(
 
     private fun showProgressNotification(bookId: String) {
         notification = NotificationCompat.Builder(applicationContext, "BookEpubExport")
-            .setContentTitle("导出『${inputData.getString("title")}』")
-            .setContentText("准备中...")
+            .setContentTitle(applicationContext.getString(R.string.export_book_started, inputData.getString("title") ?: ""))
+            .setContentText(applicationContext.getString(R.string.epub_export_notification_preparing))
             .setSmallIcon(R.drawable.file_export_24px)
             .setProgress(100, 0, true)
             .setPriority(NotificationCompat.PRIORITY_LOW)
@@ -88,8 +88,8 @@ class ExportBookToEPUBWork @AssistedInject constructor(
     private fun updateFailureNotification(bookId: String) {
 
         notification = NotificationCompat.Builder(applicationContext, "BookEpubExport")
-            .setContentTitle("导出『${inputData.getString("title")}』")
-            .setContentText("导出失败")
+            .setContentTitle(applicationContext.getString(R.string.export_book_started, inputData.getString("title") ?: ""))
+            .setContentText(applicationContext.getString(R.string.epub_export_notification_failed))
             .setSmallIcon(R.drawable.file_export_24px)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setProgress(0, 0, false)
@@ -101,8 +101,8 @@ class ExportBookToEPUBWork @AssistedInject constructor(
 
     private fun updateCompletionNotification(bookId: String) {
         notification = NotificationCompat.Builder(applicationContext, "BookEpubExport")
-            .setContentTitle("导出『${inputData.getString("title")}』")
-            .setContentText("已成功完成")
+            .setContentTitle(applicationContext.getString(R.string.export_book_started, inputData.getString("title") ?: ""))
+            .setContentText(applicationContext.getString(R.string.epub_export_notification_success))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setSmallIcon(R.drawable.file_export_24px)
             .setProgress(0, 0, false)
@@ -121,7 +121,7 @@ class ExportBookToEPUBWork @AssistedInject constructor(
 
         if (notification == null) {
             notification = NotificationCompat.Builder(applicationContext, "BookEpubExport")
-                .setContentTitle("导出『${inputData.getString("title")}』")
+                .setContentTitle(applicationContext.getString(R.string.export_book_started, inputData.getString("title") ?: ""))
                 .setSmallIcon(R.drawable.file_export_24px)
                 .setOnlyAlertOnce(true)
                 .setPriority(NotificationCompat.PRIORITY_LOW)
@@ -129,7 +129,7 @@ class ExportBookToEPUBWork @AssistedInject constructor(
         }
 
         notification = NotificationCompat.Builder(applicationContext, "BookEpubExport")
-            .setContentTitle("导出『${inputData.getString("title")}』 ($progress%)")
+            .setContentTitle(applicationContext.getString(R.string.export_book_started, inputData.getString("title") ?: "") + " ($progress%)")
             .setContentText(text)
             .setSmallIcon(R.drawable.file_export_24px)
             .setProgress(100, progress, false)
@@ -222,7 +222,13 @@ class ExportBookToEPUBWork @AssistedInject constructor(
                 processedChapters++
                 val progress = (processedChapters.toFloat() / totalChapters * 50).toInt()
                 buildProgressNotification(
-                    bookId, progress, "章节 ${processedChapters}/${totalChapters} -"
+                    bookId,
+                    progress,
+                    applicationContext.getString(
+                        R.string.epub_export_notification_stage_chapters,
+                        processedChapters,
+                        totalChapters
+                    )
                 )
                 downloadItem.progress = progress / 100f
             }
@@ -326,7 +332,11 @@ class ExportBookToEPUBWork @AssistedInject constructor(
                 buildProgressNotification(
                     bookId,
                     progress,
-                    "图片 ${current}/${total} - "
+                    applicationContext.getString(
+                        R.string.epub_export_notification_stage_images,
+                        current,
+                        total
+                    )
                 )
 
                 downloadItem.progress = progress / 100f
@@ -408,7 +418,15 @@ class ExportBookToEPUBWork @AssistedInject constructor(
                 tasks = tasks,
                 onProgress = { current, total ->
                     val progress = (50 + current.toFloat() / total * 40).toInt()
-                    buildProgressNotification(bookId, progress, "图片 ${current}/${total} -")
+                        buildProgressNotification(
+                            bookId,
+                            progress,
+                            applicationContext.getString(
+                                R.string.epub_export_notification_stage_images,
+                                current,
+                                total
+                            )
+                        )
                     downloadItem.progress = progress / 100f
                 }
             ).run()
@@ -496,7 +514,7 @@ class ExportBookToEPUBWork @AssistedInject constructor(
         epub: EpubBuilder,
         fileUri: Uri
     ): Result {
-        Log.d(TAG, "start save epub")
+        Log.d(TAG, applicationContext.getString(R.string.epub_export_notification_stage_save))
         downloadItem.progress = 0.90f
 
         val file = tempDir.resolve("epub")
