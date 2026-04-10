@@ -5,12 +5,13 @@ on:
   push:
     branches: [refactoring]
     paths:
-      - .github/workflows/publish_api.yml
       - api/**
 
 jobs:
   PublishApiArtifact:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v2
       - name: Setup Java 17
@@ -26,8 +27,11 @@ jobs:
         if: ${{ runner.os != 'Windows' }}
         run: chmod +x ./gradlew
 
-      - name: Publish to maven
-        run: ./gradlew api:publish
-        env:
-          REPO_USER: ${{ secrets.REPOSILITE_USERNAME }}
-          REPO_PASS: ${{ secrets.REPOSILITE_PASSWORD }}
+      - name: Check doc and generate html
+        run: ./gradlew api:dokkaGenerateHtml
+
+      - name: Commit doc Html
+        uses: stefanzweifel/git-auto-commit-action@v6
+        commit_message: "Doc html"
+        commit_user_name: "Web Page Commit Github Bot"
+        repository: ./api/doc
