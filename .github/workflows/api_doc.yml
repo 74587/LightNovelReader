@@ -1,4 +1,4 @@
-name: PublishApiArtifact
+name: CheckAndGenerateApiDoc
 on:
   workflow_dispatch:
   merge_group:
@@ -8,7 +8,7 @@ on:
       - api/**
 
 jobs:
-  PublishApiArtifact:
+  CheckAndGenerateApiDoc:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -32,6 +32,7 @@ jobs:
 
       - name: Commit doc Html
         uses: stefanzweifel/git-auto-commit-action@v6
-        commit_message: "Doc html"
-        commit_user_name: "Web Page Commit Github Bot"
-        repository: ./api/doc
+        with:
+          commit_message: "Doc html"
+          commit_user_name: "Web Page Commit Github Bot"
+          repository: ./api/doc
