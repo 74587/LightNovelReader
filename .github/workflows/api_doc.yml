@@ -30,6 +30,9 @@ jobs:
       - name: Check doc and generate html
         run: ./gradlew api:dokkaGenerateHtml
 
+      - name: Copy doc html
+        run: rm -rf ./api/doc/** && cp -rf ./api/build/dokka/html/** ./api/doc
+
       - name: Commit doc Html
         uses: stefanzweifel/git-auto-commit-action@v6
         with:
