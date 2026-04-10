@@ -31,11 +31,12 @@ jobs:
         run: ./gradlew api:dokkaGenerateHtml
 
       - name: Copy doc html
-        run: rm -rf ./api/doc/** && cp -rf ./api/build/dokka/html/** ./api/doc
+        run: rm -rf ./api/doc && mkdir ./api/doc && cp -rf ./api/build/dokka/html/** ./api/doc
 
       - name: Commit doc Html
         uses: stefanzweifel/git-auto-commit-action@v6
         with:
           commit_message: "Doc html"
           commit_user_name: "Web Page Commit Github Bot"
+          file_pattern: './api/doc/**'
           repository: ./api/doc
