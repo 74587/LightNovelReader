@@ -10,7 +10,7 @@ import androidx.navigation.toRoute
 import io.nightfish.lightnovelreader.api.ui.LocalNavController
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.textformatting.FormattingViewModel
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.textformatting.navigateToEditTextFormattingRuleDialog
-import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
+import io.nightfish.lightnovelreader.api.Route
 import indi.dmzz_yyhyy.lightnovelreader.utils.isResumed
 import indi.dmzz_yyhyy.lightnovelreader.utils.popBackStackIfResumed
 

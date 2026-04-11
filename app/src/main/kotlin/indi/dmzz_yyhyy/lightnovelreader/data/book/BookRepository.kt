@@ -46,6 +46,21 @@ class BookRepository @Inject constructor(
             WebDataSourcePriority.Low -> webBookDataSourceProvider.lowPriority
         }
 
+    override suspend fun getBookInformation(
+        id: String,
+        priority: WebDataSourcePriority
+    ) =
+        withContext(Dispatchers.IO) {
+            textProcessingRepository.coroutineProcessBookInformation {
+                val webChapterContent = priority.get().getBookInformation(id)
+                if (!webChapterContent.isEmpty()) {
+                    localBookDataSource.updateBookInformation(webChapterContent)
+                    return@coroutineProcessBookInformation webChapterContent
+                }
+                return@coroutineProcessBookInformation localBookDataSource.getBookInformation(id) ?: MutableBookInformation.empty().apply { this.id = id }
+            }
+        }
+
     override fun getStateBookInformation(
         id: String,
         coroutineScope: CoroutineScope,

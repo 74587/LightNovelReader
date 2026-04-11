@@ -36,7 +36,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.detail.na
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.detail.settingsPluginManagerDetailDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.repository.navigateToSettingsPluginRepositoryDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.repository.settingsPluginRepositoryDestination
-import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
+import io.nightfish.lightnovelreader.api.Route
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.popBackStackIfResumed
 import indi.dmzz_yyhyy.lightnovelreader.utils.showSnackbar

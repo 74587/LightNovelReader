@@ -10,7 +10,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.DeletePro
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.InstallProgressDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.PluginDialogMode
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.UpdateCheckDialog
-import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
+import io.nightfish.lightnovelreader.api.Route
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 import io.nightfish.lightnovelreader.api.ui.LocalNavController
 

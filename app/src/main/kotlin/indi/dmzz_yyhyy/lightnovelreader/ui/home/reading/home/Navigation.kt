@@ -14,7 +14,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.ChapterSelectionBottomShe
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.navigateToBookReaderDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.downloadmanager.navigateToDownloadManager
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.stats.navigateToReadingStatsDestination
-import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
+import io.nightfish.lightnovelreader.api.Route
 import io.nightfish.lightnovelreader.api.ui.LocalNavController
 
 @OptIn(ExperimentalSharedTransitionApi::class, ExperimentalMaterial3Api::class)

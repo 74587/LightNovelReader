@@ -321,7 +321,7 @@
     <string name="action_show_info">資訊</string>
     <string name="collapse">收起</string>
     <string name="info_reading_finished">已讀完</string>
-    <string name="info_reading_progress">已讀 %1$s/%2$s</string>
+    <string name="info_reading_progress">已讀 %1$d/%2$d</string>
     <string name="info_volume_chapters_count">共 %d 章</string>
     <string name="bookshelf_group_title_updated">已更新 (%s)</string>
     <string name="bookshelf_group_title_pinned">已釘選 (%s)</string>

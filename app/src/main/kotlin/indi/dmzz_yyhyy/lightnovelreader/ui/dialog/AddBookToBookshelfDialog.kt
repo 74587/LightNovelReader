@@ -22,7 +22,7 @@ import androidx.navigation.toRoute
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.BaseDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.CheckBoxListItem
-import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
+import io.nightfish.lightnovelreader.api.Route
 import io.nightfish.lightnovelreader.api.bookshelf.Bookshelf
 import io.nightfish.lightnovelreader.api.ui.LocalNavController
 

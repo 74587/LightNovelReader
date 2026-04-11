@@ -31,7 +31,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.imageview.ImageViewerScre
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.imageview.ImageViewerViewModel
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.ColorPickerDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.theme.navigateToSettingsThemeDestination
-import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
+import io.nightfish.lightnovelreader.api.Route
 import indi.dmzz_yyhyy.lightnovelreader.utils.ImageUtils.saveBitmapAsPng
 import indi.dmzz_yyhyy.lightnovelreader.utils.ImageUtils.uriToBitmap
 import indi.dmzz_yyhyy.lightnovelreader.utils.isResumed

@@ -46,6 +46,7 @@ import indi.dmzz_yyhyy.lightnovelreader.utils.expandEnter
 import indi.dmzz_yyhyy.lightnovelreader.utils.expandExit
 import indi.dmzz_yyhyy.lightnovelreader.utils.expandPopEnter
 import indi.dmzz_yyhyy.lightnovelreader.utils.expandPopExit
+import io.nightfish.lightnovelreader.api.Route
 import io.nightfish.lightnovelreader.api.ui.LocalNavController
 import io.nightfish.lightnovelreader.api.ui.LocalReaderStyle
 import io.nightfish.lightnovelreader.api.ui.ReaderStyle

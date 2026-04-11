@@ -2,7 +2,6 @@ package indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.detail
 
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -13,8 +12,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.toRoute
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.PluginManagerViewModel
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.PluginSignatureDialog
-import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
 import indi.dmzz_yyhyy.lightnovelreader.utils.popBackStackIfResumed
+import io.nightfish.lightnovelreader.api.Route
 import io.nightfish.lightnovelreader.api.ui.LocalNavController
 
 fun NavGraphBuilder.settingsPluginManagerDetailDestination() {

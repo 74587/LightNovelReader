@@ -7,12 +7,12 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.navigateToPluginInstallerDialog
-import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
 import indi.dmzz_yyhyy.lightnovelreader.utils.popBackStackIfResumed
+import io.nightfish.lightnovelreader.api.Route
 import io.nightfish.lightnovelreader.api.ui.LocalNavController
 
 fun NavGraphBuilder.settingsPluginRepositoryDestination() {
-    composable<Route.Main.Settings.PluginManager.Repository> { navBackStackEntry ->
+    composable<Route.Main.Settings.PluginManager.Repository> { _ ->
         val navController = LocalNavController.current
 
         val viewModel = hiltViewModel<PluginRepositoryViewModel>()

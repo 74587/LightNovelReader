@@ -23,7 +23,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.navigateToBookReaderDesti
 import indi.dmzz_yyhyy.lightnovelreader.ui.book.reader.navigateToImageViewerDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.navigateToAddBookToBookshelfDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.navigateToMarkAllChaptersAsReadDialog
-import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
+import io.nightfish.lightnovelreader.api.Route
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.isResumed
 import indi.dmzz_yyhyy.lightnovelreader.utils.popBackStackIfResumed

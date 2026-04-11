@@ -1,4 +1,4 @@
-package indi.dmzz_yyhyy.lightnovelreader.ui.navigation
+package io.nightfish.lightnovelreader.api
 
 import androidx.annotation.Keep
 import kotlinx.serialization.Serializable

@@ -25,7 +25,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.home.bookshelf.bookshelfNavigation
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.explore.exploreNavigation
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.reading.readingNavigation
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.settingsNavigation
-import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
+import io.nightfish.lightnovelreader.api.Route
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun NavGraphBuilder.homeNavigation(sharedTransitionScope: SharedTransitionScope) {

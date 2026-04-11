@@ -7,7 +7,7 @@ import androidx.navigation.compose.navigation
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.explore.expanded.exploreExpandDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.explore.home.exploreHomeDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.explore.search.exploreSearchDestination
-import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
+import io.nightfish.lightnovelreader.api.Route
 
 @OptIn(ExperimentalSharedTransitionApi::class)
 fun NavGraphBuilder.exploreNavigation() {

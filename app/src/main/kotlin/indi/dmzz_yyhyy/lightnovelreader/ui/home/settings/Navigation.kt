@@ -44,7 +44,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.textformatting.navigate
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.textformatting.settingsTextFormattingNavigation
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.theme.navigateToSettingsThemeDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.theme.settingsThemeDestination
-import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.Route
+import io.nightfish.lightnovelreader.api.Route
 import indi.dmzz_yyhyy.lightnovelreader.utils.isResumed
 import indi.dmzz_yyhyy.lightnovelreader.utils.uriLauncher
 import io.nightfish.lightnovelreader.api.ui.LocalNavController
