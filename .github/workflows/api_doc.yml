@@ -37,7 +37,7 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: api-doc
-          path: api/build/dokka/
+          path: api/build/dokka/html
 
   DeployPreviewApiDoc:
     runs-on: ubuntu-latest
@@ -53,13 +53,13 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: api-doc
-          path: doc
+          path: lightnovelreader-api-doc
 
       - name: Set Vercel project
         run: npx vercel link --yes --scope nightfishs-projects --project lightnovelreader-api-doc --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy to Vercel
-        run: npx vercel deploy doc --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
+        run: npx vercel deploy lightnovelreader-api-doc --yes --token=${{ secrets.VERCEL_TOKEN }}
 
   DeployProductionApiDoc:
     runs-on: ubuntu-latest
@@ -75,10 +75,10 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: api-doc
-          path: doc
+          path: lightnovelreader-api-doc
 
       - name: Set Vercel project
         run: npx vercel link --yes --scope nightfishs-projects --project lightnovelreader-api-doc --token=${{ secrets.VERCEL_TOKEN }}
 
       - name: Deploy to Vercel
-        run: npx vercel deploy doc --yes --token=${{ secrets.VERCEL_TOKEN }}
+        run: npx vercel deploy lightnovelreader-api-doc --prod --yes --token=${{ secrets.VERCEL_TOKEN }}
