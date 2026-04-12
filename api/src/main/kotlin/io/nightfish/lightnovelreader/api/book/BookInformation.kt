@@ -11,24 +11,21 @@ import java.time.LocalDateTime
 /**
  * 书本详情接口
  *
- * @param id 书本id
- * @param title 书本标题
- * @param subtitle 书本副标题(如果没有可以为空)
- * @param coverUri 书本封面的[Uri][Uri]
- * @param author 书本作者
- * @param description 书本简介
- * @param tags 书本的tag, 传递stringList
- * @param publishingHouse 书本出版社
- * @param wordCount 书本总字数(不一定是字数, 也可以是书本)
- * @param lastUpdated 书本id
- * @param isComplete 书本id
+ * @property id 书本id
+ * @property title 书本标题
+ * @property subtitle 书本副标题，如果没有则为空字符串
+ * @property coverUri 书本封面的[Uri]
+ * @property author 书本作者
+ * @property description 书本简介
+ * @property tags 书本的标签列表
+ * @property publishingHouse 书本出版社
+ * @property wordCount 书本字数信息
+ * @property lastUpdated 书本最后更新时间
+ * @property isComplete 书本是否已完结
  *
  * @since Api 2
  */
 @Stable
-/**
- * BookInformation 类型。
- */
 interface BookInformation: CanBeEmpty, Copyable<BookInformation> {
     val id: String
     val title: String
@@ -42,9 +39,16 @@ interface BookInformation: CanBeEmpty, Copyable<BookInformation> {
     val lastUpdated: LocalDateTime
     val isComplete: Boolean
 
+    /**
+     * 书本详情工厂方法集合
+     *
+     * @since Api 2
+     */
     companion object {
         /**
          * 返回一个空的书本详情, 并且将id设空
+         *
+         * @since Api 2
          */
         fun empty(): BookInformation = empty("")
 
@@ -114,15 +118,15 @@ interface BookInformation: CanBeEmpty, Copyable<BookInformation> {
  *
  * @param id 书本id
  * @param title 书本标题
- * @param subtitle 书本副标题(如果没有可以为空)
- * @param coverUri 书本封面的[Uri][Uri]
+ * @param subtitle 书本副标题
+ * @param coverUrl 书本封面的[Uri]
  * @param author 书本作者
  * @param description 书本简介
- * @param tags 书本的tag, 传递stringList
+ * @param tags 书本的标签列表
  * @param publishingHouse 书本出版社
- * @param wordCount 书本总字数(不一定是字数, 也可以是书本)
- * @param lastUpdated 书本id
- * @param isComplete 书本id
+ * @param wordCount 书本字数信息
+ * @param lastUpdated 书本最后更新时间
+ * @param isComplete 书本是否已完结
  *
  * @constructor 返回可变书本详情对象
  *
@@ -153,6 +157,11 @@ class MutableBookInformation(
     override var lastUpdated by mutableStateOf(lastUpdated)
     override var isComplete by mutableStateOf(isComplete)
 
+    /**
+     * 可变书本详情工厂方法集合
+     *
+     * @since Api 2
+     */
     companion object {
 
 

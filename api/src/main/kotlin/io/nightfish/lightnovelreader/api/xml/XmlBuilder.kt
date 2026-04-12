@@ -5,7 +5,22 @@ import org.dom4j.Document
 import org.dom4j.DocumentHelper
 import org.dom4j.Element
 
+/**
+ * XML文档的构建器
+ * 提供 DSL 风格的 API 以构建 dom4j XML 文档
+ * 一般不需要直接实例化此类，通过[xml]工厂方法使用
+ *
+ * @since Api 2
+ */
 class XmlBuilder {
+    /**
+     * XML元素的构建器
+     * 用于在[XmlBuilder]DSL块中构建 XML 元素及其子元素
+     *
+     * @property element 当前正在构建的 dom4j [Element]
+     *
+     * @since Api 2
+     */
     class ElementBuilder(
         attrs: Array<out Attribute> = emptyArray(),
         val element: Element,
@@ -39,6 +54,15 @@ class XmlBuilder {
             }
         }
 
+        /**
+         * 在当前元素下创建一个子元素
+         *
+         * @param name 子元素名称
+         * @param attrs 子元素的属性列表
+         * @param builder 用于构建子元素内容的 DSL 块
+         *
+         * @since Api 2
+         */
         fun element(
             name: String,
             vararg attrs: Attribute = emptyArray(),
@@ -47,7 +71,23 @@ class XmlBuilder {
             ElementBuilder(element, name, attrs, builder)
         }
 
+        /**
+         * 创建一个 [Attribute] 键值对
+         *
+         * @param that 属性值
+         * @return 包含当前字符串和指定值的 [Attribute]
+         *
+         * @since Api 2
+         */
         infix fun String.to(that: Any?) = Attribute(this, that)
+        /**
+         * 在当前元素下创建以此字符串为名称的子元素
+         *
+         * @param attrs 子元素的属性列表
+         * @param builder 用于构建子元素内容的 DSL 块
+         *
+         * @since Api 2
+         */
         operator fun String.invoke(
             vararg attrs: Attribute = emptyArray(),
             builder: (ElementBuilder.() -> Any)? = null
@@ -57,7 +97,20 @@ class XmlBuilder {
     }
     private val document: Document = DocumentHelper
         .createDocument()
+    /** [XmlBuilder] 工厂方法集合 @since Api 2 */
     companion object {
+        /**
+         * 创建一个带命名空间的XML文档
+         *
+         * @param root 根元素名称
+         * @param xmlns 根元素的命名空间URI
+         * @param attrs 根元素的属性列表
+         * @param builder 用于构建子元素的 DSL 块
+         *
+         * @return 构建完成的 dom4j [Document]
+         *
+         * @since Api 2
+         */
         fun xml(
             root: String,
             xmlns: String,
@@ -69,6 +122,17 @@ class XmlBuilder {
             return xmlBuilder.document
         }
 
+        /**
+         * 创建一个无命名空间的XML文档
+         *
+         * @param root 根元素名称
+         * @param attrs 根元素的属性列表
+         * @param builder 用于构建子元素的 DSL 块
+         *
+         * @return 构建完成的 dom4j [Document]
+         *
+         * @since Api 2
+         */
         fun xml(
             root: String,
             vararg attrs: Attribute = emptyArray(),

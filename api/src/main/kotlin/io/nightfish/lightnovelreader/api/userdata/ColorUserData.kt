@@ -4,6 +4,14 @@ import androidx.compose.ui.graphics.Color
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 
+/**
+ * 颜色类型的用户数据
+ *
+ * @param path 用户数据的完整路径字符串
+ * @param userDataDao 底层数据访问接口
+ *
+ * @since Api 2
+ */
 class ColorUserData (
     override val path: String,
     private val userDataDao: UserDataDaoApi

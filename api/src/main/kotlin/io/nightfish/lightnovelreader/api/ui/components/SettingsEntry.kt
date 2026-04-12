@@ -27,6 +27,20 @@ import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import io.nightfish.lightnovelreader.api.userdata.BooleanUserData
 
+/**
+ * 带开关的设置项控件
+ * 通过[BooleanUserData]控制开关状态, 切换时会异步写入用户数据
+ *
+ * @param modifier Modifier修饰符
+ * @param painter 图标
+ * @param title 设置项标题
+ * @param description 设置项描述文字
+ * @param checked 当前开关状态
+ * @param booleanUserData 关联的[BooleanUserData]用户数据对象
+ * @param disabled 是否禁用此设置项
+ *
+ * @since Api 2
+ */
 @Composable
 fun SettingsSwitchEntry(
     modifier: Modifier = Modifier,
@@ -48,6 +62,19 @@ fun SettingsSwitchEntry(
     )
 }
 
+/**
+ * 带开关的设置项控件
+ *
+ * @param modifier Modifier修饰符
+ * @param painter 图标
+ * @param title 设置项标题
+ * @param description 设置项描述文字
+ * @param checked 当前开关状态
+ * @param onCheckedChange 开关状态改变时的回调
+ * @param disabled 是否禁用此设置项
+ *
+ * @since Api 2
+ */
 @Composable
 fun SettingsSwitchEntry(
     modifier: Modifier = Modifier,
@@ -107,6 +134,17 @@ fun SettingsSwitchEntry(
     }
 }
 
+/**
+ * 可点击跳转URL的设置项控件
+ *
+ * @param modifier Modifier修饰符
+ * @param painter 图标
+ * @param title 设置项标题
+ * @param description 设置项描述文字
+ * @param openUrl 点击后用系统浏览器打开的URL
+ *
+ * @since Api 2
+ */
 @Composable
 fun SettingsClickableEntry(
     modifier: Modifier = Modifier,
@@ -130,6 +168,19 @@ fun SettingsClickableEntry(
     )
 }
 
+/**
+ * 可点击的设置项控件
+ *
+ * @param modifier Modifier修饰符
+ * @param painter 图标
+ * @param title 设置项标题
+ * @param option 右侧显示的当前选项值文字(可选)
+ * @param trailingContent 右侧自定义Composable内容(可选)
+ * @param description 设置项描述文字(可选)
+ * @param onClick 点击时的回调
+ *
+ * @since Api 2
+ */
 @Composable
 fun SettingsClickableEntry(
     modifier: Modifier = Modifier,

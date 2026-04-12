@@ -12,6 +12,11 @@ private val nonTrimLineHeightStyle = LineHeightStyle(
     trim = LineHeightStyle.Trim.None
 )
 
+/**
+ * 应用的 Material Design 3 字体排版配置
+ *
+ * @since Api 2
+ */
 val AppTypography = Typography(
     displayLarge = TextStyle(
         fontSize = 22.sp,

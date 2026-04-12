@@ -12,6 +12,8 @@ import kotlinx.serialization.Serializable
  * @param count 实际的大小
  * @param unit 单位名称, 其中字符串的{count}部分将被替换为数字, 如果不存在{count}占位符则会直接将单位加到数字后面
  * @param unitResId 单位名称的ResId, 其中字符串的{count}部分将被替换为数字, 如果不存在{count}占位符则会直接将单位加到数字后面
+ *
+ * @since Api 2
  */
 @Serializable
 data class WordCount(

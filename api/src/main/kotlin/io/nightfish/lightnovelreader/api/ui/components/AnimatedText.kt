@@ -32,8 +32,27 @@ import androidx.compose.ui.unit.TextUnit
 
 /**
  * 动画文本控件
+ * 在文本变化时，提供逐字符滑动动画效果
  *
- * 在文本变化时，提供滑动动画效果
+ * @param text 显示的文本内容
+ * @param modifier Modifier修饰符
+ * @param color 文本颜色
+ * @param fontSize 字体大小
+ * @param fontStyle 字体样式
+ * @param fontWeight 字体粗细
+ * @param fontFamily 字体族
+ * @param letterSpacing 字间距
+ * @param textDecoration 文本装饰
+ * @param textAlign 文本对齐方式
+ * @param lineHeight 行高
+ * @param overflow 文本溢出处理方式
+ * @param softWrap 是否软换行
+ * @param maxLines 最大行数
+ * @param minLines 最小行数
+ * @param onTextLayout 文本布局完成回调
+ * @param style 文本样式
+ *
+ * @since Api 2
  */
 @Composable
 fun AnimatedText(

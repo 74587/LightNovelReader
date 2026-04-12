@@ -9,6 +9,14 @@ import kotlinx.serialization.json.encodeToJsonElement
 import org.dom4j.DocumentHelper
 import org.dom4j.Element
 
+/**
+ * 简单文本组件数据
+ * 用于在章节内容中嵌入纯文本段落
+ *
+ * @param text 文本内容, 支持多行(\n分隔)
+ *
+ * @since Api 2
+ */
 @Serializable
 data class SimpleTextComponentData(
     val text: String
@@ -26,8 +34,15 @@ data class SimpleTextComponentData(
             }
     }
 
+    /**
+     * [SimpleTextComponentData]工厂方法和常量集合
+     *
+     * @since Api 2
+     */
     companion object {
+        /** 简单文本组件的唯一标识字符串 */
         const val ID = "simple_text"
+        /** 默认JSON序列化器 */
         val jsonSerializer = object: ComponentDataJsonElementSerializer<SimpleTextComponentData> {
             override fun toJsonElement(data: SimpleTextComponentData): JsonElement = Json.encodeToJsonElement(data)
             override fun fromJsonElement(json: JsonElement): SimpleTextComponentData = Json.decodeFromJsonElement(json)

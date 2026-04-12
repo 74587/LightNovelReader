@@ -1,4 +1,4 @@
-name: CheckAndGenerateApiDoc
+name: CheckApiDoc
 on:
   workflow_dispatch:
   merge_group:
@@ -8,7 +8,7 @@ on:
       - api/**
 
 jobs:
-  CheckAndGenerateApiDoc:
+  CheckApiDoc:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -27,15 +27,5 @@ jobs:
         if: ${{ runner.os != 'Windows' }}
         run: chmod +x ./gradlew
 
-      - name: Check doc and generate html
+      - name: Check doc
         run: ./gradlew api:dokkaGenerateHtml
-
-      - name: Copy doc html
-        run: rm -rf ./api/doc && mkdir ./api/doc && cp -rf ./api/build/dokka/html/** ./api/doc
-
-      - name: Commit doc Html
-        uses: stefanzweifel/git-auto-commit-action@v6
-        with:
-          commit_message: "Doc html"
-          commit_user_name: "Web Page Commit Github Bot"
-          file_pattern: './api/doc/**'
