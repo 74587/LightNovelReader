@@ -1,4 +1,4 @@
-name: CheckApiDoc
+name: ApiDoc
 on:
   workflow_dispatch:
   merge_group:
@@ -29,3 +29,26 @@ jobs:
 
       - name: Check doc
         run: ./gradlew api:dokkaGenerateHtml
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: api-doc
+          path: api/build/dokka/
+
+  DeployApiDoc:
+    runs-on: ubuntu-latest
+    needs: CheckApiDoc
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install deps
+        run: npm install -g vercel
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: api-doc
+          path: doc
+
+      - name: Deploy to Vercel
+        run: npx vercel deploy doc --prod --token=${{ secrets.VERCEL_TOKEN }}
