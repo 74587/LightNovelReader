@@ -31,7 +31,10 @@ LightNovelReader <sup>*Refactored Version*</sup> is an open-source app for readi
 
 You can add custom data sources and plugins to LightNovelReader.
 
-You can start with the [sample plugin](https://github.com/dmzz-yyhyy/LightNovelReaderPlugin-Template)
+The following are links to relevant resources:
+- [Example Plugin](https://github.com/dmzz-yyhyy/LightNovelReaderPlguin-Template)
+- [Development Guide](https://lnr.nariko.org/plugin-dev/)
+- [LNR API KDoc](https://api-doc.lnr.nariko.org/)
 
 Developers are welcome to contribute!
 
