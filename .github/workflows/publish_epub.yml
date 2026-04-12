@@ -6,10 +6,10 @@ on:
     branches: [refactoring]
     paths:
       - .github/workflows/publish_epub.yml
-      - api/**
+      - epub/**
 
 jobs:
-  PublishApiArtifact:
+  PublishEpubArtifact:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2

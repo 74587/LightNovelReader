@@ -60,7 +60,7 @@ afterEvaluate {
 
                 groupId = "io.nightfish.lightnovelreader"
                 artifactId = "api"
-                version = "0.2-SNAPSHOT"
+                version = "0.3-SNAPSHOT"
             }
         }
 
