@@ -31,6 +31,10 @@ LightNovelReader <sup>*Переработанная версия*</sup> — эт
 
 Скачайте последнюю версию в [релизах GitHub](https://github.com/dmzz-yyhyy/LightNovelReader/releases/latest). Чтобы получить последние функции и исправления, скачайте свежую сборку из [Actions](https://github.com/dmzz-yyhyy/LightNovelReader/actions).
 
+[<img src="https://f-droid.org/badge/get-it-on-ru.png"
+    alt="Доступно в F-Droid"
+    height="80">](https://f-droid.org/packages/indi.dmzz_yyhyy.lightnovelreader)
+
 ## Поддержка
 
 - Нашли ошибку или есть идеи? Сообщите [**здесь**](https://github.com/dmzz-yyhyy/LightNovelReader/issues/new/choose)
