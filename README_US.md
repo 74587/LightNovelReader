@@ -42,6 +42,10 @@ Developers are welcome to contribute!
 
 Download the latest release from [GitHub Releases](https://github.com/dmzz-yyhyy/LightNovelReader/releases/latest). To experience the latest features and bug fixes, download the latest build from [Actions](https://github.com/dmzz-yyhyy/LightNovelReader/actions).
 
+[<img src="https://f-droid.org/badge/get-it-on.png"
+    alt="Get it on F-Droid"
+    height="80">](https://f-droid.org/packages/indi.dmzz_yyhyy.lightnovelreader)
+
 ## Support
 
 - Found a bug or have a feature idea? Submit it [**here**](https://github.com/dmzz-yyhyy/LightNovelReader/issues/new/choose)
