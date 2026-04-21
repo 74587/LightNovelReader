@@ -122,7 +122,7 @@
     <string name="app_updates">Updates</string>
     <string name="settings_auto_check_updates">Auto Check for Updates</string>
     <string name="settings_auto_check_updates_desc">Enable automatic update checks upon app launch</string>
-    <string name="settings_update_channel">Beta Program</string>
+    <string name="settings_update_channel">Test Update Channel</string>
     <string name="settings_update_channel_desc">Join the Beta program to experience upcoming features before the stable release and share your feedback</string>
     <string name="settings_get_updates">Check for Updates</string>
     <string name="settings_get_updates_desc">Check and install the latest version</string>

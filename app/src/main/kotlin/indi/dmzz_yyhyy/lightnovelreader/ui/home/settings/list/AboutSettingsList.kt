@@ -24,7 +24,8 @@ import io.nightfish.lightnovelreader.api.ui.components.SettingsSwitchEntry
 @Composable
 fun AboutSettingsList(
     settingState: SettingState,
-    onClickLicenses: () -> Unit
+    onClickLicenses: () -> Unit,
+    onOptOut: () -> Unit = {}
 ) {
     val appInfo: String = buildString {
         appendLine(BuildConfig.APPLICATION_ID)
@@ -51,6 +52,7 @@ fun AboutSettingsList(
     if (showDisableStatsDialog) {
         SettingsDisableStatsDialog(
             onClickConfirm = {
+                onOptOut()
                 settingState.statisticsUserData.asynchronousSet(false)
                 showDisableStatsDialog = false
             },

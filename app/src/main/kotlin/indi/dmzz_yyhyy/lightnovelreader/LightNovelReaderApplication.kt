@@ -54,30 +54,6 @@ class LightNovelReaderApplication : Application(), Configuration.Provider {
         CxHttpInit.init()
         matomoAnalytics.initialize()
         matomoAnalytics.trackAppLaunch()
-
-        var activityCount = 0
-        registerActivityLifecycleCallbacks(object : ActivityLifecycleCallbacks {
-            override fun onActivityStarted(activity: Activity) {
-                if (activityCount == 0) {
-                    matomoAnalytics.onAppForeground()
-                }
-                activityCount++
-                isAppStopped = false
-            }
-
-            override fun onActivityStopped(activity: Activity) {
-                activityCount--
-                if (activityCount == 0) {
-                    matomoAnalytics.onAppBackground()
-                }
-                isAppStopped = activityCount == 0
-            }
-            override fun onActivityResumed(activity: Activity) {}
-            override fun onActivityPaused(activity: Activity) {}
-            override fun onActivityCreated(activity: Activity, savedInstanceState: Bundle?) {}
-            override fun onActivitySaveInstanceState(activity: Activity, outState: Bundle) {}
-            override fun onActivityDestroyed(activity: Activity) {}
-        })
         pluginManager.initAllPlugin()
         coroutineScope.launch(Dispatchers.IO) {
             loggerRepository.logLevel = LogLevel.from(userDataRepository.stringUserData(UserDataPath.Settings.Data.LogLevel.path).getOrDefault("none"))

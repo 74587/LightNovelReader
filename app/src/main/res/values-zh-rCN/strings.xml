@@ -120,7 +120,7 @@
     <string name="app_updates">更新</string>
     <string name="settings_auto_check_updates">自动检查更新</string>
     <string name="settings_auto_check_updates_desc">应用启动后自动检查更新</string>
-    <string name="settings_update_channel">Beta 版本测试</string>
+    <string name="settings_update_channel">测试更新渠道</string>
     <string name="settings_update_channel_desc">提前体验即将发布的新功能，并在稳定版发布前提供宝贵的反馈</string>
     <string name="settings_get_updates">手动检查更新</string>
     <string name="settings_get_updates_desc">手动获取应用更新</string>

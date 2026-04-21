@@ -11,14 +11,18 @@ import androidx.work.workDataOf
 import dagger.hilt.android.lifecycle.HiltViewModel
 import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.work.ImportDataWork
+import indi.dmzz_yyhyy.lightnovelreader.utils.analytics.MatomoAnalytics
 import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     userDataRepository: UserDataRepository,
     private val workManager: WorkManager,
+    private val matomoAnalytics: MatomoAnalytics,
 ) : ViewModel() {
     var settingState: SettingState = SettingState(userDataRepository, viewModelScope)
+
+    fun trackOptOut() = matomoAnalytics.trackOptOut()
 
     fun importFromFile(
         uri: Uri,

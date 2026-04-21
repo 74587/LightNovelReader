@@ -57,7 +57,8 @@ fun SettingsScreen(
     onClickLicenses: () -> Unit,
     onClickThemeSettings: () -> Unit,
     onClickPluginManager: () -> Unit,
-    onClickTextFormatting: () -> Unit
+    onClickTextFormatting: () -> Unit,
+    onOptOut: () -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.pinnedScrollBehavior()
     val listState = rememberLazyListState()
@@ -132,7 +133,9 @@ fun SettingsScreen(
                     title = stringResource(R.string.about_settings),
                 ) {
                     AboutSettingsList(
-                        settingState = settingState, onClickLicenses = onClickLicenses
+                        settingState = settingState,
+                        onClickLicenses = onClickLicenses,
+                        onOptOut = onOptOut
                     )
                 }
             }

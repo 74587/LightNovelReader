@@ -29,8 +29,6 @@ class MatomoAnalytics @Inject constructor(
 ) {
     private var tracker: Tracker? = null
     private var isStatisticsEnabled = false
-    private var heartbeatJob: Job? = null
-    private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
 
     companion object {
         private const val SERVER = "eNpb85aBtYRBPaOkpKDYSl8_MS8xp7IkM7lYLy-xKDM7Xy-_KF0_N7EkPzdfryCjAACLuxEn"
@@ -79,40 +77,15 @@ class MatomoAnalytics @Inject constructor(
                 .dimension(DIMENSION_DEV_INF, buildDeviceInfo())
                 .with(t)
         }
-
-        startHeartbeat()
     }
 
-    private fun startHeartbeat() {
-        if (heartbeatJob?.isActive == true) return
-        if (!isStatisticsEnabled) return
-
-        heartbeatJob = coroutineScope.launch {
-            while (isActive) {
-                delay(30.minutes)
-                sendHeartbeat()
-            }
-        }
-    }
-
-    private fun sendHeartbeat() {
+    fun trackOptOut() {
         tracker?.let { t ->
             TrackHelper.track()
-                .screen("/ping")
-                .title("Heartbeat")
+                .event("User", "Opt Out")
+                .name("Disabled Statistics")
                 .with(t)
+            t.dispatch()
         }
-    }
-
-    fun onAppForeground() {
-        if (!isStatisticsEnabled) return
-        startHeartbeat()
-    }
-
-    fun onAppBackground() {
-        if (!isStatisticsEnabled) return
-        heartbeatJob?.cancel()
-        heartbeatJob = null
-        tracker?.dispatch()
     }
 }

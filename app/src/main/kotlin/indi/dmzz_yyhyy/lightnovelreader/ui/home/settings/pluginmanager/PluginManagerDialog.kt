@@ -273,8 +273,7 @@ fun InstallProgressDialog(
             }
         },
         dismissButton = {
-            val canShowCancel = uiState.installStep != InstallStepState.Completed &&
-                    (uiState.installStep == InstallStepState.AwaitingDecision || uiState.installProgress == null)
+            val canShowCancel = uiState.installStep == InstallStepState.AwaitingDecision
 
             if (canShowCancel) {
                 OutlinedButton(

@@ -71,7 +71,8 @@ fun NavGraphBuilder.settingsDestination() {
             onClickLogcat = navController::navigateToSettingsLogcatDestination,
             onClickTextFormatting = navController::navigateToSettingsTextFormattingManagerDestination,
             onClickPluginManager = navController::navigateToSettingsPluginManagerHomeDestination,
-            onClickThemeSettings = navController::navigateToSettingsThemeDestination
+            onClickThemeSettings = navController::navigateToSettingsThemeDestination,
+            onOptOut = settingsViewModel::trackOptOut
         )
     }
     settingsSourceChangeDestination()
