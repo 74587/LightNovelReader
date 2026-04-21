@@ -1,6 +1,7 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.components
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -36,16 +37,23 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.graphics.drawable.toBitmap
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginMetadata
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginSource
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.horizontalPadding
 import io.nightfish.lightnovelreader.api.ApiCompat
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
+import java.io.File
 
 @Composable
 fun PluginCard(
@@ -53,6 +61,7 @@ fun PluginCard(
     enabledPluginList: List<String>,
     isErrorDisabled: Boolean,
     pluginInfo: PluginMetadata,
+    pluginFile: File,
     onClickDetail: (String) -> Unit,
     onClickSwitch: (PluginMetadata) -> Unit,
     onClickDelete: (id: String, uninstall: Boolean) -> Unit,
@@ -70,14 +79,10 @@ fun PluginCard(
     var menuExpanded by remember { mutableStateOf(false) }
 
     val containerColor by animateColorAsState(
-        targetValue = when {
-            disabledByError -> colorScheme.errorContainer.copy(alpha = 0.22f)
-            enabled -> colorScheme.surfaceContainerLow
-            else -> colorScheme.surfaceContainer
-        },
+        targetValue = if (disabledByError) colorScheme.errorContainer.copy(alpha = 0.22f)
+        else colorScheme.surfaceContainer,
         label = "cardColor"
     )
-
     Card(
         modifier = modifier
             .fillMaxWidth()
@@ -90,20 +95,59 @@ fun PluginCard(
         colors = CardDefaults.cardColors(containerColor = containerColor),
         shape = RoundedCornerShape(18.dp)
     ) {
-        Column(Modifier.padding(horizontal = 16.dp).padding(top = 16.dp, bottom = 10.dp)) {
+        Column(Modifier
+            .padding(horizontal = 16.dp)
+            .padding(top = 16.dp, bottom = 10.dp)) {
             Row(verticalAlignment = Alignment.Top) {
-                Surface(
-                    color = if (enabled) colorScheme.primaryContainer else colorScheme.surfaceContainerHighest,
-                    contentColor = if (enabled) colorScheme.onPrimaryContainer else colorScheme.onSurfaceVariant,
-                    shape = RoundedCornerShape(14.dp)
-                ) {
+                val context = LocalContext.current
+                val iconState = remember(pluginInfo.packageName) { mutableStateOf<ImageBitmap?>(null) }
+
+                LaunchedEffect(pluginInfo.packageName) {
+                    val bitmap = withContext(Dispatchers.IO) {
+                        runCatching {
+                            if (pluginInfo.source == PluginSource.InstalledApp) {
+                                context.packageManager.getApplicationIcon(pluginInfo.packageName)
+                            } else {
+                                context.packageManager.getPackageArchiveInfo(pluginFile.absolutePath, 0)
+                                    ?.applicationInfo
+                                    ?.apply {
+                                        sourceDir = pluginFile.absolutePath
+                                        publicSourceDir = pluginFile.absolutePath
+                                    }
+                                    ?.loadIcon(context.packageManager)
+                            }
+                        }.getOrNull()?.toBitmap()?.asImageBitmap()
+                    }
+                    iconState.value = bitmap
+                }
+
+                val iconBitmap = iconState.value
+                if (iconBitmap == null) {
+                    Surface(
+                        color = if (enabled) colorScheme.primaryContainer else colorScheme.surfaceContainerHighest,
+                        contentColor = if (enabled) colorScheme.onPrimaryContainer else colorScheme.onSurfaceVariant,
+                        shape = RoundedCornerShape(14.dp)
+                    ) {
+                        Box(
+                            modifier = Modifier.size(44.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                painter = painterResource(R.drawable.extension_24px),
+                                contentDescription = "plugin",
+                                modifier = Modifier.size(24.dp)
+                            )
+                        }
+                    }
+                } else {
                     Box(
                         modifier = Modifier.size(44.dp),
                         contentAlignment = Alignment.Center
                     ) {
-                        Icon(
-                            painter = painterResource(R.drawable.extension_24px),
-                            contentDescription = "plugin"
+                        Image(
+                            bitmap = iconBitmap,
+                            contentDescription = "icon",
+                            modifier = Modifier.size(36.dp)
                         )
                     }
                 }

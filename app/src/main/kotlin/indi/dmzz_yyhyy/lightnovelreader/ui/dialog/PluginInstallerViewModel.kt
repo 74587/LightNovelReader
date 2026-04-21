@@ -13,6 +13,8 @@ import indi.dmzz_yyhyy.lightnovelreader.data.plugin.InstallState
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginInstallError
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginManager
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.DeleteStepState
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.InstallDecision
+import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.InstallDecisionType
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.InstallStepState
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.MutablePluginInstallerDialogUiState
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.PluginDialogMode
@@ -20,6 +22,7 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.PluginIns
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.PluginInstallerDialogUiState
 import io.nightfish.lightnovelreader.api.ApiMetadata
 import jakarta.inject.Inject
+import kotlinx.coroutines.CompletableDeferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -44,6 +47,7 @@ class PluginInstallerDialogViewModel @Inject constructor(
     val snackbarFlow = _snackbarFlow.asSharedFlow()
 
     private var currentJob: Job? = null
+    private var userDecisionDeferred: CompletableDeferred<Boolean>? = null
 
     private fun getErrorMessage(throwable: Throwable): String {
         return when (throwable) {
@@ -100,6 +104,60 @@ class PluginInstallerDialogViewModel @Inject constructor(
                         mutableUiState.installCompletedMessage = context.getString(R.string.plugin_install_read_failed)
                     }
                     return@launch
+                }
+
+                withContext(Dispatchers.Main) {
+                    mutableUiState.installMessage = context.getString(R.string.plugin_install_parse_package_info)
+                }
+                val packageInfo = context.packageManager.getPackageArchiveInfo(tempFile.path, 0)
+                if (packageInfo == null) {
+                    tempFile.delete()
+                    withContext(Dispatchers.Main) {
+                        mutableUiState.installStep = InstallStepState.Completed
+                        mutableUiState.installCompletedSuccess = false
+                        mutableUiState.installCompletedMessage = context.getString(R.string.plugin_install_read_failed)
+                    }
+                    return@launch
+                }
+                val appInfo = packageInfo.applicationInfo
+                val pluginLabel = appInfo?.loadLabel(context.packageManager)?.toString()
+                    ?: packageInfo.packageName
+                val pluginIcon = appInfo?.let {
+                    it.sourceDir = tempFile.path
+                    it.publicSourceDir = tempFile.path
+                    it.loadIcon(context.packageManager)
+                }
+                withContext(Dispatchers.Main) {
+                    mutableUiState.installInfo = PluginInstallInfo(
+                        packageName = packageInfo.packageName,
+                        name = pluginLabel,
+                        versionName = packageInfo.versionName ?: "",
+                        icon = pluginIcon
+                    )
+                    mutableUiState.installDecision = InstallDecision(
+                        type = InstallDecisionType.ConfirmInstall,
+                        message = context.getString(R.string.plugin_install_confirm_body, pluginLabel)
+                    )
+                    mutableUiState.installStep = InstallStepState.AwaitingDecision
+                }
+
+                val deferred = CompletableDeferred<Boolean>()
+                userDecisionDeferred = deferred
+                val confirmed = deferred.await()
+                userDecisionDeferred = null
+
+                if (!confirmed) {
+                    tempFile.delete()
+                    withContext(Dispatchers.Main) {
+                        onCloseDialog()
+                    }
+                    return@launch
+                }
+
+                withContext(Dispatchers.Main) {
+                    mutableUiState.installStep = InstallStepState.Working
+                    mutableUiState.installDecision = null
+                    mutableUiState.installMessage = context.getString(R.string.plugin_install_preparing)
                 }
 
                 pluginManager.installPlugin(tempFile).collect { state ->
@@ -208,7 +266,11 @@ class PluginInstallerDialogViewModel @Inject constructor(
     }
 
     fun respondUserDecision(confirm: Boolean) {
-        if (!confirm) {
+        val deferred = userDecisionDeferred
+        if (deferred != null) {
+            userDecisionDeferred = null
+            deferred.complete(confirm)
+        } else if (!confirm) {
             onCancelOperation()
         }
     }

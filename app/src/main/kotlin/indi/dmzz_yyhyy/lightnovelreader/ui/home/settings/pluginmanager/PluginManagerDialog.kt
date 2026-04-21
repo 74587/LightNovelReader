@@ -51,6 +51,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.utils.ApkSignatureInfo
 import indi.dmzz_yyhyy.lightnovelreader.utils.ApkSignatureScheme
@@ -81,17 +82,27 @@ fun InstallProgressDialog(
                                 modifier = Modifier
                                     .size(40.dp)
                                     .background(
-                                        color = colorScheme.errorContainer,
+                                        color = colorScheme.secondaryContainer,
                                         shape = CircleShape
                                     ),
                                 contentAlignment = Alignment.Center
                             ) {
-                                Icon(
-                                    painter = painterResource(R.drawable.info_24px),
-                                    contentDescription = null,
-                                    tint = colorScheme.onErrorContainer,
-                                    modifier = Modifier.size(22.dp)
-                                )
+                                if (uiState.installInfo?.icon != null) {
+                                    AsyncImage(
+                                        model = uiState.installInfo?.icon,
+                                        contentDescription = null,
+                                        modifier = Modifier
+                                            .size(38.dp)
+                                            .clip(CircleShape)
+                                    )
+                                } else {
+                                    Icon(
+                                        painter = painterResource(R.drawable.info_24px),
+                                        contentDescription = null,
+                                        tint = colorScheme.onSecondaryContainer,
+                                        modifier = Modifier.size(22.dp)
+                                    )
+                                }
                             }
                         }
                         InstallStepState.Completed -> {
@@ -243,6 +254,7 @@ fun InstallProgressDialog(
                 InstallStepState.AwaitingDecision -> {
                     val type = uiState.installDecision?.type
                     val label = when (type) {
+                        InstallDecisionType.ConfirmInstall -> R.string.plugin_install_plugin
                         InstallDecisionType.InvalidSignature -> R.string.plugin_install_anyway
                         InstallDecisionType.Reinstall,
                         InstallDecisionType.Downgrade,

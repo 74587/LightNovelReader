@@ -39,11 +39,34 @@
     <activity
         android:exported="true"
         android:name=".MainActivity"
+        android:launchMode="singleInstance"
         android:theme="@style/AppTheme"
         android:windowSoftInputMode="adjustResize">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <data android:scheme="content"/>
+        <data android:scheme="file"/>
+        <data android:mimeType="application/octet-stream"/>
+        <data android:mimeType="application/zip"/>
+        <data android:mimeType="application/x-zip-compressed"/>
+        <data android:mimeType="application/vnd.android.package-archive"/>
+      </intent-filter>
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW"/>
+        <category android:name="android.intent.category.DEFAULT"/>
+        <category android:name="android.intent.category.BROWSABLE"/>
+        <data android:scheme="file"/>
+        <data android:scheme="content"/>
+        <data android:host="*"/>
+        <data android:mimeType="*/*"/>
+        <data android:pathPattern=".*\\.lnrp"/>
+        <data android:pathPattern=".*\\.apk\\.lnrp"/>
       </intent-filter>
     </activity>
     <provider
