@@ -32,6 +32,7 @@
     <string name="disabled">Disabled</string>
     <string name="not_applicable">Not applicable</string>
     <string name="install_update">Install Update</string>
+    <string name="plugin_install_alias_label">Install as Plugin</string>
     <string name="unspecified">Unspecified</string>
     <string name="ignore">Ignore</string>
     <string name="ignore_version">Ignore Version</string>
@@ -122,7 +123,7 @@
     <string name="app_updates">Updates</string>
     <string name="settings_auto_check_updates">Auto Check for Updates</string>
     <string name="settings_auto_check_updates_desc">Enable automatic update checks upon app launch</string>
-    <string name="settings_update_channel">Beta Program</string>
+    <string name="settings_update_channel">Test Update Channel</string>
     <string name="settings_update_channel_desc">Join the Beta program to experience upcoming features before the stable release and share your feedback</string>
     <string name="settings_get_updates">Check for Updates</string>
     <string name="settings_get_updates_desc">Check and install the latest version</string>
@@ -483,6 +484,7 @@
     <string name="plugin_install_conflict_app_plugin">Installation failed: a plugin app with the same ID is installed. Please uninstall the app plugin first.</string>
     <string name="plugin_install_signature_mismatch">Installation failed: different signature detected. Please uninstall the installed version before installing this plugin.</string>
     <string name="plugin_install_overwrite_prompt">A plugin is already installed. Replace it?</string>
+    <string name="plugin_install_confirm_body">Do you want to install the plugin "%1$s"?</string>
     <string name="plugin_install_reading">Reading plugin…</string>
     <string name="plugin_install_parsing">Parsing plugin info…</string>
     <string name="plugin_install_verifying">Verifying plugin…</string>
@@ -507,7 +509,6 @@
     <string name="plugin_snackbar_disabled_load_error">Plugin disabled due to a load error.</string>
     <string name="plugin_snackbar_learn_more">Learn more</string>
     <string name="plugin_picker_title">Select plugin</string>
-    <string name="plugin_install_dialog_title">Install plugin</string>
     <string name="plugin_install_dialog_body">The following plugin will be installed:\n\n%1$s</string>
     <string name="plugin_install_action_install">Install</string>
     <string name="plugin_unknown_name">Unknown</string>

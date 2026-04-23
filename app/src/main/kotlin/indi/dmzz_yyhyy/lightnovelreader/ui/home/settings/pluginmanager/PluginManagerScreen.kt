@@ -36,6 +36,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import java.io.File
 import indi.dmzz_yyhyy.lightnovelreader.BuildConfig
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginMetadata
@@ -49,6 +50,7 @@ import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 fun PluginManagerScreen(
     enabledPluginList: List<String>,
     errorMessageMap: Map<String, String>,
+    getPluginFile: (String) -> File,
     onClickInstall: () -> Unit,
     onClickBack: () -> Unit,
     onClickPluginApps: () -> Unit,
@@ -127,6 +129,7 @@ fun PluginManagerScreen(
                         PluginCard(
                             modifier = Modifier.animateItem(),
                             pluginInfo = plugin,
+                            pluginFile = getPluginFile(plugin.packageName),
                             onClickDetail = onClickDetail,
                             enabledPluginList = enabledPluginList,
                             isErrorDisabled = errorMessageMap.containsKey(plugin.packageName),

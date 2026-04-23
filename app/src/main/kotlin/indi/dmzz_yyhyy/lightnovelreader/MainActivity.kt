@@ -1,6 +1,7 @@
 package indi.dmzz_yyhyy.lightnovelreader
 
 import android.Manifest.permission.POST_NOTIFICATIONS
+import android.content.Intent
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.content.res.Resources
@@ -39,7 +40,10 @@ import io.nightfish.lightnovelreader.api.userdata.UserDataPath
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.channels.BufferOverflow
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
@@ -48,6 +52,10 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
     @Inject lateinit var loggerRepository: LoggerRepository
     @Inject lateinit var bookshelfRepository: BookshelfRepository
+
+    private val intentChannel = Channel<Intent>(capacity = 4, onBufferOverflow = BufferOverflow.DROP_OLDEST)
+    val intentFlow = intentChannel.receiveAsFlow()
+
     @Inject lateinit var userDataRepository: UserDataRepository
     @Inject lateinit var updateCheckRepository: UpdateCheckRepository
     @Inject lateinit var workManager: WorkManager
@@ -79,6 +87,7 @@ class MainActivity : ComponentActivity() {
         initDefaultBookshelf()
         observeDisplaySettings()
         observeFormattingSettings()
+        handleIntent(intent)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { /* Android 13 + */
             if (ContextCompat.checkSelfPermission(this, POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
@@ -127,6 +136,7 @@ class MainActivity : ComponentActivity() {
             ) {
                 LightNovelReaderApp(
                     readerStyle = readerStyle,
+                    intentFlow = intentFlow,
                     onBuildNavHost = {
                         with(pluginManager) {
                             onBuildNavHost()
@@ -136,6 +146,15 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        intentChannel.trySend(intent)
+    }
+
+    private fun handleIntent(intent: Intent) {
+        intentChannel.trySend(intent)
     }
 
     private fun initDefaultBookshelf() {

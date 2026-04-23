@@ -1,5 +1,6 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager
 
+import android.graphics.drawable.Drawable
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
@@ -97,7 +98,8 @@ class MutablePluginInstallerDialogUiState : PluginInstallerDialogUiState {
 data class PluginInstallInfo(
     val packageName: String,
     val name: String,
-    val versionName: String
+    val versionName: String,
+    val icon: Drawable? = null
 )
 
 @Stable
@@ -107,6 +109,7 @@ data class InstallDecision(
 )
 
 enum class InstallDecisionType {
+    ConfirmInstall,
     Reinstall,
     Downgrade,
     InvalidSignature

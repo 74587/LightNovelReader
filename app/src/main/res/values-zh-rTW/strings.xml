@@ -28,6 +28,7 @@
     <string name="disabled">停用</string>
     <string name="not_applicable">不適用</string>
     <string name="install_update">安裝更新</string>
+    <string name="plugin_install_alias_label">作為外掛安裝</string>
     <string name="ignore">忽略</string>
     <string name="ignore_version">忽略此版本</string>
     <string name="switch_and_restart">切換並重新啟動</string>
@@ -44,6 +45,8 @@
     <string name="reader_back_press_again">再次點擊返回以退出閱讀</string>
     <string name="previous_chapter">上一章</string>
     <string name="next_chapter">下一章</string>
+    <string name="next">下一步</string>
+    <string name="abort">中止</string>
     <string name="save_rule">保存規則</string>
     <string name="delete_rule">刪除規則</string>
     <string name="data_import_success">導入成功</string>
@@ -117,7 +120,7 @@
     <string name="app_updates">更新</string>
     <string name="settings_auto_check_updates">自動檢查更新</string>
     <string name="settings_auto_check_updates_desc">應用程式啟動後自動檢查更新</string>
-    <string name="settings_update_channel">Beta 版本測試</string>
+    <string name="settings_update_channel">測試更新渠道</string>
     <string name="settings_update_channel_desc">搶先體驗即將推出的新功能，並在正式版發布前提供寶貴回饋</string>
     <string name="settings_get_updates">手動檢查更新</string>
     <string name="settings_get_updates_desc">手動取得應用程式更新</string>
@@ -466,8 +469,7 @@
     <string name="plugin_error_unknown">未知錯誤：%1$s</string>
     <string name="plugin_install_conflict_app_plugin">安裝失敗：已存在相同 ID 的外掛應用程式，請先解除安裝該應用外掛。</string>
     <string name="plugin_install_signature_mismatch">安裝失敗：偵測到不同簽名，請先解除安裝已安裝版本後再安裝此外掛。</string>
-    <string name="plugin_install_overwrite_prompt">偵測到已安裝外掛，是否覆蓋安裝？</string>
-    <string name="plugin_install_reading">正在讀取外掛…</string>
+    <string name="plugin_install_overwrite_prompt">偵測到已安裝外掛，是否覆蓋安裝？</string>    <string name="plugin_install_confirm_body">是否要安裝外掛「%1$s」？</string>    <string name="plugin_install_reading">正在讀取外掛…</string>
     <string name="plugin_install_parsing">解析外掛資訊中</string>
     <string name="plugin_install_verifying">正在驗證外掛…</string>
     <string name="plugin_install_installing">正在安裝外掛…</string>
@@ -491,7 +493,6 @@
     <string name="plugin_snackbar_disabled_load_error">已停用此外掛，因其出現載入錯誤。</string>
     <string name="plugin_snackbar_learn_more">了解更多</string>
     <string name="plugin_picker_title">選擇外掛</string>
-    <string name="plugin_install_dialog_title">安裝外掛</string>
     <string name="plugin_install_dialog_body">將安裝以下外掛：\n\n%1$s</string>
     <string name="plugin_install_action_install">安裝</string>
     <string name="plugin_unknown_name">未知</string>

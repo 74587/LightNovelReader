@@ -2,7 +2,6 @@ package indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager
 
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateMapOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -17,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -64,6 +64,9 @@ class PluginManagerViewModel @Inject constructor(
         if (!pluginFile.exists()) return null
         return getApkSignatures(pluginFile)
     }
+
+    fun getPluginFile(packageName: String): File =
+        pluginManager.getPluginFile(pluginManager.getPluginDir(packageName))
 
     @Composable
     fun PluginContent(id: String, paddingValues: PaddingValues) {

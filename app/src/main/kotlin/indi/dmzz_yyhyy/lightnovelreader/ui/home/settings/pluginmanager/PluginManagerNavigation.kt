@@ -4,16 +4,9 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.DocumentsContract
-import android.provider.OpenableColumns
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Row
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.MaterialTheme.colorScheme
-import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.SnackbarResult
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -23,6 +16,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -36,13 +30,12 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.detail.na
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.detail.settingsPluginManagerDetailDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.repository.navigateToSettingsPluginRepositoryDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.repository.settingsPluginRepositoryDestination
-import io.nightfish.lightnovelreader.api.Route
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.popBackStackIfResumed
 import indi.dmzz_yyhyy.lightnovelreader.utils.showSnackbar
 import indi.dmzz_yyhyy.lightnovelreader.utils.uriLauncher
+import io.nightfish.lightnovelreader.api.Route
 import io.nightfish.lightnovelreader.api.ui.LocalNavController
-import androidx.core.net.toUri
 
 fun NavGraphBuilder.settingsPluginManagerNavigation() {
     navigation<Route.Main.Settings.PluginManager>(
@@ -70,7 +63,6 @@ fun NavGraphBuilder.settingsPluginManagerHomeDestination() {
         var showPluginErrorDialog by remember { mutableStateOf(false) }
         var showPluginSignatureDialog: String? by remember { mutableStateOf(null) }
         var pendingInstallUri by remember { mutableStateOf<Uri?>(null) }
-        var pendingInstallName by remember { mutableStateOf("") }
         var pendingUninstallId by remember { mutableStateOf<String?>(null) }
         val uninstallLauncher = rememberLauncherForActivityResult(
             ActivityResultContracts.StartActivityForResult()
@@ -87,7 +79,6 @@ fun NavGraphBuilder.settingsPluginManagerHomeDestination() {
         }
         val launcher = uriLauncher { uri ->
             pendingInstallUri = uri
-            pendingInstallName = getDisplayName(context, uri)
         }
         val snackbarHostState = LocalSnackbarHost.current
         val coroutineScope = rememberCoroutineScope()
@@ -107,6 +98,7 @@ fun NavGraphBuilder.settingsPluginManagerHomeDestination() {
         PluginManagerScreen(
             enabledPluginList = enabledPluginList,
             errorMessageMap = errorMessageMap,
+            getPluginFile = viewModel::getPluginFile,
             onClickBack = navController::popBackStackIfResumed,
             onClickPluginApps = navController::navigateToSettingsPluginAppListDestination,
             onClickDetail = navController::navigateToSettingsPluginManagerDetailDestination,
@@ -175,58 +167,9 @@ fun NavGraphBuilder.settingsPluginManagerHomeDestination() {
         )
 
         if (pendingInstallUri != null) {
-            AlertDialog(
-                onDismissRequest = {
-                    pendingInstallUri = null
-                    pendingInstallName = ""
-                },
-                title = {
-                    Text(
-                        text = stringResource(R.string.plugin_install_dialog_title),
-                        style = typography.displayMedium,
-                        color = colorScheme.onSurface
-                    )
-                },
-                text = { Text(stringResource(R.string.plugin_install_dialog_body, pendingInstallName)) },
-                confirmButton = {
-                    Row {
-                        /*TextButton(
-                            onClick = {
-                                val uri = pendingInstallUri ?: return@TextButton
-                                val intent = Intent(Intent.ACTION_VIEW).apply {
-                                    setDataAndType(uri, "application/vnd.android.package-archive")
-                                    addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                                }
-                                context.startActivity(intent)
-                                pendingInstallUri = null
-                                pendingInstallName = ""
-                            }
-                        ) {
-                            Text("系统安装")
-                        }*/
-                        TextButton(
-                            onClick = {
-                                val uri = pendingInstallUri ?: return@TextButton
-                                navController.navigateToPluginInstallerDialog(uri.toString())
-                                pendingInstallUri = null
-                                pendingInstallName = ""
-                            }
-                        ) {
-                            Text(stringResource(R.string.plugin_install_action_install))
-                        }
-                    }
-                },
-                dismissButton = {
-                    TextButton(
-                        onClick = {
-                            pendingInstallUri = null
-                            pendingInstallName = ""
-                        }
-                    ) {
-                        Text(stringResource(android.R.string.cancel))
-                    }
-                }
-            )
+            val uri = pendingInstallUri ?: return@composable
+            navController.navigateToPluginInstallerDialog(uri.toString())
+            pendingInstallUri = null
         }
 
         if (showPluginNoSignatureDialog) {
@@ -252,12 +195,3 @@ fun NavController.navigateToSettingsPluginManagerHomeDestination() {
     navigate(Route.Main.Settings.PluginManager.Home)
 }
 
-private fun getDisplayName(context: android.content.Context, uri: Uri): String {
-    val resolver = context.contentResolver
-    val name = resolver.query(uri, arrayOf(OpenableColumns.DISPLAY_NAME), null, null, null)
-        ?.use { cursor ->
-            val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-            if (index >= 0 && cursor.moveToFirst()) cursor.getString(index) else null
-        }
-    return name ?: uri.lastPathSegment?.substringAfterLast('/') ?: context.getString(R.string.plugin_unknown_name)
-}
