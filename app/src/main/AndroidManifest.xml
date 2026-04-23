@@ -46,6 +46,14 @@
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
+    </activity>
+    <activity-alias
+        android:name=".PluginInstallAlias"
+        android:exported="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/plugin_install_alias_label"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:targetActivity=".MainActivity">
       <intent-filter>
         <action android:name="android.intent.action.VIEW"/>
         <category android:name="android.intent.category.DEFAULT"/>
@@ -56,7 +64,7 @@
         <data android:mimeType="*/*"/>
         <data android:pathSuffix=".lnrp"/>
       </intent-filter>
-    </activity>
+    </activity-alias>
     <provider
         android:name="androidx.core.content.FileProvider"
         android:authorities="${applicationId}.provider"

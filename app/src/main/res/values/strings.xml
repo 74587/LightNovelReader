@@ -32,6 +32,7 @@
     <string name="disabled">Disabled</string>
     <string name="not_applicable">Not applicable</string>
     <string name="install_update">Install Update</string>
+    <string name="plugin_install_alias_label">Install as Plugin</string>
     <string name="unspecified">Unspecified</string>
     <string name="ignore">Ignore</string>
     <string name="ignore_version">Ignore Version</string>
