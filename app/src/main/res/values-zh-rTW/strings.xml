@@ -1,7 +1,8 @@
-<resources>
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="language">繁體中文 (台灣)</string>
     <string name="language_translators">Mango, yukonisen</string>
-    <!-- navigation items -->
+    <!-- Navigation Items -->
     <string name="nav_reading">閱讀中</string>
     <string name="nav_bookshelf">書架</string>
     <string name="nav_bookshelf_select_mode">選取 書架 (%d)</string>
@@ -16,12 +17,14 @@
     <string name="apply">套用</string>
     <string name="confirm">確認</string>
     <string name="done">完成</string>
+    <string name="next">下一步</string>
+    <string name="abort">中止</string>
     <string name="decline">拒絕</string>
-    <string name="export">導出</string>
-    <string name="undo">撤銷</string>
     <string name="copied">內容已複製</string>
     <string name="select_all">全選</string>
     <string name="invert_selection">反選</string>
+    <string name="export">導出</string>
+    <string name="undo">撤銷</string>
     <string name="manual_download">手動下載</string>
     <string name="follow_system">跟隨系統</string>
     <string name="enabled">啟用</string>
@@ -29,6 +32,7 @@
     <string name="not_applicable">不適用</string>
     <string name="install_update">安裝更新</string>
     <string name="plugin_install_alias_label">作為外掛安裝</string>
+    <string name="unspecified">Unspecified</string>
     <string name="ignore">忽略</string>
     <string name="ignore_version">忽略此版本</string>
     <string name="switch_and_restart">切換並重新啟動</string>
@@ -45,8 +49,6 @@
     <string name="reader_back_press_again">再次點擊返回以退出閱讀</string>
     <string name="previous_chapter">上一章</string>
     <string name="next_chapter">下一章</string>
-    <string name="next">下一步</string>
-    <string name="abort">中止</string>
     <string name="save_rule">保存規則</string>
     <string name="delete_rule">刪除規則</string>
     <string name="data_import_success">導入成功</string>
@@ -70,7 +72,6 @@
     <string name="book_word_count_limit">字數限制:</string>
     <string name="source_available_title">可用資料來源</string>
     <string name="unavailable">無法使用</string>
-
     <!-- Hints -->
     <string name="nothing_here">沒有內容</string>
     <string name="nothing_here_desc_reading">閱讀一些書本後，它們會顯示在這裡\n透過下方的導覽列前往「探索」頁面尋找新書</string>
@@ -89,29 +90,25 @@
     <string name="reader_reached_end">已經結束了…</string>
     <string name="font_file_error">字體文件錯誤或已損壞, 請您檢查後導入</string>
     <string name="settings_data_source_pending_title">切換到 %s</string>
-    <string name="settings_data_source_pending_desc">
-        系統將清除快取並重新啟動。當下次切換回「%s」時，您目前的資料將可再次使用。
+    <string name="settings_data_source_pending_desc">        系統將清除快取並重新啟動。當下次切換回「%s」時，您目前的資料將可再次使用。
     </string>
     <string name="settings_data_source_applying">處理中……</string>
     <string name="plugin_invalid_title">無效外掛</string>
     <string name="plugin_invalid_desc">無法取得外掛資訊，外掛可能無效或損壞</string>
     <string name="plugin_disabled">不可用</string>
     <string name="plugin_disabled_desc">調整設定需要啟用外掛</string>
-
     <!-- Snackbar Hints -->
     <string name="cache_book_started">開始快取：%1$s</string>
     <string name="cache_book_running">此書正在快取中</string>
     <string name="cache_book_finished">快取成功</string>
     <string name="cache_book_error">快取失敗</string>
     <string name="restart_to_apply_changes">重新啟動應用程式以套用變更</string>
-    <string name="network_error_message">
-        無法從資料來源取得資訊，這通常是網路問題所致。在提交問題前，請知晓：我們無法協助排查具體網路狀況，請先檢查您的網路連線。
+    <string name="network_error_message">        無法從資料來源取得資訊，這通常是網路問題所致。在提交問題前，請知晓：我們無法協助排查具體網路狀況，請先檢查您的網路連線。
     </string>
     <string name="export_book_started">開始導出書本 %s</string>
     <string name="export_book_success">成功導出書本 %s</string>
     <string name="export_book_failed">導出書本 %s 失敗</string>
     <string name="removed_item">已移除: </string>
-
     <!-- Settings -->
     <string name="reading_settings">閲讀</string>
     <string name="extensions_settings">擴充功能</string>
@@ -126,7 +123,6 @@
     <string name="settings_get_updates_desc">手動取得應用程式更新</string>
     <string name="settings_distribution_platform">更新發布平台</string>
     <string name="settings_distribution_platform_settings_desc"><!--reserved--></string>
-
     <string name="reader_settings">閱讀設定</string>
     <string name="settings_reader_font_size">字型大小</string>
     <string name="settings_reader_line_spacing">行距</string>
@@ -159,7 +155,6 @@
     <string name="settings_reader_bottom_margin">底部邊距</string>
     <string name="settings_reader_left_margin">左邊距</string>
     <string name="settings_reader_right_margin">右邊距</string>
-
     <string name="display_settings">顯示</string>
     <string name="settings_theme">主題與紙張</string>
     <string name="settings_theme_desc">設定應用程式主題和閱讀器紙張</string>
@@ -170,11 +165,10 @@
     <string name="settings_theme_dark_theme">深色主題</string>
     <string name="settings_theme_dark_theme_desc">指定應用程式在深色模式下的主題</string>
     <string name="settings_theme_dynamic_colors">系統動態配色</string>
-    <string name="settings_theme_dynamic_colors_desc">從系統主題套用動態配色</string>
     <string name="settings_theme_dynamic_colors_desc_unavailable">從系統主題套用動態配色 (需要 Android 12+)</string>
+    <string name="settings_theme_dynamic_colors_desc">從系統主題套用動態配色</string>
     <string name="settings_theme_m3e">Material 3 Expressive</string>
     <string name="settings_theme_m3e_description">啟用 Material 3 Expressive 設計。此功能屬於實驗性內容，仍處於測試階段</string>
-
     <string name="settings_formats">格式</string>
     <string name="settings_formats_desc">設定日期或文字格式</string>
     <string name="date_time_formats_settings">日期和時間</string>
@@ -187,7 +181,6 @@
     <string name="settings_formats_relative_time_format">使用相對時間</string>
     <string name="settings_advanced">進階</string>
     <string name="settings_formats_characters_variant_note">漢字變體只對閱讀器生效，並且需要字型支援。</string>
-
     <string name="settings_app_language">語言</string>
     <string name="settings_app_language_desc">設定應用程式語言</string>
     <string name="settings_app_language_desc_unavailable">設定應用程式語言 (需要 Android 13+)</string>
@@ -209,7 +202,6 @@
     <string name="settings_theme_text_font">文字字型</string>
     <string name="settings_theme_text_font_desc">使用應用內建的字型或自訂字型檔案</string>
     <string name="settings_theme_text_font_weight">字重</string>
-
     <string name="data_settings">資料</string>
     <string name="settings_snap_data">快照資料</string>
     <string name="settings_snap_data_desc">將應用程式內的使用者資料匯出為 .lnr 檔案</string>
@@ -225,7 +217,6 @@
     <string name="settings_app_log_level_desc">設定日誌過濾等級，重新啟動應用程式後生效</string>
     <string name="settings_auto_proxy">自動代理</string>
     <string name="settings_auto_proxy_desc">自動從網路上取得代理 IP，<b>但這將導致您所瀏覽的書本資料可能會被攔截</b></string>
-
     <string name="about_settings">關於</string>
     <string name="settings_debug_tools">調試選項</string>
     <string name="settings_debug_tools_desc">供開發使用的調試與診斷功能</string>
@@ -241,8 +232,7 @@
     <string name="settings_statistics">匿名統計</string>
     <string name="settings_statistics_desc">我們需要收集一些統計資料，以使 LightNovelReader 變得更好</string>
     <string name="settings_statistics_disable_dialog_title">等一等……</string>
-    <string name="settings_statistics_disable_dialog_text">
-        真的要關閉統計嗎 ο(=•ω＜=)ρ⌒☆
+    <string name="settings_statistics_disable_dialog_text">        真的要關閉統計嗎 ο(=•ω＜=)ρ⌒☆
         \nLightNovelReader 僅統計日活等數據
         \n不會涉及任何隱私資訊，而且是匿名統計
         \n關閉後夜魚只能對著 0 日活哭泣了 ≧ ﹏ ≦
@@ -259,7 +249,6 @@
     <string name="experimental_settings">實驗性</string>
     <string name="debug_settings">除錯</string>
     <string name="item_view_details">查看詳細資訊</string>
-
     <string name="settings_auto_cache">自動快取</string>
     <string name="settings_auto_cache_desc">自動快取新加入的書本內容</string>
     <string name="settings_book_update_reminder">更新提醒</string>
@@ -277,7 +266,6 @@
     <string name="settings_trad_conversion_desc">將內容從簡體轉換為繁體</string>
     <string name="settings_continous_scrolling">無痕捲動</string>
     <string name="settings_continous_scrolling_desc">捲動翻頁時無痕切換章節</string>
-
     <!-- UI -->
     <string name="detail_introduction">介紹</string>
     <string name="detail_contents">目錄</string>
@@ -320,8 +308,8 @@
     <string name="import_from_file">從檔案匯入</string>
     <string name="add_to_bookshelf">收藏至書架</string>
     <string name="action_cache">快取</string>
-    <string name="expand">展開</string>
     <string name="action_show_info">資訊</string>
+    <string name="expand">展開</string>
     <string name="collapse">收起</string>
     <string name="info_reading_finished">已讀完</string>
     <string name="info_reading_progress">已讀 %1$d/%2$d</string>
@@ -374,7 +362,7 @@
     <string name="no_records">沒有記錄</string>
     <string name="total_record">總記錄</string>
     <string name="reading_sessions">閱讀會話</string>
-    <string name="reading_sessions_unit">次</string>
+    <string name="reading_sessions_unit"></string>
     <string name="reading_duration">閱讀時長</string>
     <string name="reading_duration_unit">時 %d 分</string>
     <string name="cached">已快取</string>
@@ -399,7 +387,6 @@
     <string name="rule_replacement">替換為</string>
     <string name="rule_is_regex">使用正則匹配</string>
     <string name="edit_rule">編輯規則</string>
-
     <!-- Dialogs -->
     <string name="dialog_about_version">版本</string>
     <string name="dialog_delete_bookshelf">刪除書架</string>
@@ -424,7 +411,6 @@
     <string name="dialog_slider_custom_illegal_value">請輸入合法的數值</string>
     <string name="dialog_color_picker">調色盤</string>
     <string name="dialog_color_picker_desc">選擇一個顏色用於閱讀器背景。</string>
-
     <!-- Plugin -->
     <string name="plugin_delete_title">刪除 %1$s</string>
     <string name="plugin_install_preparing">正在準備…</string>
@@ -449,6 +435,9 @@
     <string name="plugin_signature_public_key">公鑰：%1$s，%2$d-bit</string>
     <string name="plugin_signature_sha256">SHA256：%1$s</string>
     <string name="plugin_install_plugin">安裝外掛</string>
+    <string name="plugin_app_list">Plugin apps</string>
+    <string name="plugin_app_empty_title">No plugin apps</string>
+    <string name="plugin_app_empty_desc">Install a plugin app to show it here</string>
     <string name="plugin_empty_title">沒有外掛</string>
     <string name="plugin_empty_desc">安裝支援的 .lnrp 外掛</string>
     <string name="plugin_third_party_tips">來自第三方的外掛可提供額外的資料來源或功能。安裝前，請確認外掛來源可信。\nLightNovelReader 不對外掛可用性負責。</string>
@@ -465,11 +454,14 @@
     <string name="plugin_install_failed_with_reason">安裝失敗：%1$s</string>
     <string name="plugin_error_unsupported_api">不支援的 API 版本 %1$d，目前版本為 %2$d</string>
     <string name="plugin_error_version_too_high">已安裝的外掛版本高於待安裝版本</string>
+    <string name="plugin_error_app_plugin_exist">There is already a app plugin which has the same package name with the installing plugin</string>
     <string name="plugin_error_signature_mismatch">外掛簽名與已安裝版本不匹配</string>
     <string name="plugin_error_unknown">未知錯誤：%1$s</string>
     <string name="plugin_install_conflict_app_plugin">安裝失敗：已存在相同 ID 的外掛應用程式，請先解除安裝該應用外掛。</string>
     <string name="plugin_install_signature_mismatch">安裝失敗：偵測到不同簽名，請先解除安裝已安裝版本後再安裝此外掛。</string>
-    <string name="plugin_install_overwrite_prompt">偵測到已安裝外掛，是否覆蓋安裝？</string>    <string name="plugin_install_confirm_body">是否要安裝外掛「%1$s」？</string>    <string name="plugin_install_reading">正在讀取外掛…</string>
+    <string name="plugin_install_overwrite_prompt">偵測到已安裝外掛，是否覆蓋安裝？</string>
+    <string name="plugin_install_confirm_body">是否要安裝外掛「%1$s」？</string>
+    <string name="plugin_install_reading">正在讀取外掛…</string>
     <string name="plugin_install_parsing">解析外掛資訊中</string>
     <string name="plugin_install_verifying">正在驗證外掛…</string>
     <string name="plugin_install_installing">正在安裝外掛…</string>
@@ -529,7 +521,7 @@
     <string name="plugin_repo_install_failed">安裝 %1$s 失敗：%2$s</string>
     <string name="plugin_repo_install_cancelled">已取消安裝 %1$s</string>
     <string name="plugin_repo_parts_incomplete">分卷下載不完整：已完成 %1$d/%2$d，缺失 %3$s</string>
-
+    <string name="plugin_app_conflict_message">Conflicts with installed plugin app; app plugin is preferred.</string>
     <!-- Notifications -->
     <string name="epub_export_notification_channel_name">EPUB 匯出進度</string>
     <string name="epub_export_notification_preparing">準備中…</string>
@@ -538,7 +530,6 @@
     <string name="epub_export_notification_stage_chapters">章節 %1$d/%2$d -</string>
     <string name="epub_export_notification_stage_images">圖片 %1$d/%2$d -</string>
     <string name="epub_export_notification_stage_save">正在儲存 EPUB</string>
-
     <!-- KEY STRINGS -->
     <!-- Publishing House Filter -->
     <string name="key_pub_filter_title">文庫篩選</string>
@@ -555,10 +546,18 @@
     <string name="key_update_channel_release">無</string>
     <string name="key_update_channel_development">Beta 測試版</string>
     <string name="key_update_channel_ci">Alpha 測試版 (不穩定)</string>
+    <!-- Distribution Platform -->
     <!-- Dark Mode -->
     <string name="key_dark_mode_follow_system">跟隨系統</string>
     <string name="key_dark_mode_enabled">保持啟用</string>
     <string name="key_dark_mode_disabled">保持停用</string>
+    <!-- Log Level -->
+    <string name="key_log_level_none">None</string>
+    <string name="key_log_level_error">Error</string>
+    <string name="key_log_level_warning">Warning</string>
+    <string name="key_log_level_info">Info</string>
+    <string name="key_log_level_debug">Debug</string>
+    <string name="key_log_level_verbose">Verbose</string>
     <!-- Light Theme Name -->
     <string name="key_light_theme_default">預設</string>
     <string name="key_light_theme_designer">Designer</string>
@@ -568,7 +567,7 @@
     <string name="key_dark_theme_designer">Designer</string>
     <!-- Experimental Locale -->
     <string name="key_locale_none">無</string>
-    <!-- FlipAnime -->
+    <!-- Flip Animation -->
     <string name="key_flip_animation_none">無</string>
     <string name="key_flip_animation_scroll">捲動</string>
     <!-- Reader Bg Image Display Mode -->
@@ -578,7 +577,12 @@
     <string name="key_reader_indicator_battery_display_mode_hidden">隱藏</string>
     <string name="key_reader_indicator_battery_display_mode_classic">經典</string>
     <string name="key_reader_indicator_battery_display_mode_immersed">在狀態欄顯示</string>
+    <!-- Reader Back Block Mode -->
+    <string name="key_reader_back_block_mode_none">None</string>
+    <string name="key_reader_back_block_mode_double_press">Double Press</string>
+    <string name="key_reader_back_block_mode_blocked">Fully Blocked</string>
     <!-- Date Time Style -->
+    <string name="key_date_time_style_system">Follow System</string>
     <string name="key_date_time_style_short">短</string>
     <string name="key_date_time_style_medium">中</string>
     <string name="key_date_time_style_long">長</string>
