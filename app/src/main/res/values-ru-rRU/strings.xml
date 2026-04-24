@@ -1,7 +1,8 @@
-<resources>
-    <string name="app_name" translatable="false">LightNovelReader</string>
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="language">Русский (Россия)</string>
     <string name="language_translators">Xapitonov</string>
+    <!-- Navigation Items -->
     <string name="nav_reading">Чтение</string>
     <string name="nav_bookshelf">Полка</string>
     <string name="nav_bookshelf_select_mode">Выбрать полку (%d)</string>
@@ -11,40 +12,108 @@
     <string name="nav_explore_categories">Категории</string>
     <string name="nav_settings">Настройки</string>
     <string name="nav_statistics">Статистика</string>
+    <!-- Operations -->
     <string name="cancel">Отмена</string>
     <string name="apply">Применить</string>
+    <string name="confirm">Confirm</string>
+    <string name="done">Done</string>
+    <string name="next">Next</string>
+    <string name="abort">Abort</string>
     <string name="decline">Отклонить</string>
+    <string name="copied">Content copied</string>
+    <string name="select_all">Select All</string>
+    <string name="invert_selection">Invert Selection</string>
+    <string name="export">Export</string>
+    <string name="undo">Undo</string>
     <string name="manual_download">Вручную</string>
     <string name="follow_system">Следовать системе</string>
     <string name="enabled">Включено</string>
     <string name="disabled">Отключено</string>
+    <string name="not_applicable">Not applicable</string>
     <string name="install_update">Установить обновление</string>
+    <string name="plugin_install_alias_label">Install as Plugin</string>
     <string name="unspecified">Не указано</string>
     <string name="ignore">Игнорировать</string>
     <string name="ignore_version">Игнорировать версию</string>
     <string name="switch_and_restart">Сменить и перезапустить</string>
     <string name="hide_read">Скрыть прочитанное</string>
+    <string name="mark_as_read">Mark as read…</string>
+    <string name="export_epub">Export as Epub</string>
+    <string name="export_include_images">Include images</string>
+    <string name="export_split_volumes">Export by volumes</string>
+    <string name="select_location">Select a location</string>
     <string name="export_to_file">Экспорт в файл</string>
     <string name="export_and_share">Поделиться</string>
     <string name="choose_light_bg">Выбрать светлый фон</string>
     <string name="choose_dark_bg">Выбрать тёмный фон</string>
     <string name="reader_back_press_again">Нажмите назад ещё раз, чтобы выйти из чтения</string>
+    <string name="previous_chapter">Previous Chapter</string>
+    <string name="next_chapter">Next Chapter</string>
+    <string name="save_rule">Save rule</string>
+    <string name="delete_rule">Delete rule</string>
+    <string name="data_import_success">Import successful</string>
+    <string name="data_import_failed">Import failed. Please check the file format or if the file is corrupted.</string>
+    <string name="import_data_dialog_title">Import Data</string>
+    <string name="import_data_dialog_description">Merge or overwrite with this data?</string>
+    <string name="import_merge">Merge</string>
+    <string name="import_merge_desc">Merge into existing data</string>
+    <string name="import_overwrite">Overwrite</string>
+    <string name="import_overwrite_desc">Clear all data, then import the selected data</string>
+    <string name="import_overwrite_warning">Choosing “Overwrite” will erase ALL local data, including bookshelves, reading history, cache, and settings, regardless of whether the imported file contains them. This action cannot be undone.</string>
+    <string name="import_overwrite_confirm">Confirm Overwrite</string>
+    <string name="import_back">Back</string>
+    <string name="import_in_progress_title">Importing…</string>
+    <string name="import_in_progress_desc">Please wait…</string>
+    <string name="download_in_progress">In Progress</string>
+    <string name="download_item_progress">%1$s downloaded %2$d%%</string>
+    <string name="download_item_finished">%s completed</string>
+    <string name="download_item_failed">%s failed, please check your network or seek developer assistance</string>
+    <string name="book_updated_to_title">Updated to:</string>
+    <string name="book_word_count_limit">Word limit: </string>
+    <string name="source_available_title">Available sources</string>
+    <string name="unavailable">Unavailable</string>
+    <!-- Hints -->
     <string name="nothing_here">Здесь ничего нет</string>
     <string name="nothing_here_desc_reading">Прочитав книги, они появятся здесь.</string>
     <string name="nothing_here_desc_search">Последние поиски будут сохранены здесь. Используйте строку поиска.</string>
     <string name="nothing_here_desc_bookshelf">Нажмите кнопку «На полку», чтобы добавить книгу в коллекцию.</string>
+    <string name="nothing_here_desc_book_manager">No books are currently downloading</string>
     <string name="offline">Ой</string>
     <string name="offline_desc">Проверьте доступность сайта и настройки прокси.</string>
+    <string name="saved_to_pictures_dir">Saved to Pictures/LightNovelReader/%s</string>
+    <string name="save_failed">Save failed</string>
+    <string name="reader_first_page">You are on the first page</string>
+    <string name="reader_reached_top">You have reached the top</string>
+    <string name="reader_last_page">You are on the last page</string>
+    <string name="reader_reached_bottom">You have reached the bottom</string>
+    <string name="reader_reached_start">This is the beginning.</string>
+    <string name="reader_reached_end">You\'ve reached the end…</string>
+    <string name="font_file_error">Font file is incorrect or corrupted, please check and import again</string>
+    <string name="settings_data_source_pending_title">Switch to %s</string>
+    <string name="settings_data_source_pending_desc">        The operation will clear cached data and restart the app. Your current data can be restored when switching back to \"%s\".
+    </string>
+    <string name="settings_data_source_applying">Processing…</string>
+    <string name="plugin_invalid_title">Invalid plugin</string>
+    <string name="plugin_invalid_desc">Unable to get plugin info; the plugin may be invalid or corrupted.</string>
+    <string name="plugin_disabled">Unavailable</string>
+    <string name="plugin_disabled_desc">Enabling the plugin is required to adjust settings.</string>
+    <!-- Snackbar Hints -->
     <string name="cache_book_started">Началось кэширование: %1$s</string>
     <string name="cache_book_running">Эта книга сейчас кэшируется</string>
     <string name="cache_book_finished">Кэширование успешно завершено</string>
     <string name="cache_book_error">Не удалось кэшировать</string>
     <string name="restart_to_apply_changes">Перезапустите приложение для применения изменений</string>
-    <string name="network_error_message">
-        В данный момент приложение не может получить данные с источника. Обычно это связано с проблемой сети. Пожалуйста, проверьте ваше подключение.
+    <string name="network_error_message">        В данный момент приложение не может получить данные с источника. Обычно это связано с проблемой сети. Пожалуйста, проверьте ваше подключение.
     </string>
+    <string name="export_book_started">Start exporting book %s</string>
+    <string name="export_book_success">Successfully exported book %s</string>
+    <string name="export_book_failed">Failed to export book %s</string>
+    <string name="removed_item">Removed: </string>
+    <!-- Settings -->
     <string name="reading_settings">Чтение</string>
+    <string name="extensions_settings">Extensions</string>
     <string name="theme_settings">Тема</string>
+    <string name="app_settings">App</string>
     <string name="app_updates">Обновления</string>
     <string name="settings_auto_check_updates">Авто-проверка обновлений</string>
     <string name="settings_auto_check_updates_desc">Включить автоматическую проверку обновлений при запуске</string>
@@ -53,6 +122,7 @@
     <string name="settings_get_updates">Проверить обновления</string>
     <string name="settings_get_updates_desc">Проверить и установить последнюю версию.</string>
     <string name="settings_distribution_platform">Платформа распространения</string>
+    <string name="settings_distribution_platform_settings_desc"><!--reserved--></string>
     <string name="reader_settings">Настройки чтения</string>
     <string name="settings_reader_font_size">Размер шрифта</string>
     <string name="settings_reader_line_spacing">Межстрочный интервал</string>
@@ -69,7 +139,7 @@
     <string name="settings_reader_page_mode">Режим перелистывания</string>
     <string name="settings_reader_page_mode_desc">Переключение между прокруткой и перелистыванием страниц.</string>
     <string name="settings_reader_volume_key_control">Управление кнопками громкости</string>
-    <string name="settings_reader_volume_key_control_desc">Используйте кнопку "+" для перехода на предыдущую страницу и "-" для следующей.</string>
+    <string name="settings_reader_volume_key_control_desc">Используйте кнопку \"+\" для перехода на предыдущую страницу и \"-\" для следующей.</string>
     <string name="settings_reader_volume_key_interval">Интервал непрерывного перелистывания клавишей</string>
     <string name="settings_reader_t2tp">Касание для перелистывания</string>
     <string name="settings_reader_t2tp_desc">Включите перелистывание по нажатию и смените жест вызова меню на вертикальный свайп.</string>
@@ -97,6 +167,21 @@
     <string name="settings_theme_dynamic_colors">Динамичные цвета</string>
     <string name="settings_theme_dynamic_colors_desc_unavailable">Применять системные динамические цвета</string>
     <string name="settings_theme_dynamic_colors_desc">Применять системные динамические цвета (требуется Android 12+)</string>
+    <string name="settings_theme_m3e">Material 3 Expressive</string>
+    <string name="settings_theme_m3e_description">        Enables the Material 3 Expressive design. This feature is experimental and still in beta
+    </string>
+    <string name="settings_formats">Formats</string>
+    <string name="settings_formats_desc">Set date or text format</string>
+    <string name="date_time_formats_settings">Date &amp; Time</string>
+    <string name="settings_formats_date_format">Date Format</string>
+    <string name="settings_formats_date_show_year">Show Year</string>
+    <string name="settings_formats_date_show_year_desc">Include the year in dates</string>
+    <string name="settings_formats_date_order">Date Order</string>
+    <string name="settings_formats_date_order_desc">Choose how dates are ordered</string>
+    <string name="settings_formats_duration_format">Duration Format</string>
+    <string name="settings_formats_relative_time_format">Use Relative Time</string>
+    <string name="settings_advanced">Advanced</string>
+    <string name="settings_formats_characters_variant_note">Chinese character variants only apply in the reader and require font support.</string>
     <string name="settings_app_language">Язык интерфейса</string>
     <string name="settings_app_language_desc">Выберите язык приложения</string>
     <string name="settings_app_language_desc_unavailable">Выбор языка приложения (требуется Android 13+)</string>
@@ -125,10 +210,14 @@
     <string name="settings_import_data_desc">Импорт данных пользователя из выбранного файла .lnr</string>
     <string name="settings_select_data_source">Источник данных</string>
     <string name="settings_select_data_source_desc">Очистить кэш и переключить источник данных приложения. Ваши текущие данные будут сохранены и восстановлены при возврате.</string>
+    <string name="settings_plugins">Plugins</string>
+    <string name="settings_plugins_desc">Install and manage Plugins</string>
     <string name="settings_app_logs">Логи приложения</string>
     <string name="settings_app_logs_desc">Просмотр и отправка логов для отладки</string>
     <string name="settings_app_log_level">Уровень логирования</string>
     <string name="settings_app_log_level_desc">Выберите уровень фильтрации логов (требуется перезагрузка приложения)</string>
+    <string name="settings_auto_proxy">Auto Proxy</string>
+    <string name="settings_auto_proxy_desc">Automatically fetch proxy IPs from the internet, <b>but this may allow the books you browse to be intercepted</b></string>
     <string name="about_settings">О приложении</string>
     <string name="settings_debug_tools">Средства отладки</string>
     <string name="settings_debug_tools_desc">Утилиты для отладки</string>
@@ -136,11 +225,30 @@
     <string name="settings_about_oss">LightNovelReader — подарок всем любителям ранобэ в мире.</string>
     <string name="settings_github_repo">Репозиторий GitHub</string>
     <string name="settings_github_repo_desc">Поставьте звезду нашему репозиторию, чтобы помочь нам привлечь больше пользователей</string>
+    <string name="settings_support_author">Buy the Author a Tea</string>
+    <string name="settings_support_author_desc">Consider supporting NightFish with a small tip</string>
+    <string name="settings_open_source_licenses">Open-source licenses</string>
     <string name="settings_communication">Связь</string>
     <string name="settings_communication_desc">Присоединяйтесь к нашей группе QQ для обсуждений и отзывов</string>
     <string name="settings_statistics">Статистика</string>
     <string name="settings_statistics_desc">Мы используем Microsoft AppCenter для сбора анонимной статистики и улучшения LightNovelReader</string>
+    <string name="settings_statistics_disable_dialog_title">Hold on…</string>
+    <string name="settings_statistics_disable_dialog_text">        Do you really want to turn off statistics? ο(=•ω＜=)ρ⌒☆
+        LightNovelReader only collects DAU and similar usage metrics.
+        No personal privacy data is involved, and all statistics are anonymous.
+        If you turn this off, NightFish can only cry at 0 DAU ≧ ﹏ ≦
+    </string>
+    <string name="settings_statistics_disable_dialog_confirm">Turn off</string>
+    <string name="privacy_policy">Privacy Policy</string>
+    <string name="privacy_policy_title">What We Collect</string>
+    <string name="privacy_policy_collect_title">We Collect</string>
+    <string name="privacy_policy_collect_items">• Device brand and model\n• System and app version\n• Basic daily active usage (session time and duration)\n• Approximate geographic location based on IP address</string>
+    <string name="privacy_policy_not_collect_title">We Do NOT Collect</string>
+    <string name="privacy_policy_not_collect_items">Any personal data other than those listed above, including but not limited to: LightNovelReader in-app data, and any other information that could be used to identify you.</string>
+    <string name="privacy_policy_commitment_title">Our Privacy Commitment</string>
+    <string name="privacy_policy_commitment_items">LightNovelReader will not utilize any data shared with us for targeted advertising, data mining, or other privacy-harmful activities.</string>
     <string name="experimental_settings">Экспериментальные</string>
+    <string name="debug_settings">Debug</string>
     <string name="item_view_details">Просмотр деталей</string>
     <string name="settings_auto_cache">Автокэш</string>
     <string name="settings_auto_cache_desc">Автоматически кэшировать содержимое новых книг</string>
@@ -148,9 +256,9 @@
     <string name="settings_book_update_reminder_desc">Проверять обновления книг и уведомлять в фоне</string>
     <string name="settings_delete_bookshelf">Удалить полку</string>
     <string name="settings_delete_bookshelf_desc">Безвозвратно удалить эту полку</string>
-    <string name="appearance_settings">	Облик</string>
-    <string name="control_settings">	Управление</string>
-    <string name="margin_settings">	Поля</string>
+    <string name="appearance_settings">Облик</string>
+    <string name="control_settings">Управление</string>
+    <string name="margin_settings">Поля</string>
     <string name="settings_theme_settings">Настройки темы…</string>
     <string name="settings_theme_settings_desc">Настройки чтения и бумаги</string>
     <string name="settings_hide_status_bar">Скрыть строку состояния</string>
@@ -159,14 +267,18 @@
     <string name="settings_trad_conversion_desc">Преобразовать упрощённый китайский в традиционный</string>
     <string name="settings_continous_scrolling">Непрерывная прокрутка</string>
     <string name="settings_continous_scrolling_desc">Плавный переход между главами при прокрутке</string>
+    <!-- UI -->
     <string name="detail_introduction">Аннотация</string>
     <string name="detail_contents">Оглавление</string>
     <string name="detail_title">Детали</string>
+    <string name="book_management_title">Book Management</string>
+    <string name="bookshelf_new_title">New Bookshelf</string>
+    <string name="bookshelf_edit_title">Edit Bookshelf</string>
     <string name="changelog">История изменений</string>
     <string name="recent_reads">Недавние чтения (%d)</string>
     <string name="search_no_results">Результаты не найдены</string>
     <string name="search_no_results_desc">Проверьте правописание или попробуйте другие ключевые слова на китайском.</string>
-    <string name="search_results_title">Результаты поиска по "%1$s" (%2$d%3$s)</string>
+    <string name="search_results_title">Результаты поиска по \"%1$s\" (%2$d%3$s)</string>
     <string name="search_history">История поиска</string>
     <string name="start_reading">Начать чтение</string>
     <string name="continue_reading">Продолжить чтение</string>
@@ -182,7 +294,7 @@
     <string name="filter_by_publishing_house">Фильтр по издательству</string>
     <string name="filter_by_publishing_house_desc">Фильтр по издательству книги</string>
     <string name="book_info_update_date">Обновлено %s</string>
-、    <string name="book_info_word_count_kilo">%s слов</string>
+    <string name="book_info_word_count_kilo">%s слов</string>
     <string name="name">Название</string>
     <string name="bookshelf_name">Название полки</string>
     <string name="bookshelf_name_suggestion">Дайте вашей полке простое имя</string>
@@ -230,6 +342,7 @@
     <string name="view_daily">Ежедневно</string>
     <string name="view_weekly">Еженедельно</string>
     <string name="view_monthly">Ежемесячно</string>
+    <string name="view_yearly">Yearly</string>
     <string name="activity">Активность</string>
     <string name="calendar">Календарь</string>
     <string name="activity_first_read">Начал читать</string>
@@ -242,7 +355,6 @@
     <string name="time_distribution">Распределение времени</string>
     <string name="reading_details">Детали чтения</string>
     <string name="to">по</string>
-    <string name="ellipsis" translatable="false">…</string>
     <string name="heatmap_indicator_less">Меньше</string>
     <string name="heatmap_indicator_more">Больше (%d+)</string>
     <string name="time_range">Просмотрено</string>
@@ -251,7 +363,7 @@
     <string name="no_records">Нет записей</string>
     <string name="total_record">Всего записей</string>
     <string name="reading_sessions">Сессии чтения</string>
-    <string name="reading_sessions_unit"> </string>
+    <string name="reading_sessions_unit"></string>
     <string name="reading_duration">Длительность чтения</string>
     <string name="reading_duration_unit">ч %d мин</string>
     <string name="cached">В кэше</string>
@@ -262,7 +374,21 @@
     <string name="unit_minutes">м&#160;</string>
     <string name="unit_seconds">с</string>
     <string name="detail_of_date">Время чтения %1$s</string>
+    <string name="week_label_format">W%d</string>
+    <string name="detail_of_week">Week %d reading time</string>
     <string name="book_rules">Правила книги</string>
+    <string name="detail_info_stats_content">%1$s words\nTotal %2$d volumes, %3$d chapters</string>
+    <string name="mark_all_read_desc">Mark all chapters of this book as read up to now. Subsequent updated chapters will not be affected.</string>
+    <string name="completed">Completed</string>
+    <string name="clear_all">Clear All</string>
+    <string name="global_formatting_rules">Global Rules</string>
+    <string name="n_rules">%d rules</string>
+    <string name="rule_name">Name</string>
+    <string name="rule_match">Match content</string>
+    <string name="rule_replacement">Replace with</string>
+    <string name="rule_is_regex">Use regex matching</string>
+    <string name="edit_rule">Edit Rule</string>
+    <!-- Dialogs -->
     <string name="dialog_about_version">Версия</string>
     <string name="dialog_delete_bookshelf">Удалить полку</string>
     <string name="dialog_delete_bookshelf_text">Вы уверены, что хотите удалить эту полку? Она будет потеряна навсегда! (Очень надолго!)</string>
@@ -271,6 +397,8 @@
     <string name="dialog_export_to_epub_text">EPUB (Electronic Publication) — открытый стандарт электронных книг с форматом .epub.\n\nХотите экспортировать книгу в EPUB?</string>
     <string name="dialog_updates_available">Доступны обновления</string>
     <string name="dialog_snap_user_data_text">Выберите данные для экспорта</string>
+    <string name="dialog_snap_local_book_cache">Local Book Cache</string>
+    <string name="dialog_snap_local_book_cache_text">Includes all cached books and local books stored on the device</string>
     <string name="dialog_snap_bookshelf">Полка</string>
     <string name="dialog_snap_bookshelf_text">Включает информацию о полках и книгах.</string>
     <string name="dialog_snap_reading_data">Данные о чтении</string>
@@ -282,53 +410,199 @@
     <string name="dialog_select_data_source_text">Выберите источник данных. Это очистит кэш и переключит источник данных приложения. Текущие пользовательские данные сохранятся и восстановятся при возврате.</string>
     <string name="dialog_slider_custom">Введите значение</string>
     <string name="dialog_slider_custom_illegal_value">Пожалуйста, введите допустимое число</string>
-
+    <string name="dialog_color_picker">Color Palette</string>
+    <string name="dialog_color_picker_desc">Select a color for the reader background.</string>
+    <!-- Plugin -->
+    <string name="plugin_delete_title">Delete %1$s</string>
+    <string name="plugin_install_preparing">Preparing…</string>
+    <string name="plugin_version_prefix">Version %1$s</string>
+    <string name="plugin_install_failed">Installation failed</string>
+    <string name="plugin_install_completed">Plugin installed</string>
+    <string name="plugin_install_anyway">Install anyway</string>
+    <string name="plugin_update_check_title">Check for updates</string>
+    <string name="plugin_update_checking">Checking for updates…</string>
+    <string name="plugin_update_latest">You’re up to date</string>
+    <string name="plugin_error_generic">Error</string>
+    <string name="plugin_update_downloading_percent">Downloading %1$d%%</string>
+    <string name="plugin_update_extracting_percent">Extracting %1$d%%</string>
+    <string name="plugin_update_download_install">Download and install</string>
+    <string name="plugin_signature_about_title">About plugin signatures</string>
+    <string name="plugin_signature_about_body">        Plugin signatures help verify a plugin’s integrity and origin.\nYou can install unsigned plugins, but only do so if the file comes from a trusted source.
+    </string>
+    <string name="plugin_signature_dev_advice_title">Advice for plugin developers</string>
+    <string name="plugin_signature_dev_advice_body">        Use a stable signing certificate for your plugin so updates remain consistent, and to prevent tampering during distribution.
+    </string>
+    <string name="plugin_signature_info_title">Signature details</string>
+    <string name="plugin_signature_info_empty">No signature details</string>
+    <string name="plugin_signature_owner">Owner: %1$s</string>
+    <string name="plugin_signature_public_key">Public key: %1$s, %2$d-bit</string>
+    <string name="plugin_signature_sha256">SHA-256: %1$s</string>
+    <string name="plugin_install_plugin">Install plugin</string>
+    <string name="plugin_app_list">Plugin apps</string>
+    <string name="plugin_app_empty_title">No plugin apps</string>
+    <string name="plugin_app_empty_desc">Install a plugin app to show it here</string>
+    <string name="plugin_empty_title">No plugins</string>
+    <string name="plugin_empty_desc">Install a supported .lnrp plugin</string>
+    <string name="plugin_third_party_tips">        Third-party plugins may provide additional sources or features. Before installing, make sure the plugin comes from a trusted source.\nLightNovelReader is not responsible for plugin availability.
+    </string>
+    <string name="plugin_by_author">by %1$s</string>
+    <string name="plugin_details">Details</string>
+    <string name="plugin_repo">Plugin repo</string>
+    <string name="plugin_debug_reloading">Reloading…</string>
+    <string name="plugin_install_read_failed">Failed to read source file</string>
+    <string name="plugin_install_invalid_missing_annotation">Invalid plugin: missing a valid @Plugin annotation.\nPlease select a .lnrp plugin install file again.</string>
+    <string name="plugin_install_invalid_missing_api_version">Invalid plugin: missing apiVersion</string>
+    <string name="plugin_install_version_incompatible">Plugin version incompatible</string>
+    <string name="plugin_api_incompatible">This plugin was built for an older version of LightNovelReader and is not compatible with the current version.\nUpdating the plugin may resolve this issue.</string>
+    <string name="plugin_install_cancelled">Installation cancelled</string>
+    <string name="plugin_install_failed_with_reason">Installation failed: %1$s</string>
+    <string name="plugin_error_unsupported_api">Unsupported API version %1$d, current version is %2$d</string>
+    <string name="plugin_error_version_too_high">The installed plugin version is higher than the version being installed</string>
+    <string name="plugin_error_app_plugin_exist">There is already a app plugin which has the same package name with the installing plugin</string>
+    <string name="plugin_error_signature_mismatch">Plugin signature does not match the installed version</string>
+    <string name="plugin_error_unknown">Unknown error: %1$s</string>
+    <string name="plugin_install_conflict_app_plugin">Installation failed: a plugin app with the same ID is installed. Please uninstall the app plugin first.</string>
+    <string name="plugin_install_signature_mismatch">Installation failed: different signature detected. Please uninstall the installed version before installing this plugin.</string>
+    <string name="plugin_install_overwrite_prompt">A plugin is already installed. Replace it?</string>
+    <string name="plugin_install_confirm_body">Do you want to install the plugin \"%1$s\"?</string>
+    <string name="plugin_install_reading">Reading plugin…</string>
+    <string name="plugin_install_parsing">Parsing plugin info…</string>
+    <string name="plugin_install_verifying">Verifying plugin…</string>
+    <string name="plugin_install_installing">Installing plugin…</string>
+    <string name="plugin_install_continue">Continue installation…</string>
+    <string name="plugin_install_parse_package_info">Parsing package info…</string>
+    <string name="plugin_install_parse_plugin_metadata">Parsing plugin metadata…</string>
+    <string name="plugin_install_clean">Cleaning up…</string>
+    <string name="plugin_install_check_legality">Checking install legality…</string>
+    <string name="plugin_install_write_metadata">Writing plugin metadata…</string>
+    <string name="plugin_install_copy_plugin">Copying plugin…</string>
+    <string name="plugin_update_preparing">Preparing update…</string>
+    <string name="plugin_delete_confirm_body">Are you sure you want to delete this plugin? This action cannot be undone.</string>
+    <string name="plugin_delete_confirm">Delete</string>
+    <string name="plugin_delete_deleting">Deleting…</string>
+    <string name="plugin_delete_completed">Deletion complete</string>
+    <string name="plugin_delete_failed_with_reason">Deletion failed: %1$s</string>
+    <string name="plugin_update_url_missing">Update URL not configured</string>
+    <string name="plugin_update_check_failed_with_reason">Update check failed: %1$s</string>
+    <string name="plugin_update_available_with_version">New version found: %1$s (%2$d)</string>
+    <string name="plugin_snackbar_not_signed">Plugin is not signed.</string>
+    <string name="plugin_snackbar_disabled_load_error">Plugin disabled due to a load error.</string>
+    <string name="plugin_snackbar_learn_more">Learn more</string>
+    <string name="plugin_picker_title">Select plugin</string>
+    <string name="plugin_install_dialog_body">The following plugin will be installed:\n\n%1$s</string>
+    <string name="plugin_install_action_install">Install</string>
+    <string name="plugin_unknown_name">Unknown</string>
+    <string name="plugin_disabled_title">Plugin disabled</string>
+    <string name="plugin_disabled_body">An error occurred while loading this plugin, causing the app to terminate.\n\nFor stability, the plugin has been disabled automatically. You can re-enable it in the plugin manager.</string>
+    <string name="plugin_signature_count">Contains %1$d signatures</string>
+    <string name="plugin_signature_validity">Valid %1$s - %2$s</string>
+    <string name="plugin_signature_subject">Subject</string>
+    <string name="plugin_signature_issuer">Issuer</string>
+    <string name="plugin_signature_public_key_label">Public key</string>
+    <string name="plugin_signature_public_key_value">%1$d-bit %2$s </string>
+    <string name="plugin_signature_sha1_label">SHA-1</string>
+    <string name="plugin_app_loadable_tag">Loadable plugin</string>
+    <string name="plugin_enable_label">Enable plugin</string>
+    <string name="plugin_detail_tab_overview">Overview</string>
+    <string name="plugin_detail_tab_settings">Settings</string>
+    <string name="plugin_detail_summary_title">About this plugin</string>
+    <string name="plugin_detail_info_title">Plugin information</string>
+    <string name="plugin_detail_api_version">API version</string>
+    <string name="plugin_detail_signature_label">Signature</string>
+    <string name="plugin_detail_source_label">Source</string>
+    <string name="plugin_detail_source_local">Local package</string>
+    <string name="plugin_detail_source_app">Installed app</string>
+    <string name="plugin_third_party_title">Third-party plugin</string>
+    <string name="plugin_third_party_desc">This plugin is provided by a third party</string>
+    <string name="plugin_info_id_label">ID</string>
+    <string name="plugin_info_version_label">Version</string>
+    <string name="plugin_info_author_label">Author</string>
+    <string name="plugin_repo_load_failed">Repository load failed</string>
+    <string name="plugin_repo_item_version">Version %1$s (%2$d)</string>
+    <string name="plugin_repo_reinstall">Reinstall</string>
+    <string name="plugin_repo_installing">Installing</string>
+    <string name="plugin_repo_title">Plugin repository</string>
+    <string name="plugin_repo_install_failed">Failed to install %1$s: %2$s</string>
+    <string name="plugin_repo_install_cancelled">Cancelled installing %1$s</string>
+    <string name="plugin_repo_parts_incomplete">Split download incomplete: completed %1$d/%2$d, missing %3$s</string>
+    <string name="plugin_app_conflict_message">Conflicts with installed plugin app; app plugin is preferred.</string>
+    <!-- Notifications -->
+    <string name="epub_export_notification_channel_name">EPUB export progress</string>
+    <string name="epub_export_notification_preparing">Preparing…</string>
+    <string name="epub_export_notification_failed">Export failed</string>
+    <string name="epub_export_notification_success">Successfully completed</string>
+    <string name="epub_export_notification_stage_chapters">Chapters %1$d/%2$d -</string>
+    <string name="epub_export_notification_stage_images">Images %1$d/%2$d -</string>
+    <string name="epub_export_notification_stage_save">Saving EPUB</string>
     <!-- KEY STRINGS -->
-    <!-- Фильтр издательства -->
+    <!-- Publishing House Filter -->
     <string name="key_pub_filter_title">Фильтр издательства</string>
     <string name="key_pub_filter_desc">Фильтровать по издательству.</string>
-    <!-- Фильтр по начальной букве  -->
+    <!-- Initial letter Filter -->
     <string name="key_letter_filter_title">Фильтр по первой букве</string>
     <string name="key_letter_filter_desc">Фильтровать по первой букве названия книги (Пиньинь).</string>
-    <!-- Настройка читалки -->
+    <!-- Reader Custom -->
     <string name="key_customize_image">Настроить изображение</string>
     <string name="key_default_image">Изображение по умолчанию</string>
     <string name="key_default_text">Шрифт по умолчанию</string>
     <string name="key_customize_text">Настроить текст</string>
-    <!-- Канал обновлений -->
+    <!-- Update Channel -->
     <string name="key_update_channel_release">Релизные сборки</string>
     <string name="key_update_channel_development">Разработческие сборки</string>
-    <string name="key_update_channel_ci" translatable="false">CI</string>
-    <!-- Платформа распространения -->
-    <string name="key_platform_github" translatable="false">GitHub</string>
-    <string name="key_platform_appcenter" translatable="false">AppCenter</string>
-    <string name="key_platform_lnr_api" translatable="false">API LightNovelReader от yukonisen</string>
-    <!-- Тёмный режим -->
+    <string name="key_update_channel_ci">CI</string>
+    <!-- Distribution Platform -->
+    <!-- Dark Mode -->
     <string name="key_dark_mode_follow_system">Следовать системным настройкам</string>
     <string name="key_dark_mode_enabled">Принудительно включено</string>
     <string name="key_dark_mode_disabled">Принудительно отключено</string>
-    <!-- Уровень логов -->
+    <!-- Log Level -->
     <string name="key_log_level_none">Нет</string>
     <string name="key_log_level_error">Ошибка</string>
     <string name="key_log_level_warning">Предупреждение</string>
     <string name="key_log_level_info">Информация</string>
     <string name="key_log_level_debug">Отладка</string>
     <string name="key_log_level_verbose">Подробно</string>
-    <!-- Имя светлой темы -->
+    <!-- Light Theme Name -->
     <string name="key_light_theme_default">По умолчанию</string>
-    <!-- Имя тёмной темы -->
+    <string name="key_light_theme_designer">Designer</string>
+    <!-- Dark Theme Name -->
     <string name="key_dark_theme_default">По умолчанию</string>
     <string name="key_dark_theme_obsidian">Обсидиан</string>
-    <!-- Экспериментальные локалиe -->
+    <string name="key_dark_theme_designer">Designer</string>
+    <!-- Experimental Locale -->
     <string name="key_locale_none">Не задано</string>
-    <!-- Анимация перелистывания -->
+    <!-- Flip Animation -->
     <string name="key_flip_animation_none">Нет</string>
     <string name="key_flip_animation_scroll">Прокрутка</string>
-    <!-- Отображение фонового изображения -->
+    <!-- Reader Bg Image Display Mode -->
     <string name="key_bg_image_display_mode_loop">Цикл</string>
     <string name="key_bg_image_display_mode_fixed">Фиксированное</string>
-    <!-- Режим отображения индикатора батареи в читалке -->
+    <!-- Reader Battery Indicator Display Mode -->
     <string name="key_reader_indicator_battery_display_mode_hidden">Скрыто</string>
     <string name="key_reader_indicator_battery_display_mode_classic">Классический</string>
     <string name="key_reader_indicator_battery_display_mode_immersed">Погружённый</string>
+    <!-- Reader Back Block Mode -->
+    <string name="key_reader_back_block_mode_none">None</string>
+    <string name="key_reader_back_block_mode_double_press">Double Press</string>
+    <string name="key_reader_back_block_mode_blocked">Fully Blocked</string>
+    <!-- Date Time Style -->
+    <string name="key_date_time_style_system">Follow System</string>
+    <string name="key_date_time_style_short">Short</string>
+    <string name="key_date_time_style_medium">Medium</string>
+    <string name="key_date_time_style_long">Long</string>
+    <string name="key_date_time_style_full">Full</string>
+    <!-- Relative Time Style -->
+    <string name="key_relative_time_style_relative">Relative</string>
+    <string name="key_relative_time_style_absolute">Absolute</string>
+    <!-- Duration Style -->
+    <string name="key_duration_style_simple">Simple</string>
+    <string name="key_duration_style_detailed">Detailed</string>
+    <!-- Date Style -->
+    <string name="key_date_format_numeric">Numeric</string>
+    <string name="key_date_format_written">Written</string>
+    <!-- Date Order -->
+    <string name="key_date_order_auto">Follow Language</string>
+    <string name="key_date_order_ymd">Year-Month-Day</string>
+    <string name="key_date_order_dmy">Day-Month-Year</string>
+    <string name="key_date_order_mdy">Month-Day-Year</string>
 </resources>

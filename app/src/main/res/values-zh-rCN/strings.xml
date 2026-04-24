@@ -1,7 +1,8 @@
-<resources>
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
     <string name="language">简体中文 (中国大陆)</string>
     <string name="language_translators">NightFish, yukonisen</string>
-    <!-- navigation items -->
+    <!-- Navigation Items -->
     <string name="nav_reading">阅读中</string>
     <string name="nav_bookshelf">书架</string>
     <string name="nav_bookshelf_select_mode">选择 书架 (%d)</string>
@@ -16,6 +17,8 @@
     <string name="apply">应用</string>
     <string name="confirm">确定</string>
     <string name="done">完成</string>
+    <string name="next">下一步</string>
+    <string name="abort">中止</string>
     <string name="decline">拒绝</string>
     <string name="copied">内容已复制</string>
     <string name="select_all">全选</string>
@@ -35,19 +38,17 @@
     <string name="switch_and_restart">切换并重启</string>
     <string name="hide_read">仅显示未读</string>
     <string name="mark_as_read">标记为已读…</string>
-    <string name="export_to_file">导出至文件</string>
     <string name="export_epub">导出为 Epub</string>
     <string name="export_include_images">包含图片</string>
     <string name="export_split_volumes">分卷导出</string>
     <string name="select_location">选择位置</string>
+    <string name="export_to_file">导出至文件</string>
     <string name="export_and_share">导出并分享</string>
     <string name="choose_light_bg">选择浅色背景</string>
     <string name="choose_dark_bg">选择深色背景</string>
     <string name="reader_back_press_again">再次点击返回以退出阅读</string>
     <string name="previous_chapter">上一章</string>
     <string name="next_chapter">下一章</string>
-    <string name="next">下一步</string>
-    <string name="abort">中止</string>
     <string name="save_rule">保存规则</string>
     <string name="delete_rule">删除规则</string>
     <string name="data_import_success">导入成功</string>
@@ -71,7 +72,6 @@
     <string name="book_word_count_limit">字数限制:</string>
     <string name="source_available_title">可用数据源</string>
     <string name="unavailable">不可用</string>
-
     <!-- Hints -->
     <string name="nothing_here">没有内容</string>
     <string name="nothing_here_desc_reading">阅读一些书本之后，它们将显示在此处\n通过下方导航栏前往『探索』页面以获取新书</string>
@@ -90,29 +90,25 @@
     <string name="reader_reached_end">已经结束了…</string>
     <string name="font_file_error">字体文件错误或已损坏, 请您检查后导入</string>
     <string name="settings_data_source_pending_title">切换到 %s</string>
-    <string name="settings_data_source_pending_desc">
-        应用将清除缓存并重启。当前数据将在下次切换回「%s」时可用。
+    <string name="settings_data_source_pending_desc">        应用将清除缓存并重启。当前数据将在下次切换回「%s」时可用。
     </string>
     <string name="settings_data_source_applying">进行中……</string>
     <string name="plugin_invalid_title">无效插件</string>
     <string name="plugin_invalid_desc">无法获取插件信息，插件可能无效或损坏</string>
     <string name="plugin_disabled">不可用</string>
     <string name="plugin_disabled_desc">调整设置需要启用插件</string>
-
     <!-- Snackbar Hints -->
     <string name="cache_book_started">开始缓存：%1$s</string>
     <string name="cache_book_running">此书本正在缓存中</string>
     <string name="cache_book_finished">缓存成功</string>
     <string name="cache_book_error">缓存失败</string>
     <string name="restart_to_apply_changes">重启应用以生效</string>
-    <string name="network_error_message">
-        应用无法从数据源获取信息，这通常是网络问题所致。在提交问题前，请知晓：我们无法协助排查具体网络状况，请先检查您的网络连接。
+    <string name="network_error_message">        应用无法从数据源获取信息，这通常是网络问题所致。在提交问题前，请知晓：我们无法协助排查具体网络状况，请先检查您的网络连接。
     </string>
     <string name="export_book_started">开始导出书本 %s</string>
     <string name="export_book_success">成功导出书本 %s</string>
     <string name="export_book_failed">导出书本 %s 失败</string>
     <string name="removed_item">已移除: </string>
-
     <!-- Settings -->
     <string name="reading_settings">阅读</string>
     <string name="extensions_settings">扩展</string>
@@ -127,7 +123,6 @@
     <string name="settings_get_updates_desc">手动获取应用更新</string>
     <string name="settings_distribution_platform">更新分发平台</string>
     <string name="settings_distribution_platform_settings_desc"><!--reserved--></string>
-
     <string name="reader_settings">阅读设置</string>
     <string name="settings_reader_font_size">字体大小</string>
     <string name="settings_reader_line_spacing">行间距</string>
@@ -160,7 +155,6 @@
     <string name="settings_reader_bottom_margin">底部边距</string>
     <string name="settings_reader_left_margin">左边距</string>
     <string name="settings_reader_right_margin">右边距</string>
-
     <string name="display_settings">显示</string>
     <string name="settings_theme">主题与纸张</string>
     <string name="settings_theme_desc">设置应用主题和阅读器纸张</string>
@@ -171,11 +165,10 @@
     <string name="settings_theme_dark_theme">深色主题</string>
     <string name="settings_theme_dark_theme_desc">指定应用在深色模式下的主题</string>
     <string name="settings_theme_dynamic_colors">系统动态配色</string>
-    <string name="settings_theme_dynamic_colors_desc">从系统主题应用动态配色</string>
     <string name="settings_theme_dynamic_colors_desc_unavailable">从系统主题应用动态配色 (需要 Android 12+)</string>
+    <string name="settings_theme_dynamic_colors_desc">从系统主题应用动态配色</string>
     <string name="settings_theme_m3e">Material 3 Expressive</string>
     <string name="settings_theme_m3e_description">启用 Material 3 Expressive 设计。该功能为实验性内容，仍处于测试阶段</string>
-
     <string name="settings_formats">格式</string>
     <string name="settings_formats_desc">设置日期或文本格式</string>
     <string name="date_time_formats_settings">日期和时间</string>
@@ -188,7 +181,6 @@
     <string name="settings_formats_relative_time_format">使用相对时间</string>
     <string name="settings_advanced">高级</string>
     <string name="settings_formats_characters_variant_note">汉字变体只对阅读器生效，并且需要字体支持。</string>
-
     <string name="settings_app_language">语言</string>
     <string name="settings_app_language_desc">设置应用语言</string>
     <string name="settings_app_language_desc_unavailable">设置应用语言 (需要 Android 13+)</string>
@@ -210,7 +202,6 @@
     <string name="settings_theme_text_font">文本字体</string>
     <string name="settings_theme_text_font_desc">使用应用内置的字体或自定义字体文件</string>
     <string name="settings_theme_text_font_weight">字重</string>
-
     <string name="data_settings">数据</string>
     <string name="settings_snap_data">快照数据</string>
     <string name="settings_snap_data_desc">将应用内的用户数据导出为 .lnr 文件</string>
@@ -226,7 +217,6 @@
     <string name="settings_app_log_level_desc">设置日志过滤等级，重启应用后生效</string>
     <string name="settings_auto_proxy">自动代理</string>
     <string name="settings_auto_proxy_desc">自动从网络上获取代理 IP，<b>但这将导致您所浏览的书本数据可能会被截获</b></string>
-
     <string name="about_settings">关于</string>
     <string name="settings_debug_tools">调试选项</string>
     <string name="settings_debug_tools_desc">供开发使用的调试与诊断功能</string>
@@ -242,8 +232,7 @@
     <string name="settings_statistics">匿名统计</string>
     <string name="settings_statistics_desc">我们需要收集一些统计数据，以使 LightNovelReader 变得更好</string>
     <string name="settings_statistics_disable_dialog_title">等一等……</string>
-    <string name="settings_statistics_disable_dialog_text">
-        真的要关闭统计吗 ο(=•ω＜=)ρ⌒☆
+    <string name="settings_statistics_disable_dialog_text">        真的要关闭统计吗 ο(=•ω＜=)ρ⌒☆
         \nLightNovelReader 仅统计日活等数据
         \n不会涉及任何隐私信息并且是匿名统计
         \n关闭后夜鱼只能对着0日活哭泣了 ≧ ﹏ ≦
@@ -260,7 +249,6 @@
     <string name="experimental_settings">实验性</string>
     <string name="debug_settings">调试</string>
     <string name="item_view_details">查看详细信息</string>
-
     <string name="settings_auto_cache">自动缓存</string>
     <string name="settings_auto_cache_desc">自动缓存新加入的书本内容</string>
     <string name="settings_book_update_reminder">更新提醒</string>
@@ -278,7 +266,6 @@
     <string name="settings_trad_conversion_desc">将内容从简体转换为繁体</string>
     <string name="settings_continous_scrolling">无痕滚动</string>
     <string name="settings_continous_scrolling_desc">滚动翻页时无痕切换章节</string>
-
     <!-- UI -->
     <string name="detail_introduction">介绍</string>
     <string name="detail_contents">目录</string>
@@ -321,8 +308,8 @@
     <string name="import_from_file">从文件导入</string>
     <string name="add_to_bookshelf">收藏至书架</string>
     <string name="action_cache">缓存</string>
-    <string name="expand">展开</string>
     <string name="action_show_info">信息</string>
+    <string name="expand">展开</string>
     <string name="collapse">收起</string>
     <string name="info_reading_finished">已读完</string>
     <string name="info_reading_progress">已读 %1$d/%2$d</string>
@@ -375,7 +362,7 @@
     <string name="no_records">没有记录</string>
     <string name="total_record">总记录</string>
     <string name="reading_sessions">阅读会话</string>
-    <string name="reading_sessions_unit">次</string>
+    <string name="reading_sessions_unit"></string>
     <string name="reading_duration">阅读时长</string>
     <string name="reading_duration_unit">时 %d 分</string>
     <string name="cached">已缓存</string>
@@ -400,7 +387,6 @@
     <string name="rule_replacement">替换为</string>
     <string name="rule_is_regex">使用正则匹配</string>
     <string name="edit_rule">编辑规则</string>
-
     <!-- Dialogs -->
     <string name="dialog_about_version">版本</string>
     <string name="dialog_delete_bookshelf">删除书架</string>
@@ -425,7 +411,6 @@
     <string name="dialog_slider_custom_illegal_value">请输入合法的数值</string>
     <string name="dialog_color_picker">调色盘</string>
     <string name="dialog_color_picker_desc">选择一个颜色用于阅读器背景。</string>
-
     <!-- Plugin -->
     <string name="plugin_delete_title">删除 %1$s</string>
     <string name="plugin_install_preparing">正在准备…</string>
@@ -433,7 +418,6 @@
     <string name="plugin_install_failed">安装失败</string>
     <string name="plugin_install_completed">插件安装完成</string>
     <string name="plugin_install_anyway">仍要安装</string>
-
     <string name="plugin_update_check_title">检查更新</string>
     <string name="plugin_update_checking">正在检查更新…</string>
     <string name="plugin_update_latest">已是最新版本</string>
@@ -441,26 +425,24 @@
     <string name="plugin_update_downloading_percent">下载中 %1$d%%</string>
     <string name="plugin_update_extracting_percent">解压中 %1$d%%</string>
     <string name="plugin_update_download_install">下载并安装</string>
-
     <string name="plugin_signature_about_title">关于插件签名</string>
-    <string name="plugin_signature_about_body">
-        插件签名可用于确认插件文件的完整性与来源。\n允许安装未签名的插件，但请务必确认文件来自可信渠道。
+    <string name="plugin_signature_about_body">        插件签名可用于确认插件文件的完整性与来源。\n允许安装未签名的插件，但请务必确认文件来自可信渠道。
     </string>
     <string name="plugin_signature_dev_advice_title">对插件开发者的建议</string>
-    <string name="plugin_signature_dev_advice_body">
-        建议为插件生成并使用固定的签名证书，以便在版本更新时维持一致性，并确保插件在分发过程中不被篡改。
+    <string name="plugin_signature_dev_advice_body">        建议为插件生成并使用固定的签名证书，以便在版本更新时维持一致性，并确保插件在分发过程中不被篡改。
     </string>
-
     <string name="plugin_signature_info_title">签名信息</string>
     <string name="plugin_signature_info_empty">无签名信息</string>
     <string name="plugin_signature_owner">所有者: %1$s</string>
     <string name="plugin_signature_public_key">公钥: %1$s，%2$d-bit</string>
     <string name="plugin_signature_sha256">SHA256: %1$s</string>
     <string name="plugin_install_plugin">安装插件</string>
+    <string name="plugin_app_list">Plugin apps</string>
+    <string name="plugin_app_empty_title">No plugin apps</string>
+    <string name="plugin_app_empty_desc">Install a plugin app to show it here</string>
     <string name="plugin_empty_title">没有插件</string>
     <string name="plugin_empty_desc">安装受支持的 .lnrp 格式插件</string>
-    <string name="plugin_third_party_tips">
-        来自第三方的插件可以提供额外的数据源或功能。安装插件前，请确保其来源可信。\nLightNovelReader 不对插件可用性负责。
+    <string name="plugin_third_party_tips">        来自第三方的插件可以提供额外的数据源或功能。安装插件前，请确保其来源可信。\nLightNovelReader 不对插件可用性负责。
     </string>
     <string name="plugin_by_author">作者: %1$s</string>
     <string name="plugin_details">详情</string>
@@ -506,7 +488,6 @@
     <string name="plugin_snackbar_disabled_load_error">已禁用该插件，因为其出现加载错误。</string>
     <string name="plugin_snackbar_learn_more">了解更多</string>
     <string name="plugin_picker_title">选择插件</string>
-
     <string name="plugin_install_dialog_body">将安装以下插件:\n\n%1$s</string>
     <string name="plugin_install_action_install">安装</string>
     <string name="plugin_unknown_name">未知</string>
@@ -543,7 +524,7 @@
     <string name="plugin_repo_install_failed">安装 %1$s 失败：%2$s</string>
     <string name="plugin_repo_install_cancelled">已取消安装 %1$s</string>
     <string name="plugin_repo_parts_incomplete">分卷下载不完整: 已完成 %1$d/%2$d，缺失 %3$s</string>
-
+    <string name="plugin_app_conflict_message">Conflicts with installed plugin app; app plugin is preferred.</string>
     <!-- Notifications -->
     <string name="epub_export_notification_channel_name">EPUB 导出进度</string>
     <string name="epub_export_notification_preparing">准备中…</string>
@@ -552,7 +533,6 @@
     <string name="epub_export_notification_stage_chapters">章节 %1$d/%2$d -</string>
     <string name="epub_export_notification_stage_images">图片 %1$d/%2$d -</string>
     <string name="epub_export_notification_stage_save">正在保存为 EPUB</string>
-
     <!-- KEY STRINGS -->
     <!-- Publishing House Filter -->
     <string name="key_pub_filter_title">文库筛选</string>
@@ -569,10 +549,18 @@
     <string name="key_update_channel_release">无</string>
     <string name="key_update_channel_development">Beta 测试版</string>
     <string name="key_update_channel_ci">Alpha 测试版 (不稳定)</string>
+    <!-- Distribution Platform -->
     <!-- Dark Mode -->
     <string name="key_dark_mode_follow_system">跟随系统</string>
     <string name="key_dark_mode_enabled">保持启用</string>
     <string name="key_dark_mode_disabled">保持禁用</string>
+    <!-- Log Level -->
+    <string name="key_log_level_none">None</string>
+    <string name="key_log_level_error">Error</string>
+    <string name="key_log_level_warning">Warning</string>
+    <string name="key_log_level_info">Info</string>
+    <string name="key_log_level_debug">Debug</string>
+    <string name="key_log_level_verbose">Verbose</string>
     <!-- Light Theme Name -->
     <string name="key_light_theme_default">默认</string>
     <string name="key_light_theme_designer">Designer</string>
@@ -582,7 +570,7 @@
     <string name="key_dark_theme_designer">Designer</string>
     <!-- Experimental Locale -->
     <string name="key_locale_none">无</string>
-    <!-- FlipAnime -->
+    <!-- Flip Animation -->
     <string name="key_flip_animation_none">无</string>
     <string name="key_flip_animation_scroll">滚动</string>
     <!-- Reader Bg Image Display Mode -->
@@ -597,6 +585,7 @@
     <string name="key_reader_back_block_mode_double_press">双击</string>
     <string name="key_reader_back_block_mode_blocked">完全阻止</string>
     <!-- Date Time Style -->
+    <string name="key_date_time_style_system">Follow System</string>
     <string name="key_date_time_style_short">短</string>
     <string name="key_date_time_style_medium">中</string>
     <string name="key_date_time_style_long">长</string>
