@@ -4,7 +4,7 @@ on:
   pull_request:
     branches: [master, refactoring]
     paths:
-      - app/src/**
+      - app/src/main/kotlin/**
       - build.gradle.kts
       - gradle.properties
       - settings.gradle
