@@ -555,4 +555,85 @@
     <string name="epub_export_notification_stage_chapters">Chapters %1$d/%2$d -</string>
     <string name="epub_export_notification_stage_images">Images %1$d/%2$d -</string>
     <string name="epub_export_notification_stage_save">Saving EPUB</string>
+
+    <!-- KEY STRINGS -->
+    <!-- Publishing House Filter -->
+    <string name="key_pub_filter_title">Publishing House Filter</string>
+    <string name="key_pub_filter_desc">Filter by publishing house.</string>
+    <!-- Initial letter Filter -->
+    <string name="key_letter_filter_title">First Letter Filter</string>
+    <string name="key_letter_filter_desc">Filter by the first letter of the book\'s title (Pinyin).</string>
+    <!-- Reader Custom -->
+    <string name="key_customize_image">Customize Image</string>
+    <string name="key_default_image">Default Image</string>
+    <string name="key_default_text">Default Font</string>
+    <string name="key_customize_text">Customize Image</string>
+    <!-- Update Channel -->
+    <string name="key_update_channel_release">None (Stable)</string>
+    <string name="key_update_channel_development">Beta Version</string>
+    <string name="key_update_channel_ci">Alpha Version (Unstable)</string>
+    <!-- Distribution Platform -->
+    <string name="key_platform_github" translatable="false">GitHub</string>
+    <string name="key_platform_appcenter" translatable="false">AppCenter</string>
+    <string name="key_platform_lnr_api" translatable="false">LightNovelReader API</string>
+    <!-- Dark Mode -->
+    <string name="key_dark_mode_follow_system">Follow System</string>
+    <string name="key_dark_mode_enabled">Override Enabled</string>
+    <string name="key_dark_mode_disabled">Override Disabled</string>
+    <!-- Log Level -->
+    <string name="key_log_level_none">None</string>
+    <string name="key_log_level_error">Error</string>
+    <string name="key_log_level_warning">Warning</string>
+    <string name="key_log_level_info">Info</string>
+    <string name="key_log_level_debug">Debug</string>
+    <string name="key_log_level_verbose">Verbose</string>
+    <!-- Light Theme Name -->
+    <string name="key_light_theme_default">Default</string>
+    <string name="key_light_theme_designer">Designer</string>
+    <!-- Dark Theme Name -->
+    <string name="key_dark_theme_default">Default</string>
+    <string name="key_dark_theme_obsidian">Obsidian</string>
+    <string name="key_dark_theme_designer">Designer</string>
+    <!-- Experimental Locale -->
+    <string name="key_locale_none">Not set</string>
+    <string name="key_locale_zh_cn" translatable="false">简体中文 (中国大陆)</string>
+    <string name="key_locale_zh_hk" translatable="false">繁體中文 (香港)</string>
+    <string name="key_locale_zh_tw" translatable="false">繁體中文 (台灣)</string>
+    <string name="key_locale_ja_jp" translatable="false">日本語</string>
+    <string name="key_locale_ko_kr" translatable="false">한국어 (대한민국)</string>
+    <string name="key_locale_ko_kp" translatable="false">한국어 (조선민주주의인민공화국)</string>
+    <!-- Flip Animation -->
+    <string name="key_flip_animation_none">None</string>
+    <string name="key_flip_animation_scroll">Scroll</string>
+    <!-- Reader Bg Image Display Mode -->
+    <string name="key_bg_image_display_mode_loop">Loop</string>
+    <string name="key_bg_image_display_mode_fixed">Fixed</string>
+    <!-- Reader Battery Indicator Display Mode -->
+    <string name="key_reader_indicator_battery_display_mode_hidden">Hidden</string>
+    <string name="key_reader_indicator_battery_display_mode_classic">Classic</string>
+    <string name="key_reader_indicator_battery_display_mode_immersed">Show status bar</string>
+    <!-- Reader Back Block Mode -->
+    <string name="key_reader_back_block_mode_none">None</string>
+    <string name="key_reader_back_block_mode_double_press">Double Press</string>
+    <string name="key_reader_back_block_mode_blocked">Fully Blocked</string>
+    <!-- Date Time Style -->
+    <string name="key_date_time_style_system">Follow System</string>
+    <string name="key_date_time_style_short">Short</string>
+    <string name="key_date_time_style_medium">Medium</string>
+    <string name="key_date_time_style_long">Long</string>
+    <string name="key_date_time_style_full">Full</string>
+    <!-- Relative Time Style -->
+    <string name="key_relative_time_style_relative">Relative</string>
+    <string name="key_relative_time_style_absolute">Absolute</string>
+    <!-- Duration Style -->
+    <string name="key_duration_style_simple">Simple</string>
+    <string name="key_duration_style_detailed">Detailed</string>
+    <!-- Date Style -->
+    <string name="key_date_format_numeric">Numeric</string>
+    <string name="key_date_format_written">Written</string>
+    <!-- Date Order -->
+    <string name="key_date_order_auto">Follow Language</string>
+    <string name="key_date_order_ymd">Year-Month-Day</string>
+    <string name="key_date_order_dmy">Day-Month-Year</string>
+    <string name="key_date_order_mdy">Month-Day-Year</string>
 </resources>
