@@ -25,25 +25,10 @@ import java.io.FileOutputStream
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
-sealed interface StoreInstallState {
-    data object Loading : StoreInstallState
-    data class Ready(
-        val plugin: StorePlugin
-    ) : StoreInstallState
-    data class Downloading(
-        val lastPlugin: StorePlugin,
-        val progress: Float
-    ) : StoreInstallState
-    data class Error(
-        val message: String
-    ) : StoreInstallState
-}
-
 @HiltViewModel
 class PluginStoreInstallViewModel @Inject constructor(
     private val pluginManager: PluginManager
 ) : ViewModel() {
-
     var state: StoreInstallState by mutableStateOf(StoreInstallState.Loading)
     var downloadProgress: Float by mutableFloatStateOf(0f)
     private val base = "eNpb85aBtYRBK6OkpKDYSl-_IKc0PTOvWC8vsSgzO18vvyhdP7EgEyZsn5liCwDAsBIV"

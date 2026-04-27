@@ -17,12 +17,6 @@ import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
-data class PluginUpdateInfo(
-    val pluginId: String,
-    val versionName: String,
-    val storePlugin: StorePlugin
-)
-
 @Singleton
 class PluginUpdateCheckRepository @Inject constructor(
     private val pluginManager: PluginManager

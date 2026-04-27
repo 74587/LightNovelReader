@@ -24,7 +24,7 @@ import javax.inject.Inject
 class PluginManagerViewModel @Inject constructor(
     val pluginManager: PluginManager,
     val userDataRepository: UserDataRepository,
-    pluginUpdateCheckRepository: PluginUpdateCheckRepository,
+    val pluginUpdateCheckRepository: PluginUpdateCheckRepository,
 ) : ViewModel() {
 
     private val enabledPluginUserData = userDataRepository.stringListUserData(UserDataPath.Plugin.EnabledPlugins.path)
@@ -34,7 +34,7 @@ class PluginManagerViewModel @Inject constructor(
     val errorMessageMap: Map<String, String> = pluginManager.errorPluginMap
     val scannedPluginApps: List<PluginAppInfo> = pluginManager.appPluginInfos
 
-    val pluginUpdates = pluginUpdateCheckRepository.updates
+    val pluginUpdates get() = pluginUpdateCheckRepository.updates
 
     private val _snackbarFlow = MutableSharedFlow<String>()
     val snackbarFlow = _snackbarFlow.asSharedFlow()
