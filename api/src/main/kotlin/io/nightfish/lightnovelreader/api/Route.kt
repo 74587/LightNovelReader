@@ -132,9 +132,6 @@ object Route {
                 /** 已安装插件列表界面路由 */
                 @Serializable
                 object AppList
-                /** 插件仓库界面路由 */
-                @Serializable
-                object Repository
             }
             /** 数据源切换界面路由组 */
             @Serializable
@@ -291,7 +288,10 @@ object Route {
     @Serializable
     object DownloadManager
 
-    /** 插件商店安装底栏 */
+    /** 插件商店安装底栏
+     *
+     * @param pluginId 目标插件id
+     */
     @Serializable
     data class PluginStoreInstall(val pluginId: String)
 }
