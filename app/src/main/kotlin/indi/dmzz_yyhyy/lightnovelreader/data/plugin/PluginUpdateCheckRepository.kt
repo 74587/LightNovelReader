@@ -10,8 +10,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
-import java.net.HttpURLConnection
-import java.net.URL
+import okhttp3.OkHttpClient
+import okhttp3.Request
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -35,6 +36,10 @@ class PluginUpdateCheckRepository @Inject constructor(
     private val json = Json { ignoreUnknownKeys = true }
     private val base = "eNpb85aBtYRBK6OkpKDYSl-_IKc0PTOvWC8vsSgzO18vvyhdP7EgEyZsn5liCwDAsBIV"
     private val coroutineScope = CoroutineScope(Dispatchers.IO + SupervisorJob())
+    private val httpClient = OkHttpClient.Builder()
+        .connectTimeout(15, TimeUnit.SECONDS)
+        .readTimeout(15, TimeUnit.SECONDS)
+        .build()
 
     init {
         pluginManager.addOnInitializedCallback {
@@ -52,13 +57,11 @@ class PluginUpdateCheckRepository @Inject constructor(
             Log.d(TAG, "Checking updates for plugin $pluginId")
             try {
                 val url = "${update(base)}$pluginId"
-                val connection = (URL(url).openConnection() as HttpURLConnection).apply {
-                    connectTimeout = 15_000
-                    readTimeout = 15_000
-                    requestMethod = "GET"
+                val request = Request.Builder().url(url).get().build()
+                val body = httpClient.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) throw Exception("HTTP ${response.code}")
+                    response.body.string()
                 }
-                val body = connection.inputStream.bufferedReader().use { it.readText() }
-                connection.disconnect()
                 val storePlugin = json.decodeFromJsonElement(
                     StorePlugin.serializer(),
                     json.parseToJsonElement(body).jsonObject["plugin"]!!

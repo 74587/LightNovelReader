@@ -2,11 +2,12 @@ package indi.dmzz_yyhyy.lightnovelreader.data.update
 
 import android.util.Log
 import kotlinx.coroutines.flow.MutableStateFlow
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import org.json.JSONObject
 import java.io.File
 import java.io.IOException
-import java.net.HttpURLConnection
-import java.net.URL
+import java.util.concurrent.TimeUnit
 import java.util.zip.ZipFile
 
 /**
@@ -17,6 +18,11 @@ object APIParser {
     private const val TAG = "APIParser"
     private const val BASE_URL = "https://lnr.nariko.org"
     private const val API_PATH = "/api/update"
+
+    private val httpClient = OkHttpClient.Builder()
+        .connectTimeout(5, TimeUnit.SECONDS)
+        .readTimeout(10, TimeUnit.SECONDS)
+        .build()
 
     class APIRelease(
         override val version: Int,
@@ -33,21 +39,18 @@ object APIParser {
     ): Release? {
         return try {
             updatePhase.tryEmit("API步骤: 正在请求 $channel 频道更新信息")
-            val url = URL("$BASE_URL$API_PATH?channel=$channel")
-            val connection = url.openConnection() as HttpURLConnection
-            connection.requestMethod = "GET"
-            connection.connectTimeout = 5000
-            connection.readTimeout = 10000
-            connection.setRequestProperty("Accept", "application/json")
-
-            val responseCode = connection.responseCode
-            if (responseCode != HttpURLConnection.HTTP_OK) {
-                Log.e(TAG, "API request failed with status code: $responseCode")
-                return null
+            val request = Request.Builder()
+                .url("$BASE_URL$API_PATH?channel=$channel")
+                .header("Accept", "application/json")
+                .get()
+                .build()
+            val responseBody = httpClient.newCall(request).execute().use { response ->
+                if (!response.isSuccessful) {
+                    Log.e(TAG, "API request failed with status code: ${response.code}")
+                    return null
+                }
+                response.body.string()
             }
-
-            val responseBody = connection.inputStream.bufferedReader().use { it.readText() }
-            connection.disconnect()
 
             updatePhase.tryEmit("API步骤: 解析更新信息")
             val json = JSONObject(responseBody)

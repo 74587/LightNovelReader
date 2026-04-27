@@ -17,11 +17,11 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
-import java.io.BufferedInputStream
+import okhttp3.OkHttpClient
+import okhttp3.Request
 import java.io.File
 import java.io.FileOutputStream
-import java.net.HttpURLConnection
-import java.net.URL
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 sealed interface StoreInstallState {
@@ -51,19 +51,21 @@ class PluginStoreInstallViewModel @Inject constructor(
     val navigateToInstall = _navigateToInstall.asSharedFlow()
 
     private val json = Json { ignoreUnknownKeys = true }
+    private val httpClient = OkHttpClient.Builder()
+        .connectTimeout(15, TimeUnit.SECONDS)
+        .readTimeout(60, TimeUnit.SECONDS)
+        .build()
 
     fun load(pluginId: String) {
         if (state is StoreInstallState.Ready) return
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 val url = "${update(base)}$pluginId"
-                val connection = (URL(url).openConnection() as HttpURLConnection).apply {
-                    connectTimeout = 15_000
-                    readTimeout = 15_000
-                    requestMethod = "GET"
+                val request = Request.Builder().url(url).get().build()
+                val body = httpClient.newCall(request).execute().use { response ->
+                    if (!response.isSuccessful) throw Exception("HTTP ${response.code}")
+                    response.body.string()
                 }
-                val body = connection.inputStream.bufferedReader().use { it.readText() }
-                connection.disconnect()
                 val plugin = json.decodeFromJsonElement(StorePlugin.serializer(), json.parseToJsonElement(body).jsonObject["plugin"]!!)
                 withContext(Dispatchers.Main) {
                     state = StoreInstallState.Ready(plugin)
@@ -136,28 +138,24 @@ class PluginStoreInstallViewModel @Inject constructor(
     }
 
     private fun downloadFile(url: String, dest: File, onProgress: (Float) -> Unit) {
-        val connection = (URL(url).openConnection() as HttpURLConnection).apply {
-            connectTimeout = 15_000
-            readTimeout = 60_000
-            instanceFollowRedirects = true
-            requestMethod = "GET"
-        }
-        if (connection.responseCode != HttpURLConnection.HTTP_OK)
-            throw Exception("HTTP ${connection.responseCode}")
-        val total = connection.contentLengthLong.takeIf { it > 0 } ?: -1L
-        BufferedInputStream(connection.inputStream).use { input ->
-            FileOutputStream(dest).use { output ->
-                val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
-                var downloaded = 0L
-                var bytesRead: Int
-                while (input.read(buffer).also { bytesRead = it } != -1) {
-                    output.write(buffer, 0, bytesRead)
-                    downloaded += bytesRead
-                    if (total > 0) onProgress((downloaded.toFloat() / total).coerceIn(0f, 1f))
+        val request = Request.Builder().url(url).get().build()
+        httpClient.newCall(request).execute().use { response ->
+            if (!response.isSuccessful) throw Exception("HTTP ${response.code}")
+            val body = response.body
+            val total = body.contentLength().takeIf { it > 0 } ?: -1L
+            body.byteStream().use { input ->
+                FileOutputStream(dest).use { output ->
+                    val buffer = ByteArray(DEFAULT_BUFFER_SIZE)
+                    var downloaded = 0L
+                    var bytesRead: Int
+                    while (input.read(buffer).also { bytesRead = it } != -1) {
+                        output.write(buffer, 0, bytesRead)
+                        downloaded += bytesRead
+                        if (total > 0) onProgress((downloaded.toFloat() / total).coerceIn(0f, 1f))
+                    }
                 }
             }
         }
-        connection.disconnect()
         onProgress(1f)
     }
 }

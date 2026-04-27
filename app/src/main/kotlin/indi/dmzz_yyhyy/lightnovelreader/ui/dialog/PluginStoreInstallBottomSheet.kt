@@ -2,6 +2,9 @@ package indi.dmzz_yyhyy.lightnovelreader.ui.dialog
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.layout.Arrangement
@@ -177,6 +180,11 @@ private fun PluginContent(
 
     val targetApi = plugin.compatibility.targetApi
     val isCompatible = targetApi == null || ApiCompat.isSupported(targetApi)
+    val progressAnim by animateFloatAsState(
+        targetValue = downloadProgress,
+        animationSpec = tween(durationMillis = 500, easing = FastOutSlowInEasing),
+        label = "",
+    )
 
     Text(stringResource(R.string.plugin_store_install_title), style = typography.titleMedium)
 
@@ -311,7 +319,7 @@ private fun PluginContent(
     AnimatedVisibility(visible = downloading, enter = fadeIn(), exit = fadeOut()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             LinearProgressIndicator(
-                progress = { downloadProgress },
+                progress = { progressAnim },
                 modifier = Modifier.fillMaxWidth(),
                 trackColor = colorScheme.surfaceVariant
             )
