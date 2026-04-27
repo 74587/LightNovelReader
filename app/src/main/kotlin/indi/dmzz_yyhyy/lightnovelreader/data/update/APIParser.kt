@@ -1,6 +1,7 @@
 package indi.dmzz_yyhyy.lightnovelreader.data.update
 
 import android.util.Log
+import indi.dmzz_yyhyy.lightnovelreader.BuildConfig
 import kotlinx.coroutines.flow.MutableStateFlow
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -40,7 +41,7 @@ object APIParser {
         return try {
             updatePhase.tryEmit("API步骤: 正在请求 $channel 频道更新信息")
             val request = Request.Builder()
-                .url("$BASE_URL$API_PATH?channel=$channel")
+                .url("$BASE_URL$API_PATH?channel=$channel&ref=lnr-app&ver=${BuildConfig.VERSION_NAME}")
                 .header("Accept", "application/json")
                 .get()
                 .build()

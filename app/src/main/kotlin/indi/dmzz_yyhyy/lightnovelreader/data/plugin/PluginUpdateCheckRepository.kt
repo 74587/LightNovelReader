@@ -1,6 +1,7 @@
 package indi.dmzz_yyhyy.lightnovelreader.data.plugin
 
 import android.util.Log
+import indi.dmzz_yyhyy.lightnovelreader.BuildConfig
 import indi.dmzz_yyhyy.lightnovelreader.utils.update
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -56,7 +57,7 @@ class PluginUpdateCheckRepository @Inject constructor(
             val pluginId = meta.packageName
             Log.d(TAG, "Checking updates for plugin $pluginId")
             try {
-                val url = "${update(base)}$pluginId"
+                val url = "${update(base)}$pluginId&ref=lnr-app&ver=${BuildConfig.VERSION_NAME}"
                 val request = Request.Builder().url(url).get().build()
                 val body = httpClient.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) throw Exception("HTTP ${response.code}")

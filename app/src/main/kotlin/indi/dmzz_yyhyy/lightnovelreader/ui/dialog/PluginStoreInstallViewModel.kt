@@ -7,6 +7,7 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import indi.dmzz_yyhyy.lightnovelreader.BuildConfig
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginManager
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.StorePlugin
 import indi.dmzz_yyhyy.lightnovelreader.utils.update
@@ -60,7 +61,7 @@ class PluginStoreInstallViewModel @Inject constructor(
         if (state is StoreInstallState.Ready) return
         viewModelScope.launch(Dispatchers.IO) {
             try {
-                val url = "${update(base)}$pluginId"
+                val url = "${update(base)}$pluginId&ref=lnr-app&ver=${BuildConfig.VERSION_NAME}"
                 val request = Request.Builder().url(url).get().build()
                 val body = httpClient.newCall(request).execute().use { response ->
                     if (!response.isSuccessful) throw Exception("HTTP ${response.code}")
