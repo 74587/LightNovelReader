@@ -253,6 +253,12 @@ class PluginInstallerDialogViewModel @Inject constructor(
                     input.copyTo(output)
                 }
             }
+            if (uri.scheme == "file") {
+                val sourceFile = File(uri.path ?: "")
+                if (sourceFile.canonicalPath.startsWith(pluginManager.pluginsTempDir.canonicalPath)) {
+                    sourceFile.delete()
+                }
+            }
             tempFile.setReadOnly()
             tempFile
         } catch (_: Exception) {

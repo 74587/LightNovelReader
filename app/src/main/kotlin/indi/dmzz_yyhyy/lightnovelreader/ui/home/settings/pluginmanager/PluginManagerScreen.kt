@@ -24,7 +24,6 @@ import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -36,20 +35,20 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import java.io.File
-import indi.dmzz_yyhyy.lightnovelreader.BuildConfig
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginMetadata
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.EmptyPage
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.PluginCard
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalClaimSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PluginManagerScreen(
     enabledPluginList: List<String>,
     errorMessageMap: Map<String, String>,
+    updateVersionNames: Map<String, String>,
     getPluginFile: (String) -> File,
     onClickInstall: () -> Unit,
     onClickBack: () -> Unit,
@@ -128,6 +127,7 @@ fun PluginManagerScreen(
                             modifier = Modifier.animateItem(),
                             pluginInfo = plugin,
                             pluginFile = getPluginFile(plugin.packageName),
+                            updateVersionName = updateVersionNames[plugin.packageName],
                             onClickDetail = onClickDetail,
                             enabledPluginList = enabledPluginList,
                             isErrorDisabled = errorMessageMap.containsKey(plugin.packageName),

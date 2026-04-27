@@ -140,13 +140,6 @@ class PluginManager @Inject constructor(
 
             runCatching {
                 val apkFile = File(apkPath)
-                apkFile.inputStream().buffered().use { inputStream ->
-                    val tempDir = pluginsTempDir.also { it.mkdirs() }
-                    val tempFile = File(tempDir, "install_${System.currentTimeMillis()}.apk")
-                    tempFile.outputStream().buffered().use {
-                        inputStream.copyTo(it)
-                    }
-                }
                 var error: InstallState.Error? = null
                 runBlocking(Dispatchers.IO) {
                     installPlugin(apkFile).collect {
@@ -175,6 +168,7 @@ class PluginManager @Inject constructor(
     }
 
     fun initAllPlugin() {
+        pluginsTempDir.deleteRecursively()
         webBookDataSourceManager.loadWebDataSourceFromClass(
             Wenku8Api::class.java,
             pluginInjector
