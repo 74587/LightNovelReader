@@ -10,6 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import android.content.Intent
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.UpdatesAvailableDialogViewModel
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.navigateToPluginInstallerDialog
+import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.navigateToPluginStoreInstall
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.navigateUpdatesAvailableDialog
 import indi.dmzz_yyhyy.lightnovelreader.ui.navigation.LightNovelReaderNavHost
 import io.nightfish.lightnovelreader.api.ui.ReaderStyle
@@ -34,8 +35,12 @@ fun LightNovelReaderApp(
     LaunchedEffect(Unit) {
         intentFlow.collect { intent ->
             if (intent.action == Intent.ACTION_VIEW) {
-                intent.data?.toString()?.let { uriString ->
-                    navController.navigateToPluginInstallerDialog(uriString)
+                val uri = intent.data ?: return@collect
+                if (uri.scheme == "lightnovelreader" && uri.host == "install_plugin") {
+                    val pluginId = uri.getQueryParameter("id") ?: return@collect
+                    navController.navigateToPluginStoreInstall(pluginId)
+                } else {
+                    navController.navigateToPluginInstallerDialog(uri.toString())
                 }
             }
         }

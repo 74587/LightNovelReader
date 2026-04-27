@@ -28,8 +28,6 @@ import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.applist.n
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.applist.settingsPluginAppListDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.detail.navigateToSettingsPluginManagerDetailDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.detail.settingsPluginManagerDetailDestination
-import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.repository.navigateToSettingsPluginRepositoryDestination
-import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.repository.settingsPluginRepositoryDestination
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.popBackStackIfResumed
 import indi.dmzz_yyhyy.lightnovelreader.utils.showSnackbar
@@ -44,7 +42,6 @@ fun NavGraphBuilder.settingsPluginManagerNavigation() {
         settingsPluginManagerHomeDestination()
         settingsPluginAppListDestination()
         settingsPluginManagerDetailDestination()
-        settingsPluginRepositoryDestination()
     }
 }
 
@@ -147,7 +144,6 @@ fun NavGraphBuilder.settingsPluginManagerHomeDestination() {
                     message = incompatibleString
                 )
             },
-            onClickPluginRepo = navController::navigateToSettingsPluginRepositoryDestination,
             onClickInstall = {
                 val initUri = DocumentsContract.buildDocumentUri(
                     "com.android.externalstorage.documents",

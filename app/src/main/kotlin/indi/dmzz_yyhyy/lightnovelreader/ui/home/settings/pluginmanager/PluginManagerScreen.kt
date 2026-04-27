@@ -60,7 +60,6 @@ fun PluginManagerScreen(
     onClickKeyAlert: () -> Unit,
     onClickErrorAlert: () -> Unit,
     onClickIncompatibleAlert: () -> Unit,
-    onClickPluginRepo: () -> Unit,
     onClickCheckUpdate: (String) -> Unit,
     pluginInfoList: List<PluginMetadata>,
     onClickShowSignatures: (String) -> Unit
@@ -79,7 +78,6 @@ fun PluginManagerScreen(
                 onClickBack = onClickBack,
                 scrollBehavior = enterAlwaysScrollBehavior,
                 onClickPluginApps = onClickPluginApps,
-                onClickPluginRepo = onClickPluginRepo
             )
         },
         floatingActionButton = {
@@ -189,7 +187,6 @@ private fun TopBar(
     scrollBehavior: TopAppBarScrollBehavior,
     onClickBack: () -> Unit,
     onClickPluginApps: () -> Unit,
-    onClickPluginRepo: () -> Unit
 ) {
     TopAppBar(
         title = {
@@ -217,12 +214,6 @@ private fun TopBar(
                     painter = painterResource(R.drawable.deployed_code_24px), null
                 )
             }
-            if (BuildConfig.DEBUG)
-                TextButton(
-                    onClick = onClickPluginRepo
-                ) {
-                    Text(text = stringResource(R.string.plugin_repo))
-                }
         },
         scrollBehavior = scrollBehavior
     )

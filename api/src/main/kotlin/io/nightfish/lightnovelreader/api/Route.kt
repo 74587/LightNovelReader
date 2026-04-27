@@ -290,4 +290,8 @@ object Route {
     /** 下载管理器路由 */
     @Serializable
     object DownloadManager
+
+    /** 插件商店安装底栏 */
+    @Serializable
+    data class PluginStoreInstall(val pluginId: String)
 }
