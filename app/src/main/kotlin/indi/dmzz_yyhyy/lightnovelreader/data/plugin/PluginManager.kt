@@ -67,6 +67,11 @@ class PluginManager @Inject constructor(
     val pluginsTempDir: File = appContext.cacheDir.resolve("plugins_tmp")
     var appPluginInfos: List<PluginAppInfo> = emptyList()
        private set
+
+    private val onInitializedCallbacks = mutableListOf<() -> Unit>()
+    fun addOnInitializedCallback(callback: () -> Unit) {
+        onInitializedCallbacks += callback
+    }
     fun getPluginDir(name: String): File = pluginsDir.resolve(name)
     fun getPluginDataDir(pluginDir: File) = pluginDir.resolve("data")
     fun getPluginFile(pluginDir: File): File = pluginDir.resolve("plugin")
@@ -175,7 +180,8 @@ class PluginManager @Inject constructor(
         )
         appPluginInfos = initAllAppPlugin()
         val enabledPlugins = enabledPluginsUserData.getOrDefault(emptyList())
-        val pluginDirs = pluginsDir.listFiles() ?: return
+        val pluginDirs = pluginsDir.listFiles()
+        if (pluginDirs != null) {
         for (dir in pluginDirs) {
             if (getPluginInstallLock(dir).exists()) continue
             val metadataFile = getPluginMetadataFile(dir)
@@ -209,6 +215,8 @@ class PluginManager @Inject constructor(
                 }
             }
         }
+        }
+        onInitializedCallbacks.forEach { it() }
     }
 
     private fun extractAssetFromApk(apk: File, targetDir: File) = runCatching {

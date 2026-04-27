@@ -19,6 +19,7 @@
     <string name="done">完成</string>
     <string name="next">下一步</string>
     <string name="abort">中止</string>
+    <string name="close">關閉</string>
     <string name="decline">拒絕</string>
     <string name="copied">內容已複製</string>
     <string name="select_all">全選</string>
@@ -362,7 +363,6 @@
     <string name="no_records">沒有記錄</string>
     <string name="total_record">總記錄</string>
     <string name="reading_sessions">閱讀會話</string>
-    <string name="reading_sessions_unit"></string>
     <string name="reading_duration">閱讀時長</string>
     <string name="reading_duration_unit">時 %d 分</string>
     <string name="cached">已快取</string>
@@ -508,20 +508,18 @@
     <string name="plugin_detail_source_label">來源</string>
     <string name="plugin_detail_source_local">本機套件</string>
     <string name="plugin_detail_source_app">已安裝應用程式</string>
+    <!-- Plugin Store -->
+    <string name="plugin_store_install_title">取得外掛</string>
+    <string name="plugin_store_load_failed">載入失敗</string>
+    <string name="plugin_store_load_failed_desc">取得外掛資訊失敗</string>
+    <string name="plugin_store_install_with_size">安裝（%1$s）</string>
+    <string name="plugin_store_download_progress">%1$d%% 已下載</string>
     <string name="plugin_third_party_title">第三方外掛</string>
     <string name="plugin_third_party_desc">此外掛由第三方提供</string>
     <string name="plugin_info_id_label">ID</string>
     <string name="plugin_info_version_label">版本</string>
     <string name="plugin_info_author_label">作者</string>
-    <string name="plugin_repo_load_failed">倉庫載入失敗</string>
-    <string name="plugin_repo_item_version">版本 %1$s (%2$d)</string>
-    <string name="plugin_repo_reinstall">重新安裝</string>
-    <string name="plugin_repo_installing">安裝中</string>
-    <string name="plugin_repo_title">外掛倉庫</string>
-    <string name="plugin_repo_install_failed">安裝 %1$s 失敗：%2$s</string>
-    <string name="plugin_repo_install_cancelled">已取消安裝 %1$s</string>
-    <string name="plugin_repo_parts_incomplete">分卷下載不完整：已完成 %1$d/%2$d，缺失 %3$s</string>
-    <string name="plugin_app_conflict_message">Conflicts with installed plugin app; app plugin is preferred.</string>
+    <string name="plugin_app_conflict_message">與已安裝的外掛應用程式衝突，優先使用應用程式外掛。</string>
     <!-- Notifications -->
     <string name="epub_export_notification_channel_name">EPUB 匯出進度</string>
     <string name="epub_export_notification_preparing">準備中…</string>

@@ -14,7 +14,8 @@ data class StorePlugin(
     val compatibility: Compatibility = Compatibility(),
     val release: Release,
     val assets: Assets = Assets(),
-    val download: Download
+    val download: Download,
+    val changelog: String = ""
 ) {
     @Serializable
     data class Compatibility(

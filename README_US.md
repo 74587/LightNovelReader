@@ -91,6 +91,13 @@ If you enjoy using it or find it helpful, consider supporting us through [Aifadi
 All contributions go toward continuous development, new features, possible future server maintenance, and community growth.
 Your support helps keep the project alive and makes reading even better for everyone.
 
+## Translation
+
+[![Crowdin](https://badges.crowdin.net/lightnovelreader/localized.svg)](https://crowdin.com/project/lightnovelreader)
+
+LightNovelReader uses [Crowdin](https://crowdin.com/project/lightnovelreader) to manage translations. Want to help localize the app into your language? Head over to the Crowdin project to contribute!
+
+> Don't see your language? Request it on [Crowdin](https://crowdin.com/project/lightnovelreader)!
 
 ## License
 

@@ -39,11 +39,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.DialogProperties
+import androidx.core.net.toUri
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -55,7 +57,6 @@ import indi.dmzz_yyhyy.lightnovelreader.data.plugin.StorePlugin
 import io.nightfish.lightnovelreader.api.ApiCompat
 import io.nightfish.lightnovelreader.api.Route
 import io.nightfish.lightnovelreader.api.ui.LocalNavController
-import java.io.File
 
 fun NavGraphBuilder.pluginStoreInstallBottomSheet() {
     dialog<Route.PluginStoreInstall>(
@@ -150,10 +151,10 @@ private fun LoadingContent() {
 
 @Composable
 private fun ErrorContent(message: String, onDismiss: () -> Unit) {
-    Text(text = "加载失败", style = typography.titleLarge)
+    Text(text = stringResource(R.string.plugin_store_load_failed), style = typography.titleLarge)
     Spacer(Modifier.height(8.dp))
 
-    Text("获取插件信息失败", style = typography.bodyMedium, color = colorScheme.error)
+    Text(stringResource(R.string.plugin_store_load_failed_desc), style = typography.bodyMedium, color = colorScheme.error)
     Spacer(Modifier.height(2.dp))
     Text(message, style = typography.bodyMedium, color = colorScheme.onSurfaceVariant)
     Spacer(Modifier.height(16.dp))
@@ -161,7 +162,7 @@ private fun ErrorContent(message: String, onDismiss: () -> Unit) {
         onClick = onDismiss,
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp)
-    ) { Text("关闭") }
+    ) { Text(stringResource(R.string.close)) }
 }
 
 @Composable
@@ -177,7 +178,7 @@ private fun PluginContent(
     val targetApi = plugin.compatibility.targetApi
     val isCompatible = targetApi == null || ApiCompat.isSupported(targetApi)
 
-    Text("获取插件", style = typography.titleMedium)
+    Text(stringResource(R.string.plugin_store_install_title), style = typography.titleMedium)
 
     Spacer(Modifier.height(16.dp))
 
@@ -234,20 +235,11 @@ private fun PluginContent(
         }
     }
 
-    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.height(22.dp))
 
-
-
-    Spacer(Modifier.height(12.dp))
-
-    val hasDescription =
-        plugin.description.isNotBlank() && plugin.description != plugin.summary
-
-    val text = if (descriptionExpanded && hasDescription) {
-        plugin.description
-    } else {
-        plugin.summary
-    }
+    val hasDescription = plugin.description.isNotBlank() && plugin.description != plugin.summary
+    val text = if (descriptionExpanded && hasDescription) plugin.description
+    else plugin.summary
 
     Text(
         text = text,
@@ -273,11 +265,12 @@ private fun PluginContent(
         Box(modifier = Modifier.fillMaxWidth()) {
             TextButton(
                 onClick = { descriptionExpanded = !descriptionExpanded },
-                modifier = Modifier.padding(vertical = 8.dp)
+                modifier = Modifier
+                    .padding(vertical = 8.dp)
                     .align(Alignment.BottomEnd)
             ) {
                 Text(
-                    text = if (descriptionExpanded) "收起" else "更多",
+                    text = if (descriptionExpanded) stringResource(R.string.collapse) else stringResource(R.string.expand),
                     style = typography.bodyMedium,
                     color = colorScheme.primary
                 )
@@ -287,7 +280,34 @@ private fun PluginContent(
         Spacer(Modifier.height(14.dp))
     }
 
-    // Download progress bar
+    val changelog = plugin.changelog
+    if (changelog.isNotEmpty()){
+        Text(
+            text = stringResource(R.string.changelog),
+            style = typography.bodyMedium,
+            color = colorScheme.onSurfaceVariant,
+            fontWeight = FontWeight.Bold,
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 6.dp)
+        )
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(10.dp),
+            color = colorScheme.surfaceContainerHigh
+        ) {
+            Text(
+                text = changelog,
+                style = typography.bodyMedium,
+                color = colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(12.dp)
+                    .heightIn(max = 180.dp)
+                    .verticalScroll(rememberScrollState())
+            )
+        }
+        Spacer(Modifier.height(12.dp))
+    }
+
     AnimatedVisibility(visible = downloading, enter = fadeIn(), exit = fadeOut()) {
         Column(modifier = Modifier.fillMaxWidth()) {
             LinearProgressIndicator(
@@ -306,9 +326,11 @@ private fun PluginContent(
         if (!downloading) {
             TextButton(
                 onClick = onDismiss,
-                modifier = Modifier.weight(1f).height(46.dp),
+                modifier = Modifier
+                    .weight(1f)
+                    .height(46.dp),
                 shape = RoundedCornerShape(12.dp)
-            ) { Text("取消") }
+            ) { Text(stringResource(R.string.cancel)) }
         }
 
         val sizeLabel = formatSize(
@@ -316,10 +338,10 @@ private fun PluginContent(
                 ?: plugin.download.parts.mapNotNull { it.sizeBytes }.takeIf { it.isNotEmpty() }?.sum()
         )
         val buttonText = when {
-            !isCompatible -> "不可用"
-            downloading -> "${(downloadProgress * 100).toInt()}% 已下载"
-            sizeLabel != null -> "安装（$sizeLabel）"
-            else -> "安装"
+            !isCompatible -> stringResource(R.string.plugin_disabled)
+            downloading -> stringResource(R.string.plugin_store_download_progress, (downloadProgress * 100).toInt())
+            sizeLabel != null -> stringResource(R.string.plugin_store_install_with_size, sizeLabel)
+            else -> stringResource(R.string.plugin_install_action_install)
         }
 
         Button(
@@ -340,7 +362,7 @@ private fun PluginContent(
 }
 
 @Composable
-private fun Badge(text: String, containerColor: androidx.compose.ui.graphics.Color, contentColor: androidx.compose.ui.graphics.Color) {
+private fun Badge(text: String, containerColor: Color, contentColor: Color) {
     Surface(shape = RoundedCornerShape(4.dp), color = containerColor) {
         Text(
             text = text,
@@ -359,5 +381,3 @@ private fun formatSize(bytes: Long?): String? {
         else -> "$bytes B"
     }
 }
-
-private fun File.toUri(): android.net.Uri = android.net.Uri.fromFile(this)

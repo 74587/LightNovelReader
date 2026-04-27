@@ -1,9 +1,7 @@
 package indi.dmzz_yyhyy.lightnovelreader
 
-import android.app.Activity
 import android.app.Application
 import android.content.Context
-import android.os.Bundle
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import androidx.work.WorkManager
@@ -11,6 +9,7 @@ import dagger.hilt.android.HiltAndroidApp
 import indi.dmzz_yyhyy.lightnovelreader.data.logging.LogLevel
 import indi.dmzz_yyhyy.lightnovelreader.data.logging.LoggerRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginManager
+import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginUpdateCheckRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataRepository
 import indi.dmzz_yyhyy.lightnovelreader.utils.CxHttpInit
 import indi.dmzz_yyhyy.lightnovelreader.utils.analytics.MatomoAnalytics
@@ -32,6 +31,7 @@ class LightNovelReaderApplication : Application(), Configuration.Provider {
     @Inject lateinit var loggerRepository: LoggerRepository
     @Inject lateinit var userDataRepository: UserDataRepository
     @Inject lateinit var pluginManager: PluginManager
+    @Inject lateinit var pluginUpdateCheckRepository: PluginUpdateCheckRepository
     @Inject lateinit var matomoAnalytics: MatomoAnalytics
 
     override val workManagerConfiguration: Configuration

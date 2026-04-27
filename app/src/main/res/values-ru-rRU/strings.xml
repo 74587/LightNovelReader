@@ -363,7 +363,6 @@
     <string name="no_records">Нет записей</string>
     <string name="total_record">Всего записей</string>
     <string name="reading_sessions">Сессии чтения</string>
-    <string name="reading_sessions_unit"></string>
     <string name="reading_duration">Длительность чтения</string>
     <string name="reading_duration_unit">ч %d мин</string>
     <string name="cached">В кэше</string>
@@ -517,14 +516,6 @@
     <string name="plugin_info_id_label">ID</string>
     <string name="plugin_info_version_label">Version</string>
     <string name="plugin_info_author_label">Author</string>
-    <string name="plugin_repo_load_failed">Repository load failed</string>
-    <string name="plugin_repo_item_version">Version %1$s (%2$d)</string>
-    <string name="plugin_repo_reinstall">Reinstall</string>
-    <string name="plugin_repo_installing">Installing</string>
-    <string name="plugin_repo_title">Plugin repository</string>
-    <string name="plugin_repo_install_failed">Failed to install %1$s: %2$s</string>
-    <string name="plugin_repo_install_cancelled">Cancelled installing %1$s</string>
-    <string name="plugin_repo_parts_incomplete">Split download incomplete: completed %1$d/%2$d, missing %3$s</string>
     <string name="plugin_app_conflict_message">Conflicts with installed plugin app; app plugin is preferred.</string>
     <!-- Notifications -->
     <string name="epub_export_notification_channel_name">EPUB export progress</string>
