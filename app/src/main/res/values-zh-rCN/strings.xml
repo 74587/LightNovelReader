@@ -19,7 +19,6 @@
     <string name="done">完成</string>
     <string name="next">下一步</string>
     <string name="abort">中止</string>
-    <string name="close">关闭</string>
     <string name="decline">拒绝</string>
     <string name="copied">内容已复制</string>
     <string name="select_all">全选</string>
@@ -363,6 +362,7 @@
     <string name="no_records">没有记录</string>
     <string name="total_record">总记录</string>
     <string name="reading_sessions">阅读会话</string>
+    <string name="reading_sessions_unit"></string>
     <string name="reading_duration">阅读时长</string>
     <string name="reading_duration_unit">时 %d 分</string>
     <string name="cached">已缓存</string>
@@ -511,18 +511,12 @@
     <string name="plugin_detail_source_label">来源</string>
     <string name="plugin_detail_source_local">本地包</string>
     <string name="plugin_detail_source_app">已安装应用</string>
-    <!-- Plugin Store -->
-    <string name="plugin_store_install_title">获取插件</string>
-    <string name="plugin_store_load_failed">加载失败</string>
-    <string name="plugin_store_load_failed_desc">获取插件信息失败</string>
-    <string name="plugin_store_install_with_size">安装（%1$s）</string>
-    <string name="plugin_store_download_progress">%1$d%% 已下载</string>
     <string name="plugin_third_party_title">第三方插件</string>
     <string name="plugin_third_party_desc">该插件由第三方提供</string>
     <string name="plugin_info_id_label">ID</string>
     <string name="plugin_info_version_label">版本</string>
     <string name="plugin_info_author_label">作者</string>
-    <string name="plugin_app_conflict_message">与已安装的插件应用冲突，优先使用应用插件。</string>
+    <string name="plugin_app_conflict_message">Conflicts with installed plugin app; app plugin is preferred.</string>
     <!-- Notifications -->
     <string name="epub_export_notification_channel_name">EPUB 导出进度</string>
     <string name="epub_export_notification_preparing">准备中…</string>
