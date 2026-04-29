@@ -62,6 +62,7 @@ fun PluginCard(
     isErrorDisabled: Boolean,
     pluginInfo: PluginMetadata,
     pluginFile: File,
+    updateVersionName: String? = null,
     onClickDetail: (String) -> Unit,
     onClickSwitch: (PluginMetadata) -> Unit,
     onClickDelete: (id: String, uninstall: Boolean) -> Unit,
@@ -282,6 +283,25 @@ fun PluginCard(
                             containerColor = colorScheme.errorContainer.copy(alpha = 0.25f),
                             labelColor = colorScheme.onErrorContainer,
                             leadingIconContentColor = colorScheme.onErrorContainer
+                        )
+                    )
+                }
+
+                if (updateVersionName != null) {
+                    AssistChip(
+                        onClick = { onClickCheckUpdate(pluginInfo.packageName) },
+                        label = { Text(stringResource(R.string.app_updates)) },
+                        leadingIcon = {
+                            Icon(
+                                painter = painterResource(R.drawable.deployed_code_update_24px),
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        },
+                        colors = AssistChipDefaults.assistChipColors(
+                            containerColor = colorScheme.surfaceContainerHighest,
+                            labelColor = colorScheme.onSurfaceVariant,
+                            leadingIconContentColor = colorScheme.onSurfaceVariant
                         )
                     )
                 }

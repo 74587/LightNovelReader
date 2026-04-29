@@ -8,6 +8,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginAppInfo
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginManager
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginMetadata
+import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginUpdateCheckRepository
 import indi.dmzz_yyhyy.lightnovelreader.data.userdata.UserDataRepository
 import indi.dmzz_yyhyy.lightnovelreader.utils.ApkSignatureInfo
 import indi.dmzz_yyhyy.lightnovelreader.utils.getApkSignatures
@@ -23,6 +24,7 @@ import javax.inject.Inject
 class PluginManagerViewModel @Inject constructor(
     val pluginManager: PluginManager,
     val userDataRepository: UserDataRepository,
+    val pluginUpdateCheckRepository: PluginUpdateCheckRepository,
 ) : ViewModel() {
 
     private val enabledPluginUserData = userDataRepository.stringListUserData(UserDataPath.Plugin.EnabledPlugins.path)
@@ -31,6 +33,8 @@ class PluginManagerViewModel @Inject constructor(
     val pluginList: List<PluginMetadata> = pluginManager.allPluginList
     val errorMessageMap: Map<String, String> = pluginManager.errorPluginMap
     val scannedPluginApps: List<PluginAppInfo> = pluginManager.appPluginInfos
+
+    val pluginUpdates get() = pluginUpdateCheckRepository.updates
 
     private val _snackbarFlow = MutableSharedFlow<String>()
     val snackbarFlow = _snackbarFlow.asSharedFlow()

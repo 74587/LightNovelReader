@@ -28,7 +28,6 @@ import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -42,7 +41,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import indi.dmzz_yyhyy.lightnovelreader.BuildConfig
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginMetadata
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.EmptyPage
@@ -56,6 +54,7 @@ import java.io.File
 fun PluginManagerScreen(
     enabledPluginList: List<String>,
     errorMessageMap: Map<String, String>,
+    updateVersionNames: Map<String, String>,
     getPluginFile: (String) -> File,
     onClickInstall: () -> Unit,
     onClickBack: () -> Unit,
@@ -66,7 +65,6 @@ fun PluginManagerScreen(
     onClickKeyAlert: () -> Unit,
     onClickErrorAlert: () -> Unit,
     onClickIncompatibleAlert: () -> Unit,
-    onClickPluginRepo: () -> Unit,
     onClickCheckUpdate: (String) -> Unit,
     pluginInfoList: List<PluginMetadata>,
     onClickShowSignatures: (String) -> Unit
@@ -86,7 +84,6 @@ fun PluginManagerScreen(
                 onClickBack = onClickBack,
                 scrollBehavior = enterAlwaysScrollBehavior,
                 onClickPluginApps = onClickPluginApps,
-                onClickPluginRepo = onClickPluginRepo
             )
         },
         floatingActionButton = {
@@ -166,6 +163,7 @@ fun PluginManagerScreen(
                             modifier = Modifier.animateItem(),
                             pluginInfo = plugin,
                             pluginFile = getPluginFile(plugin.packageName),
+                            updateVersionName = updateVersionNames[plugin.packageName],
                             onClickDetail = onClickDetail,
                             enabledPluginList = enabledPluginList,
                             isErrorDisabled = errorMessageMap.containsKey(plugin.packageName),
@@ -225,7 +223,6 @@ private fun TopBar(
     scrollBehavior: TopAppBarScrollBehavior,
     onClickBack: () -> Unit,
     onClickPluginApps: () -> Unit,
-    onClickPluginRepo: () -> Unit
 ) {
     TopAppBar(
         title = {
@@ -253,12 +250,6 @@ private fun TopBar(
                     painter = painterResource(R.drawable.deployed_code_24px), null
                 )
             }
-            if (BuildConfig.DEBUG)
-                TextButton(
-                    onClick = onClickPluginRepo
-                ) {
-                    Text(text = stringResource(R.string.plugin_repo))
-                }
         },
         scrollBehavior = scrollBehavior
     )

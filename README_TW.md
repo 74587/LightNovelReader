@@ -91,6 +91,14 @@ LightNovelReader 是一個完全免費、開源的專案。
 所有贊助款項將用於持續開發、新功能實作、（若有）伺服器維護及社群建設。
 你的支持讓我們能不斷前進，打造更好的閱讀體驗。
 
+## 翻譯
+
+[![Crowdin](https://badges.crowdin.net/lightnovelreader/localized.svg)](https://crowdin.com/project/lightnovelreader)
+
+LightNovelReader 使用 [Crowdin](https://crowdin.com/project/lightnovelreader) 管理在地化工作。如果你希望協助翻譯或改進現有的譯文，歡迎前往 Crowdin 專案頁面參與貢獻！
+
+> 找不到你的語言？歡迎在 [Crowdin](https://crowdin.com/project/lightnovelreader) 申請新增語言！
+
 ## 授權條款
 
 ```

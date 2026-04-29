@@ -516,14 +516,6 @@
     <string name="plugin_info_id_label">ID</string>
     <string name="plugin_info_version_label">版本</string>
     <string name="plugin_info_author_label">作者</string>
-    <string name="plugin_repo_load_failed">仓库加载失败</string>
-    <string name="plugin_repo_item_version">版本 %1$s (%2$d)</string>
-    <string name="plugin_repo_reinstall">重新安装</string>
-    <string name="plugin_repo_installing">安装中</string>
-    <string name="plugin_repo_title">插件仓库</string>
-    <string name="plugin_repo_install_failed">安装 %1$s 失败：%2$s</string>
-    <string name="plugin_repo_install_cancelled">已取消安装 %1$s</string>
-    <string name="plugin_repo_parts_incomplete">分卷下载不完整: 已完成 %1$d/%2$d，缺失 %3$s</string>
     <string name="plugin_app_conflict_message">Conflicts with installed plugin app; app plugin is preferred.</string>
     <!-- Notifications -->
     <string name="epub_export_notification_channel_name">EPUB 导出进度</string>
