@@ -544,7 +544,7 @@
     <string name="key_dark_mode_enabled">保持啟用</string>
     <string name="key_dark_mode_disabled">保持停用</string>
     <!-- Log Level -->
-    <string name="key_log_level_none">None</string>
+    <string name="key_log_level_none">不紀錄</string>
     <string name="key_log_level_error">錯誤</string>
     <string name="key_log_level_warning">警告</string>
     <string name="key_log_level_info">訊息</string>
