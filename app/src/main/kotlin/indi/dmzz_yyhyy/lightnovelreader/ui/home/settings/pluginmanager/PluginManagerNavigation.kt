@@ -24,12 +24,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.navigation
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.navigateToPluginInstallerDialog
+import indi.dmzz_yyhyy.lightnovelreader.ui.dialog.navigateToPluginStoreInstall
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.applist.navigateToSettingsPluginAppListDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.applist.settingsPluginAppListDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.detail.navigateToSettingsPluginManagerDetailDestination
 import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.detail.settingsPluginManagerDetailDestination
-import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.repository.navigateToSettingsPluginRepositoryDestination
-import indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager.repository.settingsPluginRepositoryDestination
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.popBackStackIfResumed
 import indi.dmzz_yyhyy.lightnovelreader.utils.showSnackbar
@@ -44,7 +43,6 @@ fun NavGraphBuilder.settingsPluginManagerNavigation() {
         settingsPluginManagerHomeDestination()
         settingsPluginAppListDestination()
         settingsPluginManagerDetailDestination()
-        settingsPluginRepositoryDestination()
     }
 }
 
@@ -59,6 +57,8 @@ fun NavGraphBuilder.settingsPluginManagerHomeDestination() {
         val viewModel = hiltViewModel<PluginManagerViewModel>(parentEntry ?: navBackStackEntry)
         val enabledPluginList by viewModel.enabledPluginFlow.collectAsState(emptyList())
         val errorMessageMap = viewModel.errorMessageMap
+        val pluginUpdates by viewModel.pluginUpdates.collectAsState()
+        val updateVersionNames = pluginUpdates.mapValues { it.value.versionName }
         var showPluginNoSignatureDialog by remember { mutableStateOf(false) }
         var showPluginErrorDialog by remember { mutableStateOf(false) }
         var showPluginSignatureDialog: String? by remember { mutableStateOf(null) }
@@ -88,7 +88,7 @@ fun NavGraphBuilder.settingsPluginManagerHomeDestination() {
                 snackbarHostState.showSnackbar(message, withDismissAction = true)
             }
         }
-
+        val checkUpdateViewActionLabel = "查看"
         val errorString = stringResource(R.string.plugin_snackbar_disabled_load_error)
         val notSignedString = stringResource(R.string.plugin_snackbar_not_signed)
         val learnMoreString = stringResource(R.string.plugin_snackbar_learn_more)
@@ -98,6 +98,7 @@ fun NavGraphBuilder.settingsPluginManagerHomeDestination() {
         PluginManagerScreen(
             enabledPluginList = enabledPluginList,
             errorMessageMap = errorMessageMap,
+            updateVersionNames = updateVersionNames,
             getPluginFile = viewModel::getPluginFile,
             onClickBack = navController::popBackStackIfResumed,
             onClickPluginApps = navController::navigateToSettingsPluginAppListDestination,
@@ -113,7 +114,20 @@ fun NavGraphBuilder.settingsPluginManagerHomeDestination() {
                 }
             },
             pluginInfoList = viewModel.pluginList,
-            onClickCheckUpdate = { TODO() },
+            onClickCheckUpdate = { packageName ->
+                val updateInfo = pluginUpdates[packageName] ?: return@PluginManagerScreen
+                val pluginName = viewModel.pluginList.firstOrNull { it.packageName == packageName }?.name ?: packageName
+                showSnackbar(
+                    coroutineScope = coroutineScope,
+                    hostState = snackbarHostState,
+                    message = "「$pluginName」有新版本可用：${updateInfo.versionName}",
+                    actionLabel = checkUpdateViewActionLabel
+                ) {
+                    if (it == SnackbarResult.ActionPerformed) {
+                        navController.navigateToPluginStoreInstall(updateInfo.pluginId)
+                    }
+                }
+            },
             onClickKeyAlert = {
                 showSnackbar(
                     coroutineScope = coroutineScope,
@@ -147,7 +161,6 @@ fun NavGraphBuilder.settingsPluginManagerHomeDestination() {
                     message = incompatibleString
                 )
             },
-            onClickPluginRepo = navController::navigateToSettingsPluginRepositoryDestination,
             onClickInstall = {
                 val initUri = DocumentsContract.buildDocumentUri(
                     "com.android.externalstorage.documents",

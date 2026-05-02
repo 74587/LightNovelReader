@@ -1,5 +1,8 @@
 package indi.dmzz_yyhyy.lightnovelreader.ui.home.settings.pluginmanager
 
+import android.content.Intent
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -24,7 +28,6 @@ import androidx.compose.material3.MaterialTheme.typography
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.TopAppBarScrollBehavior
@@ -32,24 +35,26 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import java.io.File
-import indi.dmzz_yyhyy.lightnovelreader.BuildConfig
+import androidx.core.net.toUri
 import indi.dmzz_yyhyy.lightnovelreader.R
 import indi.dmzz_yyhyy.lightnovelreader.data.plugin.PluginMetadata
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.EmptyPage
 import indi.dmzz_yyhyy.lightnovelreader.ui.components.PluginCard
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalClaimSnackbarHost
 import indi.dmzz_yyhyy.lightnovelreader.utils.LocalSnackbarHost
+import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PluginManagerScreen(
     enabledPluginList: List<String>,
     errorMessageMap: Map<String, String>,
+    updateVersionNames: Map<String, String>,
     getPluginFile: (String) -> File,
     onClickInstall: () -> Unit,
     onClickBack: () -> Unit,
@@ -60,13 +65,13 @@ fun PluginManagerScreen(
     onClickKeyAlert: () -> Unit,
     onClickErrorAlert: () -> Unit,
     onClickIncompatibleAlert: () -> Unit,
-    onClickPluginRepo: () -> Unit,
     onClickCheckUpdate: (String) -> Unit,
     pluginInfoList: List<PluginMetadata>,
     onClickShowSignatures: (String) -> Unit
 ) {
     val enterAlwaysScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
     val claim = LocalClaimSnackbarHost.current
+    val context = LocalContext.current
 
     DisposableEffect(Unit) {
         claim(true)
@@ -79,7 +84,6 @@ fun PluginManagerScreen(
                 onClickBack = onClickBack,
                 scrollBehavior = enterAlwaysScrollBehavior,
                 onClickPluginApps = onClickPluginApps,
-                onClickPluginRepo = onClickPluginRepo
             )
         },
         floatingActionButton = {
@@ -106,10 +110,6 @@ fun PluginManagerScreen(
                 .padding(paddingValues)
                 .fillMaxSize()
         ) {
-            ThirdPartyPluginTips()
-
-            Spacer(Modifier.height(8.dp))
-
             if (pluginInfoList.isEmpty()) {
                 Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                     EmptyPage(
@@ -125,11 +125,45 @@ fun PluginManagerScreen(
                         .fillMaxSize()
                         .weight(1f)
                 ) {
+                    item {
+                        Row(
+                            modifier = Modifier.fillMaxWidth()
+                                .clickable(onClick = {
+                                    val intent = Intent(Intent.ACTION_VIEW, "https://plugins.nariko.org".toUri())
+                                    context.startActivity(intent, null)
+                                })
+                                .padding(horizontal = 24.dp, vertical = 16.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Icon(
+                                painter = painterResource(id = R.drawable.archive_24px),
+                                contentDescription = "archive"
+                            )
+                            Text(
+                                modifier = Modifier.weight(1f),
+                                text = "从插件市场获取新插件",
+                                style = typography.titleSmall,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Icon(
+                                modifier = Modifier.size(18.dp),
+                                painter = painterResource(id = R.drawable.open_in_new_24px),
+                                contentDescription = "open",
+                                tint = colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                    item {
+                        ThirdPartyPluginTips()
+                    }
                     items(pluginInfoList) { plugin ->
                         PluginCard(
                             modifier = Modifier.animateItem(),
                             pluginInfo = plugin,
                             pluginFile = getPluginFile(plugin.packageName),
+                            updateVersionName = updateVersionNames[plugin.packageName],
                             onClickDetail = onClickDetail,
                             enabledPluginList = enabledPluginList,
                             isErrorDisabled = errorMessageMap.containsKey(plugin.packageName),
@@ -189,7 +223,6 @@ private fun TopBar(
     scrollBehavior: TopAppBarScrollBehavior,
     onClickBack: () -> Unit,
     onClickPluginApps: () -> Unit,
-    onClickPluginRepo: () -> Unit
 ) {
     TopAppBar(
         title = {
@@ -217,12 +250,6 @@ private fun TopBar(
                     painter = painterResource(R.drawable.deployed_code_24px), null
                 )
             }
-            if (BuildConfig.DEBUG)
-                TextButton(
-                    onClick = onClickPluginRepo
-                ) {
-                    Text(text = stringResource(R.string.plugin_repo))
-                }
         },
         scrollBehavior = scrollBehavior
     )

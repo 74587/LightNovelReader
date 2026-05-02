@@ -20,6 +20,7 @@
     <string name="done">Done</string>
     <string name="next">Next</string>
     <string name="abort">Abort</string>
+    <string name="close">Close</string>
     <string name="decline">Decline</string>
     <string name="copied">Content copied</string>
     <string name="select_all">Select All</string>
@@ -532,19 +533,17 @@
     <string name="plugin_detail_source_label">Source</string>
     <string name="plugin_detail_source_local">Local package</string>
     <string name="plugin_detail_source_app">Installed app</string>
+    <!-- Plugin Store -->
+    <string name="plugin_store_install_title">Get Plugin</string>
+    <string name="plugin_store_load_failed">Failed to load</string>
+    <string name="plugin_store_load_failed_desc">Failed to get plugin info</string>
+    <string name="plugin_store_install_with_size">Install (%1$s)</string>
+    <string name="plugin_store_download_progress">%1$d%% downloaded</string>
     <string name="plugin_third_party_title">Third-party plugin</string>
     <string name="plugin_third_party_desc">This plugin is provided by a third party</string>
     <string name="plugin_info_id_label">ID</string>
     <string name="plugin_info_version_label">Version</string>
     <string name="plugin_info_author_label">Author</string>
-    <string name="plugin_repo_load_failed">Repository load failed</string>
-    <string name="plugin_repo_item_version">Version %1$s (%2$d)</string>
-    <string name="plugin_repo_reinstall">Reinstall</string>
-    <string name="plugin_repo_installing">Installing</string>
-    <string name="plugin_repo_title">Plugin repository</string>
-    <string name="plugin_repo_install_failed">Failed to install %1$s: %2$s</string>
-    <string name="plugin_repo_install_cancelled">Cancelled installing %1$s</string>
-    <string name="plugin_repo_parts_incomplete">Split download incomplete: completed %1$d/%2$d, missing %3$s</string>
     <string name="plugin_app_conflict_message">Conflicts with installed plugin app; app plugin is preferred.</string>
 
     <!-- Notifications -->

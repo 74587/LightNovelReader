@@ -91,6 +91,14 @@ LightNovelReader 是一个完全免费、开源的项目。
 如果你喜欢这个项目或它对你有所帮助，欢迎通过 [爱发电](https://www.ifdian.net/a/lightnovelreader) 支持我们。
 所有款项将用于持续开发、新功能的实现、（如果有）服务器维护以及社区建设。
 
+## 翻译
+
+[![Crowdin](https://badges.crowdin.net/lightnovelreader/localized.svg)](https://crowdin.com/project/lightnovelreader)
+
+LightNovelReader 使用 [Crowdin](https://crowdin.com/project/lightnovelreader) 管理翻译工作。如果你希望帮助翻译或改进现有的翻译，欢迎前往 Crowdin 项目页面参与贡献！
+
+> 没有找到你的语言？欢迎在 [Crowdin](https://crowdin.com/project/lightnovelreader) 申请添加新语言！
+
 ## License
 
 ```
