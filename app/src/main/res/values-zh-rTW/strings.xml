@@ -19,6 +19,7 @@
     <string name="done">完成</string>
     <string name="next">下一步</string>
     <string name="abort">中止</string>
+    <string name="close">關閉</string>
     <string name="decline">拒絕</string>
     <string name="copied">內容已複製</string>
     <string name="select_all">全選</string>
@@ -332,7 +333,7 @@
     <string name="log_crash">App 當機</string>
     <string name="log_empty_list">空日誌列表</string>
     <string name="detail_info_title">標題</string>
-    <string name="detail_info_id">ID</string>
+    <string name="detail_info_id">書本識別碼</string>
     <string name="detail_info_author">作者</string>
     <string name="detail_info_publishing_house">文庫</string>
     <string name="detail_info_updated_on">更新</string>
@@ -435,9 +436,9 @@
     <string name="plugin_signature_public_key">公鑰：%1$s，%2$d-bit</string>
     <string name="plugin_signature_sha256">SHA256：%1$s</string>
     <string name="plugin_install_plugin">安裝外掛</string>
-    <string name="plugin_app_list">Plugin apps</string>
-    <string name="plugin_app_empty_title">No plugin apps</string>
-    <string name="plugin_app_empty_desc">Install a plugin app to show it here</string>
+    <string name="plugin_app_list">擴充程式</string>
+    <string name="plugin_app_empty_title">未安裝擴充程式</string>
+    <string name="plugin_app_empty_desc">安裝以顯示擴充程式</string>
     <string name="plugin_empty_title">沒有外掛</string>
     <string name="plugin_empty_desc">安裝支援的 .lnrp 外掛</string>
     <string name="plugin_third_party_tips">來自第三方的外掛可提供額外的資料來源或功能。安裝前，請確認外掛來源可信。\nLightNovelReader 不對外掛可用性負責。</string>
@@ -508,12 +509,18 @@
     <string name="plugin_detail_source_label">來源</string>
     <string name="plugin_detail_source_local">本機套件</string>
     <string name="plugin_detail_source_app">已安裝應用程式</string>
+    <!-- Plugin Store -->
+    <string name="plugin_store_install_title">取得外掛</string>
+    <string name="plugin_store_load_failed">載入失敗</string>
+    <string name="plugin_store_load_failed_desc">無法取得外掛資料</string>
+    <string name="plugin_store_install_with_size">安裝（%1$s）</string>
+    <string name="plugin_store_download_progress">已下載 %1$d%%</string>
     <string name="plugin_third_party_title">第三方外掛</string>
     <string name="plugin_third_party_desc">此外掛由第三方提供</string>
-    <string name="plugin_info_id_label">ID</string>
+    <string name="plugin_info_id_label">包名</string>
     <string name="plugin_info_version_label">版本</string>
     <string name="plugin_info_author_label">作者</string>
-    <string name="plugin_app_conflict_message">Conflicts with installed plugin app; app plugin is preferred.</string>
+    <string name="plugin_app_conflict_message">與已安裝的擴充程式（plugin app）衝突，將優先使用外掛（app plugin）。</string>
     <!-- Notifications -->
     <string name="epub_export_notification_channel_name">EPUB 匯出進度</string>
     <string name="epub_export_notification_preparing">準備中…</string>

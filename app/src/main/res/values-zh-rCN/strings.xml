@@ -19,6 +19,7 @@
     <string name="done">完成</string>
     <string name="next">下一步</string>
     <string name="abort">中止</string>
+    <string name="close">Close</string>
     <string name="decline">拒绝</string>
     <string name="copied">内容已复制</string>
     <string name="select_all">全选</string>
@@ -511,6 +512,12 @@
     <string name="plugin_detail_source_label">来源</string>
     <string name="plugin_detail_source_local">本地包</string>
     <string name="plugin_detail_source_app">已安装应用</string>
+    <!-- Plugin Store -->
+    <string name="plugin_store_install_title">Get Plugin</string>
+    <string name="plugin_store_load_failed">Failed to load</string>
+    <string name="plugin_store_load_failed_desc">Failed to get plugin info</string>
+    <string name="plugin_store_install_with_size">Install (%1$s)</string>
+    <string name="plugin_store_download_progress">%1$d%% downloaded</string>
     <string name="plugin_third_party_title">第三方插件</string>
     <string name="plugin_third_party_desc">该插件由第三方提供</string>
     <string name="plugin_info_id_label">ID</string>
