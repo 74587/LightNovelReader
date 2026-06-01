@@ -232,7 +232,7 @@ private fun AppBar(
                         expanded = sortMenuExpanded,
                         onDismissRequest = { onSortMenuExpandedChange(false) }
                     ) {
-                        MenuOptions.LocalBookSortMenuOptions.optionList.forEach { option ->
+                        MenuOptions.BookshelfSortTypeOptions.optionList.forEach { option ->
                             val sort = LocalBookSort.valueOf(option.key)
 
                             DropdownMenuItem(
